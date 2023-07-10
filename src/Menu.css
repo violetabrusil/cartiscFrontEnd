@@ -1,0 +1,241 @@
+.menu-lateral {
+  height: calc(100% - 80px);
+  max-width: 225px;
+  position: absolute;
+  z-index: 1;
+  top: 80px;
+  left: 0;
+  background-color: #E7ECEF;
+  transition: width 0.5s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.menu-lateral a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 13px;
+  color: #6E757D;
+  display: block;
+  transition: 0.3s;
+  position: relative;
+  height: 50px;
+}
+
+.menu-lateral a .icono {
+  margin-right: 10px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-lateral a .icono img {
+  width: 30px;
+  height: 30px;
+  margin-left: -13px;
+  margin-top: 10px;
+}
+
+.menu-lateral a .texto {
+  transition: 0s;
+  white-space: nowrap;
+  /* Evita el salto de línea */
+  overflow: hidden;
+  /* Oculta el texto que excede el ancho */
+  text-overflow: ellipsis;
+  /* Agrega puntos suspensivos (...) al final del texto */
+}
+
+.menu-lateral a .opcion-container {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  /* Ajusta el margen superior según sea necesario */
+}
+
+.menu-lateral a.active {
+  color: #316EA8;
+  font-weight: bold;
+}
+
+.menu-lateral a.active::before {
+  content: '';
+  position: absolute;
+  top: 55%;
+  right: -20px;
+  transform: translate(0, -50%);
+  height: 75%;
+  width: 9px;
+  left: 0;
+  background-color: #316EA8;
+}
+
+.menu-lateral .icono-menu {
+  position: absolute;
+  bottom: -25px;
+  right: -24px;
+  transform: translateY(-50%) rotate(180deg);
+  transition: transform 0.3s;
+}
+
+.menu-lateral.open .icono-menu {
+  right: auto;
+  left: -13px;
+  /* Posiciona el icono a la izquierda */
+  transform: rotate(0deg);
+}
+
+.menu-lateral .icono-menu img {
+  width: 25px;
+  height: 23px;
+}
+
+.menu-lateral.open {
+  width: 60px;
+}
+
+.menu-lateral.open a .texto {
+  opacity: 0;
+  margin-left: -100px;
+}
+
+.menu-lateral .imagen-vertical {
+  width: 130px;
+  height: auto;
+  position: absolute;
+  bottom: 5px;
+  right: 53px;
+  transform: rotate(0deg);
+  object-fit: contain;
+  transition: transform 0.3s;
+  margin-top: auto;
+  margin-left: auto;
+}
+
+.menu-lateral.open .imagen-vertical {
+  width: 120px;
+  bottom: 76px;
+  right: -12px;
+  transform: rotate(-90deg);
+  /* Restablece la rotación de la imagen al estar abierto */
+  margin-top: 0;
+  margin-left: auto;
+  margin-right: -20px;
+}
+
+.menu-lateral.open .button-menu {
+  background: none;
+  border: none;
+  margin-left: 27px;
+  margin-bottom: 30px;
+}
+
+.menu-lateral .button-menu {
+  background: none;
+  border: none;
+  margin-left: 27px;
+  margin-bottom: 44px;
+}
+
+@media screen and (max-width: 768px) {
+  .menu-lateral {
+    padding-top: 15px;
+  }
+
+  .menu-lateral a {
+    font-size: 16px;
+    padding: 8px 8px 8px 24px;
+  }
+
+  .menu-lateral .icono-menu {
+    bottom: -5px;
+    margin-right: 16px;
+  }
+
+  .menu-lateral.open {
+    width: 50px;
+  }
+
+  .menu-lateral a .icono img {
+    max-width: 20px;
+    height: auto;
+    margin-left: -9px;
+  }
+
+  .menu-lateral .imagen-vertical {
+    bottom: 20px;
+    right: 60px;
+    max-width: 50%;
+    object-fit: contain;
+    max-height: calc(100% - 80px);
+  }
+
+  .menu-lateral.open .imagen-vertical {
+    right: -18px;
+    max-width: 60%;
+    object-fit: contain;
+    max-height: calc(100% - 80px);
+  }
+
+  .menu-lateral.open .icono-menu {
+    left: -10px;
+  }
+
+
+}
+
+@media screen and (max-width: 520px) {
+  .menu-lateral a .icono img {
+    max-width: 20px;
+    height: auto;
+  }
+
+  .menu-lateral .imagen-vertical {
+    bottom: 23px;
+    right: 60px;
+    max-width: 62%;
+    object-fit: contain;
+    max-height: calc(100% - 80px);
+  }
+
+  .menu-lateral.open .imagen-vertical {
+    bottom: 104px;
+    left: -50px;
+    max-width: 300%;
+    object-fit: contain;
+    max-height: calc(100% - 80px);
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .menu-lateral a {
+    font-size: 12px;
+    padding: 8px 8px 8px 20px;
+  }
+
+  .menu-lateral .icono-menu {
+    font-size: 20px;
+  }
+
+  .menu-lateral a .texto {
+    display: none;
+  }
+
+  .menu-lateral .imagen-vertical {
+    bottom: 23px;
+    right: 60px;
+    max-width: 62%;
+    object-fit: contain;
+    max-height: calc(100% - 80px);
+  }
+
+  .menu-lateral.open .imagen-vertical {
+    bottom: 104px;
+    left: -50px;
+    max-width: 300%;
+    object-fit: contain;
+    max-height: calc(100% - 80px);
+  }
+}

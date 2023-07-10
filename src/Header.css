@@ -1,0 +1,84 @@
+.header-left {
+    flex: 2;
+    flex-shrink: 0;
+}
+
+@media screen and (max-width: 600px) {
+    .header-left {
+        align-self: flex-start;
+    }
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+    max-width: 200px;
+}
+
+.icon-image {
+    max-width: 100px;
+    /* Ajusta el tamaño máximo de la imagen según tus necesidades */
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+@media screen and (min-width: 768px) {
+    .icon-image {
+        max-height: 50px;
+        /* Ajusta la altura máxima en pantallas más grandes */
+    }
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image {
+    width: 50px;
+    /* Ajusta el tamaño de la foto de perfil según tus necesidades */
+    height: 50px;
+    border-radius: 50%;
+    /* Da forma circular a la foto de perfil */
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.profile-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+}
+
+.profile-role {
+    font-size: 15px;
+    color: white;
+    font-style: normal;
+    font-weight: 200;
+    padding-top: 3px;
+}
+
+/* Estilos responsive */
+@media screen and (max-width: 600px) {
+
+    .header-left,
+    .header-right {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+
+    .header-right {
+        max-width: 100%;
+        /* Cambia el ancho máximo a ocupar el 100% del espacio disponible */
+        overflow: hidden;
+        /* Oculta el contenido que se desborda */
+    }
+}

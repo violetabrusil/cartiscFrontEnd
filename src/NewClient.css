@@ -1,0 +1,228 @@
+.containerNewClient {
+    position: absolute;
+    top: 80px;
+    bottom: 0;
+    left: 60px;
+    right: 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 0px;
+}
+
+.left-section-new-client {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.right-section-new-client {
+    background-color: #d0d0d0;
+    padding: 20px;
+}
+
+.containerNewClientTitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.containerNewClientTitle h2 {
+    flex: 1;
+    text-align: left;
+}
+
+.containerNewClient-form {
+    margin-bottom: 20px;
+}
+
+.button-next {
+    width: 167px;
+    height: 40px;
+    background-color: #1c4a74;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+}
+
+.container-button-next {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: auto;
+}
+
+.input-form {
+    width: 95%;
+    height: 30px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+}
+
+.custom-select-control {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.custom-select-control--focused {
+    box-shadow: 0 0 0 2px #aaa;
+}
+
+.custom-select-option {
+    background-color: transparent;
+}
+
+.custom-select-option--selected {
+    background-color: #ddd;
+}
+
+.custom-select-option--hover {
+    background-color: #f5f5f5;
+}
+
+.input-plate {
+    width: 30%;
+    height: 68px;
+    border: 5px solid #000;
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+    font-weight: bold;
+    font-size: 50px;
+    text-align: center;
+    padding-top: 18px;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
+}
+
+.input-container {
+    position: relative;
+    margin-top: 10px;
+    margin-left: 3px;
+    display: flex;
+    align-items: center;
+}
+
+.input-container label {
+    position: absolute;
+    top: 23%;
+    left: 16%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease-out, font-size 0.3s ease-out;
+    pointer-events: none;
+    color: black;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.input-container.active label {
+    top: 23%;
+}
+
+.label-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #000;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.container-add-car-form {
+    margin-bottom: 20px;
+}
+
+.form-scroll {
+    max-height: 513px;
+    overflow: auto;
+}
+
+.button-alert {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    margin-left: 13px;
+    margin-top: 64px;
+}
+
+.alert {
+    width: 30px;
+    height: 30px;
+}
+
+@media screen and (max-width: 768px) {
+    .containerNewClient {
+        position: absolute;
+        display: block;
+        left: 0;
+    }
+
+    .left-section-new-client,
+    .right-section-new-client {
+        width: 100%;
+    }
+
+    .containerNewClientTitle {
+        flex-direction: column;
+    }
+
+    .containerNewClientTitle h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .right-section-new-client .input-plate {
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .containerNewClientClients {
+        position: static;
+        display: block;
+        margin-top: 160px;
+        margin-left: 0;
+    }
+
+    .left-section-new-client,
+    .right-section-new-client {
+        width: 100%;
+    }
+
+    .containerNewClientTitle {
+        flex-direction: column;
+    }
+
+    .containerNewClientTitle h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .right-section-new-client .input-plate {
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .search-box {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .input-form {
+        margin-bottom: 10px;
+    }
+
+    .right-section-new-client .input-plate {
+        width: 70%;
+    }
+}
