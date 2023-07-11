@@ -23,6 +23,8 @@
 .right-section {
     background-color: #d0d0d0;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .containerTitle-car {
@@ -138,6 +140,114 @@
     opacity: 50%;
 }
 
+.button-maintenance {
+    width: 200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    background-color: #316EA8;
+    border-radius: 7px;
+}
+
+.button-maintenance-text {
+    color: white;
+    font-weight: bold;
+    padding-inline-start: 15px;
+}
+
+.button-maintenance-filter {
+    width: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    background: none;
+}
+
+.button-sort {
+    width: 100px;
+    border: none;
+    margin-top: 3px;
+    background: none;
+}
+
+.button-maintenance-text-filter {
+    color: black;
+    font-weight: bold;
+}
+
+.label-maintenance {
+    max-width: 250px;
+    height: 40px;
+    border: 1px solid rgb(0 0 0 / 31%);
+    background: #FFF;
+    flex-grow: 1;
+    border-radius: 8px;
+}
+
+.icon-alert-white {
+    width: 25px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.icon-calendar {
+    width: 20px;
+    height: 20px;
+}
+
+.icon-sort {
+    width: 50px;
+    height: 50px;
+}
+
+.containerTitle-car-maintenance {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+}
+
+.container-maintenance-filter {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 4px;
+    margin-top: 16px;
+}
+
+.container-maintenance-filter h4 {
+    flex: 1;
+    text-align: left;
+}
+
+.container-checkbox {
+    display: flex;
+    margin-left: 106px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.label-checkbox {
+    width: 160px;
+    height: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.50);
+    background: #FFF;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+}
+
+.input-checkbox {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.50);
+    border-radius: 8px;
+    margin-right: 10px;
+    margin-left: 200px;
+    margin-top: 2px;
+}
+
 @media screen and (max-width: 768px) {
     .containerCar {
         position: absolute;
@@ -202,4 +312,3 @@
         max-width: 300px;
     }
 }
-
