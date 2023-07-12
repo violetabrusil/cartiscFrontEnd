@@ -25,12 +25,12 @@
     padding: 20px;
 }
 
-.containerTitle {
+.container-title-client {
     display: flex;
     align-items: center;
 }
 
-.containerTitle h2 {
+.container-title-client h2{
     flex: 1;
     text-align: left;
 }
@@ -43,38 +43,18 @@
     height: 84vh;
 }
 
-.button-filter {
-    width: 100px;
-    height: 40px;
-    border: none;
-    margin-top: 3px;
-}
-
-.button-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-}
-
-.button-text {
-    flex: 1;
-    text-align: left;
-    margin-top: -13px;
-    display: inline-block;
-    vertical-align: middle;
-    font-weight: bold;
-    color: #6E757D;
-}
-
 .button-add-client {
     width: 216px;
     height: 64px;
-    flex-shrink: 0;
     background-color: #1C4A74;
-    color: white;
-    font-weight: bold;
     border: none;
     border-radius: 6px;
+    font-size: 17px;
+}
+
+.text-button-add-client {
+    color: white;
+    font-weight: bold;
     font-size: 17px;
 }
 
@@ -120,30 +100,6 @@
     height: 30px;
     margin-right: -38px;
     margin-top: -13px;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    max-width: 95%;
-    height: 25px;
-    margin-bottom: 25px;
-    padding: 5px;
-    border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
-}
-
-.search-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-}
-
-.search-icon {
-    width: 25px;
-    height: 25px;
 }
 
 .result-client {
@@ -300,21 +256,6 @@
         width: 100%;
     }
 
-    .containerTitle {
-        flex-direction: column;
-    }
-
-    .containerTitle h2,
-    .button-filter {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .search-box {
-        width: 100%;
-        max-width: 300px;
-    }
-
     .vehicle-icon {
         width: 30px;
         height: 30px;
@@ -335,25 +276,4 @@
         width: 100%;
     }
 
-    .containerTitle {
-        flex-direction: column;
-    }
-
-    .containerTitle h2,
-    .button-filter {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .search-box {
-        width: 100%;
-        max-width: 300px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .search-box {
-        width: 100%;
-        max-width: 300px;
-    }
 }

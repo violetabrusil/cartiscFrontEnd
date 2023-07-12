@@ -5,8 +5,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import filterIcon from "../../images/icons/filterIcon.png";
-import searchIcon from "../../images/icons/searchIcon.png";
+import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
+import Modal from "../../modal/Modal";
 import clientIcon from "../../images/icons/userIcon-gray.png";
 import eyeIcon from "../../images/icons/eyeIcon.png";
 import carIcon from "../../images/icons/carIcon-gray.png";
@@ -21,7 +21,9 @@ import deleteIcon from "../../images/icons/deleteIcon.png";
 
 const Clients = () => {
 
+    const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const [selectedOption, setSelectedOption] = useState('');
     const navigate = useNavigate();
     const [showClientInformation, setShowClientInformation] = useState(false);
     const [showClientCarInformation, setShowClientCarInformation] = useState(false);
@@ -29,6 +31,31 @@ const Clients = () => {
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+
+    const handleSearchClientChange = (newSearchTerm) => {
+        setSearchTerm(newSearchTerm);
+        // Aquí puedes hacer cualquier otra lógica que necesites cuando cambie el término de búsqueda
+    };
+
+    const openFilterModal = () => {
+        setIsFilterModalOpen(true);
+    };
+
+    const closeFilterModal = () => {
+        setIsFilterModalOpen(false);
+    };
+
+    const handleOptionChange = (option) => {
+        setSelectedOption(option);
+    };
+
+    const handleSelectClick = () => {
+        // Aquí se puede manejar la opción seleccionada.
+        console.log(selectedOption);
+
+        // Cerrar el modal después de seleccionar.
+        closeFilterModal();
+    };
 
     const [vehicles] = useState([
         { type: "auto", plate: "ABC123" },
@@ -45,14 +72,6 @@ const Clients = () => {
         return acc;
     }, []);
 
-    const openFilterModal = () => {
-        setIsFilterModalOpen(true);
-    };
-
-    const closeFilterModal = () => {
-        setIsFilterModalOpen(false);
-    };
-
     const handleAddClient = () => {
         // Redirige a la página deseada
         navigate("/clients/newClient");
@@ -62,7 +81,7 @@ const Clients = () => {
         event.stopPropagation();
         setShowClientInformation(true);
         setShowClientCarInformation(false);
-        setShowTitle(true);
+        setShowTitle(false);
     };
 
     const handleClientCarInformation = () => {
@@ -104,18 +123,12 @@ const Clients = () => {
             <div className="containerClients">
                 <div className="left-section">
                     {/*Título del contenedor con el botón para filtrar búsqueda */}
-                    <div className="containerTitle">
-                        <h2>Clientes</h2>
-                        <button className="button-filter" onClick={openFilterModal}>
-                            <img src={filterIcon} alt="Filter Icon" className="button-icon" />
-                            <span className="button-text">Filtro</span>
-                        </button>
-                    </div>
-                    {/*Buscador*/}
-                    <div className="search-box">
-                        <img src={searchIcon} alt="Search Icon" className="search-icon" />
-                        <input type="text" className="search-input" />
-                    </div>
+                    <TitleAndSearchBox
+                        title="Clientes"
+                        onSearchChange={handleSearchClientChange}
+                        onButtonClick={openFilterModal}
+                    />
+
                     {/*Lista de clientes*/}
                     <div className="result-client" onClick={handleClientCarInformation}>
                         <div className="first-result">
@@ -138,10 +151,10 @@ const Clients = () => {
 
                     </div>
                 </div>
-                <div className="right-section">
+                 <div className="right-section">
 
                     {!selectedVehicle && showTitle && (
-                        <div className="containerTitle">
+                        <div className="container-title-client">
                             <h2>Autos</h2>
                             <button className="button-add-car" onClick={openFilterModal}>
                                 <img src={addIcon} alt="Add Car Icon" className="button-add-car-icon" />
@@ -152,7 +165,9 @@ const Clients = () => {
                     {/* Aquí colocamos los componentes para la sección derecha */}
                     {!showClientCarInformation && !showClientInformation && (
                         <div className="container-button-add-client">
-                            <button className="button-add-client" onClick={handleAddClient} >AGREGAR CLIENTE</button>
+                            <button className="button-add-client" onClick={handleAddClient} >
+                                <span className="text-button-add-client">AGREGAR CLIENTE</span>
+                                </button>
                         </div>
 
                     )}
@@ -195,7 +210,7 @@ const Clients = () => {
 
                     {showClientInformation && !showClientCarInformation && (
                         <div>
-                            <div className="containerTitle">
+                            <div className="container-title-client">
                                 <h2>Información del cliente</h2>
                                 <button className="button-unavailable">
                                     <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon" />
@@ -230,9 +245,6 @@ const Clients = () => {
                             </div>
 
                         </div>
-
-
-
                     )}
 
                     {/*Información del vehículo del cliente */}
@@ -307,31 +319,19 @@ const Clients = () => {
                         </div>
                     )}
 
-
                 </div>
             </div>
 
             {/*Modal del filtro de búsqueda*/}
 
             {isFilterModalOpen && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <h3>Seleccione el filtro a buscar</h3>
-                        <div className="filter-options">
-                            <label>
-                                <input type="radio" name="filter" value="cedula" />
-                                Cédula
-                            </label>
-                            <label>
-                                <input type="radio" name="filter" value="nombre" />
-                                Nombre
-                            </label>
-                        </div>
-                        <button className="modal-button" onClick={closeFilterModal}>
-                            Seleccionar
-                        </button>
-                    </div>
-                </div>
+                <Modal
+                    isOpen={isFilterModalOpen}
+                    onClose={closeFilterModal}
+                    options={['Cédula', 'Nombre']}
+                    onOptionChange={handleOptionChange}
+                    onSelect={handleSelectClick}
+                />
             )}
 
         </div>

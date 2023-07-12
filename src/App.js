@@ -16,6 +16,7 @@ import Home from './pages/Home';
 import Clients from './pages/clients/Clients';
 import NewClient from './pages/clients/NewClient';
 import Cars from './pages/cars/Car';
+import Services from './pages/services/Service';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/clients" element={<Clients />} />
           <Route path="/clients/newClient" element={<NewClient />} />
           <Route path="/cars" element={<Cars />} />
+          <Route path="/services" element={<Services />} />
         </Routes>
       </div>
 

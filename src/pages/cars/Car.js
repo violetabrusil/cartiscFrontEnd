@@ -6,8 +6,8 @@ import DatePicker from "react-datepicker";
 import { Calendar } from "../../calendar/Calendar";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import filterIcon from "../../images/icons/filterIcon.png";
-import searchIcon from "../../images/icons/searchIcon.png";
+import Modal from "../../modal/Modal";
+import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import eyeIcon from "../../images/icons/eyeIcon.png";
 import iconAlertWhite from "../../images/icons/alerIconWhite.png";
 import "react-datepicker/dist/react-datepicker.css";
@@ -17,7 +17,9 @@ import sortLeftIcon from "../../images/icons/sortLeftIcon.png";
 
 const Cars = () => {
 
+    const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const [selectedOption, setSelectedOption] = useState('');
     const [showCarInformation, setShowCarInformation] = useState(false);
     const [showCarHistory, setShowCarHistory] = useState(false);
     const [selectedDate, setSelectedDate] = React.useState(null); // Estado para almacenar la fecha seleccionada 
@@ -27,12 +29,29 @@ const Cars = () => {
     const options = ['Cambio de aceite', 'Cambio de motor'];
     const [selectedOptions, setSelectedOptions] = useState([]);
 
+    const handleSearchCarChange = (newSearchTerm) => {
+        setSearchTerm(newSearchTerm);
+        // Aquí puedes hacer cualquier otra lógica que necesites cuando cambie el término de búsqueda
+    };
+
     const openFilterModal = () => {
         setIsFilterModalOpen(true);
     };
 
     const closeFilterModal = () => {
         setIsFilterModalOpen(false);
+    };
+
+    const handleOptionChange = (option) => {
+        setSelectedOption(option);
+    };
+
+    const handleSelectClick = () => {
+        // Aquí se puede manejar la opción seleccionada.
+        console.log(selectedOption);
+
+        // Cerrar el modal después de seleccionar.
+        closeFilterModal();
     };
 
     const handleCarHistory = (event) => {
@@ -100,19 +119,13 @@ const Cars = () => {
 
             <div className="containerCars">
                 <div className="left-section">
-                    {/*Título del contenedor */}
-                    <div className="containerTitle-car">
-                        <h2>Autos</h2>
-                        <button className="button-filter-car" onClick={openFilterModal}>
-                            <img src={filterIcon} alt="Filter Car Icon" className="button-icon-car" />
-                            <span className="button-text-car">Filtro</span>
-                        </button>
-                    </div>
-                    {/*Buscador */}
-                    <div className="search-car-box">
-                        <img src={searchIcon} alt="Search Car Icon" className="search-car-icon" />
-                        <input type="text" className="search-car-input"></input>
-                    </div>
+                    {/*Título del contenedor y cuadro de búsqueda */}
+                    <TitleAndSearchBox
+                        title="Autos"
+                        onSearchChange={handleSearchCarChange}
+                        onButtonClick={openFilterModal}
+                    />
+
                     {/*Lista de vehículos */}
                     <div className="result-car" onClick={handleCarHistory}>
                         <div className="first-result-car">
@@ -238,7 +251,7 @@ const Cars = () => {
                                         </div>
                                     </div>
                                 ))}
-                                { /*<div>Selected options: {selectedOptions.join(', ')}</div> */ }
+                                { /*<div>Selected options: {selectedOptions.join(', ')}</div> */}
 
                             </div>
 
@@ -250,24 +263,13 @@ const Cars = () => {
                 {/*Modal del filtro de búsqueda*/}
 
                 {isFilterModalOpen && (
-                    <div className="filter-modal-overlay">
-                        <div className="filter-modal">
-                            <h3>Seleccione el filtro a buscar</h3>
-                            <div className="filter-options">
-                                <label>
-                                    <input type="radio" name="filter" value="cedula" />
-                                    Placa
-                                </label>
-                                <label>
-                                    <input type="radio" name="filter" value="nombre" />
-                                    Nombre Titular
-                                </label>
-                            </div>
-                            <button className="modal-button" onClick={closeFilterModal}>
-                                Seleccionar
-                            </button>
-                        </div>
-                    </div>
+                    <Modal
+                        isOpen={isFilterModalOpen}
+                        onClose={closeFilterModal}
+                        options={['Placa', 'Nombre Titular']}
+                        onOptionChange={handleOptionChange}
+                        onSelect={handleSelectClick}
+                    />
                 )}
 
                 {isAlertModalOpen && (
