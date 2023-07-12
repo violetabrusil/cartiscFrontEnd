@@ -17,13 +17,13 @@ import Clients from './pages/clients/Clients';
 import NewClient from './pages/clients/NewClient';
 import Cars from './pages/cars/Car';
 import Services from './pages/services/Service';
+import Operation from './pages/operations/Operation';
 
 function App() {
   return (
     <Router>
       <div>
         <Routes>
-
           <Route path="/login" element={<Login />} />
           <Route path="/loginExpress" element={<LoginExpress />} />
           <Route path="/home" element={<Home />} />
@@ -31,6 +31,7 @@ function App() {
           <Route path="/clients/newClient" element={<NewClient />} />
           <Route path="/cars" element={<Cars />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/services/operations" element={<Operation />} />
         </Routes>
       </div>
 

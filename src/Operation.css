@@ -1,0 +1,172 @@
+.container-operations {
+    position: absolute;
+    top: 80px;
+    /* Ajusta la altura del header */
+    bottom: 0;
+    left: 60px;
+    /* Ancho del menú cerrado */
+    right: 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    /* Divide la pantalla en partes de 1/3 y 2/3 */
+    grid-gap: 0px;
+    /* Espacio entre las secciones */
+}
+
+.left-section {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-section {
+    background-color: #d0d0d0;
+    padding: 20px;
+}
+
+.container-general-operation {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 84vh;
+}
+
+.container-title-add-operation {
+    display: flex;
+    align-items: center;
+}
+
+.container-title-add-operation h2 {
+    flex: 1;
+    text-align: left;
+}
+
+.container-new-operation {
+    margin-left: 50px;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.row-operation {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.container-new-operation label {
+    font-size: 20px;
+    font-weight: 500;
+    margin-right: 20px;
+}
+
+.container-new-operation input {
+    width: 300px;
+    height: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.50);
+    background: #FFF;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-left: 50px;
+}
+
+.container-operation-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: auto;
+}
+
+.accept-button {
+    width: 180px;
+    height: 50px;
+    background-color: #1C4A74;
+    border: none;
+    border-radius: 6px;
+}
+
+.accept-button-disabled {
+    width: 180px;
+    height: 50px;
+    background-color: #6E757D;
+    border: none;
+    border-radius: 6px;
+}
+
+.edit-button {
+    width: 180px;
+    height: 50px;
+    background-color: #1C4A74;
+    border: none;
+    border-radius: 6px;
+}
+
+.text-button-operation {
+    color: white;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.result-operation {
+    max-width: 98%;
+    height: 50px;
+    background: #FFF;
+    border: 1px solid #D4D4D4;
+}
+
+.title-operation {
+    display: flex;
+    height: 50px;
+    flex-direction: column;
+    justify-content: center;
+    color: #000;
+    font-size: 19px;
+    font-style: normal;
+    font-weight: 300;
+    padding-left: 10px;
+}
+
+.delete-operation-button {
+    height: 40px;
+    border: none;
+    margin-top: 3px;
+    background: none;
+}
+
+.delete-icon-operation {
+    width: 35px;
+    height: 35px;
+    margin-top: -7px;
+    margin-right: -10px;
+}
+
+@media screen and (max-width: 768px) {
+    .container-operations {
+        position: absolute;
+        display: block;
+        left: 0;
+    }
+
+    .left-section,
+    .right-section {
+        width: 100%;
+    }
+
+}
+
+@media screen and (max-width: 320px) {
+    .container-operations {
+        position: static;
+        display: block;
+        margin-top: 160px;
+        /* Ajusta la altura del header y el menú */
+        margin-left: 0;
+    }
+
+    .left-section,
+    .right-section {
+        width: 100%;
+    }
+
+}

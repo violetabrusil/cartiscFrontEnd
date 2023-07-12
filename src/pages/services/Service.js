@@ -1,6 +1,7 @@
 import "../../Service.css";
 import "../../Modal.css";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
@@ -15,6 +16,7 @@ const Services = () => {
     const [selectedOption, setSelectedOption] = useState('');
     const [showButtons, setShowButtons] = useState(true);
     const [showAddService, setShowAddService] = useState(false);
+    const navigate = useNavigate();
 
     const handleSearchServiceChange = (newSearchTerm) => {
         setSearchTerm(newSearchTerm);
@@ -98,6 +100,10 @@ const Services = () => {
         // Aquí puedes manejar la lógica para eliminar la fila
     };
 
+    const handleAddOperation = () => {
+        navigate("/services/operations");
+    }
+
 
     return (
         <div>
@@ -119,7 +125,7 @@ const Services = () => {
                             <button className="button-add" style={{ marginRight: "10px" }} onClick={handleAddService} >
                                 <span className="text-button">AGREGAR SERVICIO</span>
                             </button>
-                            <button className="button-add" style={{ marginLeft: "10px" }}>
+                            <button className="button-add" style={{ marginLeft: "10px" }} onClick={handleAddOperation}>
                                 <span className="text-button">AGREGAR OPERACIÓN</span>
                             </button>
                         </div>
@@ -197,7 +203,7 @@ const Services = () => {
                             </div>
 
                             <div className="container-buttons">
-                                <button className="button-add-operation" style={{ marginRight: "10px" }} onClick={handleAddService} >
+                                <button className="button-add-operation" style={{ marginRight: "10px" }} onClick={handleAddOperation} >
                                     <span className="text-button">Agregar Operación</span>
                                 </button>
                                 <button className="button-add-operation" style={{ marginLeft: "10px" }}>
