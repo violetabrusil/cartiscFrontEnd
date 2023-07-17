@@ -1,0 +1,31 @@
+.stock-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 69vh;
+    margin: 0;
+    padding: 0;
+}
+
+.label-input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 100px;
+    justify-content: center;
+}
+
+.label-input-container label {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.label-input-container input {
+    border: 1px solid rgba(0, 0, 0, 0.50);
+    border-radius: 8px;
+    height: 40px;
+    width: auto;
+    font-weight: 400;
+    font-size: 22px;
+    text-align: center;
+}

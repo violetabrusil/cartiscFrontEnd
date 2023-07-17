@@ -1,16 +1,14 @@
 import "../../Products.css";
-import React, { useEffect, useState } from "react";
-import Select from 'react-select';
+import React, { useState } from "react";
 import { useTable, usePagination } from "react-table";
 import addProductIcon from "../../images/icons/addIcon.png";
-import searchIcon from "../../images/icons/searchIcon.png";
 import deleteIcon from "../../images/icons/deleteIcon.png";
 import editIcon from "../../images/icons/editIcon.png";
+import SearchBar from "../../searchBar/SearchBar";
+import DataTable from "../../dataTable/DataTable";
 
 const Products = () => {
 
-    const [selectedOption, setSelectedOption] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");
     const [showGeneralProducts, setShowGeneralProducts] = useState(true);
     const [showAddProducts, setShowAddProducts] = useState(false);
     const [showEditProducts, setShowEditProducts] = useState(false);
@@ -39,53 +37,10 @@ const Products = () => {
         column: "",
     });
 
-    const handleOptionsChange = (selectedOption) => {
-        setSelectedOption(selectedOption);
-    };
-
-    const handleSearchInputChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    useEffect(() => {
-        //Búsqueda de productos
-        const delayTimer = setTimeout(() => {
-            //Lógica para realizar la búsqueda
-            console.log("Select option", selectedOption);
-            console.log("Search term", searchTerm);
-        }, 500); //Espera 500ms después de la última pulsación de tecla
-
-        return () => clearTimeout(delayTimer); //Limpia el temporizador al desmontarse el componente
-    }, [selectedOption, searchTerm]);
-
-    const options = [
-        { value: 'numero de serie', label: 'Número de serie' },
-        { value: 'titulo', label: 'Título' },
-        { value: 'categoria', label: 'Categoría' }
-    ];
-
-    const customStyles = {
-        control: (base, state) => ({
-            ...base,
-            width: '550px',  // Aquí estableces el ancho
-            height: '40px',  // Y aquí la altura
-            minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
-            border: '1px solid rgb(0 0 0 / 34%)',
-            borderRadius: '4px',
-            padding: '1px',
-            boxSizing: 'border-box'  // Asegura que el borde y el relleno estén incluidos en el tamaño
-        }),
-        placeholder: (provided, state) => ({
-            ...provided,
-            color: '#999', // Color del texto del placeholder
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            className: 'custom-select-option-product',
-            // otros estilos personalizados si los necesitas
-        }),
-        menuPortal: base => ({ ...base, width: '41%', zIndex: 9999 }),
-
+    const handleFilter = (selectedOption, searchTerm) => {
+        console.log("Selected option", selectedOption);
+        console.log("Search term", searchTerm);
+        // Aquí puedes manejar la lógica del filtro
     };
 
     const data = React.useMemo(
@@ -138,18 +93,6 @@ const Products = () => {
         []
     );
 
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        prepareRow,
-        page,
-        canPreviousPage,
-        canNextPage,
-        nextPage,
-        previousPage,
-    } = useTable({ columns, data }, usePagination);
-
     const handleDelete = (row) => {
         console.log("Eliminar fila: ", row);
         // Aquí puedes manejar la lógica para eliminar la fila
@@ -196,71 +139,9 @@ const Products = () => {
                         </button>
                     </div>
 
-                    <form>
-                        <div className="search-bar-container">
-                            <Select
-                                options={options}
-                                value={selectedOption}
-                                onChange={handleOptionsChange}
-                                styles={customStyles}
-                                placeholder="Seleccionar"
-                                menuPortalTarget={document.body}
-                            />
+                    <SearchBar onFilter={handleFilter} />
 
-                            <div className="search-products-box">
-                                <img src={searchIcon} alt="Search Product Icon" className="search-products-icon" />
-                                <input
-                                    type="text"
-                                    className="input-search-products"
-                                    onChange={handleSearchInputChange}
-                                    placeholder="Buscar Productos"
-                                />
-                            </div>
-                        </div>
-
-                    </form>
-
-                    <div className="container-table">
-                        <table {...getTableProps()}>
-                            <thead>
-                                {headerGroups.map((headerGroup) => (
-                                    <tr {...headerGroup.getHeaderGroupProps()}>
-                                        {headerGroup.headers.map((column) => (
-                                            <th {...column.getHeaderProps()}>
-                                                {column.render('Header')}
-                                            </th>
-                                        ))}
-
-                                    </tr>
-                                ))}
-                            </thead>
-                            <tbody {...getTableBodyProps()}>
-                                {page.map((row) => {
-                                    prepareRow(row);
-                                    return (
-                                        <tr {...row.getRowProps()}>
-                                            {row.cells.map((cell) => (
-                                                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                            ))}
-                                        </tr>
-                                    )
-                                })}
-
-                            </tbody>
-
-                        </table>
-
-                        <div className="container-table-buttons">
-                            <button style={{ marginRight: "10px", marginBottom: "10px" }} onClick={() => previousPage()} disabled={!canPreviousPage}>
-                                Anterior
-                            </button>
-                            <button style={{ marginLeft: "10px", marginBottom: "10px" }} onClick={() => nextPage()} disabled={!canNextPage}>
-                                Siguiente
-                            </button>
-
-                        </div>
-
-                    </div>
+                    <DataTable data={data} columns={columns} />
 
                 </div>
             )}

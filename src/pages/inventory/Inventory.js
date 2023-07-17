@@ -4,7 +4,8 @@ import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Products from "./Products";
-
+import Stock from "./Stock";
+import Location from "./Location";
 
 const Inventory = () => {
 
@@ -28,11 +29,11 @@ const Inventory = () => {
                     </TabPanel>
 
                     <TabPanel>
-                        <h2>Componente Stock</h2>
+                        <Stock />
                     </TabPanel>
 
                     <TabPanel>
-                        <h2>Componente Ubicación</h2>
+                        <Location />
                     </TabPanel>
 
                 </Tabs>

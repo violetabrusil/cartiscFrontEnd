@@ -1,0 +1,29 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: center;
+    padding: 10px;
+    background-color: white;
+}
+
+td {
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid black;
+}
+
+.container-table-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.container-table {
+    background-color: white;
+    width: 94%;
+    margin: auto;
+    padding-top: 47px;
+}
