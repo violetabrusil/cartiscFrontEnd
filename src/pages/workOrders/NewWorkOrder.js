@@ -17,7 +17,8 @@ import camionIcon from "../../images/icons/camionIcon.png";
 import arrowIcon from "../../images/icons/arrowIcon.png";
 import fuelIcon from "../../images/icons/fuelIcon.png";
 import "react-datepicker/dist/react-datepicker.css";
-
+import VehiclePlans from "../../vehicle-plans/VehiclePlans";
+import carPlan from "../../images/vehicle plans/Car.png";
 
 const NewWorkOrder = () => {
 
@@ -424,6 +425,9 @@ const NewWorkOrder = () => {
                 <div className="title-second-section-container">
                     <h3>Puntos de interés</h3>
                 </div>
+                
+
+                <VehiclePlans imgSrc={carPlan} />
 
             </div>
 
