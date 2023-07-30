@@ -1,0 +1,141 @@
+.work-order-container {
+    position: absolute;
+    top: 80px;
+    /* Ajusta la altura del header */
+    bottom: 0;
+    left: 60px;
+    /* Ancho del menú cerrado */
+    right: 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    /* Divide la pantalla en partes de 1/3 y 2/3 */
+    grid-gap: 0px;
+    /* Espacio entre las secciones */
+}
+
+.left-section {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-section {
+    background-color: #d0d0d0;
+    padding: 20px;
+}
+
+.work-orders-container-title {
+    display: flex;
+    align-items: center;
+}
+
+.work-orders-container-title h2{
+    flex: 1;
+    text-align: left;
+}
+
+.search-box-work-orders {
+    display: flex;
+    align-items: center;
+    max-width: 95%;
+    height: 25px;
+    margin-bottom: 25px;
+    padding: 5px;
+    border-radius: 6px;
+    border: 2px solid rgba(134, 134, 134, 0.31);
+    background: rgba(128, 128, 128, 0.26);
+}
+
+.input-search-work-orders {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+.search-work-orders-icon {
+    width: 25px;
+    height: 25px;
+}
+
+.container-button-add-work-orders {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    height: 84vh;
+}
+
+.button-add-work-orders {
+    width: 216px;
+    height: 64px;
+    background-color: #1C4A74;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+}
+
+.text-button-add-work-orders {
+    color: white;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+@media screen and (max-width: 768px) {
+    .work-order-container {
+        position: absolute;
+        display: block;
+        left: 0;
+    }
+
+    .left-section,
+    .right-section {
+        width: 100%;
+    }
+
+    .work-orders-container-title {
+        flex-direction: column;
+    }
+
+    .work-orders-container-title h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .search-box-work-orders {
+        width: 100%;
+        max-width: 300px;
+    }
+
+}
+
+@media screen and (max-width: 320px) {
+    .work-order-container {
+        position: static;
+        display: block;
+        margin-top: 160px;
+        /* Ajusta la altura del header y el menú */
+        margin-left: 0;
+    }
+
+    .left-section,
+    .right-section {
+        width: 100%;
+    }
+
+    .work-orders-container-title {
+        flex-direction: column;
+    }
+
+    .work-orders-container-title h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .search-box-work-orders {
+        width: 100%;
+        max-width: 300px;
+    }
+
+}

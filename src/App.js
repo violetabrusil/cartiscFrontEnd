@@ -19,6 +19,8 @@ import Cars from './pages/cars/Car';
 import Services from './pages/services/Service';
 import Operation from './pages/operations/Operation';
 import Inventory from './pages/inventory/Inventory';
+import WorkOrders from './pages/workOrders/WorkOrders';
+import NewWorkOrder from './pages/workOrders/NewWorkOrder';
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/services/operations" element={<Operation />} />
           <Route path="/inventory" element={<Inventory />} />
+          <Route path="/workOrders" element={<WorkOrders />} />
+          <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
         </Routes>
       </div>
 
