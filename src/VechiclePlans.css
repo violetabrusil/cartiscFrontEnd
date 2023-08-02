@@ -1,4 +1,8 @@
-.vehicle-plan {
-    width: 200;
-    height: 200;
+.container-vehicle-plan {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    height: 100vh;
 }

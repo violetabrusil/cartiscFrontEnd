@@ -384,7 +384,7 @@ const NewWorkOrder = () => {
 
                     <div className="half-second-container">
                         <h3>Síntomas presentados</h3>
-                        <div className="content">
+                        <div className="content-new-work-order">
                             <div
                                 contentEditable
                                 suppressContentEditableWarning
@@ -415,7 +415,7 @@ const NewWorkOrder = () => {
 
                     <div className="half-second-container">
                         <h3>Observaciones generales</h3>
-                        <div className="content">
+                        <div className="content-new-work-order">
                            <textarea className="textarea-class" placeholder="Describa las observaciones"></textarea>
                         </div>
                     </div>

@@ -323,7 +323,7 @@
 }
 
 .title-second-section-container {
-    display: flow-root;
+    display: flex;
     justify-content: space-between;
     align-items: center;
 }
@@ -412,7 +412,7 @@
     text-align: left;
 }
 
-.content {
+.content-new-work-order {
     height: 33vh;
     /* Esto hace que los divs ocupen la totalidad de la altura de la pantalla */
     border-radius: 13px;
