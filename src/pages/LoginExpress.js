@@ -3,9 +3,10 @@ import '../App.css';
 import '../Form.css';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
-import logo from "../images/cartics-black.png";
-import image from "../images/car.png";
-import photo from "../images/user.png"
+
+const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
+const image = process.env.PUBLIC_URL + "/images/car.png";
+const photo = process.env.PUBLIC_URL + "/images/user.png";
 
 const LoginExpress = () => {
 

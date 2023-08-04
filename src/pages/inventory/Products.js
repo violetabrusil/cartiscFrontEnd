@@ -1,11 +1,11 @@
 import "../../Products.css";
 import React, { useState } from "react";
-import { useTable, usePagination } from "react-table";
-import addProductIcon from "../../images/icons/addIcon.png";
-import deleteIcon from "../../images/icons/deleteIcon.png";
-import editIcon from "../../images/icons/editIcon.png";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
+
+const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
+const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
+const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 
 const Products = () => {
 

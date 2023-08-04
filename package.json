@@ -1,11 +1,16 @@
 {
   "name": "cartics",
+  "productName": "Cartics",
   "version": "0.1.0",
+  "main": "electron.js",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3",
     "konva": "^9.2.0",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
@@ -20,13 +25,34 @@
     "react-table": "^7.8.0",
     "react-tabs": "^6.0.1",
     "use-image": "^1.1.1",
+    "wait-on": "^7.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "electron-start": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && npm run electron\""
+    
+  },
+  "build": {
+    "appId": "com.cartics",
+    "files": [
+      "build/**/*",
+      "electron.js"
+    ],
+    "mac": {
+      "category": "public.app.category.developer-tools",
+      "icon": "icon.icns"
+    },
+    "win": {
+      "icon": "icon.ico"
+    },
+    "linux": {
+      "icon": "icon.png"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -45,5 +71,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "electron": "^25.3.2",
+    "electron-builder": "^24.6.3"
   }
 }

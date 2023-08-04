@@ -1,18 +1,19 @@
 import "../Menu.css";
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import menuButton from "../images/icons/menu-button.png";
-import logo from "../images/cartics-black.png";
-import userIconGray from "../images/icons/userIcon-gray.png";
-import userIconBlue from "../images/icons/userIcon-blue.png";
-import carIconGray from "../images/icons/carIcon-gray.png";
-import carIconBlue from "../images/icons/carIcon-blue.png";
-import workOrderIconGray from "../images/icons/workOrderIcon-gray.png";
-import workOrderIconBlue from "../images/icons/workOrderIcon-blue.png";
-import serviceIconGray from "../images/icons/serviceIcon-gray.png";
-import serviceIconBlue from "../images/icons/serviceIcon-blue.png";
-import inventoryIconGray from "../images/icons/inventoryIcon-gray.png";
-import inventoryIconBlue from "../images/icons/inventoryIcon-blue.png";
+
+const menuButton = process.env.PUBLIC_URL + "/images/icons/menu-button.png";
+const logo = process.env.PUBLIC_URL + "/images/cartics-black.png";
+const userIconGray = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
+const userIconBlue = process.env.PUBLIC_URL + "/images/icons/userIcon-blue.png";
+const carIconGray = process.env.PUBLIC_URL + "/images/icons/carIcon-gray.png";
+const carIconBlue = process.env.PUBLIC_URL + "/images/icons/carIcon-blue.png";
+const workOrderIconGray = process.env.PUBLIC_URL + "/images/icons/workOrderIcon-gray.png";
+const workOrderIconBlue = process.env.PUBLIC_URL + "/images/icons/workOrderIcon-blue.png";
+const serviceIconGray = process.env.PUBLIC_URL + "/images/icons/serviceIcon-gray.png";
+const serviceIconBlue = process.env.PUBLIC_URL + "/images/icons/serviceIcon-blue.png";
+const inventoryIconGray = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-gray.png";
+const inventoryIconBlue = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-blue.png";
 
 const Menu = () => {
 

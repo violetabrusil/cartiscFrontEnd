@@ -3,8 +3,9 @@ import "../../Modal.css"
 import React, { useState } from "react";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import alertIcon from "../../images/icons/alertIcon.png"
 import Select from 'react-select';
+
+const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 
 const NewClient = () => {
 

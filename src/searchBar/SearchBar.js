@@ -1,7 +1,8 @@
 import "../SearchBar.css";
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
-import searchIcon from "../images/icons/searchIcon.png";
+
+const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 
 const SearchBar = ({ onFilter }) => {
 

@@ -1,6 +1,7 @@
 import "../Car.css"
 import React from "react";
-import calendarIcon from "../images/icons/calendarIcon.png";
+
+const calendarIcon = process.env.PUBLIC_URL + "/images/icons/calendarIcon.png";
 
 export const Calendar = React.forwardRef(({ value, onClick }, ref) => (
     <img

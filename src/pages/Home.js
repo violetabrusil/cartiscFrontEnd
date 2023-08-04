@@ -2,7 +2,8 @@ import "../Home.css";
 import React from "react";
 import Header from "../header/Header";
 import Menu from "../menu/Menu";
-import logo from "../images/ingenieria-mecatronica.png";
+
+const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 
 const Home = () => {
     return (

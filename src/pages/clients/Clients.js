@@ -7,17 +7,18 @@ import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
-import clientIcon from "../../images/icons/userIcon-gray.png";
-import eyeIcon from "../../images/icons/eyeIcon.png";
-import carIcon from "../../images/icons/carIcon-gray.png";
-import unavailableIcon from "../../images/icons/unavailableIcon.png";
-import autoIcon from "../../images/icons/autoIcon.png";
-import busetaIcon from "../../images/icons/busIcon.png";
-import camionetaIcon from "../../images/icons/camionetaIcon.png";
-import camionIcon from "../../images/icons/camionIcon.png";
-import addIcon from "../../images/icons/addIcon.png";
-import alertIcon from "../../images/icons/alertIcon.png";
-import deleteIcon from "../../images/icons/deleteIcon.png";
+
+const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
+const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
+const carIcon = process.env.PUBLIC_URL + "/images/icons/carIcon-gray.png";
+const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
+const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
+const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
+const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
+const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
+const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
+const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
+const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 
 const Clients = () => {
 

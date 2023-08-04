@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import searchIcon from "../../images/icons/searchIcon.png";
+
+const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 
 const WorkOrders = () => {
 

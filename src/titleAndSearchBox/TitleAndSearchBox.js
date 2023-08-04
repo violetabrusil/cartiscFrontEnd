@@ -1,7 +1,8 @@
 import "../TitleAndSearchBox.css"
 import React from "react";
-import filterIcon from "../images/icons/filterIcon.png";
-import searchIcon from "../images/icons/searchIcon.png";
+
+const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
+const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
 const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick }) => {
     return (

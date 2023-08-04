@@ -1,24 +1,23 @@
 import "../../NewWorkOrder.css";
 import React, { useState, useRef, useEffect } from "react";
-import DatePicker from "react-datepicker";
-import Select from 'react-select';
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import searchIcon from "../../images/icons/searchIcon.png";
-import clientIcon from "../../images/icons/userIcon-gray.png";
-import carIcon from "../../images/icons/carIcon-gray.png";
-import calendarIcon from "../../images/icons/calendarIcon.png";
-import autoIcon from "../../images/icons/autoIcon.png";
-import busetaIcon from "../../images/icons/busIcon.png";
-import camionetaIcon from "../../images/icons/camionetaIcon.png";
-import camionIcon from "../../images/icons/camionIcon.png";
-import arrowIcon from "../../images/icons/arrowIcon.png";
-import fuelIcon from "../../images/icons/fuelIcon.png";
 import "react-datepicker/dist/react-datepicker.css";
 import VehiclePlans from "../../vehicle-plans/VehiclePlans";
-import carPlan from "../../images/vehicle plans/Car.png";
+
+const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
+const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
+const carIcon = process.env.PUBLIC_URL + "/images/icons/carIcon-gray.png";
+const calendarIcon = process.env.PUBLIC_URL + "/images/icons/calendarIcon.png";
+const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
+const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
+const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
+const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
+const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
+const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
+const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 
 const NewWorkOrder = () => {
 

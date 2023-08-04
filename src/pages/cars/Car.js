@@ -8,12 +8,13 @@ import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
-import eyeIcon from "../../images/icons/eyeIcon.png";
-import iconAlertWhite from "../../images/icons/alerIconWhite.png";
 import "react-datepicker/dist/react-datepicker.css";
-import deleteIcon from "../../images/icons/deleteIcon.png";
-import alertIcon from "../../images/icons/alertIcon.png";
-import sortLeftIcon from "../../images/icons/sortLeftIcon.png";
+
+const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
+const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
+const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
+const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
+const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 
 const Cars = () => {
 

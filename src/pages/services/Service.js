@@ -7,7 +7,8 @@ import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
 import { useTable, usePagination } from "react-table";
-import deleteIcon from "../../images/icons/deleteIcon.png";
+
+const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 
 const Services = () => {
 

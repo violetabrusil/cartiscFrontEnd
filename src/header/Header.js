@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import '../Header.css'
-import photo from "../images/user.png"
-import logo from "../images/ingenieria-mecatronica.png"
+
+const photo = process.env.PUBLIC_URL + "/images/user.png";
+const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 
 function Header({ showIcon, showPhoto, showUser, showRol }) {
 
