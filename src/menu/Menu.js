@@ -4,6 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 
 const menuButton = process.env.PUBLIC_URL + "/images/icons/menu-button.png";
 const logo = process.env.PUBLIC_URL + "/images/cartics-black.png";
+const homeIconGray = process.env.PUBLIC_URL + "/images/icons/homeIcon-gray.png";
+const homeIconBlue = process.env.PUBLIC_URL + "/images/icons/homeIcon-blue.png";
 const userIconGray = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const userIconBlue = process.env.PUBLIC_URL + "/images/icons/userIcon-blue.png";
 const carIconGray = process.env.PUBLIC_URL + "/images/icons/carIcon-gray.png";
@@ -14,6 +16,8 @@ const serviceIconGray = process.env.PUBLIC_URL + "/images/icons/serviceIcon-gray
 const serviceIconBlue = process.env.PUBLIC_URL + "/images/icons/serviceIcon-blue.png";
 const inventoryIconGray = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-gray.png";
 const inventoryIconBlue = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-blue.png";
+const paymentIconGray = process.env.PUBLIC_URL + "/images/icons/paymentIcon-gray.png";
+const paymentIconBlue = process.env.PUBLIC_URL + "/images/icons/paymentIcon-blue.png";
 
 const Menu = () => {
 
@@ -26,18 +30,20 @@ const Menu = () => {
     };
 
     const menuOptions = useMemo(() => [
-        { path: "/clients", icon: userIconGray, iconSelected: userIconBlue, label: "Clientes", labelStyle: { marginTop: "16px" } },
-        { path: "/cars", icon: carIconGray, iconSelected: carIconBlue, label: "Vehículos", labelStyle: { marginTop: "10px" } },
-        { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo", labelStyle: { marginTop: "8px" } },
-        { path: "/services", icon: serviceIconGray, iconSelected: serviceIconBlue, label: "Servicios y operaciones", labelStyle: { marginTop: "8px" } },
-        { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Inventario", labelStyle: { marginTop: "8px" } },
+        { path: "/home", icon: homeIconGray, iconSelected: homeIconBlue, label: "Home" },
+        { path: "/clients", icon: userIconGray, iconSelected: userIconBlue, label: "Clientes" },
+        { path: "/cars", icon: carIconGray, iconSelected: carIconBlue, label: "Vehículos" },
+        { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo" },
+        { path: "/services", icon: serviceIconGray, iconSelected: serviceIconBlue, label: "Servicios y operaciones" },
+        { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Inventario" },
+        { path: "/paymentReceipt", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Comprobantes de pago" },
     ], []);
 
     useEffect(() => {
         const currentPath = location.pathname;
         const foundIndex = menuOptions.findIndex((option) => currentPath.startsWith(option.path));
         setActiveIndex(foundIndex);
-      }, [location.pathname, menuOptions]);
+    }, [location.pathname, menuOptions]);
 
     return (
         <div className="Menu">

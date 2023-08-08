@@ -2,7 +2,7 @@
   "name": "cartics",
   "productName": "Cartics",
   "version": "0.1.0",
-  "main": "electron.js",
+  "main": "public/electron.js",
   "homepage": "./",
   "private": true,
   "dependencies": {
@@ -34,21 +34,24 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "electron-start": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && npm run electron\""
-    
+    "electron-start": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && npm run electron\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "build": {
     "appId": "com.cartics",
     "files": [
+      "./public/electron.js",
+      "package.json",
       "build/**/*",
-      "electron.js"
+      "node_modules/**/*"
     ],
     "mac": {
       "category": "public.app.category.developer-tools",
-      "icon": "icon.icns"
+      "icon": "icons/mac/cartics-logo-only.icns"
     },
     "win": {
-      "icon": "icon.ico"
+      "icon": "icons/windows/cartics-logo-only.ico"
     },
     "linux": {
       "icon": "icon.png"

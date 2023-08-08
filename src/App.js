@@ -8,7 +8,6 @@ import './Menu.css';
 import './Modal.css';
 import './NewClient.css';
 
-
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import LoginExpress from './pages/LoginExpress';
@@ -21,6 +20,7 @@ import Operation from './pages/operations/Operation';
 import Inventory from './pages/inventory/Inventory';
 import WorkOrders from './pages/workOrders/WorkOrders';
 import NewWorkOrder from './pages/workOrders/NewWorkOrder';
+import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
 
 function App() {
   return (
@@ -39,6 +39,7 @@ function App() {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/workOrders" element={<WorkOrders />} />
           <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
+          <Route path="/paymentReceipt" element={<PaymentReceipts />} />
         </Routes>
       </div>
 

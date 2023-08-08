@@ -21,7 +21,7 @@
   display: block;
   transition: 0.3s;
   position: relative;
-  height: 50px;
+  height: 33px;
 }
 
 .menu-lateral a .icono {
@@ -29,6 +29,8 @@
   font-size: 20px;
   display: flex;
   align-items: center;
+  max-width: auto;
+  max-height: auto;
 }
 
 .menu-lateral a .icono img {

@@ -1,16 +1,19 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
+const url = require('url')
 
 let mainWindow
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
+    title: "Cartics",
     resizable: false,
-    icon: '/images/',
+    icon: path.join(__dirname, 'icons/mac/cartics-logo-only.icns'),
     webPreferences: {
-      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -19,7 +22,12 @@ function createWindow() {
   if (isDev) {
     mainWindow.loadURL('http://localhost:3000');
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../build/index.html'));
+    mainWindow.loadURL(url.format({
+      pathname: path.join(__dirname, '../build/index.html'),
+      protocol: 'file:',
+      slashes: true
+    }));
+    //mainWindow.loadFile(path.join(__dirname, '../build/index.html'));
   }
   mainWindow.on('closed', function () {
     mainWindow = null
