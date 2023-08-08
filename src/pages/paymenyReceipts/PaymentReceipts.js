@@ -145,7 +145,7 @@ const PaymentReceipts = () => {
                             type="text"
                             className="input-search-payments-receipts"
                             onChange={handleSearchInputChange}
-                            placeholder="Buscar Comprobantes de pago"
+                            placeholder="Buscar comprobantes de pago"
                         />
 
                     </div>

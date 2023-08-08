@@ -65,10 +65,10 @@
 .menu-lateral a.active::before {
   content: '';
   position: absolute;
-  top: 55%;
+  top: 73%;
   right: -20px;
   transform: translate(0, -50%);
-  height: 75%;
+  height: 60%;
   width: 9px;
   left: 0;
   background-color: #316EA8;
