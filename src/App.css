@@ -3,6 +3,7 @@
   flex-direction: column;
   min-height: 100vh;
   position: relative;
+  overflow-y: auto;
 }
 
 .content-container {
@@ -109,17 +110,46 @@
   }
 }
 
+.content-image {
+  position: relative;
+  margin-left: 30px;
+  margin-top: 50px;
+}
 
+.content-image-login {
+  position: relative;
+  margin-left: 30px;
+  margin-top: 130px;
+}
 
 .blurred-image {
   position: absolute;
-  top: 0;
+  bottom: 0;
+  /* Coloca la imagen en la parte inferior del contenedor */
+  z-index: 10;
+  /* Un z-index alto para asegurarse de que se muestre sobre otros elementos */
   left: 0;
-  width: 100%;
-  height: auto;
   opacity: 0.5;
   filter: blur(0px);
-  z-index: 1;
+}
+
+.button-login-express {
+  background: white;
+  width: 40%;
+  padding: 6px 24px;
+  box-sizing: border-box;
+  border-radius: 13px;
+  color: #316EA8;
+  font-style: normal;
+  font-size: 24px;
+  border: 2px solid #316EA8
+}
+
+.button-login-express:hover {
+  background-color: #00358B;
+  color: white;
+  border: 2px solid white;
+  /* Cambiar el color de fondo al pasar el cursor sobre el botón */
 }
 
 @media screen and (min-width: 768px) {
@@ -128,12 +158,11 @@
   }
 }
 
-.nameContainer {
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: #000000;
+.nameContainer,
+.rolContainer,
+.profile-container {
   margin-bottom: 10px;
+  text-align: center;
 }
 
 @media screen and (max-width: 600px) {
@@ -149,13 +178,6 @@
   margin-top: 5px;
 }
 
-.rolContainer {
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: #000000;
-}
-
 @media screen and (max-width: 600px) {
   .rolContainer {
     padding: 1em;
@@ -169,7 +191,8 @@
 }
 
 .profile-pic {
-  width: 150px; /* Tamaño inicial de la imagen */
+  width: 150px;
+  /* Tamaño inicial de la imagen */
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
@@ -178,14 +201,16 @@
 
 @media screen and (max-width: 600px) {
   .profile-pic {
-    width: 100px; /* Ajusta el tamaño de la imagen para dispositivos móviles */
+    width: 100px;
+    /* Ajusta el tamaño de la imagen para dispositivos móviles */
     height: 100px;
   }
 }
 
 @media screen and (max-width: 400px) {
   .profile-pic {
-    width: 80px; /* Ajusta el tamaño de la imagen para pantallas más pequeñas */
+    width: 80px;
+    /* Ajusta el tamaño de la imagen para pantallas más pequeñas */
     height: 80px;
   }
 }
@@ -193,18 +218,148 @@
 .alternate-button {
   background-color: transparent;
   border: none;
-  color: #00358B; /* Color del enlace */
+  color: #00358B;
+  /* Color del enlace */
   font-size: 16px;
   text-decoration: underline;
-  margin-top: 10px; /* Espacio entre los botones */
+  margin-top: 10px;
+  /* Espacio entre los botones */
   cursor: pointer;
-  
 }
 
 .alternate-button:hover {
-  color: #00358B; /* Color del enlace al pasar el cursor */
+  color: #00358B;
+  /* Color del enlace al pasar el cursor */
 }
 
 .alternate-button:focus {
   outline: none;
+}
+
+.pin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* Ajusta según tus necesidades */
+  gap: 10px;
+  /* Espaciado entre los botones */
+  margin-top: 20px;
+}
+
+.number-pad button {
+  background-color: #316EA8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 9px 10px;
+  /* Espacio interior para que los botones sean más grandes */
+  cursor: pointer;
+  /* Cambiar cursor a mano al pasar sobre el botón */
+  font-size: 18px;
+  /* Aumentar el tamaño de fuente */
+  transition: background-color 0.3s;
+  /* Animación suave al cambiar el color de fondo */
+  font-weight: bold;
+}
+
+.number-pad button:hover {
+  background-color: #00358B;
+  /* Cambiar el color de fondo al pasar el cursor sobre el botón */
+}
+
+.container-login-express {
+  display: flex;
+  /* Activa Flexbox */
+  justify-content: center;
+  gap: 70px;
+  margin-top: 20px;
+}
+
+.left,
+.right {
+  padding: 0;
+  /* Asegura que no haya padding */
+  margin: 0 5px;
+  /* Añade un pequeño margen entre los divs */
+}
+
+.form-container-login-express {
+  width: 80%;
+  max-width: 400px;
+  /* ajusta según tus necesidades */
+  margin: 0 auto;
+  /* centra el formulario horizontalmente */
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.form-input-login-express {
+  width: 80%;
+  height: 43px;
+  padding: 12px;
+  box-sizing: border-box;
+  /* esto hace que el padding no agregue ancho adicional al input */
+  border: 1px solid #E1E1E4;
+  border-radius: 13px;
+  font-style: normal;
+  font-weight: 600;
+  text-align: center;
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.password-login-express {
+  width: 80%;
+  height: 43px;
+  box-sizing: border-box;
+  border: 1px solid #E1E1E4;
+  border-radius: 13px;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 80px;
+  text-align: center;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  padding-top: 13px;
+  padding-bottom: 12px;
+  overflow: hidden;
+  letter-spacing: 4px;
+  font-family: Arial, sans-serif;
+}
+
+.container-button-delete-number {
+  background: none;
+  border: none;
+}
+
+.button-delete-number {
+  width: 25px;
+  height: 25px;
+  margin-bottom: -5px;
+}
+
+.container-button-login-express {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.container-button-other-account {
+  margin-top: 5px;
+  text-align: center;
+}
+
+.container-data-user {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  text-align: center;
+  margin-left: 50px;
 }

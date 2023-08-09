@@ -1,5 +1,11 @@
 .container {
     padding-bottom: 100px; /* Ajusta el espacio inferior para la imagen */
+    overflow-x: hidden;
+}
+
+.content {
+    margin-bottom: 100px;
+    /* Espacio adicional para asegurar que la imagen no se superponga al contenido */
 }
 
 .image {
@@ -11,11 +17,6 @@
     object-fit: contain;
     margin-bottom: 1px; /* Ajusta el margen inferior para separar la imagen del contenido */
     left: auto;
-}
-
-.content {
-    margin-bottom: 100px;
-    /* Espacio adicional para asegurar que la imagen no se superponga al contenido */
 }
 
 @media screen and (max-width: 768px) {

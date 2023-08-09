@@ -15,6 +15,7 @@
     gap: 10px;
     flex-grow: 1;
     max-width: 200px;
+    margin-right: 30px;
 }
 
 .icon-image {

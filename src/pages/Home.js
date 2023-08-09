@@ -13,9 +13,7 @@ const Home = () => {
             <Menu />
             <div className="container">
 
-                <div className="content">
-                    {/* Contenido de la página */}
-                </div>
+               
                 <img src={logo} alt="Imagen Logo" className="image" />
             </div>
         </div>

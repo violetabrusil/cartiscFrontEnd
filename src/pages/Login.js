@@ -4,6 +4,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from '../services/api';
 import { AuthContext } from '../contexts/AuthContext';
+import { userTypeMaping } from '../constants/userRoleConstants'; 
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 
@@ -23,8 +24,16 @@ const Login = () => {
 
         try {
             const response = await apiClient.post('/login', { username, password });
+
+            //Transforma el valor de user_type por la constante
+            //correspondiente antes de actualizar el estado 
+            const modifiedUser = {
+                ...response.data,
+                user_type: userTypeMaping[response.data.user_type] || response.data.user_type
+            };
+
             //Actualiza el estado global del usuario
-            setUser(response.data);
+            setUser(modifiedUser);
             navigate("/home");
             
         } catch (error) {
@@ -73,10 +82,8 @@ const Login = () => {
 
             </div>
 
-            <div className='image'>
-                <div className="image-container">
-                    <img className="blurred-image" src={image} alt='Car' />
-                </div>
+            <div className="content-image-login" >
+                <img className="blurred-image" src={image} alt='Car' />
             </div>
 
             <Footer></Footer>

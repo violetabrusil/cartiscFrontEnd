@@ -108,7 +108,7 @@ const Services = () => {
 
     return (
         <div>
-             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} />
+             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
 
             <div className="container-services">
