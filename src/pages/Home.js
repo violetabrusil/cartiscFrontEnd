@@ -6,12 +6,13 @@ import Menu from "../menu/Menu";
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 
 const Home = () => {
+
     return (
         <div>
-            <Header showIcon={true} showPhoto={true} showUser="Name User" showRol="Rol" />
+            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
             <div className="container">
-                
+
                 <div className="content">
                     {/* Contenido de la página */}
                 </div>

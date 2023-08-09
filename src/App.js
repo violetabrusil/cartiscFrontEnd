@@ -21,29 +21,33 @@ import Inventory from './pages/inventory/Inventory';
 import WorkOrders from './pages/workOrders/WorkOrders';
 import NewWorkOrder from './pages/workOrders/NewWorkOrder';
 import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
-    <Router>
-      <div>
-        <Routes>
-        <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/loginExpress" element={<LoginExpress />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/clients/newClient" element={<NewClient />} />
-          <Route path="/cars" element={<Cars />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/services/operations" element={<Operation />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/workOrders" element={<WorkOrders />} />
-          <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
-          <Route path="/paymentReceipt" element={<PaymentReceipts />} />
-        </Routes>
-      </div>
+    <AuthProvider>
+      <Router>
+        <div>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/loginExpress" element={<LoginExpress />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/clients/newClient" element={<NewClient />} />
+            <Route path="/cars" element={<Cars />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/services/operations" element={<Operation />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/workOrders" element={<WorkOrders />} />
+            <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
+            <Route path="/paymentReceipt" element={<PaymentReceipts />} />
+          </Routes>
+        </div>
 
-    </Router>
+      </Router>
+    </AuthProvider>
+
 
   );
 }

@@ -82,3 +82,13 @@
         /* Oculta el contenido que se desborda */
     }
 }
+
+.logout-button {
+    background: transparent;
+    border: none;
+}
+
+.logout-icon {
+    width: 35px;
+    height: 35px;
+}

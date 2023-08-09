@@ -1,6 +1,9 @@
-import React from "react";
 import '../App.css';
 import '../Form.css';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import apiClient from '../services/api';
+import { AuthContext } from '../contexts/AuthContext';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 
@@ -8,6 +11,26 @@ const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png"
 
 const Login = () => {
+
+    const { setUser } = useContext(AuthContext);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+
+    const handleLogin = async (event) => {
+        // Para evitar que el formulario recargue la página
+        event.preventDefault();
+
+        try {
+            const response = await apiClient.post('/login', { username, password });
+            //Actualiza el estado global del usuario
+            setUser(response.data);
+            navigate("/home");
+            
+        } catch (error) {
+            console.log("Error en el inicio de sesión", error)
+        }
+    }
 
     return (
 
@@ -27,9 +50,21 @@ const Login = () => {
                 </div>
 
                 <div className="form-container">
-                    <form>
-                        <input className="form-input" type="text" placeholder="Ingrese su usuario" />
-                        <input className="form-input" type="password" placeholder="Ingrese su contraseña" />
+                    <form onSubmit={handleLogin}>
+                        <input
+                            className="form-input"
+                            type="text"
+                            placeholder="Ingrese su usuario"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                        <input
+                            className="form-input"
+                            type="password"
+                            placeholder="Ingrese su contraseña"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                         <button type="submit" className="button-form">Entrar</button>
                     </form>
                 </div>

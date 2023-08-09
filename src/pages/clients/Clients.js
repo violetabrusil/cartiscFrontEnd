@@ -118,7 +118,7 @@ const Clients = () => {
 
     return (
         <div>
-            <Header showIcon={true} showPhoto={true} showUser="Name User" showRol="Rol" />
+            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} />
             <Menu />
 
             <div className="containerClients">
@@ -152,7 +152,7 @@ const Clients = () => {
 
                     </div>
                 </div>
-                 <div className="right-section">
+                <div className="right-section">
 
                     {!selectedVehicle && showTitle && (
                         <div className="container-title-client">
@@ -168,7 +168,7 @@ const Clients = () => {
                         <div className="container-button-add-client">
                             <button className="button-add-client" onClick={handleAddClient} >
                                 <span className="text-button-add-client">AGREGAR CLIENTE</span>
-                                </button>
+                            </button>
                         </div>
 
                     )}

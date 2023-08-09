@@ -25,7 +25,7 @@ const WorkOrders = () => {
     return (
 
         <div>
-            <Header showIcon={true} showPhoto={true} showUser="Name User" showRol="Rol" />
+             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} />
             <Menu />
 
             <div className="work-order-container">
