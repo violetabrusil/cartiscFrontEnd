@@ -8,7 +8,7 @@ import './Menu.css';
 import './Modal.css';
 import './NewClient.css';
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import LoginExpress from './pages/LoginExpress';
 import Home from './pages/Home';
