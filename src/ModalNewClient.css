@@ -1,0 +1,147 @@
+.filter-modal-new-client-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8));
+    display: flex;
+    align-items: center;
+    /* Alinear verticalmente en el centro */
+    justify-content: center;
+    z-index: 9999;
+}
+.filter-modal-new-client-overlay:before {
+    content: "";
+    display: block;
+    position: sticky;
+    top: 0;
+    height: 0;
+    z-index: 1;  /* Esto asegura que el pseudo-elemento está por encima de otros contenidos del modal */
+}
+
+.filter-modal-new-client {
+    position: relative;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 400px;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+.filter-modal-new-client h3 {
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.filter-modal-new-client p {
+    font-size: 18px;
+    font-weight: normal;
+    text-align: center;
+}
+
+.button-options-new-client {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.half-new-client {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.optionYes-button-modal-new-client {
+    background-color: #1C4A74;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    /* Ajusta el espacio entre el último elemento y el botón */
+    align-self: center;
+    width: 160px;
+    height: 40px;
+}
+
+.optionYes-button-modal-new-client:hover {
+    background-color: #245681;
+}
+
+.optionNo-button-modal-new-client {
+    background-color: #6E757D;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    /* Ajusta el espacio entre el último elemento y el botón */
+    align-self: center;
+    width: 160px;
+    height: 40px;
+}
+
+.optionNo-button-modal-new-client:hover {
+    background-color: #6E757D;
+}
+
+.modal-icon {
+    position: absolute;
+    top: -45px;  /* La mitad del alto del icono para centrarlo con respecto al borde superior */
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 80px;
+    height: 80px;
+    z-index: 10001; /* Asegurando que esté por encima de otros contenidos */
+}
+
+/* Media queries para tamaños de pantalla */
+
+@media screen and (max-width: 768px) {
+    .filter-modal-new-client {
+        /* Estilos para tamaños de pantalla medianos */
+        width: 80%;
+        max-width: 400px;
+    }
+
+    .filter-modal-new-client-overlay {
+        /* Estilos para tamaños de pantalla medianos */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .filter-modal-new-client {
+        /* Estilos para tamaños de pantalla pequeños */
+        width: 90%;
+        max-width: 300px;
+        padding: 10px;
+    }
+
+    .filter-modal-new-client-overlay {
+        /* Estilos para tamaños de pantalla pequeños */
+    }
+
+    .container-modal-new-client {
+        flex-direction: column;
+    }
+
+    .half-new-client {
+        margin-bottom: 20px;
+    }
+}
+
+/* Agrega los estilos específicos para cada tamaño de pantalla según sea necesario */

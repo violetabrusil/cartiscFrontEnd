@@ -1,17 +1,22 @@
 import "../../NewClient.css"
 import "../../Modal.css"
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Select from 'react-select';
+import apiClient from "../../services/apiClient";
+import ModalNewClient from "../../modal/ModalNewClient";
 
 const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
+const checkedIcon = process.env.PUBLIC_URL + "/images/icons/checkedIcon.png";
+const canceledIcon = process.env.PUBLIC_URL + "/images/icons/canceledIcon.png";
 
 const NewClient = () => {
 
     //Variables para el formulario de AddClient
-    const [card, setCard] = useState("");
-    const [fullName, setFullName] = useState("");
+    const [cedula, setCedula] = useState("");
+    const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -25,28 +30,14 @@ const NewClient = () => {
     const [actualMileage, setActualMileage] = useState("");
     const [isInputFocused, setIsInputFocused] = useState(false);
 
+    const navigate = useNavigate();
+
     // Estado para controlar la visibilidad del formulario
     const [showForm, setShowForm] = useState(false);
 
-    const handleCardChange = (e) => {
-        setCard(e.target.value);
-    };
-
-    const handleFullNameChange = (e) => {
-        setFullName(e.target.value);
-    };
-
-    const handleAddressChange = (e) => {
-        setAddress(e.target.value);
-    };
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePhoneChange = (e) => {
-        setPhone(e.target.value);
-    };
+    //Estado para controlar la visibilidad del modal 
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState('');
 
     const handleCarPlateChange = (e) => {
         const value = e.target.value.toUpperCase();
@@ -95,11 +86,45 @@ const NewClient = () => {
         setActualMileage(e.target.value);
     };
 
-    const handleSaveClick = () => {
+    const handleSaveClick = async (event) => {
+        // Para evitar que el formulario recargue la página
+        event.preventDefault();
+
+        try {
+            await apiClient.post('/clients/register', { cedula, name, address, phone, email });
+            setShowModal(true);
+            setModalType('success');
+
+        } catch (error) {
+            console.log("Error al guardar un cliente", error)
+
+            if (error.response) {
+                //Lista de códigos de estado del servidor en caso de error
+                const errorStatusCode = [500, 404, 403, 401]
+
+                if (errorStatusCode.includes(error.response.status)) {
+                    setShowModal(true);
+                    setModalType('error');
+                }
+            }
+        }
+
         // Lógica para guardar los datos del cliente
-        console.log("Guardar datos del cliente");
-        // Mostrar el formulario
+    };
+
+    const handleYes = () => {
+        setShowModal(false);
         setShowForm(true);
+    };
+
+    const handleNo = () => {
+        navigate("/clients");
+        setShowModal(false);
+    };
+
+    const handleReturn = () => {
+        setShowModal(false);
+        setModalType(''); // Opcional, para restablecer el tipo de modal.
     };
 
     const handleAddCarClick = () => {
@@ -177,23 +202,23 @@ const NewClient = () => {
                         <form>
                             <label className="label-form">
                                 Cédula
-                                <input className="input-form" type="text" value={card} onChange={handleCardChange} />
+                                <input className="input-form" type="text" value={cedula} onChange={(e) => setCedula(e.target.value)} />
                             </label>
                             <label className="label-form">
                                 Nombre completo
-                                <input className="input-form" type="text" value={fullName} onChange={handleFullNameChange} />
+                                <input className="input-form" type="text" value={name} onChange={(e) => setName(e.target.value)} />
                             </label>
                             <label className="label-form">
                                 Dirección
-                                <input className="input-form" type="text" value={address} onChange={handleAddressChange} />
+                                <input className="input-form" type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
                             </label>
                             <label className="label-form">
                                 Email
-                                <input className="input-form" type="email" value={email} onChange={handleEmailChange} />
+                                <input className="input-form" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                             </label>
                             <label className="label-form">
                                 Teléfono
-                                <input className="input-form" type="text" value={phone} onChange={handlePhoneChange} />
+                                <input className="input-form" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
                             </label>
 
 
@@ -313,6 +338,21 @@ const NewClient = () => {
                     </div>
                 )}
             </div>
+
+            {showModal && (
+                <ModalNewClient
+                    primaryMessage={modalType === 'success' ?
+                        "El cliente se registró exitosamente" : "Ha ocurrido un error"}
+                    secondaryMessage={modalType === 'success' ?
+                        "Desea agregar un vehículo" : "Intente nuevamente en unos minutos, si persiste contacte con soporte"}
+                    handleNo={handleNo}
+                    handleYes={modalType === 'error' ? handleReturn : handleYes }
+                    icon={modalType === 'success' ? checkedIcon : canceledIcon}
+                    modalType={modalType}
+                />
+            )}
+
+
 
         </div>
     );

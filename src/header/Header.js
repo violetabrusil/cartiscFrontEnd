@@ -2,7 +2,7 @@ import '../Header.css';
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../contexts/AuthContext';
-import apiClient from '../services/api';
+import apiLogin from '../services/api';
 
 const logoutIcon = process.env.PUBLIC_URL + "/images/icons/logout1Icon.png";
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
@@ -18,7 +18,7 @@ function Header({ showIcon, showPhoto, showUser, showRol, showLogoutButton }) {
         event.preventDefault();
 
         try {
-            await apiClient.post('/logout');
+            await apiLogin.post('/logout');
             navigate("/loginExpress");
             
         } catch (error) {

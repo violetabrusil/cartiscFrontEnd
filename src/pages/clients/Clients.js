@@ -1,10 +1,11 @@
 import "../../Clients.css";
 import "../../Modal.css";
 import "../../NewClient.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
+import apiClient from "../../services/apiClient";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
 
@@ -19,9 +20,12 @@ const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
+const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 
 const Clients = () => {
 
+    const [clients, setClients] = useState([]);
+    const [selectedClient, setSelectedClient] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState('');
@@ -78,8 +82,10 @@ const Clients = () => {
         navigate("/clients/newClient");
     };
 
-    const handleClientInformation = (event) => {
+    const handleClientInformation = (clientId, event) => {
         event.stopPropagation();
+        const client = clients.find(client => client.client.id === clientId);
+        setSelectedClient(client);
         setShowClientInformation(true);
         setShowClientCarInformation(false);
         setShowTitle(false);
@@ -114,7 +120,20 @@ const Clients = () => {
 
     const handleAlertClick = () => {
         openAlertModal();
-    }
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await apiClient.get('/clients/all')
+                setClients(response.data)
+            } catch (error) {
+                console.log("Error al obtener los datos de los clientes", error)
+
+            }
+        }
+        fetchData();
+    }, []);
 
     return (
         <div>
@@ -131,27 +150,33 @@ const Clients = () => {
                     />
 
                     {/*Lista de clientes*/}
-                    <div className="result-client" onClick={handleClientCarInformation}>
-                        <div className="first-result">
-                            <img src={clientIcon} alt="Client Icon" className="icon-client" />
-                            <div className="container-data">
-                                <label className="name-client">Daniel Taco</label>
-                                <div className="container-car-number">
-                                    <label className="car-number">1</label>
-                                    <img src={carIcon} alt="Car client" className="icon-car"></img>
+                    <div className="container-list-client">
+                        {clients.map(clientData => (
+                            <div className="result-client" onClick={handleClientCarInformation} key={clientData.client.id}>
+                                <div className="first-result">
+                                    <img src={clientIcon} alt="Client Icon" className="icon-client" />
+                                    <div className="container-data">
+                                        <label className="name-client">{clientData.client.name}</label>
+                                        <div className="container-car-number">
+                                            <label className="car-number"> {clientData.vehicles_count && clientData.vehicles_count.car ? clientData.vehicles_count.car : 0}</label>
+                                            <img src={carIcon} alt="Car client" className="icon-car"></img>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="second-result">
+                                    <button className="button-eye" onClick={(event) => handleClientInformation(clientData.client.id, event)}>
+                                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye" />
+                                    </button>
                                 </div>
 
                             </div>
-                        </div>
 
-                        <div className="second-result">
-                            <button className="button-eye" onClick={handleClientInformation}>
-                                <img src={eyeIcon} alt="Eye Icon" className="icon-eye" />
-                            </button>
-                        </div>
-
+                        ))}
                     </div>
+
                 </div>
+
                 <div className="right-section">
 
                     {!selectedVehicle && showTitle && (
@@ -216,29 +241,57 @@ const Clients = () => {
                                 <button className="button-unavailable">
                                     <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon" />
                                 </button>
+                                <button className="button-edit-client">
+                                    <img src={editIcon} alt="Edit Client Icon" className="button-edit-client-icon" />
+                                </button>
                             </div>
 
                             <div className="containerNewClient-form">
                                 <form>
                                     <label className="label-form">
                                         Cédula
-                                        <input className="input-form" type="text" />
+                                        <input
+                                            className="input-form"
+                                            type="text"
+                                            value={selectedClient ? selectedClient.client.cedula : ''}
+                                            readOnly
+                                        />
                                     </label>
                                     <label className="label-form">
                                         Nombre completo
-                                        <input className="input-form" type="text" />
+                                        <input
+                                            className="input-form"
+                                            type="text"
+                                            value={selectedClient ? selectedClient.client.name : ''}
+                                            readOnly
+                                        />
                                     </label>
                                     <label className="label-form">
                                         Dirección
-                                        <input className="input-form" type="text" />
+                                        <input
+                                            className="input-form"
+                                            type="text"
+                                            value={selectedClient ? selectedClient.client.address : ''}
+                                            readOnly
+                                        />
                                     </label>
                                     <label className="label-form">
                                         Email
-                                        <input className="input-form" type="email" />
+                                        <input
+                                            className="input-form"
+                                            type="text"
+                                            value={selectedClient ? selectedClient.client.email : ''}
+                                            readOnly
+                                        />
                                     </label>
                                     <label className="label-form">
                                         Teléfono
-                                        <input className="input-form" type="text" />
+                                        <input
+                                            className="input-form"
+                                            type="text"
+                                            value={selectedClient ? selectedClient.client.phone : ''}
+                                            readOnly
+                                        />
                                     </label>
 
 

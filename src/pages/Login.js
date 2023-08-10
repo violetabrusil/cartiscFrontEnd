@@ -2,7 +2,7 @@ import '../App.css';
 import '../Form.css';
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from '../services/api';
+import apiLogin from '../services/api';
 import { AuthContext } from '../contexts/AuthContext';
 import { userTypeMaping } from '../constants/userRoleConstants'; 
 import Footer from "../footer/Footer";
@@ -23,7 +23,7 @@ const Login = () => {
         event.preventDefault();
 
         try {
-            const response = await apiClient.post('/login', { username, password });
+            const response = await apiLogin.post('/login', { username, password });
 
             //Transforma el valor de user_type por la constante
             //correspondiente antes de actualizar el estado 

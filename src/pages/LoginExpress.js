@@ -3,7 +3,7 @@ import '../Form.css';
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../contexts/AuthContext';
-import apiClient from '../services/api';
+import apiLogin from '../services/api';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 
@@ -32,7 +32,7 @@ const LoginExpress = () => {
 
         try {
             
-            await apiClient.post('/login-express', { unumber, pin });
+            await apiLogin.post('/login-express', { unumber, pin });
             navigate("/home");
         } catch (error) {
             console.log("Error en el inicio de sesión", error)
