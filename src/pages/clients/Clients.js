@@ -3,7 +3,7 @@ import "../../Modal.css";
 import "../../NewClient.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
-import { useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
 import Select from 'react-select';
@@ -24,7 +24,6 @@ const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png"
 const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
-const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 
 const Clients = () => {
@@ -55,7 +54,6 @@ const Clients = () => {
     const [isAlertVehicleSuspend, setIsAlertVehicleSuspend] = useState(false);
     const [showAddVehicle, setShowAddVehicle] = useState(false);
 
-    const [clientId, setClientId] = useState('');
     const [category, setCategory] = useState('');
     const [plateCar, setPlateCar] = useState('');
     const [brand, setBrand] = useState('');
@@ -128,21 +126,6 @@ const Clients = () => {
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
-
-    const [vehicles] = useState([
-        { type: "auto", plate: "ABC123" },
-        { type: "buseta", plate: "GHI789" },
-        { type: "camioneta", plate: "DEF456" },
-        { type: "camion", plate: "JKL012" },
-    ]);
-
-    // Divide los vehículos en grupos de dos
-    const vehicleGroups = vehicles.reduce((acc, vehicle, index) => {
-        if (index % 2 === 0) {
-            acc.push(vehicles.slice(index, index + 2));
-        }
-        return acc;
-    }, []);
 
     const handleAddClient = () => {
         // Redirige a la página deseada
