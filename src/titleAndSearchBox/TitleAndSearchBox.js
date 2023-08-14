@@ -4,7 +4,7 @@ import React from "react";
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
-const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick }) => {
+const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOption }) => {
     return (
         <div>
             <div className="container-title">
@@ -20,7 +20,7 @@ const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick }) => {
                 <input
                     type="text"
                     className="input-search"
-                    onChange={e => onSearchChange(e.target.value)}
+                    onChange={e => onSearchChange(e.target.value, selectedOption)}
                 />
             </div>
 

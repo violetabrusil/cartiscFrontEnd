@@ -19,7 +19,7 @@ const inventoryIconBlue = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-
 const paymentIconGray = process.env.PUBLIC_URL + "/images/icons/paymentIcon-gray.png";
 const paymentIconBlue = process.env.PUBLIC_URL + "/images/icons/paymentIcon-blue.png";
 
-const Menu = () => {
+const Menu = ({ resetFunction }) => {
 
     const [isOpen, setIsOpen] = useState(true);
     const location = useLocation();
@@ -53,7 +53,7 @@ const Menu = () => {
                         to={option.path}
                         key={index}
                         className={`opcion-container ${activeIndex === index ? "active" : ""}`}
-                        onClick={() => setActiveIndex(index)}
+                        onClick={resetFunction}
                     >
                         <span className="opcion-container">
                             <span className="icono">

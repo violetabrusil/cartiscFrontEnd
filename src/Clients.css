@@ -60,7 +60,7 @@
 }
 
 .button-unavailable {
-    width: 100px;
+    width: 85px;
     height: 40px;
     border: none;
     background: none;
@@ -74,17 +74,17 @@
 }
 
 .button-edit-client {
-    width: 100px;
+    width: 60px;
     height: 40px;
     border: none;
     background: none;
-    margin-top: -16px;
+    margin-top: -12px;
 }
 
 .button-edit-client-icon {
-    width: 50px;
-    height: 50px;
-    margin-right: -10px;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
 }
 
 .button-add-car {
@@ -110,11 +110,12 @@
     background: none;
 }
 
-.button-delete-icon {
-    width: 30px;
-    height: 30px;
-    margin-right: -38px;
+.button-suspend-client-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: -26px;
     margin-top: -13px;
+
 }
 
 .container-list-client {
@@ -180,8 +181,15 @@
     display: grid;
     grid-template-columns: 1fr 15fr;
     grid-gap: 2px;
-    margin-top: 1px
+    margin-top: 1px;
+    width: 15%;
 } 
+
+.vehicle-count-container {
+    display: flex;
+    align-items: center; /* Si deseas que los ítems estén centrados verticalmente */
+    gap: 16px; /* Espaciado entre ítems, puedes ajustar este valor a tu preferencia */
+}
 
 .icon-client {
     width: 40px;
@@ -199,6 +207,15 @@
     height: 20px;
 }
 
+.icon-van {
+    width: 25px;
+    height: 25px;
+}
+
+.van-container {
+    margin-top: -7px;
+}
+
 .button-eye {
     width: 100px;
     height: 40px;
@@ -214,7 +231,7 @@
     align-items: center;
     /* Agregado: Centra verticalmente los elementos */
     height: 72vh;
-    /* Agregado: Asegura que el contenedor ocupe toda la altura de la ventana */
+    overflow-y: auto;
 }
 
 .vehicle {
@@ -264,6 +281,31 @@
 
 .vehicle-plate {
     margin-top: 5px;
+}
+
+.container-data-client-form {
+    margin-bottom: 20px;
+    margin-left: 23px;
+} 
+
+.container-button-edit-product {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    box-sizing: border-box;
+    height: 20vh;
+    margin-right: 20px;
+}
+
+.button-edit-data-client {
+    width: 167px;
+    height: 40px;
+    background-color: #1c4a74;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
 }
 
 @media screen and (max-width: 768px) {
