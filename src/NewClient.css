@@ -101,7 +101,9 @@
     font-size: 50px;
     text-align: center;
     padding-top: 18px;
+    padding-block-start: 23px;
     box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
+
 }
 
 .input-container {
@@ -115,13 +117,23 @@
 .input-container label {
     position: absolute;
     top: 23%;
-    left: 16%;
-    transform: translate(-50%, -50%);
+    left: 12%;
+    transform: translateY(-50%);
     transition: transform 0.3s ease-out, font-size 0.3s ease-out;
     pointer-events: none;
     color: black;
     font-size: 20px;
     font-weight: 700;
+
+}
+
+.input-container .flag-icon {
+    height: 23px;
+    width: 26px;
+    position: absolute;
+    top: 24%;
+    left: calc(50% - 379px);
+    transform: translateY(-50%);
 }
 
 .input-container.active label {

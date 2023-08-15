@@ -16,7 +16,6 @@ import { getVehicleCategory } from "../../constants/vehicleCategoryConstants";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-const carIcon = process.env.PUBLIC_URL + "/images/icons/carIcon-gray.png";
 const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
 const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
@@ -25,6 +24,7 @@ const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
+const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
 const Clients = () => {
 
@@ -152,7 +152,7 @@ const Clients = () => {
         const clientData = clients.find(client => client.client.id === clientId);
         event.stopPropagation();
         fetchVehicleInfoByClientId(clientId);
-        console.log("id client",clientId )
+        console.log("id client", clientId)
         setSelectedClientData(clientData);
         console.log(clientData)
         setShowClientInformation(false);
@@ -170,7 +170,7 @@ const Clients = () => {
         setShowAddVehicle(false);
         setShowClientInformation(false);
         setShowClientCarInformation(true);
-        
+
     };
 
     const handleShowAddVehicle = (event) => {
@@ -261,7 +261,7 @@ const Clients = () => {
     };
 
     const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{4})$/;
+        const regex = /^([A-Z]{3})(\d{3,4})$/;
 
         if (regex.test(plateInput)) {
             return plateInput.replace(
@@ -354,7 +354,7 @@ const Clients = () => {
                     }
                     return vehicle;
                 });
-                
+
                 setClientVehicles(formattedVehicles);
             } else {
                 console.log("No se encontraron vehículos para este cliente.");
@@ -403,13 +403,11 @@ const Clients = () => {
         //por cédula y nombre
 
         const fetchData = async () => {
-            console.log("ejecuto el endpoint por defec to")
 
             let endpoint = '/clients/all'; //Endpoint por defecto
 
-            //Si hay un término de búsqueda
+            //Si hay un filtro de búsqueda
             if (searchTerm) {
-                console.log("entro al swicth")
                 switch (selectedOption) {
                     case 'Cédula':
                         endpoint = `/clients/search-by-cedula/${searchTerm}`;
@@ -455,7 +453,7 @@ const Clients = () => {
     const resetClientState = () => {
         setShowClientCarInformation(false);
         // resetea otros estados...
-      };
+    };
 
     const customStyles = {
         control: (provided, state) => ({
@@ -484,7 +482,7 @@ const Clients = () => {
     return (
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
-            <Menu resetFunction={resetClientState}/>
+            <Menu resetFunction={resetClientState} />
 
             <div className="containerClients">
                 <div className="left-section">
@@ -509,7 +507,7 @@ const Clients = () => {
                                             {/* Si el vehicles_count es vacío */}
                                             <div className="container-car-number">
                                                 <label className="car-number">{(clientData.vehicles_count && clientData.vehicles_count.car) || 0}</label>
-                                                <img src={carIcon} alt="Car client" className="icon-car" />
+                                                <img src={autoIcon} alt="Car client" className="icon-car" />
                                             </div>
 
                                             {/* Si vehicles_count no es vacío, muestra los otros íconos */}
@@ -531,7 +529,7 @@ const Clients = () => {
                                                         <div className="container-car-number">
                                                             <label className="car-number"> {clientData.vehicles_count.bus}
                                                             </label>
-                                                            <img src={busetaIcon} alt="Bus client" className="icon-car"></img>
+                                                            <img src={busetaIcon} alt="Bus client" className="icon-bus"></img>
                                                         </div>
 
                                                     )}
@@ -723,6 +721,7 @@ const Clients = () => {
                                             onFocus={handleInputFocus}
                                             onBlur={handleInputBlur}
                                             readOnly />
+                                        <img src={flagIcon} alt="Flag" className="flag-icon" />
                                         <label>ECUADOR</label>
                                         {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />
@@ -800,6 +799,7 @@ const Clients = () => {
                                     <div className={`input-container ${isInputFocused ? "active" : ""}`}>
                                         <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
                                             onFocus={handleInputFocus} onBlur={handleInputBlur} />
+                                        <img src={flagIcon} alt="Flag" className="flag-icon" />
                                         <label>ECUADOR</label>
                                         {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />

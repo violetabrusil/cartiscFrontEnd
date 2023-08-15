@@ -203,13 +203,18 @@
 }
 
 .icon-car {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
 }
 
 .icon-van {
     width: 25px;
     height: 25px;
+}
+
+.icon-bus {
+    width: 25px;
+    height: 23px;
 }
 
 .van-container {
