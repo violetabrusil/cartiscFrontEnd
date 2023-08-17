@@ -22,7 +22,7 @@ const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
 const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
 const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
-const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
+//const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
@@ -97,7 +97,7 @@ const Clients = () => {
     const [selectedVehicle, setSelectedVehicle] = useState(false);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    //const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [refreshClients, setRefreshClients] = useState(false);
 
     const handleSearchClientChange = (term, filter) => {
@@ -222,7 +222,7 @@ const Clients = () => {
         setBrand("");
         setModel("");
         setMotor("");
-    }
+    };
 
     const handleInputFocus = () => {
         setIsInputFocused(true);
@@ -232,6 +232,7 @@ const Clients = () => {
         setIsInputFocused(false);
     };
 
+    /*
     const openAlertModal = () => {
         setIsAlertModalOpen(true);
     };
@@ -239,6 +240,7 @@ const Clients = () => {
     const closeAlertModal = () => {
         setIsAlertModalOpen(false);
     };
+    */
 
     const openAlertModalClientSuspend = () => {
         setIsAlertClientSuspend(true);
@@ -256,9 +258,9 @@ const Clients = () => {
         setIsAlertVehicleSuspend(false);
     }
 
-    const handleAlertClick = () => {
+    /*const handleAlertClick = () => {
         openAlertModal();
-    };
+    };*/
 
     const formatPlate = (plateInput) => {
         const regex = /^([A-Z]{3})(\d{3,4})$/;
@@ -286,7 +288,6 @@ const Clients = () => {
             if (response.status === 200) {
                 setClientSuspended(prevState => !prevState);
                 const updatedClients = clients.filter(client => client.id !== selectedClient.client.id);
-                console.log(updatedClients);
                 setClients(updatedClients);
                 setShowClientCarInformation(false);
                 setShowClientInformation(false);
@@ -324,10 +325,18 @@ const Clients = () => {
 
             if (response.data && response.data.id) {
                 setIsEditMode(false);
+                const newClient = response.data;
+                setClients(prevClients => 
+                    prevClients.map(client => 
+                        client.id === newClient.id ? newClient : client
+                    )
+                );
+                setRefreshClients(prev => !prev);
                 toast.success('Información actualizada correctamente.', {
                     position: toast.POSITION.TOP_RIGHT,
                     autoClose: 5000 // duración de 5 segundos
                 });
+                setShowClientInformation(false);
             } else {
                 toast.error('Ha ocurrido un error al actualizar la información.', {
                     position: toast.POSITION.TOP_RIGHT
@@ -430,7 +439,7 @@ const Clients = () => {
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption, clientSuspended, refreshClients]);
+    }, [searchTerm, selectedOption, refreshClients, clientSuspended, ]);
 
     //Obtención de la información del cliente para editarlo
     useEffect(() => {
@@ -850,6 +859,8 @@ const Clients = () => {
 
                     {/*Modal para alertas */}
 
+                    {/* 
+
                     {isAlertModalOpen && (
                         <div className="filter-modal-overlay">
                             <div className="filter-modal">
@@ -871,6 +882,7 @@ const Clients = () => {
                             </div>
                         </div>
                     )}
+                    */}
 
                 </div>
             </div>

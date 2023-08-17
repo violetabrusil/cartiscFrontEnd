@@ -1,13 +1,15 @@
 import "../../Car.css";
 import "../../Modal.css";
 import "../../NewClient.css";
-import "react-datepicker/dist/react-datepicker.css";
+import "../../Clients.css";
+//import "react-datepicker/dist/react-datepicker.css";
 import 'react-toastify/dist/ReactToastify.css';
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import DatePicker from "react-datepicker";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
+//import DatePicker from "react-datepicker";
 import { debounce } from 'lodash';
-import { Calendar } from "../../calendar/Calendar";
-import { ToastContainer, toast } from 'react-toastify'
+//import { Calendar } from "../../calendar/Calendar";
+import { ToastContainer, toast } from 'react-toastify';
+import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
@@ -16,8 +18,8 @@ import apiClient from "../../services/apiClient";
 import axios from "axios";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
-const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
+//const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
+//const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
@@ -30,36 +32,105 @@ const Cars = () => {
     //Variable para el filtro y la búsqueda de vehículos y clientes
     const [selectedOption, setSelectedOption] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState('cédula');
-    const [inputValue, setInputValue] = useState('');
+    const [activeTab, setActiveTab] = useState('cédula');;
     const [searchClienTerm, setSearchClientTerm] = useState('');
     const [clients, setClients] = useState([]);
     const [selectedClientId, setSelectedClientId] = useState(null);
+    const [nameClient, setNameClient] = useState('');
 
     //Varibales para el manejo de los vehículos
     const [vehicles, setVehicles] = useState([]);
-    const iconsVehicles = {
-        car: process.env.PUBLIC_URL + "/images/icons/autoIcon.png",
-        van: process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png",
-        bus: process.env.PUBLIC_URL + "/images/icons/busIcon.png",
-        truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
-    };
+    const iconsVehicles = useMemo(() => {
+        return {
+            car: process.env.PUBLIC_URL + "/images/icons/autoIcon.png",
+            van: process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png",
+            bus: process.env.PUBLIC_URL + "/images/icons/busIcon.png",
+            truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
+        };
+    }, []); // No hay dependencias, ya que se trata de una inicialización única
     const [selectedVehicle, setSelectedVehicle] = useState(null);
-    const [isAlertVehicleSuspend, setIsAlertVechicleSuspend] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
     const [isSearchClientModalOpen, setIsSearchClientModalOpen] = useState(false);
     const isMounted = useRef(false);
     const source = axios.CancelToken.source();
+    const options = [
+        { value: 'car', label: 'Auto' },
+        { value: 'van', label: 'Camioneta' },
+        { value: 'bus', label: 'Buseta' },
+        { value: 'truck', label: 'Camión' }
+    ];
+    const [isInputFocused, setIsInputFocused] = useState(false);
+    const [refreshVehicles, setRefreshVehicles] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [isAlertVehicleSuspend, setIsAlertVechicleSuspend] = useState(false);
+    //const [selectedDate, setSelectedDate] = React.useState(null); // Estado para almacenar la fecha seleccionada 
+    const [vehicleSuspended, setVehicleSuspended] = useState(false);
 
+    //Variables para guardar a un vehículo
+    const [category, setCategory] = useState('');
+    const [plateCar, setPlateCar] = useState('');
+    const [brand, setBrand] = useState('');
+    const [model, setModel] = useState('');
+    const [year, setYear] = useState('');
+    const [motor, setMotor] = useState('');
+    const [km, setKm] = useState('');
+
+    //Variables para de modales y secciones
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    //const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [showCarInformation, setShowCarInformation] = useState(false);
     const [showCarHistory, setShowCarHistory] = useState(false);
-    const [selectedDate, setSelectedDate] = React.useState(null); // Estado para almacenar la fecha seleccionada 
-    const [isInputFocused, setIsInputFocused] = useState(false);
-    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [showMaintenance, setShowMaintenance] = useState(false);
-    const options = ['Cambio de aceite', 'Cambio de motor'];
-    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [showButtonAddVehicle, setShowButtonAddVehicle] = useState(true);
+    const [showAddVehicle, setShowAddVehicle] = useState(false);
+    //const options = ['Cambio de aceite', 'Cambio de motor'];
+    //const [selectedOptions, setSelectedOptions] = useState([]);
+
+    const transformPlateForSaving = (plateWithDash) => {
+        return plateWithDash.replace(/-/g, '');
+    };
+
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            className: 'custom-select-control',
+            width: '97%', // Estilo personalizado para el ancho
+            height: '50px', // Estilo personalizado para la altura
+            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
+            borderRadius: '4px', // Estilo personalizado para el borde redondeado
+            padding: '8px',
+            marginBottom: '20px',
+            marginTop: '8px'
+        }),
+        placeholder: (provided, state) => ({
+            ...provided,
+            color: '#999', // Color del texto del placeholder
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            className: 'custom-select-option',
+            // otros estilos personalizados si los necesitas
+        }),
+
+    };
+
+    // Función para restablecer el formulario
+    const resetForm = () => {
+        setPlateCar("");
+        setYear("");
+        setCategory("");
+        setKm("");
+        setBrand("");
+        setModel("");
+        setMotor("");
+    };
+
+    const resetVehicleState = () => {
+        setShowAddVehicle(false);
+        setShowCarInformation(false);
+        setShowCarHistory(false);
+        setShowButtonAddVehicle(true);
+        // resetea otros estados...
+    };
 
     const handleSearchCarChange = (term, filter) => {
         console.log(term, filter);
@@ -94,19 +165,25 @@ const Cars = () => {
         setShowCarHistory(true);
         setShowCarInformation(false);
         setShowMaintenance(false);
+        setShowAddVehicle(false);
+        setShowButtonAddVehicle(false);
     }
 
+    /*
     const handleDateChange = (date) => {
         setSelectedDate(date);
     };
+    */
 
-    const handleCarInformation = (vehicleId, event) => {
+    const handleCarInformation = (vehicle, event) => {
         event.stopPropagation();
-        const vehicle = vehicles.find(vehicle => vehicle.id === vehicleId);
+
         setSelectedVehicle(vehicle);
-        setShowCarInformation(true)
-        setShowCarHistory(false)
+        setShowCarInformation(true);
+        setShowCarHistory(false);
         setShowMaintenance(false);
+        setShowAddVehicle(false);
+        setShowButtonAddVehicle(false);
     };
 
     const openAlertModalVehicleSuspend = () => {
@@ -117,13 +194,46 @@ const Cars = () => {
         setIsAlertVechicleSuspend(false);
     };
 
-
     const handleOpenModalSearchClient = () => {
         setIsSearchClientModalOpen(true);
     };
 
     const handleCloseModalSearchClient = () => {
         setIsSearchClientModalOpen(false);
+        setSearchClientTerm('');
+        setClients([]);
+        setActiveTab('cédula');
+    };
+
+    const handleTabChange = (tabName) => {
+        setActiveTab(tabName);
+        setSearchClientTerm('');
+        setClients([]);
+    };
+
+    const handleShowAddVehicle = (clientId, event) => {
+        event.stopPropagation();
+        setShowButtonAddVehicle(false);
+        setShowAddVehicle(true);
+        handleCloseModalSearchClient();
+        setSelectedClientId(clientId);
+        const name_client = clients.find(client => client.client.id === clientId);
+        setNameClient(name_client.client.name);
+
+    };
+
+    const formatPlate = (plateInput) => {
+        const regex = /^([A-Z]{3})(\d{3,4})$/;
+
+        if (regex.test(plateInput)) {
+            return plateInput.replace(
+                regex,
+                (match, p1, p2) => {
+                    return p1 + "-" + p2;
+                }
+            );
+        }
+        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
     };
 
     const handleInputFocus = () => {
@@ -134,6 +244,30 @@ const Cars = () => {
         setIsInputFocused(false);
     };
 
+    const handleCarPlateChange = (e) => {
+        const value = e.target.value.toUpperCase();
+        const regex = /^([A-Z]{0,3})-?(\d{0,4})$/;
+
+        if (regex.test(value)) {
+            const formattedValue = value.replace(
+                /^([A-Z]{0,3})-?(\d{0,4})$/,
+                (match, p1, p2) => {
+                    if (p1 && p2) {
+                        return p1 + "-" + p2;
+                    } else {
+                        return value;
+                    }
+                }
+            );
+            setPlateCar(formattedValue);
+        }
+    };
+
+    const handleTypeCarChange = (selectedOptionCategoryCar) => {
+        setCategory(selectedOptionCategoryCar.value);
+    };
+
+    /*
     const openAlertModal = () => {
         setIsAlertModalOpen(true);
     };
@@ -144,7 +278,7 @@ const Cars = () => {
 
     const handleAlertClick = () => {
         openAlertModal();
-    }
+    };
 
     const handleMaintenance = (event) => {
         event.stopPropagation();
@@ -165,24 +299,39 @@ const Cars = () => {
             }
         });
     };
+    */
 
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
+    const handleAddVehicle = async (event) => {
+        // Para evitar que el formulario recargue la página
+        const client_id = selectedClientId;
+        const plate = transformPlateForSaving(plateCar);
+        event.preventDefault();
+        try {
+            const response = await apiClient.post('/vehicles/register', { client_id, category, plate, brand, model, year, motor, km });
 
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
+            const newVehicle = response.data;
+            setVehicles(prevVehicles => [...prevVehicles, newVehicle]);
+            setRefreshVehicles(prev => !prev);
+            setShowAddVehicle(false);
+            toast.success('Vehículo registrado', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setShowButtonAddVehicle(true);
+
+            // Restablecer el estado del formulario de agregar auto
+            resetForm();
+
+        } catch (error) {
+            console.log("error", error)
+            toast.error('Error al guardar un vehiculo', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
+
     };
 
     const handleSearchClientWithDebounce = useCallback(
         debounce(async () => {
-            console.log("Initiating search with term:", searchClienTerm);
             let endpoint = '';
             if (activeTab === 'cédula') {
                 endpoint = `/clients/search-by-cedula/${searchClienTerm}`;
@@ -199,7 +348,6 @@ const Cars = () => {
                 // Solo actualiza el estado si el componente sigue montado
                 if (isMounted.current) {
                     setClients(response.data);
-                    console.log("data", response.data);
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
@@ -212,6 +360,88 @@ const Cars = () => {
         [activeTab, searchClienTerm]
     );
 
+    //Función para editar la información de un vehículo
+    const handleEditVehicle = async (event) => {
+        // Para evitar que el formulario recargue la página
+        event.preventDefault();
+        const plate = transformPlateForSaving(plateCar);
+
+        try {
+            const response = await apiClient.put(`/vehicles/update/${selectedVehicle.id}`, {
+                plate,
+                year,
+                category,
+                km,
+                brand,
+                model,
+                motor
+            });
+
+            if (response.data && response.data.id) {
+                setIsEditMode(false);
+                const newVehicle = response.data;
+                setVehicles(prevVehicles =>
+                    prevVehicles.map(vehicle =>
+                        vehicle.id === newVehicle.id ? newVehicle : vehicle
+                    )
+                );
+                setRefreshVehicles(prev => !prev);
+                toast.success('Información actualizada correctamente.', {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 5000 // duración de 5 segundos
+                });
+                setShowCarInformation(false);
+                setShowButtonAddVehicle(true);
+            } else {
+                toast.error('Ha ocurrido un error al actualizar la información.', {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            }
+
+        } catch (error) {
+            console.log('Error al actualizar la información del cliente', error);
+            toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    };
+
+    //Función para suspender un cliente
+    const handleUnavailableVehicle = async (event) => {
+        //Para evitar que el formulario recargue la página
+        event.preventDefault();
+        setIsAlertVechicleSuspend(false);
+
+        try {
+
+            const response = await apiClient.put(`/vehicles/change-status/${selectedVehicle.id}?status=suspended`)
+
+            if (response.status === 200) {
+                setVehicleSuspended(prevState => !prevState);
+                const updateVehicles = vehicles.filter(vehicle => vehicle.id !== selectedVehicle.id);
+                setVehicles(updateVehicles);
+                setShowCarInformation(false);
+                setShowCarHistory(false);
+                setShowButtonAddVehicle(true);
+                toast.success('Vehículo suspendido', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+
+            } else {
+                toast.error('Ha ocurrido un error al suspender el vehículo.', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
+
+        } catch (error) {
+            console.log('Error al suspender al vehículo', error);
+            toast.error('Error al suspender al vehículo. Por favor, inténtalo de nuevo..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    };
+
+    //Para realizar la búsqueda del cliente en el modal
     useEffect(() => {
         // Al montar el componente
         isMounted.current = true;
@@ -276,12 +506,26 @@ const Cars = () => {
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption]);
+    }, [searchTerm, selectedOption, refreshVehicles, vehicleSuspended, iconsVehicles]);
+
+    //Obtención de la información del vehículo para editarlo
+    useEffect(() => {
+        if (selectedVehicle) {
+            setPlateCar(selectedVehicle.plate);
+            setYear(selectedVehicle.year);
+            setCategory(selectedVehicle.category);
+            console.log("categoyr", (selectedVehicle.category))
+            setKm(selectedVehicle.km);
+            setBrand(selectedVehicle.brand);
+            setModel(selectedVehicle.model);
+            setMotor(selectedVehicle.motor);
+        }
+    }, [selectedVehicle, iconsVehicles]);
 
     return (
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
-            <Menu />
+            <Menu resetFunction={resetVehicleState} />
 
             <div className="containerCars">
                 <div className="left-section">
@@ -319,7 +563,7 @@ const Cars = () => {
                                 <div className="third-result-car">
                                     <button className="button-eye-car">
                                         <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car"
-                                            onClick={(event) => handleCarInformation(vehicleData.id, event)} />
+                                            onClick={(event) => handleCarInformation(vehicleData, event)} />
                                     </button>
                                 </div>
 
@@ -332,15 +576,81 @@ const Cars = () => {
                 </div>
 
                 <div className="right-section">
-
-                    {!showCarHistory && !showCarInformation && !showMaintenance && (
+                    <ToastContainer />
+                    {/*Sección para mostrar el botón de agregar vehículo */}
+                    {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
                         <div className="container-button-add-vehicle">
                             <button className="button-add-vehicle" onClick={handleOpenModalSearchClient} >
                                 <span className="text-button-add-vehicle">AGREGAR VEHÍCULO</span>
                             </button>
                         </div>
                     )}
-                    {showCarHistory && !showCarInformation && !showMaintenance && (
+
+                    {/*Sección para mostrar el formulario para agregar un vehículo*/}
+                    {showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
+                        <>
+                            <div className="container-new-vehicle">
+                                <h2>{nameClient}</h2>
+                            </div>
+
+                            <div className="container-add-car-form">
+                                <div className="form-scroll">
+                                    <form>
+                                        <div className={`input-container ${isInputFocused ? "active" : ""}`}>
+                                            <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
+                                                onFocus={handleInputFocus} onBlur={handleInputBlur} />
+                                            <img src={flagIcon} alt="Flag" className="flag-icon" />
+                                            <label>ECUADOR</label>
+                                            {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
+                                            <img src={alertIcon} className="alert" alt="Alert" />
+                                        </button>
+                                        */}
+                                        </div>
+
+                                        <label className="label-form">
+                                            Año
+                                            <input className="input-form" type="number" value={year} onChange={(e) => setYear(parseInt(e.target.value))} />
+                                        </label>
+                                        <label className="label-form">
+                                            Categoría
+                                            <Select
+                                                options={options}
+                                                value={options.find(option => option.value === category)}
+                                                onChange={handleTypeCarChange}
+                                                styles={customStyles}
+                                                placeholder="Seleccionar" />
+                                        </label>
+                                        <label className="label-form">
+                                            Kilometraje actual
+                                            <input className="input-form" type="number" value={km} onChange={(e) => setKm(parseInt(e.target.value))} />
+                                        </label>
+                                        <label className="label-form">
+                                            Marca
+                                            <input className="input-form" type="text" value={brand} onChange={(e) => setBrand(e.target.value)} />
+                                        </label>
+                                        <label className="label-form">
+                                            Modelo
+                                            <input className="input-form" type="text" value={model} onChange={(e) => setModel(e.target.value)} />
+                                        </label>
+                                        <label className="label-form">
+                                            Motor
+                                            <input className="input-form" type="text" value={motor} onChange={(e) => setMotor(e.target.value)} />
+                                        </label>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div className="container-button-next">
+                                <button className="button-next" onClick={handleAddVehicle}>
+                                    GUARDAR
+                                </button>
+                            </div>
+                        </>
+
+
+                    )}
+                    {/* 
+                    {showCarHistory && !showAddVehicle && !showButtonAddVehicle && !showCarInformation && !showMaintenance && (
                         <div>
                             <div className="containerTitle-car-maintenance">
                                 <label className="label-maintenance"></label>
@@ -365,13 +675,14 @@ const Cars = () => {
 
                         </div>
                     )}
+                    */}
 
-                    {showCarInformation && !showCarHistory && !showMaintenance && (
+                    {showCarInformation && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showMaintenance && (
                         <div>
                             <div className="containerNewClientTitle">
                                 <h2>Información del vehículo</h2>
                                 <button className="button-unavailable" onClick={openAlertModalVehicleSuspend}>
-                                    <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon" />
+                                    <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon" onClick={openAlertModalVehicleSuspend} />
                                 </button>
                                 <button className="button-edit-client">
                                     <img src={editIcon} alt="Edit Client Icon" className="button-edit-client-icon" onClick={() => setIsEditMode(true)} />
@@ -382,7 +693,15 @@ const Cars = () => {
                                 <div className="form-scroll">
                                     <form>
                                         <div className={`input-container ${isInputFocused ? "active" : ""}`}>
-                                            <input className="input-plate" type="text" onFocus={handleInputFocus} onBlur={handleInputBlur} />
+                                            <input
+                                                className="input-plate"
+                                                type="text"
+                                                value={plateCar}
+                                                onFocus={handleInputFocus}
+                                                onBlur={handleInputBlur}
+                                                onChange={handleCarPlateChange}
+                                                readOnly={!isEditMode}
+                                            />
                                             <img src={flagIcon} alt="Flag" className="flag-icon" />
                                             <label>ECUADOR</label>
                                             {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
@@ -392,32 +711,83 @@ const Cars = () => {
 
                                         <label className="label-form">
                                             Año
-                                            <input className="input-form" type="text" />
+                                            <input
+                                                className="input-form"
+                                                type="number"
+                                                value={year}
+                                                onChange={(e) => setYear(parseInt(e.target.value))}
+                                                readOnly={!isEditMode}
+                                            />
                                         </label>
                                         <label className="label-form">
-                                            Tipo
-                                            <input className="input-form" type="text" />
+                                            Categoría
+                                            <Select
+                                                options={options}
+                                                value={options.find(option => option.value === category)}
+                                                onChange={handleTypeCarChange}
+                                                styles={customStyles}
+                                                placeholder="Seleccionar"
+                                                readOnly={!isEditMode}
+                                            />
                                         </label>
                                         <label className="label-form">
-                                            Cilindraje
-                                            <input className="input-form" />
+                                            Kilometraje actual
+                                            <input
+                                                className="input-form"
+                                                type="number"
+                                                value={km}
+                                                onChange={(e) => setKm(parseInt(e.target.value))}
+                                                readOnly={!isEditMode}
+                                            />
                                         </label>
                                         <label className="label-form">
                                             Marca
-                                            <input className="input-form" />
+                                            <input
+                                                className="input-form"
+                                                type="text"
+                                                value={brand}
+                                                onChange={(e) => setBrand(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
                                         </label>
                                         <label className="label-form">
-                                            Teléfono
-                                            <input className="input-form" type="text" />
+                                            Modelo
+                                            <input
+                                                className="input-form"
+                                                type="text"
+                                                value={model}
+                                                onChange={(e) => setModel(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
+                                        </label>
+                                        <label className="label-form">
+                                            Motor
+                                            <input
+                                                className="input-form"
+                                                type="number"
+                                                value={motor}
+                                                onChange={(e) => setMotor(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
                                         </label>
                                     </form>
                                 </div>
+
+                                {isEditMode &&
+                                    <div className="container-button-edit-vehicle">
+                                        <button className="button-edit-data-vehicle" onClick={handleEditVehicle}>
+                                            GUARDAR
+                                        </button>
+                                    </div>
+                                }
                             </div>
 
                         </div>
                     )}
 
-                    {showMaintenance && !showCarHistory && !showCarInformation && (
+                    {/* */}
+
+                    {showMaintenance && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && (
                         <div>
 
                             <div className="containerNewClientTitle">
@@ -439,12 +809,14 @@ const Cars = () => {
                                             <span>{option}</span>
                                         </div>
                                         <div>
+                                            {/* 
                                             <input
                                                 type="checkbox"
                                                 name={option}
                                                 onChange={handleCheckboxChange}
                                                 className="input-checkbox"
                                             />
+                                            */}
                                         </div>
                                     </div>
                                 ))}
@@ -469,6 +841,7 @@ const Cars = () => {
                     />
                 )}
 
+                {/* 
                 {isAlertModalOpen && (
                     <div className="filter-modal-overlay">
                         <div className="filter-modal">
@@ -490,6 +863,7 @@ const Cars = () => {
                         </div>
                     </div>
                 )}
+                */}
 
                 {isSearchClientModalOpen && (
                     <div className="filter-modal-overlay">
@@ -499,12 +873,12 @@ const Cars = () => {
                             </button>
                             <div className="tabs">
                                 <button className={`button-tab ${activeTab === 'cédula' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('cédula')}>
+                                    onClick={() => handleTabChange('cédula')}>
                                     Cédula
                                     <div className="line"></div>
                                 </button>
                                 <button className={`button-tab ${activeTab === 'nombre' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('nombre')}>
+                                    onClick={() => handleTabChange('nombre')}>
                                     Nombre
                                     <div className="line"></div>
                                 </button>
@@ -514,13 +888,19 @@ const Cars = () => {
                                 <input
                                     className="input-search-client"
                                     value={searchClienTerm}
-                                    onChange={e => setSearchClientTerm(e.target.value)}
+                                    onChange={e => {
+                                        const value = e.target.value;
+                                        if (activeTab === 'cédula' && !/^[0-9]*$/.test(value)) return;
+                                        if (activeTab === 'nombre' && !/^[a-zA-Z\s]*$/.test(value)) return;
+                                        setSearchClientTerm(value);
+                                    }}
                                     placeholder={`Buscar por ${activeTab}`}
+                                    pattern={activeTab === 'cédula' ? "[0-9]*" : "[a-zA-Z ]*"}
                                 />
                             </div>
 
                             {clients.length > 0 && (
-                                <table>
+                                <table className="client-table">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
@@ -529,7 +909,7 @@ const Cars = () => {
                                     </thead>
                                     <tbody>
                                         {clients.map(client => (
-                                            <tr key={client.client.id} onClick={() => setSelectedClientId(client.client.id)}>
+                                            <tr key={client.client.id} onClick={(event) => handleShowAddVehicle((client.client.id), event)}>
                                                 <td>{client.client.name}</td>
                                                 <td>{client.client.cedula}</td>
                                             </tr>
@@ -541,6 +921,29 @@ const Cars = () => {
 
                         </div>
 
+                    </div>
+
+                )}
+
+                {isAlertVehicleSuspend && (
+                    <div className="filter-modal-overlay">
+                        <div className="filter-modal">
+                            <h3 style={{ textAlign: "center" }}>¿Está seguro de suspender el vehículo?</h3>
+                            <div className="button-options">
+                                <div className="half">
+                                    <button className="optionNo-button" onClick={closeAlertModalVehicleSuspend}>
+                                        No
+                                    </button>
+                                </div>
+                                <div className="half">
+                                    <button className="optionYes-button" onClick={handleUnavailableVehicle}  >
+                                        Si
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
                 )}

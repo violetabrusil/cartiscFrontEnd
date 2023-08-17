@@ -309,6 +309,11 @@
     height: 25px;
 }
 
+.container-new-vehicle {
+    display: flex;
+    justify-content: space-between;
+}
+
 @media screen and (max-width: 768px) {
     .containerCar {
         position: absolute;
@@ -342,7 +347,7 @@
     background: none;
     border: none;
     font-weight: bold;
-    color: #6E757D;
+    color: #D8D9DA;
     position: relative;
 }
 
@@ -357,13 +362,13 @@
     left: 50%;
     transform: translateX(-50%);
     width: 200%;
-    height: 2px;
-    background-color: #6E757D;
-
+    height: 1px;
+    background-color: #D8D9DA;
 }
 
 .button-tab.active .line {
     background-color: #316EA8;
+    height: 2px;
 }
 
 .button-close {
@@ -376,6 +381,38 @@
 .close-icon {
     width: 25px;
     height: 25px;
+}
+
+.client-table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.client-table td {
+    text-align: left;
+}
+
+.client-table thead th {
+    text-align: left;
+}
+
+.container-button-edit-vehicle {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    box-sizing: border-box;
+    height: 10vh;
+    margin-right: 20px;
+}
+
+.button-edit-data-vehicle {
+    width: 167px;
+    height: 40px;
+    background-color: #1c4a74;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
 }
 
 @media screen and (max-width: 320px) {

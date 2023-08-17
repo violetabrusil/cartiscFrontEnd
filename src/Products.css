@@ -113,7 +113,7 @@
 
 .container-button-save-product {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     box-sizing: border-box;
     height: 12vh;
