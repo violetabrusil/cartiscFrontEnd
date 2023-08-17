@@ -1,28 +1,52 @@
 import "../../Service.css";
 import "../../Modal.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTable, usePagination } from "react-table";
+import { debounce } from 'lodash';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
-import { useTable, usePagination } from "react-table";
+import apiClient from "../../services/apiClient";
 
+const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 
 const Services = () => {
 
+    //Variables para controlar el tab de servicios y operaciones
+    const [activeTab, setActiveTab] = useState('servicios');
+
+    //Variables para la búsqueda de servicios y operaciones
+    const [selectedOption, setSelectedOption] = useState('');
+
+    //Variables para controlar el estado de las secciones de operaciones
+    const [operations, setOperations] = useState([]);
+    const [showOperationInformation, setShowOperationInformation] = useState(false);
+
+
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    const [selectedOption, setSelectedOption] = useState('');
     const [showButtons, setShowButtons] = useState(true);
     const [showAddService, setShowAddService] = useState(false);
     const navigate = useNavigate();
 
-    const handleSearchServiceChange = (newSearchTerm) => {
-        setSearchTerm(newSearchTerm);
-        // Aquí puedes hacer cualquier otra lógica que necesites cuando cambie el término de búsqueda
+    const handleSearchServiceChange = (term, filter) => {
+        console.log("term y filtro", term, filter)
+        setSearchTerm(term);
+        setSelectedOption(filter);
     };
+
+    const handleSearchServiceWithDebounce = debounce(handleSearchServiceChange, 500);
+
+    const handleSearchOperationChange = (term, filter) => {
+        console.log("term filter operation", term, filter);
+        setSearchTerm(term);
+        setSelectedOption(filter);
+    };
+
+    const handleSearchOperationWithDebounce = debounce(handleSearchOperationChange, 500);
 
     const openFilterModal = () => {
         setIsFilterModalOpen(true);
@@ -32,12 +56,19 @@ const Services = () => {
         setIsFilterModalOpen(false);
     };
 
+    const handleShowOperationInformation = (operationId, event) => {
+        event.stopPropagation();
+        console.log("id operation", operationId);
+        setShowOperationInformation(true);
+    };
+
     const handleOptionChange = (option) => {
         setSelectedOption(option);
     };
 
-    const handleSelectClick = () => {
+    const handleSelectClick = (option) => {
         // Aquí se puede manejar la opción seleccionada.
+        setSelectedOption(option);
         console.log(selectedOption);
 
         // Cerrar el modal después de seleccionar.
@@ -103,23 +134,112 @@ const Services = () => {
 
     const handleAddOperation = () => {
         navigate("/services/operations");
-    }
+    };
+
+    useEffect(() => {
+        //Función que permite obtener todas las operaciones
+        //registrados cuando inicia la pantalla y las busca
+        //por título o código
+
+        const fetchData = async () => {
+
+            //Endpoint por defecto
+            let endpoint = '/operations/all';
+            const searchTypeOperationCode = "operation_code";
+            const searchTypeTitle = "title";
+            //Si hay un filtro de búsqueda
+            console.log("selectedoption", selectedOption)
+            console.log("console", searchTerm)
+            
+            if (searchTerm) {
+                switch (selectedOption) {
+                    case 'Código':
+                        endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchTerm}`;
+                        break;
+                    case 'Título':
+                        endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchTerm}`;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            try {
+                const response = await apiClient.get(endpoint);
+                console.log("response", response.data);
+                setOperations(response.data);
+
+
+            } catch (error) {
+                console.log("Error al obtener los datos de las operaciones");
+            }
+        }
+        fetchData();
+    }, [searchTerm, selectedOption]);
 
 
     return (
         <div>
-             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
 
             <div className="container-services">
                 <div className="left-section">
                     {/*Título del contenedor con buscador */}
-                    <TitleAndSearchBox
-                        title="Servicios"
-                        onSearchChange={handleSearchServiceChange}
-                        onButtonClick={openFilterModal}
-                    />
+                    <div className="tabs-service-operation">
+                        <button
+                            className={`button-tab-service ${activeTab === 'servicios' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('servicios')}
+                        >
+                            <div className="line-tab"></div>
+                            Servicios
+                        </button>
+                        <button
+                            className={`button-tab-service ${activeTab === 'operaciones' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('operaciones')}
+                        >
+                            <div className="line-tab "></div>
+                            Operaciones
+                        </button>
+                    </div>
+
+                    <div style={{ marginTop: "-10px" }}>
+                        <TitleAndSearchBox
+                            selectedOption={selectedOption}
+                            title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} // Convertir a mayúscula inicial
+                            onSearchChange={activeTab === 'servicios' ? handleSearchServiceWithDebounce : handleSearchOperationWithDebounce}
+                            onButtonClick={openFilterModal}
+                        />
+                    </div>
+
+                    {activeTab === 'servicios' && <div className="search-results-servicios">Resultados de Servicios...</div>}
+                    {activeTab === 'operaciones' &&
+                        <div className="search-results-operations">
+                            {operations.map(operationData => (
+                                <div key={operationData.id} className="result-operations">
+                                    <div className="operation-code-section">
+                                        <label className="operation-code">{operationData.operation_code}</label>
+                                    </div>
+
+                                    <div className="operation-name-section">
+                                        <label className="operation-name">{operationData.title}</label>
+                                    </div>
+
+                                    <div className="operation-eye-section">
+                                        <button className="button-eye-operation" onClick={(event) => handleShowOperationInformation(operationData.id, event)}>
+                                            <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
+                                        </button>
+                                    </div>
+
+
+                                </div>
+
+                            ))}
+
+                        </div>
+                    }
+
                 </div>
+
                 <div className="right-section">
                     {showButtons && (
                         <div className="container-add-service">
@@ -226,7 +346,7 @@ const Services = () => {
                 <Modal
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
-                    options={['Título', 'Nombre', 'Código']}
+                    options={['Código', 'Título']}
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />
