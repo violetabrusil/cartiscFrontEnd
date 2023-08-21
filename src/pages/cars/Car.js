@@ -528,7 +528,7 @@ const Cars = () => {
             <Menu resetFunction={resetVehicleState} />
 
             <div className="containerCars">
-                <div className="left-section">
+                <div className="left-section-cars">
                     {/*Título del contenedor y cuadro de búsqueda */}
                     <TitleAndSearchBox
                         selectedOption={selectedOption}
@@ -575,7 +575,7 @@ const Cars = () => {
 
                 </div>
 
-                <div className="right-section">
+                <div className="right-section-cars">
                     <ToastContainer />
                     {/*Sección para mostrar el botón de agregar vehículo */}
                     {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
@@ -682,7 +682,7 @@ const Cars = () => {
                             <div className="containerNewClientTitle">
                                 <h2>Información del vehículo</h2>
                                 <button className="button-unavailable" onClick={openAlertModalVehicleSuspend}>
-                                    <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon" onClick={openAlertModalVehicleSuspend} />
+                                    <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon"/>
                                 </button>
                                 <button className="button-edit-client">
                                     <img src={editIcon} alt="Edit Client Icon" className="button-edit-client-icon" onClick={() => setIsEditMode(true)} />

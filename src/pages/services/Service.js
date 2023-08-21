@@ -1,13 +1,16 @@
 import "../../Service.css";
 import "../../Modal.css";
+import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTable, usePagination } from "react-table";
 import { debounce } from 'lodash';
+import { ToastContainer, toast } from 'react-toastify';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
+import OperationRightSection from "../operations/OperationRightSection";
 import apiClient from "../../services/apiClient";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -23,8 +26,11 @@ const Services = () => {
 
     //Variables para controlar el estado de las secciones de operaciones
     const [operations, setOperations] = useState([]);
-    const [showOperationInformation, setShowOperationInformation] = useState(false);
-
+    const [showEditOperation, setShowEditOperation] = useState(false);
+    const [showAddOperation, setShowAddOperation] = useState(false);
+    const [addOperation] = useState(true);
+    const [editOperation] = useState(true);
+    const [selectedOperation, setSelectedOperation] = useState(null);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -59,7 +65,12 @@ const Services = () => {
     const handleShowOperationInformation = (operationId, event) => {
         event.stopPropagation();
         console.log("id operation", operationId);
-        setShowOperationInformation(true);
+        const selectedOp = operations.find(op => op.id === operationId);
+        setSelectedOperation(selectedOp);
+        setShowAddOperation(false);
+        setShowAddService(false);
+        setShowButtons(false);
+        setShowEditOperation(true);
     };
 
     const handleOptionChange = (option) => {
@@ -79,6 +90,7 @@ const Services = () => {
         event.stopPropagation();
         setShowAddService(true);
         setShowButtons(false);
+        setShowAddOperation(false);
     };
 
     const data = React.useMemo(
@@ -132,8 +144,54 @@ const Services = () => {
         // Aquí puedes manejar la lógica para eliminar la fila
     };
 
-    const handleAddOperation = () => {
-        navigate("/services/operations");
+    const handleAddOperation = (event) => {
+        event.stopPropagation();
+        setShowAddOperation(true);
+        setShowAddService(false);
+        setShowButtons(false);
+        setSelectedOperation(null);
+
+    };
+
+    const handleOperationChange = (updatedOperation, action) => {
+        let newOperations;
+
+        switch (action) {
+            case "ADD":
+            case "UPDATE":
+                const operationIndex = operations.findIndex(op => op.id === updatedOperation.id);
+
+                if (operationIndex !== -1) {
+                    // Si la operación ya existe, reemplázala
+                    newOperations = [...operations];
+                    newOperations[operationIndex] = updatedOperation;
+                } else {
+                    // Si es una nueva operación, añádela a la lista
+                    newOperations = [...operations, updatedOperation];
+                }
+                break;
+
+            case "SUSPEND":
+                newOperations = operations.filter(op => op.id !== updatedOperation.id);
+                break;
+
+            default:
+                console.error("Acción no reconocida:", action);
+                return;
+        }
+
+        setOperations(newOperations);
+        setShowButtons(true);
+        setShowAddOperation(false);
+        setShowEditOperation(false);
+    };
+
+    const resetServiceState = () => {
+        setShowAddOperation(false);
+        setShowAddService(false);
+        setShowEditOperation(false);
+        setShowButtons(true);
+        // resetea otros estados...
     };
 
     useEffect(() => {
@@ -150,7 +208,7 @@ const Services = () => {
             //Si hay un filtro de búsqueda
             console.log("selectedoption", selectedOption)
             console.log("console", searchTerm)
-            
+
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Código':
@@ -180,10 +238,10 @@ const Services = () => {
     return (
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
-            <Menu />
+            <Menu resetFunction={resetServiceState} />
 
             <div className="container-services">
-                <div className="left-section">
+                <div className="left-section-service">
                     {/*Título del contenedor con buscador */}
                     <div className="tabs-service-operation">
                         <button
@@ -240,7 +298,8 @@ const Services = () => {
 
                 </div>
 
-                <div className="right-section">
+                <div className="right-section-service">
+                    <ToastContainer />
                     {showButtons && (
                         <div className="container-add-service">
                             <button className="button-add" style={{ marginRight: "10px" }} onClick={handleAddService} >
@@ -253,10 +312,9 @@ const Services = () => {
 
                     )}
 
-
                     {/*Contenedor para agregar servicio */}
 
-                    {showAddService && (
+                    {showAddService && !showAddOperation && (
                         <div className="container-general">
                             <div className="container-title-add-service">
                                 <h2>Agregar Servicio</h2>
@@ -336,6 +394,28 @@ const Services = () => {
                         </div>
 
                     )}
+
+                    {/*Contenedor para agregar operaciones */}
+
+                    {showAddOperation && !showAddService && (
+                        <OperationRightSection
+                            onOperationChange={handleOperationChange}
+                            localOperations={operations}
+
+                        />
+                    )}
+
+                    {/*Contenedor para editar operaciones*/}
+
+                    {showEditOperation && !showAddOperation && !showAddService && (
+                        <OperationRightSection
+                            onOperationChange={handleOperationChange}
+                            selectedOperation={selectedOperation}
+                            localOperations={operations}
+
+                        />
+                    )}
+
 
                 </div>
             </div>

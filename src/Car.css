@@ -13,14 +13,14 @@
     /* Espacio entre las secciones */
 }
 
-.left-section {
+.left-section-cars {
     background-color: #f0f0f0;
     padding: 20px;
     display: flex;
     flex-direction: column;
 }
 
-.right-section {
+.right-section-cars {
     background-color: #d0d0d0;
     padding: 20px;
     display: flex;
@@ -321,8 +321,8 @@
         left: 0;
     }
 
-    .left-section,
-    .right-section {
+    .left-sectionp-cars,
+    .right-section-cars {
         width: 100%;
     }
 }
@@ -424,8 +424,8 @@
         margin-left: 0;
     }
 
-    .left-section,
-    .right-section {
+    .left-section-cars,
+    .right-section-cars {
         width: 100%;
     }
 }
