@@ -159,12 +159,6 @@
     height: 50px;
 }
 
-.containerTitle-car-maintenance {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 18px;
-}
-
 .container-maintenance-filter {
     display: flex;
     justify-content: space-between;
@@ -284,11 +278,6 @@
 .search-client-icon {
     width: 25px;
     height: 25px;
-}
-
-.container-new-vehicle {
-    display: flex;
-    justify-content: space-between;
 }
 
 @media screen and (max-width: 768px) {

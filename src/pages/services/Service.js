@@ -13,13 +13,13 @@ import Modal from "../../modal/Modal";
 import OperationRightSection from "../operations/OperationRightSection";
 import apiClient from "../../services/apiClient";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
+import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
-const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const Services = () => {
 
@@ -495,16 +495,10 @@ const Services = () => {
                     {currentSection === 'addService' && (
                         <div className="container-general">
 
-                            <div className="container-title-add-service">
-                                <button className="button-arrow" onClick={handleGoBackToButtons}>
-                                    <img
-                                        className="arrow-icon"
-                                        src={arrowLeftIcon}
-                                        alt="Arrow Icon"
-                                    />
-                                </button>
-                                <h2>Agregar Servicio</h2>
-                            </div>
+                            <CustomTitleSection
+                                onBack={handleGoBackToButtons}
+                                title="Agregar Servicio"
+                            />
 
                             <div className="container-new-service">
                                 <div className="row">

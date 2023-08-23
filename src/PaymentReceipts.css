@@ -6,15 +6,6 @@
     right: 27px;
 }
 
-.container-title-payment-receipts {
-    display: flex;
-    align-items: center;
-}
-
-.container-title-payment-receipts h2 {
-    flex: 1;
-    text-align: left;
-}
 
 .search-bar-container-payment-receipts {
     display: flex;

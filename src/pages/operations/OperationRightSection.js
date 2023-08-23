@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import apiClient from "../../services/apiClient";
+import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
 const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
@@ -118,26 +119,15 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
             {selectedOperation ? (
                 <div className="container-general-operation">
-                    <div className="container-title-add-operation">
 
-                        <button className="button-arrow" onClick={goBack}>
-                            <img
-                                className="arrow-icon"
-                                src={arrowLeftIcon}
-                                alt="Arrow Icon"
-                            />
-                        </button>
-
-                        <h2>Información de la Operación</h2>
-
-                        <button className="button-unavailable-operation" onClick={openAlertModalOperationSuspend} >
-                            <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-operation-icon" />
-                        </button>
-                        <button className="button-edit-operation">
-                            <img src={editIcon} alt="Edit Operation Icon" className="button-edit-operation-icon" onClick={() => setIsEditing(true)} />
-                        </button>
-
-                    </div>
+                    <CustomTitleSection
+                        onBack={goBack}
+                        title="Información de la Operación"
+                        showDisableIcon={true}
+                        onDisable={openAlertModalOperationSuspend}
+                        showEditIcon={true}
+                        onEdit={() => setIsEditing(true)}
+                    />
 
                     <div className="container-new-operation">
                         <div className="row-operation">
@@ -172,18 +162,11 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
                 </div>
             ) : (
                 <div className="container-general-operation">
-                    <div className="container-title-add-operation">
 
-                        <button className="button-arrow" onClick={goBack}>
-                            <img
-                                className="arrow-icon"
-                                src={arrowLeftIcon}
-                                alt="Arrow Icon"
-                            />
-                        </button>
-
-                        <h2>Agregar Operación</h2>
-                    </div>
+                    <CustomTitleSection
+                        onBack={goBack}
+                        title="Agregar Operación"
+                    />
 
                     <div className="container-new-operation">
 

@@ -4,6 +4,7 @@ import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import DataTable from "../../dataTable/DataTable";
+import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const downloadIcon = process.env.PUBLIC_URL + "/images/icons/downloadIcon.png";
@@ -125,10 +126,10 @@ const PaymentReceipts = () => {
             <Menu />
 
             <div className="container-payment-receipts">
-                <div className="container-title-payment-receipts">
-                    <h2>Comprobantes de pagos</h2>
-                </div>
-
+                
+                <CustomTitleSection 
+                title="Comprobantes de pagos"/>
+               
                 <div className="search-bar-container-payment-receipts">
                     <Select
                         options={options}
