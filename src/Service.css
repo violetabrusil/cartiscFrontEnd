@@ -58,6 +58,7 @@
 .container-title-add-service {
     display: flex;
     align-items: center;
+    margin-top: -10px;
 }
 
 .container-title-add-service h2 {
@@ -83,13 +84,25 @@
     font-weight: 500;
 }
 
-.container-new-service input {
+.input-total-cost {
     width: 300px;
     height: 50px;
     border: 1px solid rgba(0, 0, 0, 0.50);
     background: #FFF;
     border-radius: 8px;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.title-service {
+    width: 300px;
+    height: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.50);
+    background: #FFF;
+    border-radius: 8px;
+    text-transform: uppercase;
     font-size: 16px;
+    padding-left: 10px;
 }
 
 .button-delete-operation {
@@ -240,6 +253,107 @@ td {
     width: 30px;
     height: 30px;
     opacity: 50%;
+}
+
+.search-operation-box {
+    display: flex;
+    align-items: center;
+    max-width: 97%;
+    height: 25px;
+    margin-bottom: 25px;
+    padding: 5px;
+    border-radius: 6px;
+    border: 2px solid rgba(134, 134, 134, 0.31);
+    background: rgba(128, 128, 128, 0.26);
+}
+
+.input-search-operation {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+.search-operation-icon {
+    width: 25px;
+    height: 25px;
+}
+
+.add-operation-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.less-operation-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.operation-table {
+    font-size: 12px; /* Ajusta este valor al tamaño deseado */
+}
+
+.operation-table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.operation-table td {
+    text-align: left;
+    padding: 8px;
+}
+
+.operation-table thead th {
+    text-align: left;
+}
+
+.selected-operations-scroll-container {
+    max-height: 253px;
+    overflow-y: auto;
+}
+
+.list-operations-scroll-container {
+    max-height: 295px;
+    overflow-y: auto;
+}
+
+.operation-selected-table {
+    font-size: 12px; /* Ajusta este valor al tamaño deseado */
+}
+
+.operation-selected-table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.operation-selected-table td {
+    text-align: left;
+    padding: 10px;
+}
+
+.operation-selected-table thead th {
+    text-align: left;
+}
+
+.cost-cell {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.table-container {
+    background-color: white;
+    max-height: 300px;  
+    overflow: auto;
+}
+
+.button-arrow {
+    background: none;
+    border: none;
+    margin-right: 4px;
+    margin-top: 5px
+}
+
+.arrow-icon {
+    width: 35px;
+    height: 35px;
 }
 
 @media screen and (max-width: 768px) {

@@ -172,7 +172,21 @@
 
 .input-title-operation {
     text-transform: uppercase;
-    margin-right: 5px;
+    padding-left: 10px;
+}
+
+.input-cost-operation {
+    padding-left: 10px;
+}
+
+.input-title-service {
+    text-transform: uppercase;
+    padding-left: 10px;
+}
+
+.input-cost-service {
+    padding-left: 10px;
+  
 }
 
 @media screen and (max-width: 768px) {

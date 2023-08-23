@@ -32,7 +32,7 @@ const Cars = () => {
     //Variable para el filtro y la búsqueda de vehículos y clientes
     const [selectedOption, setSelectedOption] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    const [activeTab, setActiveTab] = useState('cédula');;
+    const [activeTab, setActiveTab] = useState('cédula');
     const [searchClienTerm, setSearchClientTerm] = useState('');
     const [clients, setClients] = useState([]);
     const [selectedClientId, setSelectedClientId] = useState(null);
@@ -48,6 +48,7 @@ const Cars = () => {
             truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
         };
     }, []); // No hay dependencias, ya que se trata de una inicialización única
+    
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [isSearchClientModalOpen, setIsSearchClientModalOpen] = useState(false);
     const isMounted = useRef(false);

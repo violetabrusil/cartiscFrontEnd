@@ -1,4 +1,5 @@
 import "../../Operation.css";
+import "../../Service.css";
 import "../../Modal.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
@@ -7,8 +8,9 @@ import apiClient from "../../services/apiClient";
 
 const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
+const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
-const OperationRightSection = ({ localOperations, selectedOperation, onOperationChange }) => {
+const OperationRightSection = ({ localOperations, selectedOperation, onOperationChange, goBack }) => {
 
     console.log("Operación seleccionada en 'OperationRightSection':", selectedOperation);
 
@@ -32,7 +34,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
                 onOperationChange(response.data, "ADD");
             }
             // Notificar al componente padre sobre la nueva operación
-    
+
             toast.success('Operación registrada', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -53,7 +55,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
                 onOperationChange(response.data, "UPDATE");
             }
             // Notifica al componente padre para actualizar la lista de operaciones
-        
+
             toast.success('Operación actualizada con éxito', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -82,7 +84,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
         try {
 
-            const response = await apiClient.put(`/operations/change-status/${selectedOperation.id}?status=active`)
+            const response = await apiClient.put(`/operations/change-status/${selectedOperation.id}?status=suspended`)
 
             if (response.status === 200) {
                 onOperationChange(selectedOperation, "SUSPEND");
@@ -117,6 +119,15 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
             {selectedOperation ? (
                 <div className="container-general-operation">
                     <div className="container-title-add-operation">
+
+                        <button className="button-arrow" onClick={goBack}>
+                            <img
+                                className="arrow-icon"
+                                src={arrowLeftIcon}
+                                alt="Arrow Icon"
+                            />
+                        </button>
+
                         <h2>Información de la Operación</h2>
 
                         <button className="button-unavailable-operation" onClick={openAlertModalOperationSuspend} >
@@ -143,6 +154,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
                         <div className="row-operation">
                             <label>Costo</label>
                             <input
+                                className="input-cost-operation"
                                 type="number"
                                 value={isEditing ? cost : parseFloat(cost).toFixed(2)}
                                 disabled={!isEditing}
@@ -161,6 +173,15 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
             ) : (
                 <div className="container-general-operation">
                     <div className="container-title-add-operation">
+
+                        <button className="button-arrow" onClick={goBack}>
+                            <img
+                                className="arrow-icon"
+                                src={arrowLeftIcon}
+                                alt="Arrow Icon"
+                            />
+                        </button>
+
                         <h2>Agregar Operación</h2>
                     </div>
 
@@ -179,6 +200,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
                         <div className="row-operation">
                             <label>Costo</label>
                             <input
+                                className="input-cost-operation"
                                 type="number"
                                 value={cost}
                                 onChange={handleInputChange}

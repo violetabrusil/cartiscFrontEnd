@@ -1,11 +1,11 @@
 import "../../Service.css";
 import "../../Modal.css";
 import 'react-toastify/dist/ReactToastify.css';
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useTable, usePagination } from "react-table";
 import { debounce } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
+import axios from "axios";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
@@ -15,28 +15,57 @@ import apiClient from "../../services/apiClient";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
+const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
+const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
+const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
+const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const Services = () => {
 
     //Variables para controlar el tab de servicios y operaciones
     const [activeTab, setActiveTab] = useState('servicios');
+    const [currentSection, setCurrentSection] = useState(null);
+    const showButtons = currentSection === null;
+    const [lastActiveSection, setLastActiveSection] = useState({
+        servicios: null,  // o 'default' si hay una sección predeterminada
+        operaciones: null
+    });
 
     //Variables para la búsqueda de servicios y operaciones
     const [selectedOption, setSelectedOption] = useState('');
-
-    //Variables para controlar el estado de las secciones de operaciones
-    const [operations, setOperations] = useState([]);
-    const [showEditOperation, setShowEditOperation] = useState(false);
-    const [showAddOperation, setShowAddOperation] = useState(false);
-    const [addOperation] = useState(true);
-    const [editOperation] = useState(true);
-    const [selectedOperation, setSelectedOperation] = useState(null);
-
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    const [showButtons, setShowButtons] = useState(true);
-    const [showAddService, setShowAddService] = useState(false);
-    const navigate = useNavigate();
+
+    //Variables para las operaciones y controlar el estado de sus secciones
+    const [operations, setOperations] = useState([]);
+    const [selectedOperation, setSelectedOperation] = useState(null);
+
+    //Variables para los servicios y controlar el estado de sus secciones
+    const [services, setServices] = useState([]);
+    const [selectedService, setSelectedService] = useState(null);
+    const [isSearchOperationModalOpen, setIsSearchOperationModalOpen] = useState(false);
+    const [searchOperationTerm, setSearchOperationTerm] = useState('');
+    const isMounted = useRef(false);
+    const source = axios.CancelToken.source();
+    const [activeTabOperation, setActiveTabOperation] = useState('código');
+    const [operation, setOperation] = useState([]);
+    const [selectedOperations, setSelectedOperations] = useState([]);
+
+    const handleTabClick = (tabName) => {
+        setActiveTab(tabName);
+        const lastSectionForTab = lastActiveSection[tabName];
+        console.log('Tab actual:', tabName);
+        console.log('Última sección para el tab:', lastSectionForTab);
+
+        if (lastSectionForTab) {
+            setCurrentSection(lastSectionForTab);
+        } else {
+            setCurrentSection(null);
+        }
+        // Ya que showButtons se determina por el valor de currentSection, 
+        // ya no necesitamos establecerlo aquí directamente
+        console.log('Valor de showButtons tras el click:', showButtons);
+    };
 
     const handleSearchServiceChange = (term, filter) => {
         console.log("term y filtro", term, filter)
@@ -67,10 +96,13 @@ const Services = () => {
         console.log("id operation", operationId);
         const selectedOp = operations.find(op => op.id === operationId);
         setSelectedOperation(selectedOp);
-        setShowAddOperation(false);
-        setShowAddService(false);
-        setShowButtons(false);
-        setShowEditOperation(true);
+        setCurrentSection('editOperation');
+        setLastActiveSection(prevState => ({
+            ...prevState,
+            operaciones: 'editOperation'
+        }));
+        console.log("lastActiveSection después de update:", lastActiveSection);
+        //setShowButtons(false);
     };
 
     const handleOptionChange = (option) => {
@@ -88,40 +120,97 @@ const Services = () => {
 
     const handleAddService = (event) => {
         event.stopPropagation();
-        setShowAddService(true);
-        setShowButtons(false);
-        setShowAddOperation(false);
+        setActiveTab('servicios');
+        setCurrentSection('addService');
+        setLastActiveSection(prevState => ({ ...prevState, servicios: 'addService' }));
+        console.log("lastActiveSection después de update:", lastActiveSection);
+        // setShowButtons(false);
     };
 
-    const data = React.useMemo(
-        () => [
-            {
-                codigo: "1",
-                titulo: "Encerar",
-                costo: "20.00",
-            },
-            // ... otros datos
-        ],
-        []
+    const handleShowServiceInformation = (serviceId, event) => {
+        event.stopPropagation();
+        console.log("id service", serviceId);
+        const selectedServ = services.find(serv => serv.id === serviceId);
+        setSelectedService(selectedServ);
+    };
+
+    const handleOpenModalSearchOperation = () => {
+        setIsSearchOperationModalOpen(true);
+    };
+
+    const handleCloseModalSearchOperation = () => {
+        setIsSearchOperationModalOpen(false);
+        setSearchOperationTerm('');
+        setOperation([]);
+        setActiveTabOperation('código');
+    };
+
+    const handleTabChange = (tabName) => {
+        setActiveTabOperation(tabName);
+        setSearchOperationTerm('');
+        setOperation([]);
+    };
+
+    const handleSearchOperationsWithDebounce = useCallback(
+        debounce(async () => {
+            const searchTypeOperationCode = "operation_code";
+            const searchTypeTitle = "title";
+            let endpoint = '';
+            if (activeTabOperation === 'código') {
+                endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchOperationTerm}`;
+                console.log("Searching with endpoint:", endpoint);
+            } else {
+                endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchOperationTerm}`
+            }
+
+            try {
+                const response = await apiClient.get(endpoint, {
+                    cancelToken: source.token
+                });
+
+                // Solo actualiza el estado si el componente sigue montado
+                if (isMounted.current) {
+                    setOperation(response.data);
+                    console.log("operaciones modal", response.data)
+                }
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                    console.log('Previous request cancelled', error.message);
+                } else {
+                    console.error("Error al buscar:", error);
+                }
+            }
+        }, 500),
+        [activeTab, searchOperationTerm]
     );
+
+    const handleAddOperationModal = (operationToAdd) => {
+        // Verifica si la operación ya está en la lista
+        if (selectedOperations.some(op => op.id === operationToAdd.id)) {
+            // Si ya fue agregada, termina la función
+            return;
+        }
+        // Agrega la operación si no está en la lista
+        setSelectedOperations(prev => [...prev, operationToAdd]);
+    };
+
+    const handleRemoveOperation = (operationIdToRemove) => {
+        setSelectedOperations(prevOperations => prevOperations.filter(op => op.id !== operationIdToRemove));
+    };
 
     const columns = React.useMemo(
         () => [
-            { Header: "Código", accessor: "codigo" },
-            { Header: "Título", accessor: "titulo" },
+            { Header: "Código", accessor: "operation_code" },
+            { Header: "Título", accessor: "title" },
             {
                 Header: "Costo",
-                accessor: "costo",
-                Cell: ({ value }) => `$${value}` // Agrega un signo de dólar antes del valor
-            },
-            {
-                Header: "",
-                Cell: ({ row }) => (
-                    <button className="button-delete-operation" onClick={() => handleDelete(row.original)}>
-                        <img src={deleteIcon} alt="Delete Operation Icon" className="delete-icon" />
-                    </button>
-                ),
-                id: 'delete-button'
+                accessor: "cost",
+                Cell: ({ value }) => (
+                    <span className="cost-cell">
+                        $ {parseFloat(value).toFixed(2)}
+                    </span>
+                    // Agrega un signo de dólar antes del valor y lo transforma float
+                )
             }
         ],
         []
@@ -137,7 +226,11 @@ const Services = () => {
         canNextPage,
         nextPage,
         previousPage,
-    } = useTable({ columns, data }, usePagination);
+    } = useTable({
+        columns,
+        data: selectedOperations,
+        initialState: { pageSize: 5 }
+    }, usePagination);
 
     const handleDelete = (row) => {
         console.log("Eliminar fila: ", row);
@@ -146,11 +239,12 @@ const Services = () => {
 
     const handleAddOperation = (event) => {
         event.stopPropagation();
-        setShowAddOperation(true);
-        setShowAddService(false);
-        setShowButtons(false);
         setSelectedOperation(null);
-
+        setActiveTab('operaciones');
+        setCurrentSection('addOperation');
+        setLastActiveSection(prevState => ({ ...prevState, operaciones: 'addOperation' }));
+        console.log("lastActiveSection después de update:", lastActiveSection);
+        //setShowButtons(false);
     };
 
     const handleOperationChange = (updatedOperation, action) => {
@@ -179,20 +273,36 @@ const Services = () => {
                 console.error("Acción no reconocida:", action);
                 return;
         }
-
         setOperations(newOperations);
-        setShowButtons(true);
-        setShowAddOperation(false);
-        setShowEditOperation(false);
+        setCurrentSection(null);
     };
 
     const resetServiceState = () => {
-        setShowAddOperation(false);
-        setShowAddService(false);
-        setShowEditOperation(false);
-        setShowButtons(true);
-        // resetea otros estados...
+        setActiveTab('servicios');
+        setCurrentSection(null);
+        setLastActiveSection({
+            servicios: null,
+            operaciones: null
+        });
+
     };
+
+    const handleGoBackToButtons = () => {
+        setCurrentSection(null);
+    };
+
+    //Calcular el total del costo del servicio mediante el valor
+    //de cada operación seleccionada
+    const totalCost = selectedOperations.reduce((sum, operation) => {
+        const cost = parseFloat(operation.cost);
+
+        if (isNaN(cost)) {
+            console.error('Valor inválido:', operation.cost);
+            return sum;  // Retorna la suma acumulada hasta ahora sin cambiarla
+        }
+
+        return sum + cost;  // Retorna la suma acumulada más el nuevo costo
+    }, 0);
 
     useEffect(() => {
         //Función que permite obtener todas las operaciones
@@ -234,6 +344,58 @@ const Services = () => {
         fetchData();
     }, [searchTerm, selectedOption]);
 
+    useEffect(() => {
+        //Función que permite obtener todos los servicios
+        //registrados cuando inicia la pantalla y las busca
+        //por título o código
+
+        const fetchData = async () => {
+
+            //Endpoint por defecto
+            let endpoint = '/services/all';
+            const searchTypeServiceCode = "service_code";
+            const searchTypeTitle = "title";
+
+            if (searchTerm) {
+                switch (selectedOption) {
+                    case 'Código':
+                        endpoint = `/services/search?search_type=${searchTypeServiceCode}&criteria=${searchTerm}`;
+                        break;
+                    case 'Título':
+                        endpoint = `/services/search?search_type=${searchTypeTitle}&criteria=${searchTerm}`;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            try {
+                const response = await apiClient.get(endpoint);
+                setServices(response.data);
+            } catch (error) {
+                console.log("Error al obtener los datos de los servicios");
+            }
+        }
+        fetchData();
+    }, [searchTerm, selectedOption]);
+
+    //Para realizar la búsqueda de las operaciones en el modal
+    useEffect(() => {
+        // Al montar el componente
+        isMounted.current = true;
+
+        console.log("useEffect triggered with:", searchOperationTerm);
+        if (searchOperationTerm) {
+            handleSearchOperationsWithDebounce();
+        } else {
+            setOperation([]);
+        }
+
+        //Cleanup al desmontar el componente o al cambiar el término de búsqueda
+        return () => {
+            isMounted.current = false;  // Indica que el componente ha sido desmontado
+            source.cancel('Search term changed or component unmounted'); // Cancela la solicitud
+        };
+    }, [searchOperationTerm, handleSearchOperationsWithDebounce]);
 
     return (
         <div>
@@ -246,14 +408,14 @@ const Services = () => {
                     <div className="tabs-service-operation">
                         <button
                             className={`button-tab-service ${activeTab === 'servicios' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('servicios')}
+                            onClick={() => handleTabClick('servicios')}
                         >
                             <div className="line-tab"></div>
                             Servicios
                         </button>
                         <button
                             className={`button-tab-service ${activeTab === 'operaciones' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('operaciones')}
+                            onClick={() => handleTabClick('operaciones')}
                         >
                             <div className="line-tab "></div>
                             Operaciones
@@ -269,11 +431,34 @@ const Services = () => {
                         />
                     </div>
 
-                    {activeTab === 'servicios' && <div className="search-results-servicios">Resultados de Servicios...</div>}
+                    {activeTab === 'servicios' &&
+                        <div className="search-results-servicios">
+                            {services.map(serviceData => (
+                                <div key={`service-${serviceData.id}`} className="result-operations">
+                                    <div className="operation-code-section">
+                                        <label className="operation-code">{serviceData.service_code}</label>
+                                    </div>
+
+                                    <div className="operation-name-section">
+                                        <label className="operation-name">{serviceData.title}</label>
+                                    </div>
+
+                                    <div className="operation-eye-section">
+                                        <button className="button-eye-operation" onClick={(event) => handleShowServiceInformation(serviceData.id, event)}>
+                                            <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            ))}
+
+                        </div>
+                    }
                     {activeTab === 'operaciones' &&
                         <div className="search-results-operations">
                             {operations.map(operationData => (
-                                <div key={operationData.id} className="result-operations">
+                                <div key={`operation-${operationData.id}`} className="result-operations">
                                     <div className="operation-code-section">
                                         <label className="operation-code">{operationData.operation_code}</label>
                                     </div>
@@ -288,11 +473,8 @@ const Services = () => {
                                         </button>
                                     </div>
 
-
                                 </div>
-
                             ))}
-
                         </div>
                     }
 
@@ -314,31 +496,47 @@ const Services = () => {
 
                     {/*Contenedor para agregar servicio */}
 
-                    {showAddService && !showAddOperation && (
+                    {currentSection === 'addService' && (
                         <div className="container-general">
+
                             <div className="container-title-add-service">
+                                <button className="button-arrow" onClick={handleGoBackToButtons}>
+                                    <img
+                                        className="arrow-icon"
+                                        src={arrowLeftIcon}
+                                        alt="Arrow Icon"
+                                    />
+                                </button>
                                 <h2>Agregar Servicio</h2>
                             </div>
 
                             <div className="container-new-service">
                                 <div className="row">
                                     <label>Título</label>
-                                    <input style={{ marginLeft: "100px" }}></input>
+                                    <input
+                                        className="title-service"
+                                        style={{ marginLeft: "100px" }}
+                                    />
                                 </div>
 
                                 <div className="row">
                                     <label>Costo Total</label>
-                                    <input style={{ marginLeft: "50px" }}></input>
+                                    <input
+                                        type="text"
+                                        value={`$ ${totalCost.toFixed(2)}`}
+                                        className="input-total-cost"
+                                        style={{ marginLeft: "50px" }}
+                                        readOnly />
                                 </div>
 
                             </div>
 
                             <div className="container-title-add-service">
-                                <h2>Operaciones</h2>
+                                <h3>Operaciones</h3>
                             </div>
 
-                            <div style={{ backgroundColor: 'white' }}>
-                                <table {...getTableProps()}>
+                            <div className="table-container">
+                                <table {...getTableProps()} className="operation-selected-table">
                                     <thead>
                                         {headerGroups.map((headerGroup) => (
                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -377,13 +575,13 @@ const Services = () => {
 
                                 </div>
 
-
-
                             </div>
 
                             <div className="container-buttons">
-                                <button className="button-add-operation" style={{ marginRight: "10px" }} onClick={handleAddOperation} >
-                                    <span className="text-button">Agregar Operación</span>
+                                <button className="button-add-operation" style={{ marginRight: "10px" }} onClick={handleOpenModalSearchOperation} >
+                                    <span className="text-button">
+                                        {selectedOperations.length > 0 ? "Editar Operación" : "Agregar Operación"}
+                                    </span>
                                 </button>
                                 <button className="button-add-operation" style={{ marginLeft: "10px" }}>
                                     <span className="text-button">Aceptar</span>
@@ -397,22 +595,22 @@ const Services = () => {
 
                     {/*Contenedor para agregar operaciones */}
 
-                    {showAddOperation && !showAddService && (
+                    {currentSection === 'addOperation' && (
                         <OperationRightSection
                             onOperationChange={handleOperationChange}
                             localOperations={operations}
-
+                            goBack={handleGoBackToButtons}
                         />
                     )}
 
                     {/*Contenedor para editar operaciones*/}
 
-                    {showEditOperation && !showAddOperation && !showAddService && (
+                    {currentSection === 'editOperation' && (
                         <OperationRightSection
                             onOperationChange={handleOperationChange}
                             selectedOperation={selectedOperation}
                             localOperations={operations}
-
+                            goBack={handleGoBackToButtons}
                         />
                     )}
 
@@ -430,6 +628,111 @@ const Services = () => {
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />
+            )}
+
+            {isSearchOperationModalOpen && (
+                <div className="filter-modal-overlay">
+                    <div className="modal-content">
+                        <button className="button-close" onClick={handleCloseModalSearchOperation}  >
+                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                        </button>
+                        <div className="tabs">
+                            <button className={`button-tab ${activeTabOperation === 'código' ? 'active' : ''}`}
+                                onClick={() => handleTabChange('código')}>
+                                Código
+                                <div className="line"></div>
+                            </button>
+                            <button className={`button-tab ${activeTabOperation === 'título' ? 'active' : ''}`}
+                                onClick={() => handleTabChange('título')}>
+                                Título
+                                <div className="line"></div>
+                            </button>
+                        </div>
+                        <div className="search-operation-box">
+                            <img src={searchIcon} alt="Search Icon" className="search-operation-icon" />
+                            <input
+                                className="input-search-operation"
+                                value={searchOperationTerm}
+                                onChange={e => {
+                                    const value = e.target.value;
+                                    if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
+                                    if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
+                                    setSearchOperationTerm(value);
+                                }}
+                                placeholder={`Buscar por ${activeTabOperation}`}
+                                pattern={activeTabOperation === 'código' ? "[0-9]*" : "[a-zA-Z ]*"}
+                            />
+                        </div>
+
+                        {/* Tabla de operaciones seleccionadas */}
+                        {selectedOperations.length > 0 && (
+                            <div className="selected-operations-scroll-container">
+                                <h5>Operaciones seleccionadas</h5>
+                                <table className="operation-table selected">
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Título</th>
+                                            <th style={{ textAlign: "center" }}>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {selectedOperations.map(selectOperation => (
+                                            <tr key={selectOperation.id}>
+                                                <td>{selectOperation.operation_code}</td>
+                                                <td>{selectOperation.title}</td>
+                                                <td style={{ textAlign: "center" }}>
+                                                    <img
+                                                        className="less-operation-icon"
+                                                        src={deleteIcon}
+                                                        alt="Remove operation"
+                                                        onClick={() => handleRemoveOperation(selectOperation.id)}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        )}
+
+                        {operation.length > 0 && (
+                            <div className="list-operations-scroll-container">
+                                <h5>Lista de operaciones</h5>
+                                <table className="operation-table list">
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Título</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {operation.map(listOperation => (
+                                            <tr key={listOperation.id} >
+                                                <td>{listOperation.operation_code}</td>
+                                                <td>{listOperation.title}</td>
+                                                <td>
+                                                    <img
+                                                        className="add-operation-icon"
+                                                        src={addIcon}
+                                                        alt="Add operation"
+                                                        onClick={() => handleAddOperationModal(listOperation)}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        )}
+
+                    </div>
+
+                </div>
             )}
 
 
