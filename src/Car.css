@@ -262,29 +262,6 @@
 
 }
 
-.container-button-add-vehicle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    height: 84vh;
-}
-
-.button-add-vehicle {
-    width: 216px;
-    height: 64px;
-    background-color: #1C4A74;
-    border: none;
-    border-radius: 6px;
-    font-size: 17px;
-}
-
-.text-button-add-vehicle {
-    color: white;
-    font-weight: bold;
-    font-size: 17px;
-}
-
 .search-client-box {
     display: flex;
     align-items: center;

@@ -16,6 +16,8 @@ import Modal from "../../modal/Modal";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import apiClient from "../../services/apiClient";
 import axios from "axios";
+import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
+import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 //const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -48,7 +50,7 @@ const Cars = () => {
             truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
         };
     }, []); // No hay dependencias, ya que se trata de una inicialización única
-    
+
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [isSearchClientModalOpen, setIsSearchClientModalOpen] = useState(false);
     const isMounted = useRef(false);
@@ -220,7 +222,7 @@ const Cars = () => {
         setSelectedClientId(clientId);
         const name_client = clients.find(client => client.client.id === clientId);
         setNameClient(name_client.client.name);
-
+        resetForm();
     };
 
     const formatPlate = (plateInput) => {
@@ -442,6 +444,13 @@ const Cars = () => {
         }
     };
 
+    const handleGoBackButton = () => {
+        setShowButtonAddVehicle(true);
+        setShowAddVehicle(false);
+        setShowCarHistory(false);
+        setShowCarInformation(false);
+    };
+
     //Para realizar la búsqueda del cliente en el modal
     useEffect(() => {
         // Al montar el componente
@@ -580,19 +589,18 @@ const Cars = () => {
                     <ToastContainer />
                     {/*Sección para mostrar el botón de agregar vehículo */}
                     {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
-                        <div className="container-button-add-vehicle">
-                            <button className="button-add-vehicle" onClick={handleOpenModalSearchClient} >
-                                <span className="text-button-add-vehicle">AGREGAR VEHÍCULO</span>
-                            </button>
-                        </div>
+                        <CustomButtonContainer>
+                            <CustomButton title="AGREGAR VEHÍCULO" onClick={handleOpenModalSearchClient} />
+                        </CustomButtonContainer>
                     )}
 
                     {/*Sección para mostrar el formulario para agregar un vehículo*/}
                     {showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
                         <>
-                            <div className="container-new-vehicle">
-                                <h2>{nameClient}</h2>
-                            </div>
+                            <CustomTitleSection
+                                onBack={handleGoBackButton}
+                                title={nameClient}
+                            />
 
                             <div className="container-add-car-form">
                                 <div className="form-scroll">
@@ -680,15 +688,14 @@ const Cars = () => {
 
                     {showCarInformation && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showMaintenance && (
                         <div>
-                            <div className="containerNewClientTitle">
-                                <h2>Información del vehículo</h2>
-                                <button className="button-unavailable" onClick={openAlertModalVehicleSuspend}>
-                                    <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon"/>
-                                </button>
-                                <button className="button-edit-client">
-                                    <img src={editIcon} alt="Edit Client Icon" className="button-edit-client-icon" onClick={() => setIsEditMode(true)} />
-                                </button>
-                            </div>
+                            <CustomTitleSection
+                                onBack={handleGoBackButton}
+                                title="Información del vehículo"
+                                showDisableIcon={true}
+                                onDisable={openAlertModalVehicleSuspend}
+                                showEditIcon={true}
+                                onEdit={() => setIsEditMode(true)}
+                            />
 
                             <div className="container-add-car-form">
                                 <div className="form-scroll">

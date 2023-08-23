@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
+import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 
@@ -25,7 +26,7 @@ const WorkOrders = () => {
     return (
 
         <div>
-             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
 
             <div className="work-order-container">
@@ -45,13 +46,10 @@ const WorkOrders = () => {
                     </div>
                 </div>
                 <div className="right-section">
-                    <div className="container-button-add-work-orders">
-                        <button className="button-add-work-orders" onClick={handleAddNewWorkOrder}  >
-                            <span className="text-button-add-work-orders">AGREGAR ÓRDEN DE TRABAJO</span>
-                        </button>
-                    </div>
+                    <CustomButtonContainer>
+                        <CustomButton title="AGREGAR ÓRDEN DE TRABAJO" onClick={handleAddNewWorkOrder} />
+                    </CustomButtonContainer>
                 </div>
-
             </div>
 
 

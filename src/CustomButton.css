@@ -1,0 +1,30 @@
+.container-custom-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    height: 84vh;
+}
+
+.custom-button{
+    width: 216px;
+    height: 64px;
+    background-color: #1C4A74;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+}
+
+.span-custom-button {
+    color: white;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.button-add-service {
+    margin-right: 10px;
+}
+
+.button-add-operation {
+    margin-left: 10px;
+}

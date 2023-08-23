@@ -12,6 +12,7 @@ import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
 import OperationRightSection from "../operations/OperationRightSection";
 import apiClient from "../../services/apiClient";
+import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
@@ -483,15 +484,10 @@ const Services = () => {
                 <div className="right-section-service">
                     <ToastContainer />
                     {showButtons && (
-                        <div className="container-add-service">
-                            <button className="button-add" style={{ marginRight: "10px" }} onClick={handleAddService} >
-                                <span className="text-button">AGREGAR SERVICIO</span>
-                            </button>
-                            <button className="button-add" style={{ marginLeft: "10px" }} onClick={handleAddOperation}>
-                                <span className="text-button">AGREGAR OPERACIÓN</span>
-                            </button>
-                        </div>
-
+                        <CustomButtonContainer>
+                            <CustomButton title="AGREGAR SERVICIO" onClick={handleAddService} buttonClassName="button-add-service" />
+                            <CustomButton title="AGREGAR OPERACIÓN" onClick={handleAddOperation} buttonClassName="button-add-operation" />
+                        </CustomButtonContainer>
                     )}
 
                     {/*Contenedor para agregar servicio */}

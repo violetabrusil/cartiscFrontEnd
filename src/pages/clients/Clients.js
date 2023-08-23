@@ -13,17 +13,16 @@ import apiClient from "../../services/apiClient";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
 import { getVehicleCategory } from "../../constants/vehicleCategoryConstants";
+import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
+import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
 const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
 const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
 const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
-const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 //const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
-const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
 const Clients = () => {
@@ -38,7 +37,6 @@ const Clients = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [clientSuspended, setClientSuspended] = useState(false);
     const [isAlertClientSuspend, setIsAlertClientSuspend] = useState(false);
-
 
     const [cedula, setCedula] = useState('');
     const [name, setName] = useState('');
@@ -170,7 +168,6 @@ const Clients = () => {
         setShowAddVehicle(false);
         setShowClientInformation(false);
         setShowClientCarInformation(true);
-
     };
 
     const handleShowAddVehicle = (event) => {
@@ -326,8 +323,8 @@ const Clients = () => {
             if (response.data && response.data.id) {
                 setIsEditMode(false);
                 const newClient = response.data;
-                setClients(prevClients => 
-                    prevClients.map(client => 
+                setClients(prevClients =>
+                    prevClients.map(client =>
                         client.id === newClient.id ? newClient : client
                     )
                 );
@@ -406,6 +403,20 @@ const Clients = () => {
         }
     };
 
+    const handleGoBackToButtons = () => {
+        setShowAddVehicle(false);
+        setShowClientCarInformation(false);
+        setShowClientInformation(false);
+        setShowTitle(false);
+    };
+
+    const handleGoBack = () => {
+        setShowClientCarInformation(true);
+        setSelectedVehicle(false);
+        setShowClientInformation(false);
+        setShowAddVehicle(false);
+    };
+
     useEffect(() => {
         //Función que permite obtener todos los clientes 
         //cuando recien se inicia la pantala y busca lo clientes
@@ -439,7 +450,7 @@ const Clients = () => {
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption, refreshClients, clientSuspended, ]);
+    }, [searchTerm, selectedOption, refreshClients, clientSuspended,]);
 
     //Obtención de la información del cliente para editarlo
     useEffect(() => {
@@ -576,22 +587,19 @@ const Clients = () => {
                 <div className="right-section">
 
                     {!selectedVehicle && showTitle && !showAddVehicle && (
-                        <div className="container-title-client">
-                            <h2>Vehículos</h2>
-                            <button className="button-add-car" onClick={handleShowAddVehicle}>
-                                <img src={addIcon} alt="Add Car Icon" className="button-add-car-icon" />
-                            </button>
-                        </div>
+                        <CustomTitleSection
+                            title="Vehículos"
+                            onBack={handleGoBackToButtons}
+                            showAddIcon={true}
+                            onAdd={handleShowAddVehicle}
+                        />
                     )}
 
                     {/* Aquí colocamos los componentes para la sección derecha */}
                     {!showClientCarInformation && !showClientInformation && !showAddVehicle && (
-                        <div className="container-button-add-client">
-                            <button className="button-add-client" onClick={handleAddClient} >
-                                <span className="text-button-add-client">AGREGAR CLIENTE</span>
-                            </button>
-                        </div>
-
+                        <CustomButtonContainer>
+                            <CustomButton title="AGREGAR CLIENTE" onClick={handleAddClient} />
+                        </CustomButtonContainer>
                     )}
 
                     {/*Información del o los vehículos del cliente */}
@@ -627,16 +635,14 @@ const Clients = () => {
                     <ToastContainer />
                     {showClientInformation && !showClientCarInformation && !showAddVehicle && (
                         <div>
-                            <div className="container-title-client">
-                                <h2>Información del cliente</h2>
-
-                                <button className="button-unavailable" onClick={openAlertModalClientSuspend}>
-                                    <img src={unavailableIcon} alt="Unavailable Icon" className="button-unavailable-icon" />
-                                </button>
-                                <button className="button-edit-client">
-                                    <img src={editIcon} alt="Edit Client Icon" className="button-edit-client-icon" onClick={() => setIsEditMode(true)} />
-                                </button>
-                            </div>
+                            <CustomTitleSection
+                                title="Información del cliente"
+                                onBack={handleGoBackToButtons}
+                                showDisableIcon={true}
+                                onDisable={openAlertModalClientSuspend}
+                                showEditIcon={true}
+                                onEdit={() => setIsEditMode(true)}
+                            />
 
                             <div className="container-data-client-form">
                                 <form>
@@ -692,6 +698,7 @@ const Clients = () => {
                                     </label>
 
                                     {isEditMode &&
+
                                         <div className="container-button-edit-product">
                                             <button className="button-edit-data-client" onClick={handleEditClient}>
                                                 GUARDAR
@@ -710,12 +717,12 @@ const Clients = () => {
                     {/*Información del vehículo del cliente */}
 
                     {selectedVehicle && (
-                        <div className="containerNewClientTitle">
-                            <h2>{selectedClientData?.client?.name}</h2>
-                            <button className="button-delete" onClick={openAlertModalVehicleSuspend}>
-                                <img src={unavailableIcon} alt="Suspended Vehicle" className="button-suspend-client-icon" />
-                            </button>
-                        </div>
+                        <CustomTitleSection 
+                        title={selectedClientData?.client?.name}
+                        onBack={handleGoBack}
+                        showDisableIcon={true}
+                        onDisable={openAlertModalVehicleSuspend}
+                        />
                     )}
 
                     {selectedVehicle && (
@@ -796,11 +803,14 @@ const Clients = () => {
                     )}
 
                     {showAddVehicle && (
-                        <div className="containerNewClientTitle">
-                            <h2>Agregar vehículo</h2>
-                        </div>
+                        <CustomTitleSection
+                            title="Agregar vehículo"
+                            onBack={handleGoBackToButtons}
+                        />
                     )}
+
                     <ToastContainer />
+
                     {showAddVehicle && (
                         <div className="container-add-car-form">
                             <div className="form-scroll">
