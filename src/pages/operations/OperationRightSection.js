@@ -7,10 +7,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import apiClient from "../../services/apiClient";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
-const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
-const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
-const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
-
 const OperationRightSection = ({ localOperations, selectedOperation, onOperationChange, goBack }) => {
 
     console.log("Operación seleccionada en 'OperationRightSection':", selectedOperation);
@@ -48,7 +44,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
         }
 
     };
-
+    
     const handleUpdateOperation = async () => {
         try {
             const response = await apiClient.put(`/operations/update/${selectedOperation.id}`, { title, cost });

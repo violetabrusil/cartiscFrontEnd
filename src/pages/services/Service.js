@@ -43,6 +43,11 @@ const Services = () => {
 
     //Variables para los servicios y controlar el estado de sus secciones
     const [services, setServices] = useState([]);
+    const [lastUpdated, setLastUpdated] = useState(Date.now());
+    const [title, setTitle] = useState('');
+    const [mode, setMode] = useState('add');
+    const [isEditing, setIsEditing] = useState(false);
+    const [isAlertServiceSuspend, setIsAlertServiceSuspend] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
     const [isSearchOperationModalOpen, setIsSearchOperationModalOpen] = useState(false);
     const [searchOperationTerm, setSearchOperationTerm] = useState('');
@@ -52,21 +57,30 @@ const Services = () => {
     const [operation, setOperation] = useState([]);
     const [selectedOperations, setSelectedOperations] = useState([]);
 
+    {/* Decidir cuál arreglo de operaciones usar basado en el modo */ }
+    const operationsToShow = mode === 'edit' ? selectedService.Operations : selectedOperations;
+
+
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
-        const lastSectionForTab = lastActiveSection[tabName];
-        console.log('Tab actual:', tabName);
-        console.log('Última sección para el tab:', lastSectionForTab);
-
-        if (lastSectionForTab) {
-            setCurrentSection(lastSectionForTab);
+    
+        if (tabName === 'operaciones') { // Asumiendo que el nombre del tab de operaciones es 'operaciones'
+            setCurrentSection(null);  // Muestra la sección de botones
         } else {
-            setCurrentSection(null);
+            const lastSectionForTab = lastActiveSection[tabName];
+            console.log('Tab actual:', tabName);
+            console.log('Última sección para el tab:', lastSectionForTab);
+    
+            if (lastSectionForTab) {
+                setCurrentSection(lastSectionForTab);
+            } else {
+                setCurrentSection(null);
+            }
         }
-        // Ya que showButtons se determina por el valor de currentSection, 
-        // ya no necesitamos establecerlo aquí directamente
+    
         console.log('Valor de showButtons tras el click:', showButtons);
     };
+    
 
     const handleSearchServiceChange = (term, filter) => {
         console.log("term y filtro", term, filter)
@@ -128,11 +142,37 @@ const Services = () => {
         // setShowButtons(false);
     };
 
-    const handleShowServiceInformation = (serviceId, event) => {
+    const handleShowServiceInformation = async (serviceId, event) => {
         event.stopPropagation();
         console.log("id service", serviceId);
         const selectedServ = services.find(serv => serv.id === serviceId);
-        setSelectedService(selectedServ);
+        try {
+            // Hacer una petición al backend para obtener la información del servicio
+            const response = await apiClient.get(`/services/${selectedServ.id}`);
+
+            // Aquí 'response.data' es la respuesta del servidor que debería contener la información del servicio.
+            setSelectedService(response.data);
+            setTitle(response.data.title);
+            console.log("datos seleccionados", response.data.Operations)
+            setMode('edit');
+            setCurrentSection('addService');
+            setLastActiveSection(prevState => ({
+                ...prevState,
+                operaciones: 'addService'
+            }));
+            
+        } catch (error) {
+            console.error("Error fetching service information:", error);
+            // Aquí puedes manejar los errores, por ejemplo mostrar un mensaje al usuario.
+        }
+    };
+
+    const openAlertModalServiceSuspend = () => {
+        setIsAlertServiceSuspend(true);
+    };
+
+    const closeAlertModalServiceSuspend = () => {
+        setIsAlertServiceSuspend(false);
     };
 
     const handleOpenModalSearchOperation = () => {
@@ -186,17 +226,38 @@ const Services = () => {
     );
 
     const handleAddOperationModal = (operationToAdd) => {
+        // Decide a qué conjunto de operaciones agregar dependiendo del modo
+        const operationsToModify = mode === 'edit' ? selectedService.Operations : selectedOperations;
+
         // Verifica si la operación ya está en la lista
-        if (selectedOperations.some(op => op.id === operationToAdd.id)) {
+        if (operationsToModify.some(op => op.id === operationToAdd.id)) {
             // Si ya fue agregada, termina la función
             return;
         }
-        // Agrega la operación si no está en la lista
-        setSelectedOperations(prev => [...prev, operationToAdd]);
+
+        // Si estás en modo edit, modifica las operaciones de selectedService
+        if (mode === 'edit') {
+            setSelectedService(prevState => ({
+                ...prevState,
+                Operations: [...prevState.Operations, operationToAdd]
+            }));
+        } else {
+            // Si no, modifica las operaciones seleccionadas normales
+            setSelectedOperations(prev => [...prev, operationToAdd]);
+        }
     };
 
     const handleRemoveOperation = (operationIdToRemove) => {
-        setSelectedOperations(prevOperations => prevOperations.filter(op => op.id !== operationIdToRemove));
+        // Si estás en modo edit, elimina de selectedService.Operations
+        if (mode === 'edit') {
+            setSelectedService(prevState => ({
+                ...prevState,
+                Operations: prevState.Operations.filter(op => op.id !== operationIdToRemove)
+            }));
+        } else {
+            // Si estás en modo add, elimina de selectedOperations
+            setSelectedOperations(prevOperations => prevOperations.filter(op => op.id !== operationIdToRemove));
+        }
     };
 
     const columns = React.useMemo(
@@ -229,7 +290,7 @@ const Services = () => {
         previousPage,
     } = useTable({
         columns,
-        data: selectedOperations,
+        data: mode === 'edit' ? selectedService.Operations : selectedOperations,
         initialState: { pageSize: 5 }
     }, usePagination);
 
@@ -290,11 +351,14 @@ const Services = () => {
 
     const handleGoBackToButtons = () => {
         setCurrentSection(null);
+        resetForm();
     };
 
     //Calcular el total del costo del servicio mediante el valor
     //de cada operación seleccionada
-    const totalCost = selectedOperations.reduce((sum, operation) => {
+    let operationsData = mode === 'edit' ? selectedService.Operations : selectedOperations;
+
+    let totalCost = operationsData.reduce((sum, operation) => {
         const cost = parseFloat(operation.cost);
 
         if (isNaN(cost)) {
@@ -304,6 +368,89 @@ const Services = () => {
 
         return sum + cost;  // Retorna la suma acumulada más el nuevo costo
     }, 0);
+
+
+    //Función para crear un nuevo servicio 
+    const handleSaveOrUpdateService = async (event) => {
+        // Para evitar que el formulario recargue la página
+        event.preventDefault();
+        const id_operations = selectedOperations.map(operation => operation.id);
+        if (mode === 'add') {
+            try {
+
+                const response = await apiClient.post('/services/create', { title, id_operations });
+                setServices(response.data);
+                toast.success('Servicio registrado', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                setLastUpdated(Date.now());
+                setCurrentSection(null);
+
+            } catch (error) {
+                console.log("error", error)
+                toast.error('Error al guardar el servicio', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
+        } else {
+            const id_operations = selectedService.Operations.map(operation => operation.id);
+            console.log("datos servicio seleccionado", title, id_operations)
+            try {
+
+                const response = await apiClient.put(`/services/update/${selectedService.id}`, { title, id_operations });
+                setServices(response.data);
+                toast.success('Servicio actualizado', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                setLastUpdated(Date.now());
+                setIsEditing(false);
+                
+            } catch (error) {
+                console.log("error", error)
+                toast.error('Error al actualizar el servicio', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
+        }
+
+
+    };
+
+    //Función para eliminar un servicio
+    const handleDeleteService = async (event) => {
+        //Para evitar que el formulario recargue la página
+        event.preventDefault();
+        setIsAlertServiceSuspend(false);
+
+        try {
+
+            const response = await apiClient.delete(`/services/delete/${selectedService.id}`)
+
+            if (response.status === 200) {
+                toast.success('Operación eliminada', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                setLastUpdated(Date.now());
+                setCurrentSection(null);
+            } else {
+                toast.error('Ha ocurrido un error al eliminar el servicio', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
+
+        } catch (error) {
+            console.log('Error al eliminar el servicio', error);
+            toast.error('Error al eliminar el servicio. Por favor, inténtalo de nuevo..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    };
+
+    const resetForm = () => {
+        setTitle('');
+        totalCost = 0;
+        setSelectedOperations([]);
+    };
 
     useEffect(() => {
         //Función que permite obtener todas las operaciones
@@ -371,13 +518,15 @@ const Services = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
+                console.log("Respuesta del servidor:", response.data);
                 setServices(response.data);
             } catch (error) {
+                setServices([]);
                 console.log("Error al obtener los datos de los servicios");
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption]);
+    }, [searchTerm, selectedOption, lastUpdated]);
 
     //Para realizar la búsqueda de las operaciones en el modal
     useEffect(() => {
@@ -433,8 +582,8 @@ const Services = () => {
                     </div>
 
                     {activeTab === 'servicios' &&
-                        <div className="search-results-servicios">
-                            {services.map(serviceData => (
+                        <div className="search-results-operations">
+                            {Array.isArray(services) && services.map(serviceData => (
                                 <div key={`service-${serviceData.id}`} className="result-operations">
                                     <div className="operation-code-section">
                                         <label className="operation-code">{serviceData.service_code}</label>
@@ -485,8 +634,8 @@ const Services = () => {
                     <ToastContainer />
                     {showButtons && (
                         <CustomButtonContainer>
-                            <CustomButton title="AGREGAR SERVICIO" onClick={handleAddService} buttonClassName="button-add-service" />
-                            <CustomButton title="AGREGAR OPERACIÓN" onClick={handleAddOperation} buttonClassName="button-add-operation" />
+                            <CustomButton title="AGREGAR SERVICIO" onClick={handleAddService} buttonClassName="button-add-serv" />
+                            <CustomButton title="AGREGAR OPERACIÓN" onClick={handleAddOperation} buttonClassName="button-add-op" />
                         </CustomButtonContainer>
                     )}
 
@@ -497,15 +646,22 @@ const Services = () => {
 
                             <CustomTitleSection
                                 onBack={handleGoBackToButtons}
-                                title="Agregar Servicio"
+                                title={mode === 'add' ? "Agregar Servicio" : "Información del servicio"}
+                                showEditIcon={mode === 'edit' ? true : false}
+                                onEdit={mode === 'edit' ? () => setIsEditing(true) : null}
+                                showDisableIcon={mode === 'edit' ? true : false}
+                                onDisable={openAlertModalServiceSuspend}
                             />
 
                             <div className="container-new-service">
                                 <div className="row">
                                     <label>Título</label>
                                     <input
+                                        value={title}
                                         className="title-service"
                                         style={{ marginLeft: "100px" }}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        disabled={!isEditing}
                                     />
                                 </div>
 
@@ -568,12 +724,19 @@ const Services = () => {
                             </div>
 
                             <div className="container-buttons">
-                                <button className="button-add-operation" style={{ marginRight: "10px" }} onClick={handleOpenModalSearchOperation} >
+                                <button
+                                    className="button-add-operation"
+                                    style={{ marginRight: "10px", backgroundColor: isEditing ? '#1C4A74' : '#6E757D' }}
+                                    onClick={handleOpenModalSearchOperation}
+                                    disabled={!isEditing}  >
                                     <span className="text-button">
-                                        {selectedOperations.length > 0 ? "Editar Operación" : "Agregar Operación"}
+                                        {((mode === 'edit' ? selectedService.Operations : selectedOperations).length > 0) ? "Editar Operación" : "Agregar Operación"}
                                     </span>
                                 </button>
-                                <button className="button-add-operation" style={{ marginLeft: "10px" }}>
+                                <button
+                                    className="button-add-operation"
+                                    style={{ marginLeft: "10px", backgroundColor: isEditing ? '#1C4A74' : '#6E757D' }}
+                                    onClick={handleSaveOrUpdateService}>
                                     <span className="text-button">Aceptar</span>
                                 </button>
 
@@ -655,7 +818,7 @@ const Services = () => {
                         </div>
 
                         {/* Tabla de operaciones seleccionadas */}
-                        {selectedOperations.length > 0 && (
+                        {operationsToShow.length > 0 && (
                             <div className="selected-operations-scroll-container">
                                 <h5>Operaciones seleccionadas</h5>
                                 <table className="operation-table selected">
@@ -667,7 +830,7 @@ const Services = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {selectedOperations.map(selectOperation => (
+                                        {operationsToShow.map(selectOperation => (
                                             <tr key={selectOperation.id}>
                                                 <td>{selectOperation.operation_code}</td>
                                                 <td>{selectOperation.title}</td>
@@ -684,7 +847,6 @@ const Services = () => {
                                     </tbody>
                                 </table>
                             </div>
-
                         )}
 
                         {operation.length > 0 && (
@@ -723,6 +885,29 @@ const Services = () => {
                     </div>
 
                 </div>
+            )}
+
+            {isAlertServiceSuspend && (
+                <div className="filter-modal-overlay">
+                    <div className="filter-modal">
+                        <h3 style={{ textAlign: "center" }}>¿Está seguro de eliminar el servicio?</h3>
+                        <div className="button-options">
+                            <div className="half">
+                                <button className="optionNo-button" onClick={closeAlertModalServiceSuspend}>
+                                    No
+                                </button>
+                            </div>
+                            <div className="half">
+                                <button className="optionYes-button" onClick={handleDeleteService}  >
+                                    Si
+                                </button>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             )}
 
 
