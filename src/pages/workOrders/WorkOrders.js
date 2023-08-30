@@ -57,7 +57,6 @@ const WorkOrders = () => {
         return `${day}/${month}/${year}`;
     };
     
-
     const formatPlate = (plateInput) => {
         const regex = /^([A-Z]{3})(\d{3,4})$/;
 
@@ -195,7 +194,7 @@ const WorkOrders = () => {
                 </div>
                 <div className="right-section-work-order">
                     <CustomButtonContainer>
-                        <CustomButton title="AGREGAR ÓRDEN DE TRABAJO" onClick={handleAddNewWorkOrder} />
+                        <CustomButton title="AGREGAR ORDEN DE TRABAJO" onClick={handleAddNewWorkOrder} />
                     </CustomButtonContainer>
                 </div>
             </div>

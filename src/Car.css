@@ -97,6 +97,17 @@
     opacity: 50%;
 }
 
+.button-eye-car-work-order {
+    border: none;
+    background: none;
+}
+
+.icon-eye-car-work-order {
+    width: 30px;
+    height: 30px;
+    opacity: 50%;
+}
+
 .button-maintenance {
     width: 200px;
     display: flex;
@@ -116,10 +127,11 @@
 .button-maintenance-filter {
     width: 100px;
     display: flex;
-    justify-content: space-between;
+    justify-content: right;
     align-items: center;
     border: none;
     background: none;
+    margin-right: 22px;
 }
 
 .button-sort {
@@ -162,8 +174,7 @@
 .container-maintenance-filter {
     display: flex;
     justify-content: space-between;
-    margin-left: 4px;
-    margin-top: 16px;
+    margin-left: 25px;
 }
 
 .container-maintenance-filter h4 {
@@ -278,6 +289,14 @@
 .search-client-icon {
     width: 25px;
     height: 25px;
+}
+
+.car-history-section .container-table {
+    background-color: white;
+}
+
+.car-history-section .container-table .products-table td {
+    padding: 4px;
 }
 
 @media screen and (max-width: 768px) {

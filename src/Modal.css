@@ -113,7 +113,57 @@
     background-color: #6E757D;
 }
 
+.title-modal-search {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.button-close-modal {
+    background: none;
+    border: none;
+    display: flex;
+    margin-left: auto;
+    margin-top: -4px;
+}
+
+.modal-close-icon {
+    width: 25px;
+    height: 25px;
+}
+
+.container-fields-modal-search {
+    display: contents;
+}
+
+.label-fields {
+    font-weight: 700;
+    color: gray;
+    font-size: 15px;
+}
+
+.input-fields {
+    height: 25px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 13px;
+    margin-top: 10px;
+}
+.input-fields::placeholder {
+    color: rgb(0 0 0 / 34%);
+    font-weight: 600;
+}
+
+.select-field {
+    height: 37px;
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 13px;
+    margin-top: 10px;
+}
 
 /* Media queries para tamaños de pantalla */
 

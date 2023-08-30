@@ -2,12 +2,9 @@ import "../../Car.css";
 import "../../Modal.css";
 import "../../NewClient.css";
 import "../../Clients.css";
-//import "react-datepicker/dist/react-datepicker.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
-//import DatePicker from "react-datepicker";
 import { debounce } from 'lodash';
-//import { Calendar } from "../../calendar/Calendar";
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select';
 import Header from "../../header/Header";
@@ -15,17 +12,21 @@ import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import apiClient from "../../services/apiClient";
+import DataTable from "../../dataTable/DataTable";
 import axios from "axios";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import { workOrderStatus } from "../../constants/workOrderConstants";
+import SearchModalWorkOrder from "../../modal/SearchModalWorkOrder";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-//const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
+const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
 //const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
+const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
 const Cars = () => {
 
@@ -63,8 +64,11 @@ const Cars = () => {
     const [refreshVehicles, setRefreshVehicles] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isAlertVehicleSuspend, setIsAlertVechicleSuspend] = useState(false);
-    //const [selectedDate, setSelectedDate] = React.useState(null); // Estado para almacenar la fecha seleccionada 
     const [vehicleSuspended, setVehicleSuspended] = useState(false);
+    const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+    const [workOrders, setWorkOrders] = useState([]);
+    const [isSearchWorkOrderModalOpen, setIsSearchWorkOrderModalOpen] = useState(false);
+    const [selectedPlateVehicle, setSelectedPlateVehicle] = useState(null);
 
     //Variables para guardar a un vehículo
     const [category, setCategory] = useState('');
@@ -77,14 +81,14 @@ const Cars = () => {
 
     //Variables para de modales y secciones
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    //const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [showCarInformation, setShowCarInformation] = useState(false);
     const [showCarHistory, setShowCarHistory] = useState(false);
     const [showMaintenance, setShowMaintenance] = useState(false);
     const [showButtonAddVehicle, setShowButtonAddVehicle] = useState(true);
     const [showAddVehicle, setShowAddVehicle] = useState(false);
-    //const options = ['Cambio de aceite', 'Cambio de motor'];
-    //const [selectedOptions, setSelectedOptions] = useState([]);
+    const optionsMaintance = ['Cambio de aceite', 'Cambio de motor'];
+    const [selectedOptions, setSelectedOptions] = useState([]);
 
     const transformPlateForSaving = (plateWithDash) => {
         return plateWithDash.replace(/-/g, '');
@@ -161,24 +165,168 @@ const Cars = () => {
         closeFilterModal();
     };
 
-    const handleCarHistory = (event) => {
+    const columns = [
+        {
+            Header: 'Código',
+            accessor: 'work_order_code',
+        },
+        {
+            Header: 'Estado',
+            accessor: 'work_order_status',
+            Cell: ({ value }) =>
+                <label style={{ color: statusColors[value], fontWeight: "bold" }}>
+                    {value}
+                </label>
+        },
+        {
+            Header: 'Fecha inicio',
+            accessor: 'date_start',
+        },
+        {
+            Header: 'Fecha fin',
+            accessor: 'date_finish',
+        },
+        {
+            Header: 'Total',
+            accessor: 'total',
+            Cell: ({ value }) => (
+                <span>
+                    $ {parseFloat(value).toFixed(2)}
+                </span>
+            )
+        },
+        {
+            Header: 'Creado por',
+            accessor: 'created_by'
+        },
+        {
+            Header: "",
+            Cell: ({ row }) => {
+                const product = row.original;
+                return (
+                    <button className="button-eye-car-work-order">
+                        <img src={eyeIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
+                        />
+                    </button>
+                );
+            },
+            id: 'edit-product-button'
+        },
+    ];
+
+    function formatDate(isoDate) {
+        const date = new Date(isoDate);
+        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
+        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
+
+        return `${day}/${month}/${year}`;
+    };
+
+    const statusColors = {
+        "Por iniciar": "#316EA8",
+        "Asignada": "#0C1F31",
+        "En ejecución": "#4caf50",
+        "En espera": "#fbc02d",
+        "Cancelada": "#e74c3c",
+        "Completada": "#2e7d32",
+        "Eliminada": "#6E757D"
+    };
+
+    const getVehicleHistoryData = async (vehicleId) => {
+        try {
+            const response = await apiClient.get(`/work-orders/by-vehicle/${vehicleId}`)
+            const transformedWorkOrders = response.data.map(workOrder => {
+                const newDateStart = formatDate(workOrder.date_start);
+                const newDateFinish = formatDate(workOrder.date_finish);
+                const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
+                return {
+                    ...workOrder,
+                    date_start: newDateStart,
+                    date_finish: newDateFinish,
+                    work_order_status: translatedStatus,
+                };
+            });
+
+            setWorkOrders(transformedWorkOrders);
+            console.log("respuesta servidor", transformedWorkOrders);
+
+
+        } catch (error) {
+            console.log("error", error)
+
+        }
+
+    };
+
+    const handleCarHistory = (vehicleId, event) => {
         event.stopPropagation();
+        // Guarda el ID del vehículo en el estado para usarlo después
+        setSelectedVehicleId(vehicleId);
+        console.log("id vehicle", vehicleId)
+        const vehiclePlate = vehicles.find(vehicle => vehicle.id === vehicleId);
+        console.log("datos vehiculo", vehiclePlate.plate)
+        setSelectedPlateVehicle(vehiclePlate.plate);
         setShowCarHistory(true);
         setShowCarInformation(false);
         setShowMaintenance(false);
         setShowAddVehicle(false);
         setShowButtonAddVehicle(false);
-    }
-
-    /*
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
+        getVehicleHistoryData(vehicleId);
     };
-    */
+
+    const handleOpenModalWorkOrder = () => {
+        setIsSearchWorkOrderModalOpen(true);
+    };
+
+    const handleCloseModalWorkOrder = () => {
+        setIsSearchWorkOrderModalOpen(false);
+    };
+
+    const handleSearhWorkOrder = async (searchData) => {
+        console.log("datos que llegan", searchData);
+        const plate = selectedPlateVehicle.replace(/-/g, "");
+        // Transformar las claves del objeto searchData
+        const transformedSearchData = {
+            work_order_code: searchData.WorkOrderCode || null,
+            work_order_status: searchData.WorkOrderStatus || null,
+            date_start: searchData.DateStartOfSearch || null,
+            date_finish: searchData.DateFinishOfSearch || null,
+            assigned: searchData.Assigned || null,
+            delivered_by: searchData.DeliveredBy || null,
+            created_by: searchData.CreatedBy || null,
+            vehicle_plate: plate
+        };
+
+        console.log("data tranformada")
+
+        try {
+            console.log("data por enviar", transformedSearchData)
+            const response = await apiClient.post('/work-orders/search', transformedSearchData);
+            console.log("respuesta de la API", response.data);
+            const transformedWorkOrders = response.data.map(workOrder => {
+                const newDateStart = formatDate(workOrder.date_start);
+                const newDateFinish = formatDate(workOrder.date_finish);
+                const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
+                return {
+                    ...workOrder,
+                    date_start: newDateStart,
+                    date_finish: newDateFinish,
+                    work_order_status: translatedStatus,
+                };
+            });
+
+            setWorkOrders(transformedWorkOrders);
+            console.log("workorders search", transformedWorkOrders);
+            handleCloseModalWorkOrder();
+
+        } catch (error) {
+            console.error("Hubo un error al realizar la búsqueda:", error);
+        }
+    };
 
     const handleCarInformation = (vehicle, event) => {
         event.stopPropagation();
-
         setSelectedVehicle(vehicle);
         setShowCarInformation(true);
         setShowCarHistory(false);
@@ -268,7 +416,6 @@ const Cars = () => {
         setCategory(selectedOptionCategoryCar.value);
     };
 
-    /*
     const openAlertModal = () => {
         setIsAlertModalOpen(true);
     };
@@ -300,7 +447,6 @@ const Cars = () => {
             }
         });
     };
-    */
 
     const handleAddVehicle = async (event) => {
         // Para evitar que el formulario recargue la página
@@ -548,7 +694,7 @@ const Cars = () => {
                     {/*Lista de vehículos */}
                     <div className="container-list-vehicle ">
                         {vehicles.map(vehicleData => (
-                            <div key={vehicleData.id} className="result-car" onClick={handleCarHistory}>
+                            <div key={vehicleData.id} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)}>
                                 <div className="first-result-car">
                                     <div className="input-plate-container">
                                         <input
@@ -578,7 +724,7 @@ const Cars = () => {
                             </div>
                         ))}
                     </div>
-                    
+
                 </div>
 
                 <div className="right-section-cars">
@@ -654,9 +800,10 @@ const Cars = () => {
 
 
                     )}
-                    {/* 
+
                     {showCarHistory && !showAddVehicle && !showButtonAddVehicle && !showCarInformation && !showMaintenance && (
                         <div>
+                            {/*
                             <div className="containerTitle-car-maintenance">
                                 <label className="label-maintenance"></label>
                                 <button className="button-maintenance" onClick={handleMaintenance}>
@@ -664,23 +811,29 @@ const Cars = () => {
                                     <img src={iconAlertWhite} className="icon-alert-white" alt="Icon Maintenance" />
                                 </button>
                             </div>
-
+                            */}
                             <div className="container-maintenance-filter">
-                                <h4>Historial de Operaciones</h4>
-                                <button className="button-maintenance-filter">
+                                <h2>Historial de Órdenes de trabajo</h2>
+                                <button className="button-maintenance-filter" onClick={handleOpenModalWorkOrder}>
+                                    <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
                                     <span className="button-maintenance-text-filter">Filtro</span>
-                                    <DatePicker
-                                        selected={selectedDate}
-                                        onChange={handleDateChange}
-                                        customInput={<Calendar />}
-                                    />
                                 </button>
+
                             </div>
 
+                            <div className="car-history-section">
+                                <DataTable
+                                    data={workOrders}
+                                    columns={columns}
+                                    onRowClick={(row, index) => {
+                                        console.log("Fila seleccionada:", row);
+                                    }}
+                                    highlightRows={true}
+                                />
+                            </div>
 
                         </div>
                     )}
-                    */}
 
                     {showCarInformation && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showMaintenance && (
                         <div>
@@ -788,8 +941,6 @@ const Cars = () => {
 
                         </div>
                     )}
-
-                    {/* */}
 
                     {showMaintenance && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && (
                         <div>
@@ -950,6 +1101,22 @@ const Cars = () => {
                         </div>
                     </div>
 
+                )}
+
+                {isSearchWorkOrderModalOpen && (
+                    <SearchModalWorkOrder
+                        fields={[
+                            'WorkOrderCode',
+                            'WorkOrderStatus',
+                            'DateStartOfSearch',
+                            'DateFinishOfSearch',
+                            'Assigned',
+                            'DeliveredBy',
+                            'CreatedBy'
+                        ]}
+                        onSearch={handleSearhWorkOrder}
+                        onClose={handleCloseModalWorkOrder}
+                    />
                 )}
 
             </div>
