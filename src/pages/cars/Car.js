@@ -578,9 +578,7 @@ const Cars = () => {
                             </div>
                         ))}
                     </div>
-
-
-
+                    
                 </div>
 
                 <div className="right-section-cars">

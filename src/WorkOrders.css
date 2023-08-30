@@ -13,51 +13,129 @@
     /* Espacio entre las secciones */
 }
 
-.left-section {
+.left-section-work-order {
     background-color: #f0f0f0;
     padding: 20px;
     display: flex;
     flex-direction: column;
 }
 
-.right-section {
+.right-section-work-order {
     background-color: #d0d0d0;
     padding: 20px;
 }
 
-.work-orders-container-title {
-    display: flex;
+.container-list-work-orders {
+    overflow-y: auto;
+    height: 67vh;
+    overflow-x: hidden;
+}
+
+.result-work-order {
+    max-width: 98%;
+    height: 70px;
+    background: #FFF;
+    border: 1px solid #D4D4D4;
+    display: grid;
+    grid-template-columns: 118px 122px 146px;
+    border-radius: 5px;
+    margin-bottom: 10px;
     align-items: center;
 }
 
-.work-orders-container-title h2{
-    flex: 1;
-    text-align: left;
+.first-result-work-orders,
+.second-result-work-order,
+.third-result-work-order {
+    overflow: hidden; /* para evitar desbordamiento */
+    text-overflow: ellipsis; /* para mostrar puntos suspensivos si el texto es demasiado largo */
+    white-space: nowrap; /* para evitar saltos de línea */
 }
 
-.search-box-work-orders {
+.first-result-work-orders {
+    margin-left: 17px;
+}
+
+.div-label-work-order-code {
+    margin-top: 3px;
+    text-align: center;
+    color: #000;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: bold;
+}
+
+.div-label-work-order-client {
+    text-align: center;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.second-result-work-order {
     display: flex;
+    justify-content: center;
     align-items: center;
-    max-width: 95%;
-    height: 25px;
-    margin-bottom: 25px;
-    padding: 5px;
-    border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
+    margin-left: 17px;
 }
 
-.input-search-work-orders {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
+.input-plate-container-work-order {
+    position: relative;
+    text-align: center;
 }
 
-.search-work-orders-icon {
-    width: 25px;
-    height: 25px;
+.input-plate-container-work-order label {
+    position: absolute;
+    top: 36%;
+    left: 42%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: black;
+    font-weight: 450;
+    font-size: 9px;
 }
+
+.input-plate-container-work-order .ecuador-icon {
+    height: 11px;
+    width: 11px;
+    position: absolute;
+    top: 35%;
+    left: calc(50% - 33px);
+    transform: translateY(-50%);
+}
+
+.input-plate-vehicle-work-order {
+    max-width: 36%;
+    height: 13px;
+    border: 2px solid #000;
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 10px;
+    margin-top: 11px;
+    padding-top: 16px;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
+}
+
+.third-result-work-order {
+    margin-left: 11px;
+}
+
+.div-label-status {
+    text-align: center;
+    width: 100px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.div-label-date {
+    margin-top: 1px;
+    text-align: center;
+    width: 100px;
+    font-size: 12px;
+}
+
 
 .container-button-add-work-orders {
     display: flex;
@@ -89,23 +167,9 @@
         left: 0;
     }
 
-    .left-section,
-    .right-section {
+    .left-section-work-order,
+    .right-section-work-order {
         width: 100%;
-    }
-
-    .work-orders-container-title {
-        flex-direction: column;
-    }
-
-    .work-orders-container-title h2 {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .search-box-work-orders {
-        width: 100%;
-        max-width: 300px;
     }
 
 }
@@ -119,23 +183,9 @@
         margin-left: 0;
     }
 
-    .left-section,
-    .right-section {
+    .left-section-work-order,
+    .right-section-work-order {
         width: 100%;
-    }
-
-    .work-orders-container-title {
-        flex-direction: column;
-    }
-
-    .work-orders-container-title h2 {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .search-box-work-orders {
-        width: 100%;
-        max-width: 300px;
     }
 
 }
