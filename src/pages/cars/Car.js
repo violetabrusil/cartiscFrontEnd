@@ -24,8 +24,6 @@ const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 //const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
-const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
-const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 

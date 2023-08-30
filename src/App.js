@@ -22,6 +22,7 @@ import WorkOrders from './pages/workOrders/WorkOrders';
 import NewWorkOrder from './pages/workOrders/NewWorkOrder';
 import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
 import { AuthProvider } from './contexts/AuthContext';
+import Suppliers from './pages/supplier/Supplier';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="/cars" element={<Cars />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/operations" element={<Operation />} />
+            <Route path="/suppliers" element={<Suppliers />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/workOrders" element={<WorkOrders />} />
             <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />

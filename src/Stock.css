@@ -5,6 +5,7 @@
     height: 69vh;
     margin: 0;
     padding: 0;
+    margin-top: -15px
 }
 
 .label-input-container {
@@ -13,6 +14,7 @@
     align-items: center;
     gap: 100px;
     justify-content: center;
+    margin-top: 30px;
 }
 
 .label-input-container label {
@@ -25,7 +27,22 @@
     border-radius: 8px;
     height: 40px;
     width: auto;
-    font-weight: 400;
-    font-size: 22px;
+    font-weight: bold;
+    font-size: 30px;
     text-align: center;
+}
+
+.stock-button {
+    width: 160px;
+    height: 50px;
+    background-color: #1C4A74;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+}
+
+.span-stock-button {
+    color: white;
+    font-weight: bold;
+    font-size: 19px;
 }

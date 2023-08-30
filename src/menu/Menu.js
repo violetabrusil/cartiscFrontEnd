@@ -14,12 +14,14 @@ const workOrderIconGray = process.env.PUBLIC_URL + "/images/icons/workOrderIcon-
 const workOrderIconBlue = process.env.PUBLIC_URL + "/images/icons/workOrderIcon-blue.png";
 const serviceIconGray = process.env.PUBLIC_URL + "/images/icons/serviceIcon-gray.png";
 const serviceIconBlue = process.env.PUBLIC_URL + "/images/icons/serviceIcon-blue.png";
+const supplierIconGray = process.env.PUBLIC_URL + "/images/icons/supplierIcon-gray.png";
+const supplierIconBlue = process.env.PUBLIC_URL + "/images/icons/supplierIcon-blue.png";
 const inventoryIconGray = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-gray.png";
 const inventoryIconBlue = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-blue.png";
 const paymentIconGray = process.env.PUBLIC_URL + "/images/icons/paymentIcon-gray.png";
 const paymentIconBlue = process.env.PUBLIC_URL + "/images/icons/paymentIcon-blue.png";
 
-const Menu = ({ resetFunction }) => {
+const Menu = ({ resetFunction, onInventoryClick }) => {
 
     const [isOpen, setIsOpen] = useState(true);
     const location = useLocation();
@@ -35,7 +37,8 @@ const Menu = ({ resetFunction }) => {
         { path: "/cars", icon: carIconGray, iconSelected: carIconBlue, label: "Vehículos", labelStyle: { marginTop: "12px" } },
         { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo", labelStyle: { marginTop: "12px" } },
         { path: "/services", icon: serviceIconGray, iconSelected: serviceIconBlue, label: "Servicios y operaciones", labelStyle: { marginTop: "12px" } },
-        { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Inventario", labelStyle: { marginTop: "10px" } },
+        { path: "/suppliers", icon: supplierIconGray, iconSelected: supplierIconBlue, label: "Proveedores", labelStyle: { marginTop: "12px" } },
+        { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Inventario", labelStyle: { marginTop: "10px" },},
         { path: "/paymentReceipt", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Comprobantes de pago", labelStyle: { marginTop: "12px" } },
     ], []);
 
@@ -53,7 +56,14 @@ const Menu = ({ resetFunction }) => {
                         to={option.path}
                         key={index}
                         className={`opcion-container ${activeIndex === index ? "active" : ""}`}
-                        onClick={resetFunction}
+                        onClick={() => {
+                            if (option.path === "/inventory") {
+                                if (onInventoryClick) onInventoryClick();
+                                console.log("Icono de Inventario presionado");
+                            } else {
+                                if (resetFunction) resetFunction();
+                            }
+                        }}
                     >
                         <span className="opcion-container">
                             <span className="icono">

@@ -1,18 +1,28 @@
-table {
+
+.products-table {
+    font-size: 12px; 
     width: 100%;
     border-collapse: collapse;
 }
 
-th {
+.products-table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.products-table td {
     text-align: center;
+    padding: 3px;
+    border-top: 1px solid black;
+}
+
+.products-table th {
+    text-align: left;
     padding: 10px;
     background-color: white;
 }
 
-td {
+.products-table thead th {
     text-align: center;
-    padding: 10px;
-    border-top: 1px solid black;
 }
 
 .container-table-buttons {
@@ -25,5 +35,5 @@ td {
     background-color: white;
     width: 94%;
     margin: auto;
-    padding-top: 47px;
+    padding-top: 10px;
 }

@@ -547,6 +547,14 @@ const Services = () => {
         };
     }, [searchOperationTerm, handleSearchOperationsWithDebounce]);
 
+    React.useEffect(() => {
+        if (currentSection === 'addService' && mode === 'add') {
+            setIsEditing(true);
+        } else if (mode === 'edit') {
+            setIsEditing(false);
+        }
+    }, [mode, currentSection]);
+
     return (
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />

@@ -1,5 +1,5 @@
 import "../SearchBar.css";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Select from 'react-select';
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
@@ -8,30 +8,36 @@ const SearchBar = ({ onFilter }) => {
 
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const isFirstRender = useRef(true);
 
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);
-    };
+        setSearchTerm(""); //Para resetear el valor del input de búsqueda
 
-    const handleSearchInputChange = (event) => {
-        setSearchTerm(event.target.value);
     };
-
+/*
     useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
         //Búsqueda de productos
         const delayTimer = setTimeout(() => {
+            onFilter(selectedOption, searchTerm);
             //Lógica para realizar la búsqueda
             console.log("Select option", selectedOption);
             console.log("Search term", searchTerm);
         }, 500); //Espera 500ms después de la última pulsación de tecla
 
         return () => clearTimeout(delayTimer); //Limpia el temporizador al desmontarse el componente
-    }, [selectedOption, searchTerm]);
-
+    }, [selectedOption, searchTerm, onFilter]);
+*/
     const options = [
-        { value: 'numero de serie', label: 'Número de serie' },
-        { value: 'titulo', label: 'Título' },
-        { value: 'categoria', label: 'Categoría' }
+        { value: 'sku', label: 'Código de producto' },
+        { value: 'supplier_name', label: 'Nombre de proveedor' },
+        { value: 'title', label: 'Título' },
+        { value: 'category', label: 'Categoría' },
+        { value: 'branch', label: 'Marca' }
     ];
 
     const customStyles = {
@@ -75,7 +81,11 @@ const SearchBar = ({ onFilter }) => {
                 <input
                     type="text"
                     className="input-search-products"
-                    onChange={handleSearchInputChange}
+                    value={searchTerm}
+                    onChange={e => {
+                        setSearchTerm(e.target.value);
+                        onFilter(selectedOption, e.target.value);
+                    }}
                     placeholder="Buscar Productos"
                 />
             </div>

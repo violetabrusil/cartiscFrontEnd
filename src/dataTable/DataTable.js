@@ -2,7 +2,7 @@ import "../DataTable.css"
 import React from 'react';
 import { useTable, usePagination } from 'react-table';
 
-const DataTable = ({ data, columns }) => {
+const DataTable = ({ data, columns, onRowClick = () => {}, highlightRows, selectedRowIndex }) => {
 
     const {
         getTableProps,
@@ -14,11 +14,19 @@ const DataTable = ({ data, columns }) => {
         canNextPage,
         nextPage,
         previousPage,
-    } = useTable({ columns, data }, usePagination);
+        state: { pageIndex, pageSize },
+    } = useTable(
+        {
+            columns,
+            data,
+            initialState: { pageIndex: 0, pageSize: 8 },
+        },
+        usePagination
+    );
 
     return (
         <div className="container-table">
-            <table {...getTableProps()}>
+            <table {...getTableProps()} className="products-table">
                 <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -29,10 +37,13 @@ const DataTable = ({ data, columns }) => {
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {page.map(row => {
+                    {page.map((row, index) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()}>
+                            <tr
+                                {...row.getRowProps()}
+                                onClick={() => onRowClick(row, index)}
+                                style={index === selectedRowIndex && highlightRows ? { backgroundColor: '#d1e2f1' } : {}}>
                                 {row.cells.map(cell => (
                                     <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                                 ))}
