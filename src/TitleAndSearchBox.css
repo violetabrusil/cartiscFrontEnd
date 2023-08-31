@@ -13,6 +13,7 @@
     height: 40px;
     border: none;
     margin-top: 3px;
+    background-color: transparent;
 }
 
 .filter-icon {
@@ -53,6 +54,36 @@
 .search-icon {
     width: 25px;
     height: 25px;
+}
+
+.search-box-special {
+    display: flex;
+    align-items: center;
+    max-width: 86%;
+    height: 25px;
+    margin-bottom: 25px;
+    padding: 5px;
+    border-radius: 6px;
+    border: 2px solid rgba(134, 134, 134, 0.31);
+    background: rgba(128, 128, 128, 0.26);
+    margin-left: 26px;
+    margin-top: -7px;
+}
+
+.button-filter-special{
+    width: 131px;
+    height: 40px;
+    border: none;
+    margin-top: -10px;
+    background-color: transparent;
+    font-size: 14px;
+}
+
+.filter-icon-special {
+    width: 15px;
+    height: 15px;
+    margin-right: 8px;
+    margin-bottom: 3px;
 }
 
 @media screen and (max-width: 768px) {

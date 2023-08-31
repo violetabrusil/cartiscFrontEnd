@@ -142,7 +142,7 @@
 }
 
 .van-container {
-    margin-top: -7px;
+    margin-bottom: -4px;
 }
 
 .button-eye {
@@ -199,7 +199,7 @@
 .camioneta-icon {
     width: 100px;
     height: 100px;
-    margin-bottom: 15px
+    margin-top: 19px
 }
 
 .camion-icon {

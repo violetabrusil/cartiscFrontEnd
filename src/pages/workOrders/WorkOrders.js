@@ -1,7 +1,9 @@
 import "../../WorkOrders.css";
+import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { debounce } from 'lodash';
+import { ToastContainer } from "react-toastify";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
@@ -134,6 +136,8 @@ const WorkOrders = () => {
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
+
+            <ToastContainer />
 
             <div className="work-order-container">
                 <div className="left-section-work-order">

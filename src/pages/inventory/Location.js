@@ -1,4 +1,5 @@
 import "../../Location.css";
+import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useCallback, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import SearchBar from "../../searchBar/SearchBar";
