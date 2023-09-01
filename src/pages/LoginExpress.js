@@ -31,9 +31,13 @@ const LoginExpress = () => {
         const unumber = user.unumber;
 
         try {
-            
             await apiLogin.post('/login-express', { unumber, pin });
-            navigate("/home");
+            if (user.user_type === "Administrador") {
+                navigate("/settings");
+            } else {
+                navigate("/home");
+            }
+            
         } catch (error) {
             console.log("Error en el inicio de sesión", error)
         }
@@ -43,7 +47,7 @@ const LoginExpress = () => {
         setPin(prevPin => prevPin.slice(0, -1));  // Esta línea elimina el último carácter del PIN.
     };
 
-    const handleLoginOtherAccout = () => {
+    const handleLoginOtherAccount = () => {
         navigate("/login");
     };
 
@@ -118,7 +122,7 @@ const LoginExpress = () => {
                     </div>
 
                     <div className="container-button-other-account">
-                        <button className="alternate-button" type="button" onClick={handleLoginOtherAccout}>Iniciar sesión con otro usuario</button>
+                        <button className="alternate-button" type="button" onClick={handleLoginOtherAccount}>Iniciar sesión con otro usuario</button>
                     </div>
 
                 </div>

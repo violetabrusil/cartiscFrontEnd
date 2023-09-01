@@ -1,10 +1,21 @@
 import "../SearchBar.css";
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Select from 'react-select';
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 
-const SearchBar = ({ onFilter }) => {
+const SearchBar = ({ 
+    onFilter, 
+    placeholderText = "Buscar Productos", 
+    customSelectStyles, 
+    classNameSuffix = "",
+    options = [
+        { value: 'sku', label: 'Código de producto' },
+        { value: 'supplier_name', label: 'Nombre de proveedor' },
+        { value: 'title', label: 'Título' },
+        { value: 'category', label: 'Categoría' },
+        { value: 'branch', label: 'Marca' }
+    ] }) => {
 
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -15,31 +26,25 @@ const SearchBar = ({ onFilter }) => {
         setSearchTerm(""); //Para resetear el valor del input de búsqueda
 
     };
-/*
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
-        //Búsqueda de productos
-        const delayTimer = setTimeout(() => {
-            onFilter(selectedOption, searchTerm);
-            //Lógica para realizar la búsqueda
-            console.log("Select option", selectedOption);
-            console.log("Search term", searchTerm);
-        }, 500); //Espera 500ms después de la última pulsación de tecla
 
-        return () => clearTimeout(delayTimer); //Limpia el temporizador al desmontarse el componente
-    }, [selectedOption, searchTerm, onFilter]);
-*/
-    const options = [
-        { value: 'sku', label: 'Código de producto' },
-        { value: 'supplier_name', label: 'Nombre de proveedor' },
-        { value: 'title', label: 'Título' },
-        { value: 'category', label: 'Categoría' },
-        { value: 'branch', label: 'Marca' }
-    ];
-
+    /*
+        useEffect(() => {
+            if (isFirstRender.current) {
+                isFirstRender.current = false;
+                return;
+            }
+            //Búsqueda de productos
+            const delayTimer = setTimeout(() => {
+                onFilter(selectedOption, searchTerm);
+                //Lógica para realizar la búsqueda
+                console.log("Select option", selectedOption);
+                console.log("Search term", searchTerm);
+            }, 500); //Espera 500ms después de la última pulsación de tecla
+    
+            return () => clearTimeout(delayTimer); //Limpia el temporizador al desmontarse el componente
+        }, [selectedOption, searchTerm, onFilter]);
+    */
+    
     const customStyles = {
         control: (base, state) => ({
             ...base,
@@ -64,6 +69,11 @@ const SearchBar = ({ onFilter }) => {
 
     };
 
+    const combinedStyles = {
+        ...customStyles,
+        ...customSelectStyles
+    };
+
     return (
 
         <div className="search-bar-container">
@@ -71,12 +81,12 @@ const SearchBar = ({ onFilter }) => {
                 options={options}
                 value={selectedOption}
                 onChange={handleOptionsChange}
-                styles={customStyles}
+                styles={combinedStyles}
                 placeholder="Seleccionar"
                 menuPortalTarget={document.body}
             />
 
-            <div className="search-products-box">
+            <div className={`search-products-box ${classNameSuffix ? `search-products-box-${classNameSuffix}` : ""}`}>
                 <img src={searchIcon} alt="Search Product Icon" className="search-products-icon" />
                 <input
                     type="text"
@@ -86,7 +96,7 @@ const SearchBar = ({ onFilter }) => {
                         setSearchTerm(e.target.value);
                         onFilter(selectedOption, e.target.value);
                     }}
-                    placeholder="Buscar Productos"
+                    placeholder={placeholderText}
                 />
             </div>
         </div>

@@ -1,9 +1,12 @@
 import "../Menu.css";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 const menuButton = process.env.PUBLIC_URL + "/images/icons/menu-button.png";
 const logo = process.env.PUBLIC_URL + "/images/cartics-black.png";
+const settingsIconGray = process.env.PUBLIC_URL + "/images/icons/settingsIcon-gray.png";
+const settingsIconBlue = process.env.PUBLIC_URL + "/images/icons/settingsIcon-blue.png";
 const homeIconGray = process.env.PUBLIC_URL + "/images/icons/homeIcon-gray.png";
 const homeIconBlue = process.env.PUBLIC_URL + "/images/icons/homeIcon-blue.png";
 const userIconGray = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
@@ -26,21 +29,36 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const [isOpen, setIsOpen] = useState(true);
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(null);
+    const { user } = useContext(AuthContext);
+
+    console.log("user logeado",user)
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };
 
-    const menuOptions = useMemo(() => [
-        { path: "/home", icon: homeIconGray, iconSelected: homeIconBlue, label: "Home", labelStyle: { marginTop: "12px" } },
-        { path: "/clients", icon: userIconGray, iconSelected: userIconBlue, label: "Clientes", labelStyle: { marginTop: "15px" } },
-        { path: "/cars", icon: carIconGray, iconSelected: carIconBlue, label: "Vehículos", labelStyle: { marginTop: "12px" } },
-        { path: "/services", icon: serviceIconGray, iconSelected: serviceIconBlue, label: "Servicios y operaciones", labelStyle: { marginTop: "12px" } },
-        { path: "/suppliers", icon: supplierIconGray, iconSelected: supplierIconBlue, label: "Proveedores", labelStyle: { marginTop: "12px" } },
-        { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Inventario", labelStyle: { marginTop: "10px" },},
-        { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo", labelStyle: { marginTop: "12px" } },
-        { path: "/paymentReceipt", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Comprobantes de pago", labelStyle: { marginTop: "12px" } },
-    ], []);
+    const menuOptions = useMemo(() => {
+
+        let commonOptions = [
+            { path: "/home", icon: homeIconGray, iconSelected: homeIconBlue, label: "Home", labelStyle: { marginTop: "12px" } },
+            { path: "/clients", icon: userIconGray, iconSelected: userIconBlue, label: "Clientes", labelStyle: { marginTop: "15px" } },
+            { path: "/cars", icon: carIconGray, iconSelected: carIconBlue, label: "Vehículos", labelStyle: { marginTop: "12px" } },
+            { path: "/services", icon: serviceIconGray, iconSelected: serviceIconBlue, label: "Servicios y operaciones", labelStyle: { marginTop: "12px" } },
+            { path: "/suppliers", icon: supplierIconGray, iconSelected: supplierIconBlue, label: "Proveedores", labelStyle: { marginTop: "12px" } },
+            { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Inventario", labelStyle: { marginTop: "10px" }, },
+            { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo", labelStyle: { marginTop: "12px" } },
+            { path: "/paymentReceipt", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Comprobantes de pago", labelStyle: { marginTop: "12px" } },
+        ];
+
+        if (user && user.user_type === "Administrador") {
+            return [
+                { path: "/settings", icon: settingsIconGray, iconSelected: settingsIconBlue, label: "Configuración ", labelStyle: { marginTop: "12px" } },
+                ...commonOptions
+            ];
+        }
+
+        return commonOptions;
+    }, [user]);
 
     useEffect(() => {
         const currentPath = location.pathname;

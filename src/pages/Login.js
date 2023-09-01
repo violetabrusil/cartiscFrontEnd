@@ -34,7 +34,12 @@ const Login = () => {
 
             //Actualiza el estado global del usuario
             setUser(modifiedUser);
-            navigate("/home");
+            if (modifiedUser.user_type === "Administrador") {
+                navigate("/settings");
+
+            } else {
+                navigate("/home");
+            }
             
         } catch (error) {
             console.log("Error en el inicio de sesión", error)

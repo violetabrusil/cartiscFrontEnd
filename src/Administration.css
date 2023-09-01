@@ -1,0 +1,46 @@
+.administration-container-title {
+    display: flex;
+    justify-content: space-between;
+    width: 250px;
+    margin-left: 38px;
+    margin-top: 38px;
+    align-items: center;
+}
+
+.administration-container-title label {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.custom-select-option-administration {
+    background-color: transparent;
+}
+
+.custom-select-option-administration--selected {
+    background-color: #ddd;
+}
+
+.custom-select-option-administration--hover {
+    background-color: #f5f5f5;
+}
+
+.div-select-administration {
+    display: grid;
+    margin-top: 20px;
+    margin-left: 35px;
+    margin-right: 35px;
+    gap: 77px;
+}
+
+.div-text-administration {
+    width: 908px;
+    height: 134px;
+    margin-top: -5px;
+
+}
+
+.label-text-administration {
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 200;
+}

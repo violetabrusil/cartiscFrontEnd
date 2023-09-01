@@ -23,6 +23,7 @@ import NewWorkOrder from './pages/workOrders/NewWorkOrder';
 import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
 import { AuthProvider } from './contexts/AuthContext';
 import Suppliers from './pages/supplier/Supplier';
+import Settings from './pages/settings/Settings';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/loginExpress" element={<LoginExpress />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/home" element={<Home />} />
             <Route path="/clients" element={<Clients />} />
             <Route path="/clients/newClient" element={<NewClient />} />

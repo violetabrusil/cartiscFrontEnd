@@ -1,0 +1,64 @@
+.container-settings {
+    position: absolute;
+    top: 80px;
+    /* Ajusta la altura del header */
+    bottom: 0;
+    left: 60px;
+    /* Ancho del menú cerrado */
+    right: 0;
+    display: flex;
+}
+
+.react-tabs-settings {
+    width: 100%;  /* Asegura que el componente de tabs ocupa todo el ancho disponible */
+}
+
+/* Estilo para los tabs en general */
+.react-tabs-settings__tab-list {
+    display: flex;
+    justify-content: space-around;
+    /* Esto hará que los tabs se separen uniformemente en la línea */
+    border-bottom: none;
+    /* Esto quitará la línea inferior de los tabs */
+}
+
+/* Estilo para cada tab no seleccionado */
+.react-tabs-settings__tab {
+    list-style: none;
+    border: none;
+    font-size: 1.2em;
+    margin: 10px;
+    cursor: pointer;
+    text-align: center;
+    flex-grow: 1;  /* Asegura que los tabs crezcan para ocupar el espacio disponible */
+    position: relative;
+    font-size: 20px;
+    font-weight: bold;
+    color: #6E757D;
+}
+
+/* Estilo para el tab seleccionado */
+.react-tabs-settings__tab--selected {
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #316EA8;
+}
+
+/* Esto creará la línea azul en el tab seleccionado. Se posicionará absolutamente para que tenga el ancho completo del tab. */
+.react-tabs-settings__tab--selected::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 4px;
+    background: #316EA8;
+    width: calc(100% - 20px); /* Ajustamos el ancho para excluir el margen */
+    left: 10px; /* Centramos el pseudo-elemento */
+}
+
+.react-tabs-settings__tab-panel {
+    padding-left: 20px; /* Ajusta este valor para cambiar la cantidad de espacio a la izquierda del contenido */
+    padding-right: 20px;
+}
