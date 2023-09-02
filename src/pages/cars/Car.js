@@ -650,6 +650,7 @@ const Cars = () => {
                     });
 
                     setVehicles(formattedVehicles);
+                    console.log("vehiculos obtenidos", formattedVehicles)
                 } else {
                     console.log("No se encontraron vehículos");
 

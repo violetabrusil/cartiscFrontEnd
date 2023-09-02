@@ -50,7 +50,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
             { path: "/paymentReceipt", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Comprobantes de pago", labelStyle: { marginTop: "12px" } },
         ];
 
-        if (user && user.user_type === "Administrador") {
+        if (user && user.translated_user_type === "Administrador") {
             return [
                 { path: "/settings", icon: settingsIconGray, iconSelected: settingsIconBlue, label: "Configuración ", labelStyle: { marginTop: "12px" } },
                 ...commonOptions

@@ -443,6 +443,7 @@ const Clients = () => {
             try {
                 const response = await apiClient.get(endpoint);
                 setClients(response.data);
+                console.log("clientes obtenidos", response.data)
 
             } catch (error) {
                 console.log("Error al obtener los datos de los clientes", error);

@@ -37,7 +37,6 @@
     width: 30px;
     height: 30px;
     opacity: 50%;
-    margin-right: -10px;
 }
 
 .general-user {
@@ -98,6 +97,19 @@
 .icon-edit-user {
     width: 30px;
     height: 30px;
+    margin-left: 10px;
+}
+
+.button-suspend-user {
+    background: none;
+    border: none;
+}
+
+.icon-suspend-user {
+    width: 35px;
+    height: 35px;
+    margin-bottom: -5px;
+    margin-left: -6px;
 }
 
 .icon-edit-profile {
@@ -130,7 +142,7 @@
     padding: 20px;
 }
 
-.profile-pictur-user {
+.profile-picture-user {
     width: 150px;
     height: 150px;
     border-radius: 50%;
@@ -162,7 +174,6 @@
 }
 
 .container-status-user {
-    margin-top: 20px;
     text-align: center;
 }
 
@@ -175,7 +186,6 @@
 }
 
 .label-status {
-    color: #49A05C;
     font-size: 29px;
     font-style: normal;
     font-weight: 500;
@@ -183,7 +193,7 @@
 
 .container-button-user-action {
     display: grid;
-    margin-top: 20px;
+    margin-top: 33px;
     gap: 20px;
     justify-content: center;
     align-items: center;
@@ -225,9 +235,53 @@
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
+    padding-left: 5px;
 }
 
 .label-title-view {
     font-size: 18px;
     font-weight: 700;
+}
+
+.container-modal-fields {
+    margin-top: 20px;
+}
+
+.container-modal-fields > div {
+    display: flex;
+    align-items: center; 
+    margin-bottom: 10px; 
+}
+
+.container-modal-fields label {
+    margin-right: 22px; 
+    font-weight: bold;
+}
+
+.container-modal-fields input {
+    width: 200px; 
+    height: 33px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding-left: 5px;
+}
+
+.label-modal-message {
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 200;
+}
+
+.profile-picture-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
 }

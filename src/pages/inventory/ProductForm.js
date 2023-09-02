@@ -17,7 +17,7 @@ export function ProductForm({
         category: "",
         brand: "",
         price: 0.00,
-        stock: 0,
+        stock: "",
         row: "",
         column: "",
         compatibility_notes: ""
@@ -134,6 +134,14 @@ export function ProductForm({
 
     };
 
+    const handleStockChange = (e) => {
+        const value = e.target.value;
+        // Usar una regex para verificar si el valor es un número o una cadena vacía.
+        if (/^\d*$/.test(value)) {
+            setStock(value);
+        }
+    }
+
     const handleImageUpload = event => {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -170,14 +178,12 @@ export function ProductForm({
             category,
             brand,
             price,
-            stock: Number(stock),
+            stock: Number(stock) || 0,
             row,
             column,
             compatibility_notes: compatibility
         };
-    
-        
-    
+
         if (productId) {
           updateProduct(productId, product);
           onSubmit();
@@ -392,7 +398,7 @@ export function ProductForm({
                         <input
                             type="number"
                             value={stock}
-                            onChange={e => setStock(Number(e.target.value))}
+                            onChange={handleStockChange}
                             disabled={!isEditable} />
                     </div>
                     <div className="input-group">

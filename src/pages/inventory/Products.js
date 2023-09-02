@@ -134,6 +134,7 @@ const Products = ({ viewMode, setViewMode }) => {
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
+        console.log("entro");
 
         //Endpoint por defecto
         let endpoint = '/products/all';

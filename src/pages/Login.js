@@ -17,34 +17,38 @@ const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    
 
     const handleLogin = async (event) => {
         // Para evitar que el formulario recargue la página
         event.preventDefault();
-
+    
         try {
             const response = await apiLogin.post('/login', { username, password });
-
-            //Transforma el valor de user_type por la constante
-            //correspondiente antes de actualizar el estado 
+    
+            // Transformamos la respuesta del servidor
+            const translatedUserType = userTypeMaping[response.data.user_type] || response.data.user_type;
+    
             const modifiedUser = {
                 ...response.data,
-                user_type: userTypeMaping[response.data.user_type] || response.data.user_type
+                translated_user_type: translatedUserType,
             };
-
-            //Actualiza el estado global del usuario
+    
+            // Actualiza el estado global del usuario con los valores transformados
             setUser(modifiedUser);
-            if (modifiedUser.user_type === "Administrador") {
+            if (modifiedUser.translated_user_type === "Administrador") {
                 navigate("/settings");
-
             } else {
                 navigate("/home");
             }
             
         } catch (error) {
-            console.log("Error en el inicio de sesión", error)
+            console.log("Error en el inicio de sesión", error);
+            console.error("msg error", error.message);
+            console.error("msg stack", error.stack);
         }
-    }
+    };
+    
 
     return (
 

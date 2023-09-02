@@ -1,16 +1,23 @@
 import "../../Users.css";
 import "../../Modal.css"
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef, useContext } from "react";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
-import apiClient from "../../services/apiClient";
-import { ToastContainer } from "react-toastify";
+import apiAdmin from "../../services/apiAdmin";
+import { AuthContext } from "../../contexts/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
 import Select from 'react-select';
+import { userTypeMaping } from "../../constants/userRoleConstants";
+import { userStatusMaping } from "../../constants/userStatusConstants";
+import { useDebounce } from "../../useDebounce";
+
 const addUserIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const userIcon = process.env.PUBLIC_URL + "/images/user.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 const editIconWhite = process.env.PUBLIC_URL + "/images/icons/editIcon-white.png";
+const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
+
 const Users = () => {
 
     const [allUsers, setallUsers] = useState([]);
@@ -22,6 +29,27 @@ const Users = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [actionType, setActionType] = useState('view');
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [modalAction, setModalAction] = useState(null);
+
+    //Variables para creación y edición de usuarios
+    const [imageBase64, setImageBase64] = useState(null);
+    const fileInputRef = useRef(null);
+    const [role, setRole] = useState(null);
+    const [status, setStatus] = useState(actionType === 'add' ? 'active' : null);
+    const [password, setPassword] = useState("");
+    const [pin, setPin] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const debouncedPassword = useDebounce(password, 1000); // espera 500ms antes de validar
+    const [pinError, setPinError] = useState("");
+    const debouncedPin = useDebounce(pin, 500);
+    const [displayImage, setDisplayImage] = useState(null);
+    const { user } = useContext(AuthContext);
+    const [tempImage, setTempImage] = useState(null);
+
+    const statusColors = {
+        "Activo": "#49A05C",
+        "Suspendido": "#6E757D"
+    };
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -30,17 +58,16 @@ const Users = () => {
 
     const columns = React.useMemo(
         () => [
-            { Header: "Código único", accessor: "sku" },
-            { Header: "Nombre de usuario", accessor: "title" },
-            { Header: "Categoría", accessor: "category" },
+            { Header: "Código único", accessor: "unumber" },
+            { Header: "Nombre de usuario", accessor: "username" },
             {
                 Header: "Foto de perfil",
-                accessor: "product_picture",
+                accessor: "profile_picture",
                 Cell: ({ value }) => {
                     const imageUrl = value ? `data:image/jpeg;base64,${value}` : userIcon;
-
                     return (
                         <img
+                            className="profile-picture-image"
                             src={imageUrl}
                             alt="Profile Picture"
                             style={{
@@ -53,23 +80,27 @@ const Users = () => {
             },
             {
                 Header: "Rol",
-                accessor: "row"
+                accessor: "translated_user_type"
             },
             {
                 Header: "Estado",
-                accessor: "column"
+                accessor: "translated_user_status",
+                Cell: ({ value }) =>
+                    <label style={{ color: statusColors[value], fontWeight: "bold" }}>
+                        {value}
+                    </label>
             },
             {
                 Header: "Fecha de creación",
-                accessor: "fec creado"
+                accessor: "created_at"
             },
             {
                 Header: "Fecha de actualización",
-                accessor: "fecha act"
+                accessor: "updated_at"
             },
             {
                 Header: "Actualizado por",
-                accessor: "act por"
+                accessor: "updated_by"
             },
             {
                 Header: "",
@@ -87,38 +118,71 @@ const Users = () => {
         []
     );
 
+    function formatDate(isoDate) {
+        const date = new Date(isoDate);
+        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
+        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
+
+        return `${day}/${month}/${year}`;
+    };
+
+    const determineImageToShow = () => {
+        const base64Prefix = 'data:image/jpeg;base64,';
+
+        // Para 'add'
+        if (actionType === 'add') {
+            return displayImage || userIcon;
+        }
+
+        // Para 'view'
+        if (actionType === 'view') {
+            let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
+            if (userImage && !userImage.startsWith(base64Prefix)) {
+                userImage = base64Prefix + userImage;
+            }
+            return userImage || userIcon;
+        }
+
+        // Para 'edit'
+        if (actionType === 'edit') {
+            // Si tienes una nueva imagen seleccionada para cargar, úsala
+            if (displayImage) {
+                return displayImage;
+            } else {
+                // Si no hay una nueva imagen, muestra la del usuario seleccionado
+                let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
+                if (userImage && !userImage.startsWith(base64Prefix)) {
+                    userImage = base64Prefix + userImage;
+                }
+                return userImage || userIcon;
+            }
+        }
+
+        return userIcon;
+    };
+
+
     //Función que permite obtener todos los usuarios
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
 
         //Endpoint por defecto
-        let endpoint = '/products/all';
-        const searchPerSku = "sku";
-        const searchPerSupplier = "supplier_name";
-        const searchPerTitle = "title";
-        const searchPerCategory = "category";
-        const searchPerBrand = "brand";
+        let endpoint = '/all-users';
+        const searchPerUniqueCode = "unumber";
+        const searchPerUserName = "username";
 
         if (searchTerm) {
             console.log(selectedOption);
             switch (selectedOption.value) {
 
-                case 'sku':
-                    endpoint = `/products/search?search_type=${searchPerSku}&criteria=${searchTerm}`;
+                case 'unumber':
+                    endpoint = `/search-users?search_type=${searchPerUniqueCode}&criteria=${searchTerm}`;
 
                     break;
-                case 'supplier_name':
-                    endpoint = `/products/search?search_type=${searchPerSupplier}&criteria=${searchTerm}`;
-                    break;
-                case 'title':
-                    endpoint = `/products/search?search_type=${searchPerTitle}&criteria=${searchTerm}`;
-                    break;
-                case 'category':
-                    endpoint = `/products/search?search_type=${searchPerCategory}&criteria=${searchTerm}`;
-                    break;
-                case 'brand':
-                    endpoint = `/products/search?search_type=${searchPerBrand}&criteria=${searchTerm}`;
+                case 'username':
+                    endpoint = `/search-users?search_type=${searchPerUserName}&criteria=${searchTerm}`;
                     break;
                 default:
                     break;
@@ -127,11 +191,25 @@ const Users = () => {
         }
         try {
             console.log("Endpoint to fetch:", endpoint);
-            const response = await apiClient.get(endpoint);
-            console.log("Respuesta del servidor:", response.data);
-            setallUsers(response.data);
+            const response = await apiAdmin.get(endpoint);
+            const transformedUserData = response.data.map(user => {
+                const newDateCreate = formatDate(user.created_at);
+                const newDateUpdate = formatDate(user.updated_at);
+                const translatedUserType = userTypeMaping[user.user_type] || user.user_type;
+                const translatedStatusUser = userStatusMaping[user.user_status] || user.user_status;
+                return {
+                    ...user,
+                    created_at: newDateCreate,
+                    updated_at: newDateUpdate,
+                    translated_user_type: translatedUserType,
+                    translated_user_status: translatedStatusUser
+                };
+            });
+
+            console.log("Respuesta del servidor:", transformedUserData);
+            setallUsers(transformedUserData);
         } catch (error) {
-            console.log("Error al obtener los datos de los servicios");
+            console.log("Error al obtener los datos de los usuarios", error);
         }
     };
 
@@ -180,12 +258,14 @@ const Users = () => {
     };
 
     const handleShowMoreInfomation = (event, user) => {
-        setActionType('view');
-        setShowMoreInformationUser(true);
         if (event && event.stopPropagation) {
             event.stopPropagation();
         }
+        setDisplayImage(null);
+        setImageBase64(null);
         setSelectedUser(user);
+        setActionType('view');
+        console.log("usuario seleccionad", user)
     };
 
     const userOptions = [
@@ -205,33 +285,289 @@ const Users = () => {
 
     const handleShowAddNewUser = () => {
         setActionType('add');
-        setSelectedUser(null);
+        setDisplayImage(null)
+        setUsername('');
+        setPassword('');
+        setPin('');
     };
 
     const handleEditUser = () => {
+        console.log('entro')
+        console.log("Selected User before editing:", selectedUser);
         setActionType('edit');
+        console.log("action", actionType)
+
+        if (selectedUser) {
+            setUsername(selectedUser.username)
+            setStatus(selectedUser.user_status);
+            setRole(selectedUser.user_type);
+        } else if (user) {
+            setUsername(user.username)
+            setStatus(user.user_status);
+            setRole(user.user_type);
+        }
+
         setIsEditing(true);
     };
 
-    const handleUpdateUser = () => {
-        console.log("metodo para actualziar user")
+    useEffect(() => {
+        if (selectedUser) {
+            setStatus(selectedUser.user_status);
+            setRole(selectedUser.user_type);
+        }
+    }, [selectedUser]);
+
+    const openModalForCreate = () => {
+        setModalAction('create');
+        setIsOpenModal(true);
     };
 
-    const handleOpenModal = () => {
+    const openModalForResetPassword = () => {
+        setModalAction('resetPassword');
         setIsOpenModal(true);
+    };
+
+    const openModalForResetPin = () => {
+        setModalAction('resetPin');
+        setIsOpenModal(true);
+    };
+
+    const closeModal = () => {
+        setIsOpenModal(false);
+    };
+
+    const handleCloseModal = async () => {
+
+        switch (modalAction) {
+            case 'resetPassword':
+                if (!passwordError && !pinError) {
+                    resetPassword();
+                } else {
+                    toast.error('Revise los errores en el formulario.', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                }
+                break;
+            case 'resetPin':
+                if (!passwordError && !pinError) {
+                    resetPIN();
+                } else {
+                    toast.error('Revise los errores en el formulario.', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                }
+                break;
+            case 'create':
+                if (!passwordError && !pinError) {
+                    createUser();
+                } else {
+                    toast.error('Revise los errores en el formulario.', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                }
+                break;
+        }
+        setIsOpenModal(false);
+    };
+
+    const validatePassword = (password) => {
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password);
+        const isValidLength = password.length >= 6 && password.length <= 16;
+
+        return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength;
+    };
+
+    const validatePin = (pin) => {
+        // De 4 a 6 dígitos.
+        const regex = /^\d{4,6}$/;
+
+        return regex.test(pin);
+    };
+
+    useEffect(() => {
+        if (debouncedPassword.length > 0) {
+            if (!validatePassword(debouncedPassword)) {
+                setPasswordError("La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número, un carácter especial y tener entre 6 y 16 caracteres.");
+            } else {
+                setPasswordError("");
+            }
+        } else {
+            // Si el campo password está vacío o no cumple con la validación, elimina el mensaje de error.
+            setPasswordError("");
+        }
+    }, [debouncedPassword]);
+
+    const handlePasswordChange = (e) => {
+        const newPassword = e.target.value;
+        setPassword(newPassword);
+    };
+
+    useEffect(() => {
+        if (debouncedPin.length > 0) {
+            if (!validatePin(debouncedPin)) {
+                setPinError("El PIN debe contener entre 4 y 6 dígitos.");
+            } else {
+                setPinError("");
+            }
+        } else {
+            // Si el campo pin está vacío o no cumple con la validación, elimina el mensaje de error.
+            setPinError("");
+        }
+    }, [debouncedPin]);
+
+    const handlePinChange = (e) => {
+        const newPin = e.target.value;
+        setPin(newPin);
     };
 
     const handleSaveUser = (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (actionType === 'edit') {
-            handleUpdateUser();
+            editUser();
         } else {
-            handleOpenModal();
+            openModalForCreate();
         }
     };
 
-    
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            let base64String = reader.result;
+
+            // Set the full image for display
+            setDisplayImage(base64String);
+
+            // Remove the prefix "data:image/png;base64,"
+            base64String = base64String.split(',')[1];
+
+            setImageBase64(base64String);
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const editUser = async () => {
+        // Construye userData base
+        const userData = {
+            username: username,
+            pin: pin,
+            password: password,
+            user_type: role,
+            user_status: status
+        };
+
+        // Añade profile_picture a userData solo si imageBase64 tiene valor
+        if (imageBase64) {
+            userData.profile_picture = imageBase64;
+        }
+
+        console.log("data a enviar", userData);
+
+        try {
+            await apiAdmin.put(`/update-user/${selectedUser.id}`, userData);
+            toast.success('Usuario actualizado con éxito', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setActionType('view');
+            setSelectedUser(null);
+            fetchData();
+        } catch (error) {
+            toast.error('Error al actualizar el usuario', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            console.log("Error al actualizar usuario", error);
+        }
+    };
+
+    const createUser = async () => {
+
+        const userData = {
+            username: username,
+            pin: pin,
+            password: password,
+            user_type: role,
+            profile_picture: imageBase64
+        };
+
+        try {
+            await apiAdmin.post('/create-user', userData)
+            toast.success('Usuario creado con éxito', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setActionType('view');
+            setSelectedUser(null);
+            setIsOpenModal(false);
+            fetchData();
+        } catch (error) {
+            toast.error('Error al crear el usuario', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            console.log("Error al crear usuario", error);
+
+        }
+    };
+
+    const resetPassword = async () => {
+        const userId = selectedUser.id || user.id;
+        console.log("usuario select", userId)
+
+        const userData = {
+            new_password: password,
+        };
+
+        try {
+            await apiAdmin.put(`/change-password/${userId}`, userData);
+            toast.success('Contraseña actualizada', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setActionType('view');
+            setSelectedUser(null);
+            setIsOpenModal(false);
+
+        } catch (error) {
+            toast.error('Error al resetear la contraseña', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            console.log("Error al resetear la contraseña", error);
+
+        }
+    };
+
+    const resetPIN = async () => {
+        console.log("entro al pin")
+
+        const userId = selectedUser.id || user.id;
+        console.log("usuario select", userId)
+
+        const userData = {
+            new_pin: pin,
+        };
+
+        try {
+            await apiAdmin.put(`/change-pin/${userId}`, userData);
+            toast.success('PIN actualizado', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setActionType('view');
+            setSelectedUser(null);
+            setIsOpenModal(false);
+
+        } catch (error) {
+            toast.error('Error al resetear el PIN', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            console.log("Error al resetear el PIN", error);
+
+        }
+    };
 
     useEffect(() => {
         fetchData();
@@ -268,49 +604,89 @@ const Users = () => {
 
                 <div className="general-user-left">
                     <div className="container-user-information">
-                        {showMoreInformationUser && (
-                            <></>
-                        )}
-
                         <div>
                             <div className="container-button-edit-user">
                                 <label className="label-title-view">
                                     {actionType === 'edit' ? 'Editar' : (actionType === 'add' ? 'Agregar cliente' : '')}
                                 </label>
 
-
                                 {actionType === 'view' && (
-                                    <button onClick={handleEditUser} className="button-edit-user">
-                                        <img src={editIcon} alt="Edit icon users" className="icon-edit-user" />
-                                    </button>
+                                    <>
+                                        <button onClick={handleEditUser} className="button-edit-user">
+                                            <img src={editIcon} alt="Edit icon users" className="icon-edit-user" />
+                                        </button>
+                                    </>
+
                                 )}
                             </div>
 
                             <div className="container-profile-picture-user">
-                                <img src={userIcon} alt="Profile picture" className="profile-pictur-user" />
+                                <img src={determineImageToShow()} alt="Profile picture" className="profile-picture-user" />
                                 {(actionType === 'add' || actionType === 'edit') && (
-                                    <div className="div-icon-edit-profile">
+                                    <div className="div-icon-edit-profile" onClick={() => fileInputRef.current.click()}>
                                         <img src={editIconWhite} alt="Edit profile picture" className="icon-edit-profile" />
+                                        <input type="file" style={{ display: 'none' }} onChange={handleImageChange} ref={fileInputRef} />
                                     </div>
+
                                 )}
                                 {actionType !== 'add' && (
-                                    <label className="label-unique-code">5678</label>
+                                    <label className="label-unique-code">
+                                        {selectedUser ? selectedUser.unumber : user.unumber}
+                                    </label>
                                 )}
                                 {actionType === 'view' ? (
-                                    <label className="label-user-name">orlandoortiz</label>
+                                    <>
+                                        <label className="label-user-name">
+                                            {selectedUser ? selectedUser.username : user.username}
+                                        </label>
+                                        <label className="label-rol-user">
+                                            {selectedUser ? selectedUser.translated_user_type : user.user_type}
+                                        </label>
+                                    </>
+
                                 ) : (
                                     <>
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Nombre de usuario</label>
-                                            <input className="input-name-user" value={username} onChange={(e) => setUsername(e.target.value)} />
+                                            <input
+                                                className="input-name-user"
+                                                value={username}
+                                                onChange={(e) => {
+                                                    console.log("Input changed!", e.target.value);
+                                                    setUsername(e.target.value);
+                                                }}
+                                                readOnly={actionType === 'view'}
+                                            />
                                         </div>
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Rol</label>
-                                            <Select styles={selectStyles} options={roleOptions} placeholder="Seleccione" />
+                                            <Select
+                                                styles={selectStyles}
+                                                options={roleOptions}
+                                                placeholder="Seleccione"
+                                                value={roleOptions.find(option => option.value === role)}
+                                                onChange={selectedOption => {
+                                                    console.log("Role selected!", selectedOption.value);
+                                                    setRole(selectedOption.value);
+                                                }}
+                                                isDisabled={actionType === 'view'}
+                                            />
+
                                         </div>
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Estado</label>
-                                            <Select styles={selectStyles} options={statusOptions} placeholder="Seleccione" />
+                                            <Select
+                                                styles={selectStyles}
+                                                options={statusOptions}
+                                                placeholder="Seleccione"
+                                                value={statusOptions.find(option => option.value === status)}
+                                                onChange={selectedOption => {
+                                                    console.log("Status selected!", selectedOption.value);
+                                                    setStatus(selectedOption.value);
+                                                }}
+                                                isDisabled={actionType === 'add'}
+                                            />
+
                                         </div>
                                     </>
                                 )}
@@ -320,7 +696,10 @@ const Users = () => {
                                 {actionType === 'view' && (
                                     <>
                                         <label className="label-status-user">Estado:</label>
-                                        <label className="label-status">Activo</label>
+                                        <label className="label-status" style={{ color: statusColors[selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]] }}>
+                                            {selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]}
+                                        </label>
+
                                     </>
                                 )}
                             </div>
@@ -328,15 +707,15 @@ const Users = () => {
                             <div className="container-button-user-action">
                                 {actionType === 'view' ? (
                                     <>
-                                        <button className="buttons-user">
+                                        <button className="buttons-user" onClick={openModalForResetPassword}>
                                             <span className="span-button-user">Restablecer contraseña</span>
                                         </button>
-                                        <button className="buttons-user">
+                                        <button className="buttons-user" onClick={openModalForResetPin}>
                                             <span className="span-button-user">Restablecer PIN</span>
                                         </button>
                                     </>
                                 ) : (
-                                    <div style={{ marginTop: '-19px' }}>
+                                    <div style={{ marginTop: '-34px' }}>
                                         <button className="buttons-user" onClick={handleSaveUser}>
                                             <span className="span-button-user">Guardar</span>
                                         </button>
@@ -345,6 +724,7 @@ const Users = () => {
                             </div>
                         </div>
 
+
                     </div>
                 </div>
             </div>
@@ -352,19 +732,55 @@ const Users = () => {
             {isOpenModal && (
                 <div className="filter-modal-overlay">
                     <div className="filter-modal">
-                        <h3>Credenciales de acceso</h3>
-                        <div>
-                            <div>
-                                <label>Ingrese la contraseña</label>
-                                <input></input>
-                            </div>
-                            <div>
-                                <label>Ingrese el pin</label>
-                                <input></input>
-                            </div>
+                        <div style={{display: 'flex'}}>
+                            <h3>
+                                {modalAction === 'create' && 'Credenciales de acceso'}
+                                {modalAction === 'resetPassword' && 'Ingrese una contraseña temporal'}
+                                {modalAction === 'resetPin' && 'Ingrese un PIN temporal'}
+                            </h3>
+                            <button style={{marginTop: '16px'}} className="button-close-modal" onClick={closeModal}  >
+                                <img src={closeIcon} alt="Close Icon" className="modal-close-icon"></img>
+                            </button>
                         </div>
 
-                        <button className="modal-button">Confirmar</button>
+
+                        {modalAction === 'create' && (
+                            <label className="label-modal-message">
+                                Ingrese las credenciales de acceso que serán entregadas a cada operador
+                            </label>
+                        )}
+                        <div className="container-modal-fields">
+                            {/* Input de contraseña para las acciones 'create' y 'resetPassword' */}
+                            {(modalAction === 'create' || modalAction === 'resetPassword') && (
+                                <div>
+                                    <label>Ingrese la contraseña</label>
+                                    <input
+                                        type="text"
+                                        value={password}
+                                        onChange={handlePasswordChange}
+                                    />
+                                </div>
+                            )}
+                            {passwordError && <span style={{ color: 'red' }}>{passwordError}</span>}
+
+                            {/* Input de PIN para las acciones 'create' y 'resetPin' */}
+                            {(modalAction === 'create' || modalAction === 'resetPin') && (
+                                <div>
+                                    <label>Ingrese el pin</label>
+                                    <input
+                                        type="number"
+                                        style={{ marginLeft: '63px' }}
+                                        value={pin}
+                                        onChange={handlePinChange}
+                                    />
+                                </div>
+                            )}
+                            {pinError && <span style={{ color: 'red' }}>{pinError}</span>}
+
+
+                        </div>
+
+                        <button onClick={handleCloseModal} className="modal-button">Confirmar</button>
                     </div>
                 </div>
             )}
