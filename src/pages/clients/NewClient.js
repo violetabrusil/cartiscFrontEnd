@@ -258,6 +258,7 @@ const NewClient = () => {
                                     <label className="label-form">
                                         Tipo
                                         <Select
+                                            isSearchable={false}
                                             options={options}
                                             value={typeCar}
                                             onChange={handleTypeCarChange}

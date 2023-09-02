@@ -31,8 +31,11 @@ const LoginExpress = () => {
         const unumber = user.unumber;
 
         try {
-            await apiLogin.post('/login-express', { unumber, pin });
-            if (user.user_type === "Administrador") {
+            const response = await apiLogin.post('/login-express', { unumber, pin });
+            const token = response.data.token;
+            document.cookie = `jwt=${token}; path=/; samesite=none`;
+
+            if (user.user.user_type === "Administrador") {
                 navigate("/settings");
             } else {
                 navigate("/home");
@@ -66,15 +69,15 @@ const LoginExpress = () => {
                 <div className="left">
                     <div className="container-data-user">
                         <div className="nameContainer">
-                            <label className="name">Hola {user.username}</label>
+                            <label className="name">Hola {user.user.username}</label>
                         </div>
 
                         <div className="rolContainer">
-                            <label className="rol">{user.user_type}</label>
+                            <label className="rol">{user.translated_user_type}</label>
                         </div>
 
                         <div className="profile-container">
-                            <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-pic" />
+                            <img src={`data:image/jpeg;base64,${user.user.profile_picture}`} alt="Profile" className="profile-pic" />
                         </div>
                     </div>
 
@@ -88,7 +91,7 @@ const LoginExpress = () => {
                             <input
                                 className="form-input-login-express"
                                 type="text"
-                                value={user.unumber}
+                                value={user.user.unumber}
                                 readOnly
                             />
 

@@ -65,9 +65,9 @@ function Header({ showIcon, showPhoto, showUser, showRol, showLogoutButton }) {
             </div>
 
             <div className="header-right">
-                {showPhoto && <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />}
+                {showPhoto && <img src={`data:image/jpeg;base64,${user.user.profile_picture}`} alt="Profile" className="profile-image" />}
                 <div className="profile-text">
-                    {showUser && <label className="profile-name">{user.username}</label>}
+                    {showUser && <label className="profile-name">{user.user.username}</label>}
                     {showRol && <label className="profile-role">{user.translated_user_type}</label>}
                 </div>
                 {showLogoutButton &&

@@ -79,13 +79,55 @@
 .button-download-payment-receipt {
     border: none;
     background: none;
+    margin-right: -25px;
 }
 
 .download-payment-receipt-icon {
     background: none;
-    width: 30px;
-    height: 30px;
+    width: 49px;
+    height: 45px;
 }
+
+.button-email {
+    border: none;
+    background: none;
+    margin-right: -15px;
+}
+
+.email-icon {
+    background: none;
+    width: 45px;
+    height: 45px;
+}
+
+.custom-select-option-payment {
+    background-color: transparent;
+}
+
+.custom-select-option-payment--selected {
+    background-color: #ddd;
+}
+
+.custom-select-option-payment--hover {
+    background-color: #f5f5f5;
+}
+
+.button-payments-filter {
+    width: 100px;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    border: none;
+    background: none;
+    margin-right: 22px;
+}
+
+.button-payment-text-filter {
+    color: black;
+    font-weight: bold;
+}
+
+
 
 @media screen and (max-width: 768px) {
 

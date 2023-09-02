@@ -78,6 +78,7 @@ const SearchBar = ({
 
         <div className="search-bar-container">
             <Select
+                isSearchable={false}
                 options={options}
                 value={selectedOption}
                 onChange={handleOptionsChange}

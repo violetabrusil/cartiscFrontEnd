@@ -151,6 +151,7 @@
     margin-bottom: 13px;
     margin-top: 10px;
 }
+
 .input-fields::placeholder {
     color: rgb(0 0 0 / 34%);
     font-weight: 600;
@@ -165,6 +166,77 @@
     margin-top: 10px;
 }
 
+.modal-payment {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    width: 80%;
+    max-width: 410px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.date-container-payment {
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+.input-group-payment {
+    margin-bottom: 10px; 
+    display: contents;
+}
+
+.input-group-payment label {
+    display: block; /* Asegurarse de que ocupe su propia línea */
+}
+
+.label-fields-payment {
+    font-weight: 700;
+    color: gray;
+    font-size: 15px;
+}
+
+.input-fields-payment {
+    width: 96%;
+    height: 25px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 13px;
+    margin-top: 10px;
+}
+
+.input-date-payment {
+    width: 91%;
+    height: 25px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 13px;
+    margin-top: 10px;
+}
+
+.input-fields-payment::placeholder {
+    color: rgb(0 0 0 / 34%);
+    font-weight: 600;
+}
+
+.input-date-payment::placeholder {
+    color: rgb(0 0 0 / 34%);
+    font-weight: 600;
+}
+
+.double-input-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* Espacio entre los dos grupos */
+}
 /* Media queries para tamaños de pantalla */
 
 @media screen and (max-width: 768px) {

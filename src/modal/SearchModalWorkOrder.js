@@ -119,6 +119,7 @@ const SearchModalWorkOrder = ({ fields, onSearch, onClose }) => {
                     <div className="container-fields-modal-search">
                         <label className="label-fields">Estado de la orden de trabajo</label>
                         <Select
+                            isSearchable={false}
                             styles={customStyles}
                             value={selectedOption}
                             onChange={handleSelectChange}

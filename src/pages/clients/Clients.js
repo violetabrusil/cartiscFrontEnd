@@ -834,6 +834,7 @@ const Clients = () => {
                                     <label className="label-form">
                                         Categoría
                                         <Select
+                                            isSearchable={false}
                                             options={options}
                                             value={options.find(option => option.value === category)}
                                             onChange={handleTypeCarChange}

@@ -25,9 +25,12 @@ const Login = () => {
     
         try {
             const response = await apiLogin.post('/login', { username, password });
-    
+            const token = response.data.token;
+            //document.cookie = `jwt=${token}; path=/; samesite=none, HttpOnly`;
+            localStorage.setItem('token', token); 
+        
             // Transformamos la respuesta del servidor
-            const translatedUserType = userTypeMaping[response.data.user_type] || response.data.user_type;
+            const translatedUserType = userTypeMaping[response.data.user.user_type] || response.data.user.user_type;
     
             const modifiedUser = {
                 ...response.data,
@@ -36,6 +39,7 @@ const Login = () => {
     
             // Actualiza el estado global del usuario con los valores transformados
             setUser(modifiedUser);
+
             if (modifiedUser.translated_user_type === "Administrador") {
                 navigate("/settings");
             } else {

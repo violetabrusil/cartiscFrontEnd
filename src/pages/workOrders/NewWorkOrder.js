@@ -681,6 +681,7 @@ const NewWorkOrder = () => {
                                 <div className="input-group-work-order">
                                     <label>Estado</label>
                                     <Select
+                                        isSearchable={false}
                                         styles={customStylesStatus}
                                         value={workOrderStatus}
                                         onChange={handleSelectChange}

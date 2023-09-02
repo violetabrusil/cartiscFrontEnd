@@ -254,7 +254,7 @@ const Administration = () => {
             console.error('Tipo de recurso no soportado:', recordType);
             return;
         }
-    
+
         let endpoint = "";
         if (resourceConfig[recordType].specialEndpoint) {
             endpoint = `${resourceConfig[recordType].specialEndpoint}${recordId}`;
@@ -263,7 +263,7 @@ const Administration = () => {
             const statusField = resourceConfig[recordType].statusField;
             endpoint = `/${recordType}/change-status/${recordId}?${statusField}=active`;
         }
-    
+
         try {
             const response = await apiClient.put(endpoint);
             toast.success('Registro activado', {
@@ -278,7 +278,7 @@ const Administration = () => {
             console.log('Error activando el registro', error);
         }
     }
-    
+
 
     useEffect(() => {
         if (selectedOption && selectedOption.value) {
@@ -298,6 +298,7 @@ const Administration = () => {
             <div className="div-select-administration">
                 <div>
                     <Select
+                        isSearchable={false}
                         value={selectedOption}
                         onChange={handleSelect}
                         styles={administrationSelectStyles}

@@ -137,7 +137,7 @@ const Users = () => {
 
         // Para 'view'
         if (actionType === 'view') {
-            let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
+            let userImage = selectedUser ? selectedUser.profile_picture : user.user.profile_picture;
             if (userImage && !userImage.startsWith(base64Prefix)) {
                 userImage = base64Prefix + userImage;
             }
@@ -151,7 +151,7 @@ const Users = () => {
                 return displayImage;
             } else {
                 // Si no hay una nueva imagen, muestra la del usuario seleccionado
-                let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
+                let userImage = selectedUser ? selectedUser.profile_picture : user.user.profile_picture;
                 if (userImage && !userImage.startsWith(base64Prefix)) {
                     userImage = base64Prefix + userImage;
                 }
@@ -192,6 +192,7 @@ const Users = () => {
         try {
             console.log("Endpoint to fetch:", endpoint);
             const response = await apiAdmin.get(endpoint);
+            console.log("datos user", response.data)
             const transformedUserData = response.data.map(user => {
                 const newDateCreate = formatDate(user.created_at);
                 const newDateUpdate = formatDate(user.updated_at);
@@ -302,9 +303,9 @@ const Users = () => {
             setStatus(selectedUser.user_status);
             setRole(selectedUser.user_type);
         } else if (user) {
-            setUsername(user.username)
-            setStatus(user.user_status);
-            setRole(user.user_type);
+            setUsername(user.user.username)
+            setStatus(user.user.user_status);
+            setRole(user.user.user_type);
         }
 
         setIsEditing(true);
@@ -516,7 +517,7 @@ const Users = () => {
     };
 
     const resetPassword = async () => {
-        const userId = selectedUser.id || user.id;
+        const userId = selectedUser.id || user.user.id;
         console.log("usuario select", userId)
 
         const userData = {
@@ -544,7 +545,7 @@ const Users = () => {
     const resetPIN = async () => {
         console.log("entro al pin")
 
-        const userId = selectedUser.id || user.id;
+        const userId = selectedUser.id || user.user.id;
         console.log("usuario select", userId)
 
         const userData = {
@@ -631,16 +632,16 @@ const Users = () => {
                                 )}
                                 {actionType !== 'add' && (
                                     <label className="label-unique-code">
-                                        {selectedUser ? selectedUser.unumber : user.unumber}
+                                        {selectedUser ? selectedUser.unumber : user.user.unumber}
                                     </label>
                                 )}
                                 {actionType === 'view' ? (
                                     <>
                                         <label className="label-user-name">
-                                            {selectedUser ? selectedUser.username : user.username}
+                                            {selectedUser ? selectedUser.username : user.user.username}
                                         </label>
                                         <label className="label-rol-user">
-                                            {selectedUser ? selectedUser.translated_user_type : user.user_type}
+                                            {selectedUser ? selectedUser.translated_user_type : user.user.user_type}
                                         </label>
                                     </>
 
@@ -661,6 +662,7 @@ const Users = () => {
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Rol</label>
                                             <Select
+                                                isSearchable={false}
                                                 styles={selectStyles}
                                                 options={roleOptions}
                                                 placeholder="Seleccione"
@@ -676,6 +678,7 @@ const Users = () => {
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Estado</label>
                                             <Select
+                                                isSearchable={false}
                                                 styles={selectStyles}
                                                 options={statusOptions}
                                                 placeholder="Seleccione"
@@ -696,8 +699,8 @@ const Users = () => {
                                 {actionType === 'view' && (
                                     <>
                                         <label className="label-status-user">Estado:</label>
-                                        <label className="label-status" style={{ color: statusColors[selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]] }}>
-                                            {selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]}
+                                        <label className="label-status" style={{ color: statusColors[selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user.user_status]] }}>
+                                            {selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user.user_status]}
                                         </label>
 
                                     </>
