@@ -33,12 +33,13 @@ const Login = () => {
             const translatedUserType = userTypeMaping[response.data.user.user_type] || response.data.user.user_type;
     
             const modifiedUser = {
-                ...response.data,
+                ...response.data.user,
                 translated_user_type: translatedUserType,
             };
     
             // Actualiza el estado global del usuario con los valores transformados
             setUser(modifiedUser);
+            localStorage.setItem('user', JSON.stringify(modifiedUser));
 
             if (modifiedUser.translated_user_type === "Administrador") {
                 navigate("/settings");

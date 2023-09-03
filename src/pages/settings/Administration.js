@@ -266,7 +266,7 @@ const Administration = () => {
 
         try {
             const response = await apiClient.put(endpoint);
-            toast.success('Registro activado', {
+            toast.success('Registro restaurado', {
                 position: toast.POSITION.TOP_RIGHT
             });
             fetchData(recordType);

@@ -13,18 +13,34 @@ function Header({ showIcon, showPhoto, showUser, showRol, showLogoutButton }) {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const saveUserForExpressLogin = (user) => {
+        const expressLoginData = {
+            name: user.name,
+            role: user.translated_user_type,
+            profilePicture: user.profile_picture, // Suponiendo que este campo existe
+            code: user.code, // Suponiendo que este campo existe
+        };
+        localStorage.setItem('expressLoginData', JSON.stringify(expressLoginData));
+    };
+    
     const handleLogout = async (event) => {
-        // Para evitar que el formulario recargue la página
         event.preventDefault();
-
+    
+        // Guarda la información del usuario para el login express antes de cerrar sesión.
+        saveUserForExpressLogin(user);
+    
         try {
             await apiLogin.post('/logout');
-            navigate("/loginExpress");
             
+            // Limpia el usuario del contexto y del localStorage.
+            localStorage.removeItem('user');  // Remueve el usuario actual.
+            
+            navigate("/loginExpress");
         } catch (error) {
-            console.log("Error en el inicio de sesión", error)
+            console.log("Error al cerrar sesión", error);
         }
-    }
+    };
+    
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -65,9 +81,9 @@ function Header({ showIcon, showPhoto, showUser, showRol, showLogoutButton }) {
             </div>
 
             <div className="header-right">
-                {showPhoto && <img src={`data:image/jpeg;base64,${user.user.profile_picture}`} alt="Profile" className="profile-image" />}
+                {showPhoto && <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />}
                 <div className="profile-text">
-                    {showUser && <label className="profile-name">{user.user.username}</label>}
+                    {showUser && <label className="profile-name">{user.username}</label>}
                     {showRol && <label className="profile-role">{user.translated_user_type}</label>}
                 </div>
                 {showLogoutButton &&

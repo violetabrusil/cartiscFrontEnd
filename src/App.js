@@ -21,13 +21,20 @@ import Inventory from './pages/inventory/Inventory';
 import WorkOrders from './pages/workOrders/WorkOrders';
 import NewWorkOrder from './pages/workOrders/NewWorkOrder';
 import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
-import { AuthProvider } from './contexts/AuthContext';
 import Suppliers from './pages/supplier/Supplier';
 import Settings from './pages/settings/Settings';
+import React, { useContext } from 'react';
+import { AuthContext } from './contexts/AuthContext';
 
 function App() {
+  const { isLoading } = useContext(AuthContext);
+
+    if (isLoading) {
+        return <div>Loading...</div>;  // Puedes reemplazar esto con un spinner o un componente de pantalla de carga.
+    }
+
   return (
-    <AuthProvider>
+  
       <Router>
         <div>
           <Routes>
@@ -50,7 +57,7 @@ function App() {
         </div>
 
       </Router>
-    </AuthProvider>
+
 
 
   );

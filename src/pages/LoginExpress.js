@@ -24,27 +24,31 @@ const LoginExpress = () => {
     };
 
     const handleSubmit = async (event) => {
-
-        // Para evitar que el formulario recargue la página
         event.preventDefault();
-
+    
         const unumber = user.unumber;
-
+    
         try {
             const response = await apiLogin.post('/login-express', { unumber, pin });
             const token = response.data.token;
+    
+            if (response.data.user) {
+                // Guarda todos los datos del usuario en localStorage
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+            }
+    
             document.cookie = `jwt=${token}; path=/; samesite=none`;
-
-            if (user.user.user_type === "Administrador") {
+    
+            if (user.user_type === "Administrador") {
                 navigate("/settings");
             } else {
                 navigate("/home");
             }
-            
         } catch (error) {
             console.log("Error en el inicio de sesión", error)
         }
     };
+    
 
     const handleDeleteClick = () => {
         setPin(prevPin => prevPin.slice(0, -1));  // Esta línea elimina el último carácter del PIN.
@@ -69,7 +73,7 @@ const LoginExpress = () => {
                 <div className="left">
                     <div className="container-data-user">
                         <div className="nameContainer">
-                            <label className="name">Hola {user.user.username}</label>
+                            <label className="name">Hola {user.username}</label>
                         </div>
 
                         <div className="rolContainer">
@@ -77,7 +81,7 @@ const LoginExpress = () => {
                         </div>
 
                         <div className="profile-container">
-                            <img src={`data:image/jpeg;base64,${user.user.profile_picture}`} alt="Profile" className="profile-pic" />
+                            <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-pic" />
                         </div>
                     </div>
 
@@ -91,7 +95,7 @@ const LoginExpress = () => {
                             <input
                                 className="form-input-login-express"
                                 type="text"
-                                value={user.user.unumber}
+                                value={user.unumber}
                                 readOnly
                             />
 

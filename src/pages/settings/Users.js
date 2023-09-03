@@ -137,7 +137,7 @@ const Users = () => {
 
         // Para 'view'
         if (actionType === 'view') {
-            let userImage = selectedUser ? selectedUser.profile_picture : user.user.profile_picture;
+            let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
             if (userImage && !userImage.startsWith(base64Prefix)) {
                 userImage = base64Prefix + userImage;
             }
@@ -632,16 +632,16 @@ const Users = () => {
                                 )}
                                 {actionType !== 'add' && (
                                     <label className="label-unique-code">
-                                        {selectedUser ? selectedUser.unumber : user.user.unumber}
+                                        {selectedUser ? selectedUser.unumber : user.unumber}
                                     </label>
                                 )}
                                 {actionType === 'view' ? (
                                     <>
                                         <label className="label-user-name">
-                                            {selectedUser ? selectedUser.username : user.user.username}
+                                            {selectedUser ? selectedUser.username : user.username}
                                         </label>
                                         <label className="label-rol-user">
-                                            {selectedUser ? selectedUser.translated_user_type : user.user.user_type}
+                                            {selectedUser ? selectedUser.translated_user_type : user.user_type}
                                         </label>
                                     </>
 
@@ -699,8 +699,8 @@ const Users = () => {
                                 {actionType === 'view' && (
                                     <>
                                         <label className="label-status-user">Estado:</label>
-                                        <label className="label-status" style={{ color: statusColors[selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user.user_status]] }}>
-                                            {selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user.user_status]}
+                                        <label className="label-status" style={{ color: statusColors[selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]] }}>
+                                            {selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]}
                                         </label>
 
                                     </>
