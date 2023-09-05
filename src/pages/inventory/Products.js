@@ -114,20 +114,23 @@ const Products = ({ viewMode, setViewMode }) => {
 
     const handleNewProduct = () => {
         // Luego, redirige a tu pantalla principal (por ejemplo, ocultando el formulario y mostrando la tabla):
+        fetchData();
         setViewMode('general');
         setRefreshCount(refreshCount + 1);
-        fetchData();
+       
     };
 
     const handleUpdateProduct = () => {
-        setViewMode('general');
         fetchData();
+        setViewMode('general');
+       
     };
 
     const handleSuspendProduct = () => {
+        fetchData();
         setViewMode('general');
         setRefreshCount(refreshCount + 1);
-        fetchData();
+       
     };
 
     //Función que permite obtener todos los productos

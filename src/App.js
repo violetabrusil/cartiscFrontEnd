@@ -25,6 +25,10 @@ import Suppliers from './pages/supplier/Supplier';
 import Settings from './pages/settings/Settings';
 import React, { useContext } from 'react';
 import { AuthContext } from './contexts/AuthContext';
+import InformationWorkOrder from './pages/workOrders/InformationWorkOrder';
+import ChangePassword from './pages/welcome/changePassword';
+import ChangePIN from './pages/welcome/changePIN';
+import Welcome from './pages/welcome/Welcome';
 
 function App() {
   const { isLoading } = useContext(AuthContext);
@@ -40,6 +44,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/changePassword" element={<ChangePassword />} />
+            <Route path="/changePIN" element={<ChangePIN />} />
             <Route path="/loginExpress" element={<LoginExpress />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/home" element={<Home />} />
@@ -52,6 +58,7 @@ function App() {
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/workOrders" element={<WorkOrders />} />
             <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
+            <Route path="/workOrders/detailWorkOrder/:id" element={<InformationWorkOrder />} />
             <Route path="/paymentReceipt" element={<PaymentReceipts />} />
           </Routes>
         </div>

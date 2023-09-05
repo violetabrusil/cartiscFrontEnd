@@ -7,6 +7,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import { userTypeMaping } from '../constants/userRoleConstants'; 
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
+import { ToastContainer } from 'react-toastify';
 
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png"
@@ -40,6 +41,21 @@ const Login = () => {
             // Actualiza el estado global del usuario con los valores transformados
             setUser(modifiedUser);
             localStorage.setItem('user', JSON.stringify(modifiedUser));
+            console.log("user loegado", modifiedUser)
+
+            //Verifica si la contraseña ha sido cambiada
+            if (response.data.user.change_password) {
+                navigate("/changePassword");
+                console.log("usuario enviado", modifiedUser)
+                console.log('change_password:', response.data.user.change_password);
+                return;
+            }
+
+            if (response.data.user.change_pin) {
+                navigate("/changePIN");
+                console.log('change_pin:', response.data.user.change_pin);
+                return;
+            }
 
             if (modifiedUser.translated_user_type === "Administrador") {
                 navigate("/settings");
@@ -54,18 +70,16 @@ const Login = () => {
         }
     };
     
-
     return (
 
         <div className="page-container">
-            <Header></Header>
+            <Header showCarticsLogo={true}></Header>
+            <ToastContainer />
 
             <div className="content-container">
 
                 <div className='containerApp'>
-
                     <img src={logo} alt="Logo" className="logo" />
-
                 </div>
 
                 <div className="titleContainer">

@@ -1,8 +1,7 @@
 import axios from "axios";
-const token = '{TOKEN}'
-
 
 const apiAdmin = axios.create({
+    //baseURL: 'http://192.168.100.147:1313/cartics',
     baseURL: 'http://192.168.100.98:1313/cartics/admin',
     //baseURL: 'http://localhost:3000/cartics',
     headers: {

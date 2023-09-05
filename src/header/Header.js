@@ -6,8 +6,9 @@ import apiLogin from '../services/api';
 
 const logoutIcon = process.env.PUBLIC_URL + "/images/icons/logout1Icon.png";
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
+const carticsLogo = process.env.PUBLIC_URL + "/images/cartics-white.png";
 
-function Header({ showIcon, showPhoto, showUser, showRol, showLogoutButton }) {
+function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showLogoutButton }) {
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const { user } = useContext(AuthContext);
@@ -81,6 +82,7 @@ function Header({ showIcon, showPhoto, showUser, showRol, showLogoutButton }) {
             </div>
 
             <div className="header-right">
+                {showCarticsLogo && <img src={carticsLogo} alt="Cartics Logo" className="cartics-logo" /> }
                 {showPhoto && <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />}
                 <div className="profile-text">
                     {showUser && <label className="profile-name">{user.username}</label>}

@@ -88,6 +88,11 @@ const WorkOrders = () => {
         navigate("/workOrders/newWorkOrder");
     };
 
+    const handleShowInformationWorkOrderClick = (workOrderId) => {
+        navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
+    };
+    
+
     useEffect(() => {
         const fetchData = async () => {
             let endpoint = '/work-orders/all';
@@ -153,7 +158,7 @@ const WorkOrders = () => {
                     {/*Lista de órdenes de trabajo */}
                     <div className="container-list-work-orders">
                         {workOrders.map(workOrderData => (
-                            <div key={workOrderData.id} className="result-work-order">
+                            <div key={workOrderData.id} className="result-work-order" onClick={() => handleShowInformationWorkOrderClick(workOrderData.id)}>
                                 <div className="first-result-work-orders">
                                     <div className="div-label-work-order-code">
                                         <label>

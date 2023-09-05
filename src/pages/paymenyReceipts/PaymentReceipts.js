@@ -1,6 +1,7 @@
 import "../../PaymentReceipts.css";
 import "../../Modal.css"
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from 'react-toastify';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import DataTable from "../../dataTable/DataTable";
@@ -9,7 +10,8 @@ import apiClient from "../../services/apiClient";
 import { SearchModalPayment } from "../../modal/SearchModalPayment";
 import { invoiceTypeMaping } from "../../constants/invoiceTypeConstants";
 import { paymentTypeMaping } from "../../constants/paymentTypeConstants";
-import apiLogin from "../../services/api";
+import { paymentStatusMaping } from "../../constants/paymentReceiptsStatusConstants";
+
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
@@ -24,6 +26,8 @@ const PaymentReceipts = () => {
         () => [
             { Header: "Código orden de trabajo", accessor: "work_order.work_order_code" },
             { Header: "Tipo de comprobante", accessor: "invoice_type" },
+            { Header: "Cliente", accessor: "name"},
+            { Header: "Placa", accessor: "plate"},
             { Header: "Forma de pago", accessor: "payment_type" },
             { Header: "Fecha", accessor: "created_at" },
             {
@@ -37,6 +41,10 @@ const PaymentReceipts = () => {
                 Header: "Total",
                 accessor: "total",
                 Cell: ({ value }) => `$${value}` // Agrega un signo de dólar antes del valor
+            },
+            {
+                Header: "Estado",
+                accessor: "sales_receipt_status"
             },
             {
                 Header: "",
@@ -55,7 +63,7 @@ const PaymentReceipts = () => {
                 Cell: ({ row }) => {
                     const payment = row.original;
                     return (
-                        <button className="button-email" onClick={() => downloadPDF(payment.id)}>
+                        <button className="button-email" onClick={() => sendEmail(payment.id)}>
                             <img src={emailIcon} alt="Email Icon" className="email-icon" />
                         </button>
                     );
@@ -85,7 +93,15 @@ const PaymentReceipts = () => {
 
     const handleConfirm = async (data) => {
         try {
-            const response = apiLogin.post('/sales-receipts/search', data);
+            const response = await apiClient.post('/sales-receipts/search', data);
+            console.log(response.data);
+    
+            // Si response.data es null o undefined, cierra el modal y retorna.
+            if (!response.data) {
+                setModalOpen(false);
+                return;
+            }
+    
             const transformedPaymentReceipts = response.data.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
@@ -97,14 +113,15 @@ const PaymentReceipts = () => {
                     payment_type: translatedPaymentType
                 };
             })
+    
             setPaymentReceipts(transformedPaymentReceipts);
             setModalOpen(false)
-
+    
         } catch (error) {
-            console.log("Ha ocurrido un error", error)
+            console.log("Ha ocurrido un error", error);
         }
-    }
-
+    };
+    
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
@@ -116,11 +133,14 @@ const PaymentReceipts = () => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
                 const translatedPaymentType = paymentTypeMaping[payment.payment_type] || payment.payment_type;
+                const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
+              
                 return {
                     ...payment,
                     created_at: newDateStart,
                     invoice_type: translatedInvoiceType,
-                    payment_type: translatedPaymentType
+                    payment_type: translatedPaymentType,
+                    sales_receipt_status: translatedPaymentStatus
                 };
             });
             setPaymentReceipts(transformedPaymentReceipts);
@@ -153,6 +173,26 @@ const PaymentReceipts = () => {
         }
     };
 
+    const sendEmail = async (paymentId) => {
+        try {
+            const response = await apiClient.get(`/sales-receipts/send-email/${paymentId}`);
+            if ( response.status === 200) {
+                toast.success('Email enviado', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            } else {
+                toast.error('Error al enviar el email', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+
+            }
+
+       
+        } catch (error) {
+            console.error('Error al enviar el email', error);
+        }
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -163,6 +203,8 @@ const PaymentReceipts = () => {
 
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
+
+            <ToastContainer />
 
             <div className="container-payment-receipts">
 

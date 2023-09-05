@@ -79,23 +79,23 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
 
                 <div className="double-input-group">
                     <div>
-                        <label style={{display: 'block'}} className="label-fields-payment">Código orden de trabajo</label>
+                        <label style={{ display: 'block' }} className="label-fields-payment">Código orden de trabajo</label>
                         <input className="input-fields-payment" onChange={e => setOrderCode(e.target.value)} />
                     </div>
                     <div>
-                        <label style={{display: 'block'}} className="label-fields-payment">Placa vehículo</label>
-                        <input className="input-fields-payment" onChange={e => setVehiclePlate(e.target.value)} />
+                        <label style={{ display: 'block' }} className="label-fields-payment">Placa vehículo</label>
+                        <input style={{width: '91%'}} className="input-fields-payment" onChange={e => setVehiclePlate(e.target.value)} />
                     </div>
                 </div>
 
                 <div className="double-input-group">
                     <div>
                         <label className="label-fields-payment">Nombre cliente</label>
-                        <input className="input-fields-payment" onChange={e => setClientName(e.target.value)} />
+                        <input style={{width: '92%'}} className="input-fields-payment" onChange={e => setClientName(e.target.value)} />
                     </div>
-                    <div>
+                    <div style={{marginRight: '28px'}}>
                         <label className="label-fields-payment">Cédula</label>
-                        <input className="input-fields-payment" onChange={e => setClientId(e.target.value)} />
+                        <input style={{width: '107%'}} className="input-fields-payment" onChange={e => setClientId(e.target.value)} />
                     </div>
 
                 </div>
@@ -139,7 +139,11 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                             placeholderText="Seleccione " />
                     </div>
                 </div>
-                <button onClick={handleConfirm} className="modal-button">Confirmar</button>
+                <div style={{textAlign: "center"}}>
+                    <button onClick={handleConfirm} className="modal-button">Confirmar</button>
+
+                </div>
+
             </div>
         </div>
 

@@ -363,3 +363,55 @@
   text-align: center;
   margin-left: 50px;
 }
+
+.span-message {
+  font-size: 18px;
+  font-weight: 100;
+  width: 60%;
+  white-space: normal;
+  display: inline-block;
+}
+
+.span-message-welcome {
+  font-size: 50px;
+  font-weight: 100;
+  width: 60%;
+  white-space: normal;
+  display: inline-block;
+}
+
+.logo-welcome {
+  width: 40%;
+}
+
+.next-icon {
+  transform: rotate(180deg);
+}
+
+.label-welcome {
+  font-size: 30px;
+  font-weight: 400;
+  margin-top: 27px;
+  margin-right: 80px;
+}
+
+.div-next {
+  text-align: center;
+  margin: 20px;
+}
+
+.content-container-welcome {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+}
+
+.container-logo-welcome {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}

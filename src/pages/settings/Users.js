@@ -24,7 +24,6 @@ const Users = () => {
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUser, setSelectedUser] = useState(null);
-    const [showMoreInformationUser, setShowMoreInformationUser] = useState(false);
     const [username, setUsername] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [actionType, setActionType] = useState('view');
@@ -44,7 +43,6 @@ const Users = () => {
     const debouncedPin = useDebounce(pin, 500);
     const [displayImage, setDisplayImage] = useState(null);
     const { user } = useContext(AuthContext);
-    const [tempImage, setTempImage] = useState(null);
 
     const statusColors = {
         "Activo": "#49A05C",
@@ -151,7 +149,7 @@ const Users = () => {
                 return displayImage;
             } else {
                 // Si no hay una nueva imagen, muestra la del usuario seleccionado
-                let userImage = selectedUser ? selectedUser.profile_picture : user.user.profile_picture;
+                let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
                 if (userImage && !userImage.startsWith(base64Prefix)) {
                     userImage = base64Prefix + userImage;
                 }
@@ -299,13 +297,13 @@ const Users = () => {
         console.log("action", actionType)
 
         if (selectedUser) {
-            setUsername(selectedUser.username)
+            setUsername(selectedUser.user.username)
             setStatus(selectedUser.user_status);
             setRole(selectedUser.user_type);
         } else if (user) {
-            setUsername(user.user.username)
-            setStatus(user.user.user_status);
-            setRole(user.user.user_type);
+            setUsername(user.username)
+            setStatus(user.user_status);
+            setRole(user.user_type);
         }
 
         setIsEditing(true);
@@ -522,6 +520,7 @@ const Users = () => {
 
         const userData = {
             new_password: password,
+            reset: true,
         };
 
         try {
@@ -530,8 +529,8 @@ const Users = () => {
                 position: toast.POSITION.TOP_RIGHT
             });
             setActionType('view');
-            setSelectedUser(null);
             setIsOpenModal(false);
+            fetchData();
 
         } catch (error) {
             toast.error('Error al resetear la contraseña', {
@@ -550,6 +549,7 @@ const Users = () => {
 
         const userData = {
             new_pin: pin,
+            reset: true,
         };
 
         try {
@@ -558,8 +558,8 @@ const Users = () => {
                 position: toast.POSITION.TOP_RIGHT
             });
             setActionType('view');
-            setSelectedUser(null);
             setIsOpenModal(false);
+            fetchData();
 
         } catch (error) {
             toast.error('Error al resetear el PIN', {
@@ -641,7 +641,7 @@ const Users = () => {
                                             {selectedUser ? selectedUser.username : user.username}
                                         </label>
                                         <label className="label-rol-user">
-                                            {selectedUser ? selectedUser.translated_user_type : user.user_type}
+                                            {selectedUser ? selectedUser.translated_user_type : user.translated_user_type}
                                         </label>
                                     </>
 

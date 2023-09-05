@@ -1,5 +1,5 @@
 import "../SearchBar.css";
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Select from 'react-select';
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
@@ -19,7 +19,6 @@ const SearchBar = ({
 
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
-    const isFirstRender = useRef(true);
 
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);

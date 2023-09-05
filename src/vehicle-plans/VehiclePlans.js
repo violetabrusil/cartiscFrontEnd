@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Stage, Layer, Image, Circle } from 'react-konva';
 import useImage from 'use-image';
 
-const VehiclePlans = ({ imgSrc }) => {
+const VehiclePlans = ({ imgSrc, updatePoints }) => {
 
     const [points, setPoints] = useState([]);
     const [image] = useImage(imgSrc);
@@ -14,16 +14,40 @@ const VehiclePlans = ({ imgSrc }) => {
         // Update the points state with the new point
         const stage = event.currentTarget;
         const point = stage.getPointerPosition();
-        setPoints([...points, point]);
-        console.log("los puntos 1", point);
+
+        // Redondear las coordenadas
+        const roundedX = Math.round(point.x);
+        const roundedY = Math.round(point.y);
+
+        // Determinar el lado
+        const side = roundedX < imageWidth / 2 ? 'left' : 'right';
+
+        const pointWithSide = { x: roundedX, y: roundedY, side };
+
+        setPoints([...points, pointWithSide]);
+        if (updatePoints) {
+            updatePoints([...points, pointWithSide]);
+        }
+        console.log("los puntos 1", pointWithSide);
         console.log("los puntos", points);
     };
 
     const handleDragEnd = (index) => (event) => {
         const newPoints = [...points];
-        newPoints[index] = { x: event.target.x(), y: event.target.y() };
+
+        // Redondear las coordenadas
+        const roundedX = Math.round(event.target.x());
+        const roundedY = Math.round(event.target.y());
+
+        // Determinar el lado
+        const side = roundedX < imageWidth / 2 ? 'left' : 'right';
+        newPoints[index] = { x: roundedX, y: roundedY, side };
+        
         setPoints(newPoints);
-      };
+        if (updatePoints) {
+            updatePoints(newPoints);
+        }
+    };
 
     return (
         <div className="container-vehicle-plan">
@@ -36,8 +60,8 @@ const VehiclePlans = ({ imgSrc }) => {
                         y={(imageHeight - imageHeight) / 2} />
                     {points.map((point, index) => (
                         <Circle key={index} x={point.x} y={point.y} radius={10} fill="#ffea00"
-                        draggable
-                        onDragEnd={handleDragEnd(index)} />
+                            draggable
+                            onDragEnd={handleDragEnd(index)} />
                     ))}
                 </Layer>
             </Stage>

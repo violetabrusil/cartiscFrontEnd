@@ -62,7 +62,7 @@ const LoginExpress = () => {
 
         <div className="page-container">
 
-            <Header></Header>
+            <Header showCarticsLogo={true}></Header>
 
             <div className="content-container">
                 <img src={logo} alt="Logo" className="logo" />

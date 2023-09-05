@@ -290,15 +290,15 @@ const Cars = () => {
         const transformedSearchData = {
             work_order_code: searchData.WorkOrderCode || null,
             work_order_status: searchData.WorkOrderStatus || null,
-            date_start: searchData.DateStartOfSearch || null,
-            date_finish: searchData.DateFinishOfSearch || null,
+            date_start_of_search: searchData.DateStartOfSearch || null,
+            date_finish_of_search: searchData.DateFinishOfSearch || null,
             assigned: searchData.Assigned || null,
             delivered_by: searchData.DeliveredBy || null,
             created_by: searchData.CreatedBy || null,
             vehicle_plate: plate
         };
 
-        console.log("data tranformada")
+        console.log("data tranformada", transformedSearchData)
 
         try {
             console.log("data por enviar", transformedSearchData)

@@ -18,11 +18,7 @@ import VehiclePlans from "../../vehicle-plans/VehiclePlans";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import apiClient from "../../services/apiClient";
 
-
-const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
-const carIcon = process.env.PUBLIC_URL + "/images/icons/carIcon-gray.png";
-const calendarIcon = process.env.PUBLIC_URL + "/images/icons/calendarIcon.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
 const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
 const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
@@ -64,15 +60,11 @@ const NewWorkOrder = () => {
     const [observations, setObservations] = useState('');
     const navigate = useNavigate();
 
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [typeWorkOrder, setTypeWorkOrder] = useState(null);
-    const [stateWorkOrder, setStateWorkOrder] = useState(null);
-    const [showSpareParts, setShowSpareParts] = useState(false);
-    const [iconRotated, setIconRotated] = useState(false);
     const [symptoms, setSymptoms] = useState([]);
     const symptomsEndRef = useRef(null);
     const symptomsContainerRef = useRef(null);
     const [placeholder, setPlaceholder] = useState("Describa los síntomas");
+    const [pointsOfInterest, setPointsOfInterest] = useState([]);
 
     const handleSearchClientChange = (term, filter) => {
         console.log(term, filter);
@@ -172,64 +164,6 @@ const NewWorkOrder = () => {
         "Llave rueda": "wheel_wrench"
     };
 
-    const CustomInput = React.forwardRef(({ value, onClick }, ref) => (
-        <button
-            className="custom-date-picker"
-            onClick={onClick}
-            ref={ref}
-        >
-            <div className="date-picker-text">{value}</div>
-            <div className="date-picker-icon" style={{ background: `url(${calendarIcon}) center/contain no-repeat` }}></div>
-        </button>
-    ));
-
-    const options = [
-        { value: 'proforma', label: 'Proforma' },
-        { value: 'notaVenta', label: 'Nota de venta' },
-    ];
-
-    const stateOptions = [
-        { value: 'iniciar', label: 'Por iniciar' },
-        { value: 'ejecucion', label: 'En ejecución' },
-        { value: 'finalizar', label: 'Finalizado' },
-    ];
-
-    const customStyles = {
-        control: (provided, state) => ({
-            ...provided,
-            className: 'custom-select-control-work-order',
-            width: '139%', // Estilo personalizado para el ancho
-            height: '32px',
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
-            marginTop: '8px',
-            boxSizing: 'border-box'  // Asegura que el borde y el relleno estén incluidos en el tamaño
-        }),
-        placeholder: (provided, state) => ({
-            ...provided,
-            color: '#999', // Color del texto del placeholder
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            className: 'custom-select-option-work-order',
-            // otros estilos personalizados si los necesitas
-        }),
-        menuPortal: base => ({
-            ...base,
-            width: '15%',
-            zIndex: 9999,
-            minWidth: '15%',  // Aquí se establece un ancho mínimo para el menú
-        }),
-    };
-
-    const handleTypeWorkOrder = (typeWorkOrder) => {
-        setTypeWorkOrder(typeWorkOrder);
-    };
-
-    const handleStateWorkOrder = (stateWorkOrder) => {
-        setStateWorkOrder(stateWorkOrder);
-    };
-
     const [vehicles, setVehicles] = useState([]);
 
     const responsive = {
@@ -249,11 +183,6 @@ const NewWorkOrder = () => {
             breakpoint: { max: 464, min: 0 },
             items: 1,
         },
-    };
-
-    const toggleComponentes = () => {
-        setShowSpareParts(!showSpareParts);
-        setIconRotated(!iconRotated);
     };
 
     //Opciones para el estado de entrega del vehículo
@@ -407,6 +336,13 @@ const NewWorkOrder = () => {
             });
         });
 
+        vehicleStatus.points_of_interest = pointsOfInterest.map(point => {
+            return {
+                side: "left", // Aquí deberías determinar el lado correcto si es necesario.
+                x: point.x,
+                y: point.y
+            }
+        });
         vehicleStatus.presented_symptoms = symptoms.join(', ');
         vehicleStatus.general_observations = observations;
 
@@ -435,9 +371,9 @@ const NewWorkOrder = () => {
                 setTimeout(() => {
                     navigate('/workOrders');
                 }, 3000);
-            
+
             } else {
-                
+
                 toast.error('Ha ocurrido un error crear la orden de trabajo', {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -716,94 +652,11 @@ const NewWorkOrder = () => {
 
                             </div>
 
-                            {/*
-                            <div className="left-half">
-                                <div className="label-input-work-order-container">
-                                    <label>Fecha</label>
-                                    <DatePicker
-                                        selected={selectedDate}
-                                        onChange={date => setSelectedDate(date)}
-                                        customInput={<CustomInput />}
-                                        dateFormat='dd/MM/yyyy'
-                                    />
-
-                                </div>
-                                <div className="label-input-work-order-container">
-                                    <label>Tipo</label>
-                                    <Select
-                                        options={options}
-                                        value={typeWorkOrder}
-                                        onChange={handleTypeWorkOrder}
-                                        styles={customStyles}
-                                        placeholder="Seleccionar"
-                                        menuPortalTarget={document.body}
-                                        menuPlacement="auto" />
-                                </div>
-                                <div className="label-input-work-order-container">
-                                    <label>Estado</label>
-                                    <Select
-                                        options={stateOptions}
-                                        value={stateWorkOrder}
-                                        onChange={handleStateWorkOrder}
-                                        styles={customStyles}
-                                        placeholder="Seleccionar"
-                                        menuPortalTarget={document.body}
-                                        menuPlacement="auto" />
-                                </div>
-                            </div>
-
-                            
-                            <div className="right-half">
-
-                                <div className="label-input-work-order-container">
-                                    <label>Subtotal</label>
-                                    <input type="text" />
-                                </div>
-                                <div className="label-input-work-order-container">
-                                    <label>Descuento</label>
-                                    <input type="text" />
-                                </div>
-                                <div className="label-input-work-order-container">
-                                    <label>IVA</label>
-                                    <input type="text" />
-                                </div>
-                                <div className="label-input-work-order-container">
-                                    <label>Total</label>
-                                    <input type="text" />
-                                </div>
-                            </div> 
-                            */ }
-
-
-
                         </div>
 
                     </div>
 
                 </div>
-
-                {/*
-                 <div className="title-second-section-container">
-                    <h3>Repuestos</h3>
-                    <button onClick={toggleComponentes} className="button-toggle">
-                        <img
-                            src={arrowIcon}
-                            alt="Icono"
-                            className={`icon ${iconRotated ? 'rotated' : ''}`}
-                        />
-                    </button>
-                </div>
-
-                <div className="title-second-section-container">
-                    <h3>Servicios / Operaciones</h3>
-                    <button className="button-toggle">
-                        <img
-                            src={arrowIcon}
-                            alt="Icono"
-                            className={`icon ${iconRotated ? 'rotated' : ''}`}
-                        />
-                    </button>
-                </div> */}
 
                 <div className="title-second-section-container">
                     <h3>Estado entrega de vehículo</h3>
@@ -893,8 +746,10 @@ const NewWorkOrder = () => {
                     <h3>Puntos de interés</h3>
                 </div>
 
-
-                <VehiclePlans imgSrc={carPlan} />
+                <VehiclePlans
+                    imgSrc={carPlan}
+                    updatePoints={(points) => setPointsOfInterest(points)} 
+                />
 
             </div>
 
