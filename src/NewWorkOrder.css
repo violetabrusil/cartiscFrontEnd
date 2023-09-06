@@ -407,20 +407,19 @@ li.react-multi-carousel-item .carousel {
 
 .checkbox-group input[type="number"] {
     width: 41px;
-    margin-left: auto;
+    margin-left: 168px;
     margin-inline-end: 12px;
 }
 
 .fuel-icon {
-    width: 40px;
-    height: 40px
+    width: 45px;
+    height: 45px
 }
 
 .second-container {
     display: flex;
     gap: 10px;
     margin-top: 10px;
-    min-height: 48%;
 }
 
 .half-second-container {

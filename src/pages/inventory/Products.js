@@ -178,7 +178,7 @@ const Products = ({ viewMode, setViewMode }) => {
             console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
-            console.log("Error al obtener los datos de los servicios");
+            console.log("Error al obtener los datos de los productos",error);
         }
     };
 

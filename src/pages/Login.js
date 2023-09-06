@@ -29,6 +29,7 @@ const Login = () => {
             const token = response.data.token;
             //document.cookie = `jwt=${token}; path=/; samesite=none, HttpOnly`;
             localStorage.setItem('token', token); 
+            console.log("response", response.data);
         
             // Transformamos la respuesta del servidor
             const translatedUserType = userTypeMaping[response.data.user.user_type] || response.data.user.user_type;

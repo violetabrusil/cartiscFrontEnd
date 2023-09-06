@@ -1,11 +1,11 @@
 import "../VechiclePlans.css"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Stage, Layer, Image, Circle } from 'react-konva';
 import useImage from 'use-image';
 
-const VehiclePlans = ({ imgSrc, updatePoints }) => {
+const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [] }) => {
 
-    const [points, setPoints] = useState([]);
+    const [points, setPoints] = useState(initialPoints);
     const [image] = useImage(imgSrc);
     const imageWidth = 550;
     const imageHeight = 450;
@@ -48,6 +48,11 @@ const VehiclePlans = ({ imgSrc, updatePoints }) => {
             updatePoints(newPoints);
         }
     };
+
+    useEffect(() => {
+        setPoints(initialPoints);
+    }, [initialPoints]);
+    
 
     return (
         <div className="container-vehicle-plan">

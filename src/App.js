@@ -58,7 +58,7 @@ function App() {
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/workOrders" element={<WorkOrders />} />
             <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
-            <Route path="/workOrders/detailWorkOrder/:id" element={<InformationWorkOrder />} />
+            <Route path="/workOrders/detailWorkOrder/:workOrderId" element={<InformationWorkOrder />} />
             <Route path="/paymentReceipt" element={<PaymentReceipts />} />
           </Routes>
         </div>

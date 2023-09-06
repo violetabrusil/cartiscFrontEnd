@@ -188,8 +188,8 @@ const NewWorkOrder = () => {
     //Opciones para el estado de entrega del vehículo
     const optionsCheckBox = {
         group1: ['Antena', 'Radio', 'Plumas', 'Extintor', 'Control puerta'],
-        group2: ['Encendedor', 'Maqueta', 'Espejos', 'Combustible', 'Triángulos'],
-        group3: ['Llantas', 'Gata', 'Herramientas', 'Gas', 'Llave rueda']
+        group2: ['Encendedor', 'Maqueta', 'Espejos', 'Triángulos', 'Combustible'],
+        group3: ['Llantas', 'Gata', 'Herramientas', 'Llave rueda', 'Gas']
     };
 
     //Estado de las selecciones y porcentajes
@@ -665,31 +665,43 @@ const NewWorkOrder = () => {
                 <div className="checkbox-container">
                     {Object.keys(selections).map((group) => (
                         <div key={group} className="checkbox-group">
-                            {selections[group].map((isChecked, index) => (
-                                optionsCheckBox[group][index] !== 'Gas' ? (
+                            {selections[group].map((isChecked, index) => {
+                                const currentOption = optionsCheckBox[group][index];
+
+                                // Caso Gas
+                                if (currentOption === 'Gas') {
+                                    return (
+                                        <div key={index}>
+                                            <img src={fuelIcon} alt="Fuel Icon" className="fuel-icon" />
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                                value={percentages[group][index] || ''}
+                                                onChange={(event) => handlePorcentageChange(group, index, event)}
+                                            />
+                                            {' %'}
+                                        </div>
+                                    );
+                                }
+
+                                // Caso Combustible
+                                if (currentOption === 'Combustible') {
+                                    return <label key={index}>{currentOption}</label>; // Solo renderiza el label "Combustible"
+                                }
+
+                                // Caso Default (para todas las otras opciones)
+                                return (
                                     <label key={index}>
-                                        {optionsCheckBox[group][index]}
+                                        {currentOption}
                                         <input
                                             type="checkbox"
                                             checked={isChecked}
                                             onChange={() => handleCheckboxChange(group, index)}
                                         />
                                     </label>
-                                ) : (
-                                    <div key={index}>
-                                        <img src={fuelIcon} alt="Fuel Icon" className="fuel-icon" />
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            max="100"
-                                            value={percentages[group][index] || ''}
-                                            onChange={(event) => handlePorcentageChange(group, index, event)}
-                                        />
-                                        {' %'}
-                                    </div>
-                                )
-                            ))}
-
+                                );
+                            })}
                         </div>
                     ))}
                 </div>
@@ -748,7 +760,7 @@ const NewWorkOrder = () => {
 
                 <VehiclePlans
                     imgSrc={carPlan}
-                    updatePoints={(points) => setPointsOfInterest(points)} 
+                    updatePoints={(points) => setPointsOfInterest(points)}
                 />
 
             </div>

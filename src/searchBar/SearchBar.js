@@ -8,6 +8,7 @@ const SearchBar = ({
     onFilter, 
     placeholderText = "Buscar Productos", 
     customSelectStyles, 
+    customClasses = "",
     classNameSuffix = "",
     options = [
         { value: 'sku', label: 'Código de producto' },
@@ -23,6 +24,7 @@ const SearchBar = ({
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);
         setSearchTerm(""); //Para resetear el valor del input de búsqueda
+        onFilter(selectedOption, "");
 
     };
 
@@ -75,7 +77,7 @@ const SearchBar = ({
 
     return (
 
-        <div className="search-bar-container">
+        <div className={`search-bar-container ${customClasses}`}>
             <Select
                 isSearchable={false}
                 options={options}

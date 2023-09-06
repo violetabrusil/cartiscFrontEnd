@@ -50,13 +50,15 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
     const handleConfirm = () => {
         onConfirm({
             work_order_code: orderCode,
-            plate: vehiclePlate,
-            name: clientName,
-            cedula: clientId,
+            vehicle_plate: vehiclePlate,
+            client_name: clientName,
+            client_cedula: clientId,
             sales_receipt_status: status,
-            payment_type_of_search: paymentType,
+            payment_type: paymentType,
             date_start_of_search: startDate,
-            date_end_of_search: endDate,
+            date_finish_of_search: endDate,
+            //start_total_amount
+            //end_total_amount
         });
     };
 

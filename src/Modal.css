@@ -182,16 +182,17 @@
 .date-container-payment {
     display: flex;
     justify-content: space-between;
-    
+
 }
 
 .input-group-payment {
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
     display: contents;
 }
 
 .input-group-payment label {
-    display: block; /* Asegurarse de que ocupe su propia línea */
+    display: block;
+    /* Asegurarse de que ocupe su propia línea */
 }
 
 .label-fields-payment {
@@ -235,8 +236,103 @@
 .double-input-group {
     display: flex;
     justify-content: space-between;
-    gap: 10px; /* Espacio entre los dos grupos */
+    gap: 10px;
+    /* Espacio entre los dos grupos */
 }
+
+.entry {
+    position: relative;
+    padding-left: 30px;
+    /* Espacio para la línea y el círculo */
+}
+
+.entry:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 10px;
+    bottom: 0;
+    width: 2px;
+    background-color: grey;
+}
+
+.entry:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 1px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: grey;
+    transform: translateY(-50%);
+    background-image: url('/public/images/icons/checkIcon.png');
+    background-size: 13px 13px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.entry-completed:before {
+    background-color: #1C4A74;
+}
+
+.entry-pending:before {
+    background-color: #6E757D;
+}
+
+.entry-completed:after {
+    width: 20px;
+    height: 20px;
+    background-color: #1C4A74;
+    background-image: url('/public/images/icons/checkIcon.png');
+    background-size: 13px 13px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.label-history-work-order {
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 24px;
+    margin-left: 28px;
+    color: #6E757D;
+}
+
+.title-modal-hitory {
+    display: flex;
+    border-bottom: 1px solid #b9b9b9;
+}
+
+.div-container-history {
+    margin-top: 20px;
+    overflow-y: auto;
+}
+
+.button-add-product-modal {
+    border: none;
+    background: none;
+}
+
+.add-product-modal-icon {
+    background: none;
+    width: 20px;
+    height: 20px;
+    opacity: 50%;
+    margin-right: -10px;
+}
+
+.div-search-modal {
+    width: 100%;
+    max-width: 98%;
+    box-sizing: border-box;  /* Esto asegura que el padding y el border están incluidos en el ancho total */
+}
+
+.products-modal-content .products-table td {
+    text-align: center;
+    padding: 0px;
+    border-top: 1px solid black;
+}
+
 /* Media queries para tamaños de pantalla */
 
 @media screen and (max-width: 768px) {

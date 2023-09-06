@@ -2,7 +2,7 @@ import "../DataTable.css"
 import React from 'react';
 import { useTable, usePagination } from 'react-table';
 
-const DataTable = ({ data, columns, onRowClick = () => {}, highlightRows, selectedRowIndex }) => {
+const DataTable = ({ data, columns, onRowClick = () => {}, highlightRows, selectedRowIndex, initialPageSize = 8 }) => {
 
     const {
         getTableProps,
@@ -19,7 +19,7 @@ const DataTable = ({ data, columns, onRowClick = () => {}, highlightRows, select
         {
             columns,
             data,
-            initialState: { pageIndex: 0, pageSize: 8 },
+            initialState: { pageIndex: 0, pageSize: initialPageSize },
         },
         usePagination
     );
