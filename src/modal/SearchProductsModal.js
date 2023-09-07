@@ -10,14 +10,22 @@ const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
-export function SearchProductsModal({ onClose, onProductsSelected, selectedProducts = [], onProductsUpdated }) {
+export function SearchProductsModal({ onClose,
+    onProductsSelected,
+    selectedProducts = [],
+    onProductsUpdated,
+    productPrices: initialProductPrices,
+    onProductPricesUpdated,
+    productQuantities: initialProductQuantities,
+    onProductQuantitiesUpdated,
+}) {
 
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
-    const [productPrices, setProductPrices] = useState({});
-    const [productQuantities, setProductQuantities] = useState({});
-
+    const [productPrices, setProductPrices] = useState(initialProductPrices || {});
+    const [productQuantities, setProductQuantities] = useState(initialProductQuantities || {});
+    
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
         setSearchTerm(term);
@@ -49,40 +57,60 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
 
     // Función para manejar cambios en el precio
     const handlePriceChange = (productSku, newPrice) => {
-        if (newPrice === "" || newPrice <= 0) {
-            newPrice = allProducts.find(p => p.sku === productSku).price;
+        if (isNaN(newPrice)) {
+            console.error(`Invalid price for SKU: ${productSku}`);
+            return;
         }
+        console.log(`Changing price for SKU: ${productSku} to ${newPrice}`);
         setProductPrices(prevPrices => ({
             ...prevPrices,
-            [productSku]: parseFloat(newPrice),
+            [productSku]: newPrice,
         }));
     };
 
     // Función para manejar cambios en la cantidad
-    const handleQuantityChange = (sku, newQuantity) => {
-        const product = allProducts.find(p => p.sku === sku);
+    const handleQuantityChange = useCallback((sku, newQuantity) => {
+        console.log(`Inicio de handleQuantityChange con SKU: ${sku} y Cantidad: ${newQuantity}`);
+        console.log('allProducts:', allProducts);
+        const product = allProducts.find(p => p.sku === sku) || selectedProducts.find(p => p.sku === sku);
+        console.log('Producto encontrado:', product);
+    
         if (!product) return;
-        
-        const unitPrice = productPrices[sku] ? productPrices[sku] / productQuantities[sku] : product.price;
+    
         if (newQuantity > product.stock) {
             newQuantity = product.stock;
         } else if (newQuantity <= 0) {
-            newQuantity = 1; // Restablecer a 1 si alguien introduce una cantidad <= 0
+            newQuantity = 1;
         }
-        
-        const updatedPrice = unitPrice * newQuantity;
     
-        setProductPrices(prevPrices => ({
-            ...prevPrices,
-            [sku]: updatedPrice
-        }));
+        const originalUnitPrice = product.price;
     
-        setProductQuantities(prevQuantities => ({
-            ...prevQuantities,
-            [sku]: newQuantity
-        }));
-    };
-      
+        const updatedPrice = originalUnitPrice * newQuantity;
+    
+        console.log('Actualizando precios y cantidades...');
+    
+        setProductPrices(prevPrices => {
+            console.log('Precio anterior:', prevPrices);
+            const newPrices = {
+                ...prevPrices,
+                [sku]: updatedPrice
+            };
+            console.log('Nuevo precio:', newPrices);
+            return newPrices;
+        });
+    
+        setProductQuantities(prevQuantities => {
+            console.log('Cantidad anterior:', prevQuantities);
+            const newQuantities = {
+                ...prevQuantities,
+                [sku]: newQuantity
+            };
+            console.log('Nueva cantidad:', newQuantities);
+            return newQuantities;
+        });
+    }, [allProducts]); // allProducts es la dependencia
+    
+   
     const columns = React.useMemo(
         () => [
             { Header: "Número de serie", accessor: "sku" },
@@ -173,28 +201,20 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
                 accessor: "price",
                 Cell: ({ value, row }) => {
                     const sku = row.original.sku;
-
-                    // Función auxiliar para obtener un precio formateado.
-                    const getFormattedPrice = (price) => {
-                        const priceNum = parseFloat(price); // Convertir el precio a un número.
-                        if (!isNaN(priceNum)) { // Si es un número válido.
-                            return priceNum.toFixed(2);
-                        }
-                        // Si no es un número válido, devolver un valor predeterminado o manejar el error.
-                        return "0.00";
-                    };
-
-                    const initialPrice = productPrices[sku] ? getFormattedPrice(productPrices[sku]) : getFormattedPrice(value);
-                    const [localPrice, setLocalPrice] = useState(initialPrice);
+                    const currentPrice = productPrices[sku] !== undefined ? productPrices[sku] : value;
 
                     return (
                         <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '40px' }}>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
                                 type="number"
-                                value={localPrice}
-                                onChange={(e) => setLocalPrice(e.target.value)}
-                                onBlur={() => handlePriceChange(sku, parseFloat(localPrice))}
+                                value={currentPrice}
+                                onChange={(e) => {
+                                    handlePriceChange(sku, parseFloat(e.target.value));
+                                }}
+                                onBlur={() => {
+                                    console.log("Actualizando precio para SKU:", sku, "con valor:", currentPrice);
+                                }}
                                 style={{ width: '60px', fontWeight: '600' }}
                             />
                         </div>
@@ -206,22 +226,23 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
                 accessor: "quantity",
                 Cell: ({ value, row }) => {
                     const sku = row.original.sku;
-                    const [localQuantity, setLocalQuantity] = useState(productQuantities[sku] !== undefined ? productQuantities[sku] : 1);
+                    const currentQuantity = productQuantities[sku] || 1;
+                
                     return (
                         <input
                             type="number"
-                            value={localQuantity}
+                            value={currentQuantity}
                             onChange={(e) => {
-                                const newQuantity = e.target.value;
-                                setLocalQuantity(newQuantity);
-                                handleQuantityChange(sku, newQuantity);
+                                const newValue = parseInt(e.target.value, 10);
+                                handleQuantityChange(sku, newValue);
                             }}
                             style={{ width: '30px', fontWeight: '600', textAlign: 'center' }}
-                            max={row.original.stock}  // Establece el stock como el valor máximo
-                            min="0"
+                            max={row.original.stock}
+                            min="1"
                         />
                     );
                 }
+                
             },
             {
                 Header: "",
@@ -236,7 +257,7 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
                 id: 'add-product-button'
             },
         ],
-        [productQuantities]
+        [productQuantities, productPrices]
     );
 
     const addProduct = (productToAdd) => {
@@ -263,21 +284,23 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
     });
 
     const handleConfirmChanges = () => {
-        // Puedes procesar o transformar los datos si es necesario
-        // Por ejemplo, aquí podrías aplicar los cambios a selectedProducts
         const updatedProducts = selectedProducts.map((product) => {
             const sku = product.sku;
             const price = productPrices[sku] || product.price;
             const quantity = productQuantities[sku] || 1;
+
+            console.log(`SKU: ${sku}, Unit Price: ${price}, Quantity: ${quantity}, Total Price: ${price * quantity}`);
+
             return {
                 ...product,
                 price: price,
                 quantity: quantity,
             };
         });
-
-        // Luego, puedes actualizar selectedProducts o llamar a una función externa
         onProductsUpdated(updatedProducts);
+        onProductPricesUpdated(productPrices);
+        onProductQuantitiesUpdated(productQuantities)
+        onClose();
     };
 
     const fetchData = async () => {
@@ -320,7 +343,11 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
             console.log("Endpoint to fetch:", endpoint);
             const response = await apiClient.get(endpoint);
             console.log("Respuesta del servidor:", response.data);
-            setAllProducts(response.data);
+            const data = response.data.map(product => ({
+                ...product,
+                price: parseFloat(product.price),
+            }));
+            setAllProducts(data);
         } catch (error) {
             console.log("Error al obtener los datos de los productos", error);
         }
@@ -334,18 +361,42 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
         console.log("Actualización de selectedProducts:", selectedProducts);
     }, [selectedProducts]);
 
+    useEffect(() => {
+        const initialPrices = {};
+        const initialQuantities = {};
+        selectedProducts.forEach(product => {
+            initialPrices[product.sku] = product.price;
+            initialQuantities[product.sku] = product.quantity;
+        });
+        setProductPrices(initialPrices);
+        setProductQuantities(initialQuantities);
+    }, [selectedProducts]);
+
+    useEffect(() => {
+        console.log('Componente renderizado');
+    });
 
     return (
 
         <div className='filter-modal-overlay'>
             <div style={{ maxWidth: '850px' }} className="modal-payment">
                 <div style={{ display: 'flex', marginLeft: '10px', marginBottom: '0px', marginTop: '0px' }}>
-                    <h3 style={{ marginBottom: '0px' }}>Productos</h3>
-                    <div style={{ flex: "1", marginTop: '18px', marginRight: '10px' }}>
-                        <button className="button-close" onClick={() => { onClose(); handleConfirmChanges(); }} >
+                    <h3 style={{ marginBottom: '0px', flex: "1" }}>Productos</h3>
+                    {selectedProducts.length > 0 ? (
+                        // Si hay productos seleccionados, muestra el botón "Guardar"
+                        <button style={{ width: '100px', height: '33px', marginTop: '11px', marginRight: '10px' }}
+                            className="confirm-button" onClick={handleConfirmChanges}>
+                            <span className="text-confirm-button">
+                                Guardar
+                            </span>
+                        </button>
+                    ) : (
+                        // Si no hay productos seleccionados, muestra el botón "X" (cerrar)
+                        <button style={{ marginTop: '14px', marginRight: '13px' }} className="button-close" onClick={onClose}>
                             <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
                         </button>
-                    </div>
+                    )}
+
                 </div>
 
                 <div>
@@ -376,6 +427,8 @@ export function SearchProductsModal({ onClose, onProductsSelected, selectedProdu
                     )}
 
                 </div>
+
+
 
             </div>
         </div>

@@ -44,7 +44,8 @@ const InformationWorkOrder = () => {
     const [isModalOpenProducts, setIsModalOpenProducts] = useState(false);
     const [isModalOpenServices, setIsModalOpenServices] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const [mainSelectedProducts, setMainSelectedProducts] = useState([]);
+    const [productPrices, setProductPrices] = useState({});
+    const [productQuantities, setProductQuantities] = useState({});
 
     const WorkOrderStatusOptions = [
         { value: 'to_start', label: 'Por iniciar' },
@@ -689,6 +690,10 @@ const InformationWorkOrder = () => {
                     onProductsSelected={setSelectedProducts}
                     selectedProducts={selectedProducts}
                     onProductsUpdated={handleProductsUpdated}
+                    initialProductPrices={productPrices}
+                    initialProductQuantities={productQuantities}
+                    onProductPricesUpdated={setProductPrices}
+                    onProductQuantitiesUpdated={setProductQuantities}
                 />
             )}
 
