@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Stage, Layer, Image, Circle } from 'react-konva';
 import useImage from 'use-image';
 
-const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [] }) => {
+const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = true }) => {
 
     const [points, setPoints] = useState(initialPoints);
     const [image] = useImage(imgSrc);
@@ -11,6 +11,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [] }) => {
     const imageHeight = 450;
 
     const handleStageClick = (event) => {
+        if (!isEditable) return;
         // Update the points state with the new point
         const stage = event.currentTarget;
         const point = stage.getPointerPosition();
@@ -42,7 +43,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [] }) => {
         // Determinar el lado
         const side = roundedX < imageWidth / 2 ? 'left' : 'right';
         newPoints[index] = { x: roundedX, y: roundedY, side };
-        
+
         setPoints(newPoints);
         if (updatePoints) {
             updatePoints(newPoints);
@@ -52,7 +53,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [] }) => {
     useEffect(() => {
         setPoints(initialPoints);
     }, [initialPoints]);
-    
+
 
     return (
         <div className="container-vehicle-plan">
@@ -65,7 +66,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [] }) => {
                         y={(imageHeight - imageHeight) / 2} />
                     {points.map((point, index) => (
                         <Circle key={index} x={point.x} y={point.y} radius={10} fill="#ffea00"
-                            draggable
+                            draggable={isEditable}
                             onDragEnd={handleDragEnd(index)} />
                     ))}
                 </Layer>

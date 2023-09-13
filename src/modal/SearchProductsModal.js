@@ -254,7 +254,7 @@ export function SearchProductsModal({ onClose,
                         </button>
                     );
                 },
-                id: 'add-product-button'
+                id: 'delete-product-button'
             },
         ],
         [productQuantities, productPrices]

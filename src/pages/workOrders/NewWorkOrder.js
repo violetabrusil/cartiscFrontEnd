@@ -565,7 +565,7 @@ const NewWorkOrder = () => {
 
                         <div className="right-div">
                             {/* Contenido del segundo div derecho */}
-                            <Carousel responsive={responsive}>
+                            <Carousel responsive={responsive} className="carousel-vehicles ">
                                 {vehicles.map((vehicle, index) => (
                                     <div
                                         key={index}

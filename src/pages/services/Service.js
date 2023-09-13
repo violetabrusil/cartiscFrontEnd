@@ -481,6 +481,7 @@ const Services = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
+                console.log("endpoint operacioes", endpoint)
                 console.log("response", response.data);
                 setOperations(response.data);
 
@@ -518,6 +519,7 @@ const Services = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
+                console.log("endpoint", endpoint)
                 console.log("Respuesta del servidor:", response.data);
                 setServices(response.data);
             } catch (error) {

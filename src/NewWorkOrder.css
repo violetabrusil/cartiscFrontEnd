@@ -288,13 +288,13 @@
     background-color: #d1e2f1;  
 }
 
-li.react-multi-carousel-item--active {
+.carousel-vehicles li.react-multi-carousel-item--active {
     flex: 1 1 auto !important;
     position: relative !important;
     width: 190px !important;
 }
 
-li.react-multi-carousel-item .carousel {
+.carousel-vehicles li.react-multi-carousel-item .carousel {
     width: 150px;
     height: 93px;
     margin-left: 40px
@@ -369,6 +369,7 @@ li.react-multi-carousel-item .carousel {
 
 .icon.rotated {
     transform: rotate(180deg);
+    transition: transform 0.3s ease;
 }
 
 .checkbox-container {

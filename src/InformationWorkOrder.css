@@ -125,3 +125,25 @@
 .div-table-products {
     margin-top: 50px;
 }
+
+.custom-button-edit-work-order {
+    border: none;
+    background: none;
+}
+
+.custom-button-edit-work-order-icon {
+    width: 25px;
+    height: 25px;
+    margin-left: 20px;
+}
+
+.btn-select-all {
+    background: none;
+    border: none;
+    color: #007aff;
+    font-weight: 600;
+}
+
+.btn-select-all:disabled {
+    color: #6E757D;
+}

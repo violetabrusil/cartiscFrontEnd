@@ -39,7 +39,7 @@ const LoginExpress = () => {
     
             document.cookie = `jwt=${token}; path=/; samesite=none`;
     
-            if (user.user_type === "Administrador") {
+            if (user.user_type === "admin") {
                 navigate("/settings");
             } else {
                 navigate("/home");

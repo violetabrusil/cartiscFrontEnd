@@ -15,19 +15,25 @@ import { getVehicleCategory } from '../../constants/vehicleCategoryConstants';
 import ModalHistoryWorkOrder from '../../modal/ModalHistoryWorkOrder';
 import SearchProductsModal from '../../modal/SearchProductsModal';
 import DataTable from '../../dataTable/DataTable';
+import SearchServicesOperationsModal from '../../modal/SearchServicesOperationsModal';
 
 const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
-const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const clockIcon = process.env.PUBLIC_URL + "/images/icons/clockIcon.png";
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
+const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 
 const InformationWorkOrder = () => {
 
     const [visibleSections, setVisibleSections] = useState({});
-    const [iconRotated, setIconRotated] = useState(false);
+    const [iconsRotation, setIconsRotation] = useState({
+        comments: false,
+        state: false,
+        products: false,
+        services: false,
+    });
     const { workOrderId } = useParams();
     const [workOrderDetail, setWorkOrderDetail] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -46,6 +52,14 @@ const InformationWorkOrder = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productPrices, setProductPrices] = useState({});
     const [productQuantities, setProductQuantities] = useState({});
+    const [selectedOperations, setSelectedOperations] = useState([]);
+    const [operationCosts, setOperationCosts] = useState({});
+    const [selectedServicesList, setSelectedServicesList] = useState([]);
+    const [servicesWithOperations, setServicesWithOperations] = useState([]);
+    const [operationServiceCosts, setOperationServiceCosts] = useState({});
+    const allOperations = [...selectedOperations, ...servicesWithOperations];
+    const [isTextareaEditable, setTextareaEditable] = useState(false);
+    const [isEditState, setIsEditState] = useState(false);
 
     const WorkOrderStatusOptions = [
         { value: 'to_start', label: 'Por iniciar' },
@@ -61,6 +75,11 @@ const InformationWorkOrder = () => {
         setVisibleSections(prevSections => ({
             ...prevSections,
             [sectionId]: !prevSections[sectionId]
+        }));
+
+        setIconsRotation(prevRotation => ({
+            ...prevRotation,
+            [sectionId]: !prevRotation[sectionId]
         }));
     };
 
@@ -298,8 +317,55 @@ const InformationWorkOrder = () => {
         []
     );
 
+    const columnsOperations = React.useMemo(
+        () => [
+            { Header: "Código", accessor: "operation_code" },
+            { Header: "Título", accessor: "title" },
+            {
+                Header: "Costo",
+                accessor: "cost",
+                Cell: ({ value }) =>
+                    <div>
+                        $ {parseFloat(value).toFixed(2)}
+                    </div>
+            },
+        ],
+        []
+    );
+
     const handleProductsUpdated = (updatedProducts) => {
         setSelectedProducts(updatedProducts);
+    };
+
+    const handleOperationsUpdated = (selectedOptions) => {
+        setSelectedOperations(selectedOptions);
+    };
+
+    const handleServiceOperationsUpdated = (serviceOps) => {
+        console.log("Actualizando servicesWithOperations en el componente padre:", serviceOps);
+        setServicesWithOperations(serviceOps);
+    };
+
+    const handleServicesListUpdate = (updatedList) => {
+        setSelectedServicesList(updatedList); // Asumiendo que selectedServicesList es un estado en el padre.
+    };
+
+    const handleTextareaEdit = () => {
+        setTextareaEditable(prevEditable => !prevEditable);
+    };
+
+    const handleStateEdit = () => {
+        setIsEditState(prevEditState => !prevEditState);
+    };
+
+    const selectAllCheckboxes = () => {
+        let newSelections = { ...selections };
+
+        Object.keys(optionsCheckBox).forEach(group => {
+            newSelections[group] = newSelections[group].map(() => true);
+        });
+
+        setSelections(newSelections);
     };
 
     useEffect(() => {
@@ -318,6 +384,18 @@ const InformationWorkOrder = () => {
         }
     }, [workOrderDetail]);
 
+    useEffect(() => {
+        console.log("selectedServicesList ha cambiado en el componente padre:", selectedServicesList);
+        // Si necesitas realizar alguna lógica adicional cuando cambia selectedServicesList, hazlo aquí
+    }, [selectedServicesList]);
+
+    useEffect(() => {
+        console.log("operationServiceCosts en el componente padre:", operationServiceCosts);
+    }, [operationServiceCosts]);
+
+    useEffect(() => {
+        console.log("servicios de operaciones en el componente padre:", servicesWithOperations);
+    }, [servicesWithOperations]);
 
     return (
         <div>
@@ -468,12 +546,18 @@ const InformationWorkOrder = () => {
 
                             <div className="div-section-information">
                                 <div className="title-second-section-container">
-                                    <h3>Comentarios</h3>
+                                    <div style={{ display: 'flex' }}>
+                                        <h3>Comentarios</h3>
+                                        <button onClick={handleTextareaEdit} className="custom-button-edit-work-order">
+                                            <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
+                                        </button>
+                                    </div>
+
                                     <button onClick={() => toggleComponentes('comments')} className="button-toggle">
                                         <img
                                             src={arrowIcon}
                                             alt="Icono"
-                                            className={`icon ${iconRotated ? 'rotated' : ''}`}
+                                            className={`icon ${iconsRotation.comments ? 'rotated' : ''}`}
                                         />
                                     </button>
                                 </div>
@@ -484,24 +568,40 @@ const InformationWorkOrder = () => {
                                         <textarea
                                             value={comments}
                                             onChange={(e) => setComments(e.target.value)}
+                                            disabled={!isTextareaEditable}
                                         >
                                         </textarea>
                                     </div>
                                 )}
 
                                 <div className="title-second-section-container">
-                                    <h3>Estado de Entrega</h3>
+                                    <div style={{ display: 'flex' }}>
+                                        <h3>Estado de Entrega</h3>
+                                        <button onClick={handleStateEdit} className="custom-button-edit-work-order">
+                                            <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
+                                        </button>
+                                    </div>
+
                                     <button className="button-toggle" onClick={() => toggleComponentes('state')}>
                                         <img
                                             src={arrowIcon}
                                             alt="Icono"
-                                            className={`icon ${iconRotated ? 'rotated' : ''}`}
+                                            className={`icon ${iconsRotation.state ? 'rotated' : ''}`}
                                         />
                                     </button>
                                 </div>
 
                                 {visibleSections['state'] && (
                                     <>
+                                        <div style={{textAlign: "right", marginBottom: '10px'}}>
+                                            <button
+                                                className="btn-select-all"
+                                                disabled={!isEditState}
+                                                onClick={selectAllCheckboxes}>
+                                                Seleccionar todos
+                                            </button>
+                                        </div>
+
                                         <div className="checkbox-container">
                                             {Object.keys(optionsCheckBox).map((group) => (
                                                 <div key={group} className="checkbox-group">
@@ -519,6 +619,7 @@ const InformationWorkOrder = () => {
                                                                     <input className="input-full-level"
                                                                         value={fuelLevel}
                                                                         onChange={handleGasChange}
+                                                                        disabled={!isEditState}
                                                                     />
                                                                     {' %'}
                                                                 </div>
@@ -533,6 +634,7 @@ const InformationWorkOrder = () => {
                                                                         type="checkbox"
                                                                         checked={selections[group][index]}
                                                                         onChange={() => handleCheckboxChange(group, index)}
+                                                                        disabled={!isEditState}
                                                                     />
                                                                 </label>
                                                             );
@@ -549,7 +651,7 @@ const InformationWorkOrder = () => {
                                                 <h3>Síntomas presentados</h3>
                                                 <div className="content-new-work-order">
                                                     <div
-                                                        contentEditable
+                                                        contentEditable={isEditState}
                                                         suppressContentEditableWarning
                                                         onKeyDown={handleKeyPress}
                                                         className={`editable-container ${symptoms.length ? '' : 'placeholder'}`}
@@ -564,7 +666,7 @@ const InformationWorkOrder = () => {
                                                             {symptoms.map((item, index) => (
                                                                 <li key={index}
                                                                     ref={index === symptoms.length - 1 ? symptomsEndRef : null}
-                                                                    contentEditable
+                                                                    contentEditable={isEditState}
                                                                     suppressContentEditableWarning
                                                                     onBlur={(e) => handleUpdateSymptom(index, e.currentTarget.textContent)}
                                                                 >
@@ -583,6 +685,7 @@ const InformationWorkOrder = () => {
                                                         className="textarea-class"
                                                         value={observations}
                                                         onChange={(e) => setObservations(e.target.value)}
+                                                        disabled={!isEditState}
                                                     >
                                                     </textarea>
                                                 </div>
@@ -599,6 +702,7 @@ const InformationWorkOrder = () => {
                                                 imgSrc={carPlan}
                                                 updatePoints={(points) => setPointsOfInterest(points)}
                                                 initialPoints={workOrderDetail.vehicle_status.points_of_interest}
+                                                isEditable={isEditState}
                                             />
 
                                         </div>
@@ -615,7 +719,7 @@ const InformationWorkOrder = () => {
                                         <img
                                             src={arrowIcon}
                                             alt="Icono"
-                                            className={`icon ${iconRotated ? 'rotated' : ''}`}
+                                            className={`icon ${iconsRotation.products ? 'rotated' : ''}`}
                                         />
                                     </button>
                                 </div>
@@ -652,7 +756,7 @@ const InformationWorkOrder = () => {
                                         <img
                                             src={arrowIcon}
                                             alt="Icono"
-                                            className={`icon ${iconRotated ? 'rotated' : ''}`}
+                                            className={`icon ${iconsRotation.services ? 'rotated' : ''}`}
                                         />
                                     </button>
                                 </div>
@@ -668,7 +772,20 @@ const InformationWorkOrder = () => {
                                                     alt="Open Modal"
                                                     onClick={handleOpenModalServices}
                                                 />
+
+                                                <div className="div-table-products">
+                                                    {allOperations.length > 0 && (
+                                                        <DataTable
+                                                            data={allOperations}
+                                                            columns={columnsOperations}
+                                                            highlightRows={false}
+                                                            initialPageSize={4}
+                                                        />
+                                                    )}
+                                                </div>
                                             </div>
+
+
 
                                         </div>
                                     </>
@@ -698,14 +815,21 @@ const InformationWorkOrder = () => {
             )}
 
             {isModalOpenServices && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <button style={{ marginTop: '16px' }} className="button-close-modal" onClick={handleCloseModalServices}  >
-                            <img src={closeIcon} alt="Close Icon" className="modal-close-icon"></img>
-                        </button>
-
-                    </div>
-                </div>
+                <SearchServicesOperationsModal
+                    onClose={handleCloseModalServices}
+                    onOperationsSelected={setSelectedOperations}
+                    selectedOperations={selectedOperations}
+                    onOperationUpdated={handleOperationsUpdated}
+                    initialOperationCost={operationCosts}
+                    onOperationCostUpdated={setOperationCosts}
+                    selectedServicesList={selectedServicesList}
+                    setSelectedServicesList={setSelectedServicesList}
+                    servicesWithOperations={servicesWithOperations}
+                    initialOperationServiceCost={operationServiceCosts}
+                    onServiceOperationsUpdated={handleServiceOperationsUpdated}
+                    onOperationServiceCostUpdated={setOperationServiceCosts}
+                    onServicesListUpdate={handleServicesListUpdate}
+                />
             )}
 
             {isOpenHistoryWorkOrderModal && (
