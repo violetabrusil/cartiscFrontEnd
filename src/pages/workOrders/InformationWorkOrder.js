@@ -40,6 +40,7 @@ const InformationWorkOrder = () => {
     const [comments, setComments] = useState("");
     const [fuelLevel, setFuelLevel] = useState(0);
     const [symptoms, setSymptoms] = useState([]);
+    const [idVehicleStatus, setIdVehicleStatus] = useState("");
     const symptomsEndRef = useRef(null);
     const symptomsContainerRef = useRef(null);
     const [placeholder, setPlaceholder] = useState("Describa los síntomas");
@@ -60,16 +61,46 @@ const InformationWorkOrder = () => {
     const allOperations = [...selectedOperations, ...servicesWithOperations];
     const [isTextareaEditable, setTextareaEditable] = useState(false);
     const [isEditState, setIsEditState] = useState(false);
+    const [workOrderItems, setWorkOrderItems] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [nextStatus, setNextStatus] = useState(null); // Mantener el siguiente estado para la confirmación
+
+
+    const keyMapping = {
+        "Antena": "antenna",
+        "Radio": "radio",
+        "Plumas": "wipers",
+        "Extintor": "fire_extinguisher",
+        "Control puerta": "door_lock",
+        "Encendedor": "cigarette_lighter",
+        "Maqueta": "carpet",
+        "Espejos": "mirrors",
+        "Triángulos": "warning_triangles",
+        "Llantas": "tires",
+        "Gata": "jack",
+        "Herramientas": "tools",
+        "Gas": "fuel_level",
+        "Llave rueda": "wheel_wrench"
+    };
 
     const WorkOrderStatusOptions = [
         { value: 'to_start', label: 'Por iniciar' },
         { value: 'assigned', label: 'Asignada' },
         { value: 'in_development', label: 'En desarrollo' },
         { value: 'stand_by', label: 'En pausa' },
-        { value: 'cancelled', label: 'Cancelada' },
         { value: 'completed', label: 'Completada' },
-        { value: 'deleted', label: 'Eliminada' },
+        { value: 'cancelled', label: 'Cancelada' },
     ];
+
+    const validTransitions = {
+        'to_start': ['assigned', 'stand_by', 'cancelled'],
+        'assigned': ['in_development', 'stand_by', 'cancelled'],
+        'in_development': ['assigned', 'stand_by', 'cancelled', 'completed'],
+        'stand_by': ['assigned'],
+        'completed': [],
+        'cancelled': []
+    };
+
 
     const toggleComponentes = (sectionId) => {
         setVisibleSections(prevSections => ({
@@ -120,7 +151,12 @@ const InformationWorkOrder = () => {
     };
 
     const handleGasChange = (e) => {
-        setFuelLevel(e.target.value);
+        let value = parseInt(e.target.value, 10) || 0;
+
+        // Limita el valor entre 1 y 100
+        value = Math.max(1, Math.min(value, 100));
+
+        setFuelLevel(value)
     };
 
     const transformVehicleStatusToSelections = (vehicleStatus) => {
@@ -186,8 +222,48 @@ const InformationWorkOrder = () => {
         }),
     };
 
-    const handleSelectChange = (statusWorkOrder) => {
-        setWorkOrderStatus(statusWorkOrder.value);
+    const handleSelectChange = (option) => {
+        const currentStatus = workOrderStatus.value;
+        const nextStatus = option.value;
+    
+        if (validTransitions[currentStatus].includes(nextStatus)) {
+            if (nextStatus === 'cancelled' || nextStatus === 'completed') {
+                // Mostrar modal de confirmación
+                openConfirmationModal(nextStatus);
+                return;  // Detener la ejecución aquí
+            } else {
+                // Si es una transición válida, muestra toast de éxito
+                toast.success("El cambio de estado de la orden de trabajo es válido");
+                changeOrderStatus(nextStatus); // Función que realizará la petición al backend
+                setWorkOrderStatus(option); // Actualizar el estado local
+                return; // Detener la ejecución aquí
+            }
+        } else {
+            // Mostrar toast de advertencia si no es una transición válida
+            toast.warn("El cambio de estado de la orden de trabajo no es válido");
+            return; // Detener la ejecución aquí
+        }
+    };    
+
+    const openConfirmationModal = (status) => {
+        setNextStatus(status);
+        setShowModal(true);
+    };
+
+    const closeConfirmationModal = () => {
+        setNextStatus(null);
+        setShowModal(false);
+    };
+
+    const changeOrderStatus = async (newStatus) => {
+        try {
+            await apiClient.put(`/work-orders/change-status/${workOrderId}?work_order_status=${newStatus}`);
+            // Actualizar el estado local después de cambiar el estado en el backend
+            setWorkOrderStatus({ value: newStatus, label: WorkOrderStatusOptions.find(option => option.value === newStatus).label });
+        } catch (error) {
+            toast.error("Error al cambiar el estado de la orden de trabajo");
+            console.error("Error al cambiar el estado de la orden de trabajo:", error);
+        }
     };
 
     const getWorkOrderDetailById = async () => {
@@ -221,10 +297,12 @@ const InformationWorkOrder = () => {
             }
 
             setWorkOrderDetail(response.data);
-            console.log("placa", response.data.vehicle.plate)
+            console.log("datos de la orden de trabajo", response.data)
             const selectionFromApi = transformVehicleStatusToSelections(response.data.vehicle_status);
             setSelections(selectionFromApi);
             setFuelLevel(response.data.vehicle_status.fuel_level);
+            setIdVehicleStatus(response.data.vehicle_status.id);
+            setWorkOrderItems(response.data.work_order_items || []);
 
             const receivedSymptoms = response.data.vehicle_status.presented_symptoms;
             if (typeof receivedSymptoms === 'string') {
@@ -273,29 +351,7 @@ const InformationWorkOrder = () => {
     const columnsProducts = React.useMemo(
         () => [
             { Header: "Número de serie", accessor: "sku" },
-            {
-                Header: "Imagen",
-                accessor: "product_picture",
-                Cell: ({ value }) => {
-                    const imageUrl = value ? `data:image/jpeg;base64,${value}` : productIcon;
-
-                    return (
-                        <img
-                            src={imageUrl}
-                            alt="Product"
-                            style={{
-                                width: '13px',
-                                height: '13px',
-                                borderRadius: '10%',
-                                border: '1px solid rgba(0, 0, 0, 0.2)',
-                                padding: '4px'
-                            }}
-                        />
-                    );
-                }
-            },
             { Header: "Título", accessor: "title" },
-            { Header: "Categoría", accessor: "category" },
             {
                 Header: "Precio",
                 accessor: "price",
@@ -368,6 +424,66 @@ const InformationWorkOrder = () => {
         setSelections(newSelections);
     };
 
+    const editWorkOrder = async () => {  // Suponiendo que pasas el id de la orden que quieres editar
+        const vehicleStatus = {};
+
+        vehicleStatus.id = idVehicleStatus;
+        vehicleStatus.work_order_id = Number(workOrderId);
+
+        Object.keys(optionsCheckBox).forEach(group => {
+            optionsCheckBox[group].forEach((option, index) => {
+                const key = keyMapping[option];
+                if (key) {  // Si el mapeo existe
+                    if (key !== 'fuel_level') {
+                        vehicleStatus[key] = selections[group][index];
+                    } else {
+                        vehicleStatus[key] = fuelLevel
+                    }
+                }
+            });
+        });
+
+        vehicleStatus.points_of_interest = pointsOfInterest.map(point => {
+            return {
+                id: point.id,
+                side: point.side,
+                vehicle_status_id: idVehicleStatus,
+                x: point.x,
+                y: point.y
+            }
+        });
+        vehicleStatus.presented_symptoms = symptoms.join(', ');
+        vehicleStatus.general_observations = observations;
+
+        const payload = {
+            comments: comments,
+            vehicle_status: vehicleStatus,
+        };
+
+        console.log("datos a enviar", payload);
+
+        try {
+
+            const response = await apiClient.put(`/work-orders/update/${workOrderId}`, payload);
+
+            if (response.status === 200) {  // Suponiendo que tu API devuelve 200 para una edición exitosa
+                toast.success('Orden de trabajo editada exitósamente', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            } else {
+                toast.error('Ha ocurrido un error al editar la orden de trabajo', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
+
+        } catch (error) {
+            console.error("Error al editar la orden de trabajo", error);
+            toast.error('Error inesperado al editar la orden de trabajo.', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    };
+
     useEffect(() => {
         getWorkOrderDetailById();
     }, []);
@@ -383,6 +499,12 @@ const InformationWorkOrder = () => {
 
         }
     }, [workOrderDetail]);
+
+    useEffect(() => {
+        if (workOrderItems && workOrderItems.length > 0) {
+            setSelectedProducts(workOrderItems);
+        }
+    }, [workOrderItems]);
 
     useEffect(() => {
         console.log("selectedServicesList ha cambiado en el componente padre:", selectedServicesList);
@@ -429,7 +551,7 @@ const InformationWorkOrder = () => {
                                         classNamePrefix="react-select"
                                     />
                                 </div>
-                                <button className="confirm-button" >
+                                <button className="confirm-button" onClick={editWorkOrder} >
                                     <span className="text-confirm-button ">Confirmar</span>
                                 </button>
                             </div>
@@ -593,7 +715,7 @@ const InformationWorkOrder = () => {
 
                                 {visibleSections['state'] && (
                                     <>
-                                        <div style={{textAlign: "right", marginBottom: '10px'}}>
+                                        <div style={{ textAlign: "right", marginBottom: '10px' }}>
                                             <button
                                                 className="btn-select-all"
                                                 disabled={!isEditState}
@@ -608,7 +730,6 @@ const InformationWorkOrder = () => {
                                                     {optionsCheckBox[group].map((labelName, index) => {
                                                         // Si es "Combustible", solo mostrar la etiqueta
                                                         if (labelName === 'Combustible') {
-                                                            console.log("Aquí estamos en la condición de Combustible");
                                                             return <label key={index}>{labelName}</label>;
                                                         }
                                                         // Si es "Gas", mostrar el ícono (y el valor en porcentaje si es necesario)
@@ -811,6 +932,7 @@ const InformationWorkOrder = () => {
                     initialProductQuantities={productQuantities}
                     onProductPricesUpdated={setProductPrices}
                     onProductQuantitiesUpdated={setProductQuantities}
+                    workOrderId={workOrderId}
                 />
             )}
 
@@ -839,6 +961,34 @@ const InformationWorkOrder = () => {
                     orderHistory={workOrderDetail.work_order_history}
                     workOrderCode={workOrderDetail.work_order_code}
                 />
+            )}
+
+            {showModal && (
+                <div className="filter-modal-overlay">
+                    <div className="filter-modal">
+                        <h3>Confirmación</h3>
+                        <p>
+                            ¿Estás seguro de que quieres {nextStatus === 'cancelled' ? "cancelar" : "completar"} la orden de trabajo?
+                        </p>
+                        <div className="button-options">
+                            <div className="half">
+                                <button className="optionNo-button" onClick={closeConfirmationModal}>
+                                    No
+                                </button>
+                            </div>
+                            <div className="half">
+                                <button className="optionYes-button" onClick={() => {
+                                    changeOrderStatus(nextStatus);
+                                    closeConfirmationModal();
+                                }}>
+                                    Si
+                                </button>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             )}
         </div>
 

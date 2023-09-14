@@ -338,7 +338,7 @@ const NewWorkOrder = () => {
 
         vehicleStatus.points_of_interest = pointsOfInterest.map(point => {
             return {
-                side: "left", // Aquí deberías determinar el lado correcto si es necesario.
+                side: point.side, // Aquí deberías determinar el lado correcto si es necesario.
                 x: point.x,
                 y: point.y
             }

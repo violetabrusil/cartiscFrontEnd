@@ -42,7 +42,12 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
 
         // Determinar el lado
         const side = roundedX < imageWidth / 2 ? 'left' : 'right';
-        newPoints[index] = { x: roundedX, y: roundedY, side };
+        newPoints[index] = { 
+            ...newPoints[index], 
+            x: roundedX, 
+            y: roundedY, 
+            side 
+        };
 
         setPoints(newPoints);
         if (updatePoints) {
@@ -52,7 +57,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
 
     useEffect(() => {
         setPoints(initialPoints);
-    }, [initialPoints]);
+    }, []);
 
 
     return (
