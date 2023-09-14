@@ -1,8 +1,8 @@
 .page-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  position: relative;
   overflow-y: auto;
 }
 
@@ -23,23 +23,11 @@
   margin-bottom: 10px;
 }
 
-@media screen and (max-width: 600px) {
-  .titleContainer {
-    padding: 1em;
-  }
-}
-
 .title {
   font-size: 40px;
   font-style: normal;
   font-weight: 100;
   margin-top: 5px;
-}
-
-@media (max-width: 600px) {
-  .title {
-    font-size: 20px;
-  }
 }
 
 .containerApp {
@@ -56,12 +44,6 @@
   height: auto;
   object-fit: contain;
   margin-top: 10px;
-}
-
-@media (max-width: 414px) {
-  .logo {
-    width: 50%;
-  }
 }
 
 .image {
@@ -98,16 +80,16 @@
 }
 
 @media not all and (min-resolution:.001dpcm) {
-  @media {
-    .image-container img {
-      /* Estilos específicos de Safari */
-      width: 66%;
-      height: auto;
-      object-fit: contain;
-      margin-left: 20px;
-      margin-top: 130px;
-    }
+
+  .image-container img {
+    /* Estilos específicos de Safari */
+    width: 66%;
+    height: auto;
+    object-fit: contain;
+    margin-left: 20px;
+    margin-top: 130px;
   }
+
 }
 
 .content-image {
@@ -117,20 +99,22 @@
 }
 
 .content-image-login {
-  position: relative;
-  margin-left: 30px;
-  margin-top: 130px;
+  position: absolute;
+  bottom: 0;
+  margin-left: 20px;
 }
 
 .blurred-image {
+  max-height: 250px !important;
+  max-width: 550px !important;
   position: absolute;
   bottom: 0;
-  /* Coloca la imagen en la parte inferior del contenedor */
+  left: 50%;
+  /* Centrar en el contenedor */
+  transform: translateX(0%);
+  /* Ajustar al centro exacto */
   z-index: 10;
-  /* Un z-index alto para asegurarse de que se muestre sobre otros elementos */
-  left: 0;
   opacity: 0.5;
-  filter: blur(0px);
 }
 
 .button-login-express {
@@ -150,12 +134,6 @@
   color: white;
   border: 2px solid white;
   /* Cambiar el color de fondo al pasar el cursor sobre el botón */
-}
-
-@media screen and (min-width: 768px) {
-  .blurred-image {
-    width: 500px;
-  }
 }
 
 .nameContainer,
@@ -414,4 +392,54 @@
   align-items: center;
   margin-top: 30px;
   margin-bottom: 10px;
+}
+
+@media screen and (max-width: 900px) {
+  .blurred-image {
+    max-height: 180px;
+    max-width: 400px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .blurred-image {
+    max-height: 120px;
+    max-width: 250px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .logo {
+    max-width: 100px;
+    max-height: 80px;
+  }
+}
+ 
+
+@media screen and (max-width: 400px) {
+  .blurred-image {
+    max-height: 80px;
+    max-width: 150px;
+  }
+}
+
+/* Estilo específico para tablets en orientación horizontal */
+@media screen and (min-width: 601px) and (max-width: 1024px) and (orientation: landscape) {
+
+  .blurred-image {
+    max-height: 200px !important;
+    max-width: 300px !important;
+    margin-bottom: 15px;
+  }
+
+}
+
+/* Estilo para tablets en orientación horizontal */
+@media screen and (min-width: 1340px) and (max-width: 1340px) and (min-height: 800px) and (max-height: 800px)  {
+  .blurred-image {
+    max-height: 400px;
+    /* Ajusta el tamaño de la imagen según tus necesidades */
+    max-width: 800px;
+    /* Ajusta el tamaño de la imagen según tus necesidades */
+  }
 }

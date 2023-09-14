@@ -1,47 +1,107 @@
 .form-container {
-    width: 100%;
-    max-width: 400px;
-    /* ajusta según tus necesidades */
-    margin: 0 auto;
-    /* centra el formulario horizontalmente */
-    padding: 20px;
-    box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
+  /* ajusta según tus necesidades */
+  margin: 0 auto;
+  /* centra el formulario horizontalmente */
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .form-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    /* esto hace que el padding no agregue ancho adicional al input */
-    border: 1px solid #E1E1E4;
-    border-radius: 13px;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 20px;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  /* esto hace que el padding no agregue ancho adicional al input */
+  border: 1px solid #E1E1E4;
+  border-radius: 13px;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding-right: 40px;
 }
 
 .button-form {
-    width: 100%;
-    padding: 12px 24px;
-    box-sizing: border-box;
-    /* esto hace que el padding no agregue ancho adicional al button */
-    background: #1C4A74;
-    border-radius: 13px;
-    color: white;
-    font-style: normal;
-    font-size: 24px;
-    margin-top: 20px;
+  width: 100%;
+  padding: 12px 24px;
+  box-sizing: border-box;
+  /* esto hace que el padding no agregue ancho adicional al button */
+  background: #1C4A74;
+  border-radius: 13px;
+  color: white;
+  font-style: normal;
+  font-size: 24px;
+  margin-top: 20px;
 }
 
-@media (max-width: 414px) {  
-    .input-field {
-      width: 100%;  
-      padding: 6px;  
-    }
-  
-    .button {
-      padding: 6px 12px;  
-    }
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+
+}
+
+.input-icon {
+  position: absolute;
+  right: 15px;
+  /* posición del ícono dentro del contenedor */
+  top: 35%;
+  transform: translateY(-50%);
+  width: 20px;
+  /* o el tamaño que prefieras */
+}
+
+.toggle-password-icon {
+  position: absolute;
+  right: 15px;
+  /* posición del ícono dentro del contenedor */
+  top: 35%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 20px;
+  /* o el tamaño que prefieras */
+}
+
+@media (max-width: 414px) {
+  .input-field {
+    width: 100%;
+    padding: 6px;
   }
+
+  .button {
+    padding: 6px 12px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .form-input {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .button-form {
+    width: 100%;
+    padding: 12px;
+  }
+}
+
+@media screen and (min-width: 601px) and (max-width: 1024px) and (orientation: landscape) {
+
+  .blurred-image {
+    max-height: 200px !important;
+    max-width: 300px !important;
+    margin-bottom: 15px;
+  }
+
+  .form-container {
+    max-width: 313px;
+    padding: 0px;
+  }
+
+}

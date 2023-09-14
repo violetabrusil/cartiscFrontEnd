@@ -22,7 +22,6 @@ const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const clockIcon = process.env.PUBLIC_URL + "/images/icons/clockIcon.png";
-const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 
 const InformationWorkOrder = () => {
