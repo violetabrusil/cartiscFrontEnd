@@ -25,6 +25,7 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    overflow-y: hidden;
 }
 
 .result-car {
@@ -225,7 +226,7 @@
 .input-plate-container label {
     position: absolute;
     top: 37%;
-    left: 20%;
+    left: 23%;
     transform: translateY(-50%);
     pointer-events: none;
     color: black;
@@ -238,12 +239,12 @@
     width: 11px;
     position: absolute;
     top: 37%;
-    left: calc(50% - 109px);
+    left: calc(50% - 92px);
     transform: translateY(-50%);
 }
 
 .input-plate-vehicle {
-    max-width: 36%;
+    max-width: 40%;
     height: 13px;
     border: 3px solid #000;
     background: #fff;
@@ -253,7 +254,7 @@
     margin-top: 11px;
     margin-left: 20px;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 18px;
     text-align: center;
     padding-top: 22px;
     box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;

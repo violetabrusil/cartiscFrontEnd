@@ -377,7 +377,7 @@ const NewClient = () => {
                                         <div className="input-form-new-client">
                                             <input
                                                 className="input-form-add-vehicle"
-                                                type="text"
+                                                type="number"
                                                 value={year}
                                                 onChange={(e) => setYear(parseInt(e.target.value))}
                                             />

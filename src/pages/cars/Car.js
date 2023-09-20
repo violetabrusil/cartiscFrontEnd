@@ -18,6 +18,8 @@ import { CustomButtonContainer, CustomButton } from "../../customButton/CustomBu
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { workOrderStatus } from "../../constants/workOrderConstants";
 import SearchModalWorkOrder from "../../modal/SearchModalWorkOrder";
+import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
+import { CustomSingleValue } from "../../customSingleValue/CustomSingleValue";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -27,6 +29,12 @@ const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
+const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
+const yearIcon = process.env.PUBLIC_URL + "/images/icons/year.png";
+const kmIcon = process.env.PUBLIC_URL + "/images/icons/km.png";
+const brandIcon = process.env.PUBLIC_URL + "/images/icons/brand.png";
+const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
+const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
 const Cars = () => {
 
@@ -98,7 +106,7 @@ const Cars = () => {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '97%', // Estilo personalizado para el ancho
+            width: '98%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
@@ -114,6 +122,10 @@ const Cars = () => {
             ...provided,
             className: 'custom-select-option',
             // otros estilos personalizados si los necesitas
+        }),
+        menu: (provided, state) => ({
+            ...provided,
+            width: '100%', // puedes ajustar el ancho del menú aquí
         }),
 
     };
@@ -761,33 +773,109 @@ const Cars = () => {
 
                                         <label className="label-form">
                                             Año
-                                            <input className="input-form" type="number" value={year} onChange={(e) => setYear(parseInt(e.target.value))} />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="number"
+                                                    value={year}
+                                                    onChange={(e) => setYear(parseInt(e.target.value))}
+                                                />
+
+                                                <img
+                                                    src={yearIcon}
+                                                    alt="Year Icon"
+                                                    className="input-new-client-icon"
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Categoría
                                             <Select
+                                                components={{ Placeholder: CustomPlaceholder }}
                                                 isSearchable={false}
                                                 options={options}
                                                 value={options.find(option => option.value === category)}
                                                 onChange={handleTypeCarChange}
                                                 styles={customStyles}
-                                                placeholder="Seleccionar" />
+                                                placeholder="Seleccionar"
+                                                menuPortalTarget={document.body} />
                                         </label>
                                         <label className="label-form">
                                             Kilometraje actual
-                                            <input className="input-form" type="number" value={km} onChange={(e) => setKm(parseInt(e.target.value))} />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="number"
+                                                    value={km}
+                                                    onChange={(e) => setKm(parseInt(e.target.value))}
+                                                />
+                                                <img
+                                                    src={kmIcon}
+                                                    alt="Km Icon"
+                                                    className="input-new-client-icon"
+                                                    style={{ width: '30px' }}
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Marca
-                                            <input className="input-form" type="text" value={brand} onChange={(e) => setBrand(e.target.value)} />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="text"
+                                                    value={brand}
+                                                    onChange={(e) => setBrand(e.target.value)}
+                                                />
+                                                <img
+                                                    src={brandIcon}
+                                                    alt="Brand Icon"
+                                                    className="input-new-client-icon"
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Modelo
-                                            <input className="input-form" type="text" value={model} onChange={(e) => setModel(e.target.value)} />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="text"
+                                                    value={model}
+                                                    onChange={(e) => setModel(e.target.value)}
+                                                />
+                                                <img
+                                                    src={modelIcon}
+                                                    alt="Model Icon"
+                                                    className="input-new-client-icon"
+                                                    style={{ top: '35%' }}
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Motor
-                                            <input className="input-form" type="text" value={motor} onChange={(e) => setMotor(e.target.value)} />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="text"
+                                                    value={motor}
+                                                    onChange={(e) => setMotor(e.target.value)}
+                                                />
+                                                <img
+                                                    src={motorIcon}
+                                                    alt="Motor Icon"
+                                                    className="input-new-client-icon"
+
+                                                />
+
+                                            </div>
+
                                         </label>
                                     </form>
                                 </div>
@@ -815,7 +903,10 @@ const Cars = () => {
                             </div>
                             */}
                             <div className="container-maintenance-filter">
-                                <h2>Historial de Órdenes de trabajo</h2>
+                                <button onClick={handleGoBackButton} className="button-arrow-new-client">
+                                    <img src={arrowLeftIcon} className="arrow-icon-new-client" alt="Arrow Icon" />
+                                </button>
+                                <h2 style={{ marginRight: '31%' }}>Historial de Órdenes de trabajo</h2>
                                 <button className="button-maintenance-filter" onClick={handleOpenModalWorkOrder}>
                                     <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
                                     <span className="button-maintenance-text-filter">Filtro</span>
@@ -870,64 +961,116 @@ const Cars = () => {
 
                                         <label className="label-form">
                                             Año
-                                            <input
-                                                className="input-form"
-                                                type="number"
-                                                value={year}
-                                                onChange={(e) => setYear(parseInt(e.target.value))}
-                                                readOnly={!isEditMode}
-                                            />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="number"
+                                                    value={year}
+                                                    onChange={(e) => setYear(parseInt(e.target.value))}
+                                                    readOnly={!isEditMode}
+                                                />
+
+                                                <img
+                                                    src={yearIcon}
+                                                    alt="Year Icon"
+                                                    className="input-new-client-icon"
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Categoría
                                             <Select
+                                                components={{ SingleValue: CustomSingleValue }}
+                                                isSearchable={false}
                                                 options={options}
                                                 value={options.find(option => option.value === category)}
                                                 onChange={handleTypeCarChange}
                                                 styles={customStyles}
-                                                placeholder="Seleccionar"
                                                 readOnly={!isEditMode}
+                                                menuPortalTarget={document.body}
                                             />
                                         </label>
                                         <label className="label-form">
                                             Kilometraje actual
-                                            <input
-                                                className="input-form"
-                                                type="number"
-                                                value={km}
-                                                onChange={(e) => setKm(parseInt(e.target.value))}
-                                                readOnly={!isEditMode}
-                                            />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="number"
+                                                    value={km}
+                                                    onChange={(e) => setKm(parseInt(e.target.value))}
+                                                    readOnly={!isEditMode}
+                                                />
+
+                                                <img
+                                                    src={kmIcon}
+                                                    alt="Km Icon"
+                                                    className="input-new-client-icon"
+                                                    style={{ width: '30px' }}
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Marca
-                                            <input
-                                                className="input-form"
-                                                type="text"
-                                                value={brand}
-                                                onChange={(e) => setBrand(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="text"
+                                                    value={brand}
+                                                    onChange={(e) => setBrand(e.target.value)}
+                                                    readOnly={!isEditMode}
+                                                />
+                                                <img
+                                                    src={brandIcon}
+                                                    alt="Brand Icon"
+                                                    className="input-new-client-icon"
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Modelo
-                                            <input
-                                                className="input-form"
-                                                type="text"
-                                                value={model}
-                                                onChange={(e) => setModel(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="text"
+                                                    value={model}
+                                                    onChange={(e) => setModel(e.target.value)}
+                                                    readOnly={!isEditMode}
+                                                />
+                                                <img
+                                                    src={modelIcon}
+                                                    alt="Model Icon"
+                                                    className="input-new-client-icon"
+                                                    style={{ top: '35%' }}
+                                                />
+
+                                            </div>
+
                                         </label>
                                         <label className="label-form">
                                             Motor
-                                            <input
-                                                className="input-form"
-                                                type="number"
-                                                value={motor}
-                                                onChange={(e) => setMotor(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
+                                            <div className="input-form-new-client">
+                                                <input
+                                                    className="input-form-add-vehicle"
+                                                    type="number"
+                                                    value={motor}
+                                                    onChange={(e) => setMotor(e.target.value)}
+                                                    readOnly={!isEditMode}
+                                                />
+                                                <img
+                                                    src={motorIcon}
+                                                    alt="Motor Icon"
+                                                    className="input-new-client-icon"
+
+                                                />
+
+                                            </div>
+
                                         </label>
                                     </form>
                                 </div>

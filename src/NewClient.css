@@ -132,7 +132,7 @@
 .input-container label {
     position: absolute;
     top: 23%;
-    left: 12%;
+    left: 13%;
     transform: translateY(-50%);
     transition: transform 0.3s ease-out, font-size 0.3s ease-out;
     pointer-events: none;
@@ -147,7 +147,7 @@
     width: 26px;
     position: absolute;
     top: 24%;
-    left: calc(50% - 379px);
+    left: calc(50% - 359px);
     transform: translateY(-50%);
 }
 
