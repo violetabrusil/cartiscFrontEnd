@@ -10,6 +10,7 @@ import Header from "../header/Header";
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png";
 const deletIconNumber = process.env.PUBLIC_URL + "/images/icons/deleteNumberIcon.png";
+const pinIcon = process.env.PUBLIC_URL + "/images/icons/pin.png";
 
 const LoginExpress = () => {
 
@@ -25,20 +26,20 @@ const LoginExpress = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         const unumber = user.unumber;
-    
+
         try {
             const response = await apiLogin.post('/login-express', { unumber, pin });
             const token = response.data.token;
-    
+
             if (response.data.user) {
                 // Guarda todos los datos del usuario en localStorage
                 localStorage.setItem('user', JSON.stringify(response.data.user));
             }
-    
+
             document.cookie = `jwt=${token}; path=/; samesite=none`;
-    
+
             if (user.user_type === "admin") {
                 navigate("/settings");
             } else {
@@ -48,7 +49,7 @@ const LoginExpress = () => {
             console.log("Error en el inicio de sesión", error)
         }
     };
-    
+
 
     const handleDeleteClick = () => {
         setPin(prevPin => prevPin.slice(0, -1));  // Esta línea elimina el último carácter del PIN.
@@ -99,12 +100,26 @@ const LoginExpress = () => {
                                 readOnly
                             />
 
-                            <input
-                                className="password-login-express "
-                                type="password"
-                                value={pin}
-                                readOnly
-                            />
+                            <div className="input-wrapper-pin">
+
+                                <img
+                                    src={pinIcon}
+                                    alt="Pin Icon"
+                                    className="input-pin-icon"
+                                />
+
+                                <input
+                                    className="password-login-express "
+                                    type="password"
+                                    value={pin}
+                                    readOnly
+                                />
+
+
+
+                            </div>
+
+
 
                         </form>
                     </div>
@@ -136,8 +151,8 @@ const LoginExpress = () => {
 
             </div>
 
-            <div className="content-image" >
-                <img className="blurred-image" src={image} alt='Car' />
+            <div className="content-image-express" >
+                <img className="blurred-image-express" src={image} alt='Car' />
             </div>
 
 

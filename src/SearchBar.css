@@ -4,18 +4,21 @@
     justify-content: space-between;
     margin-left: 38px;
     margin-top: 13px;
+    max-width: 50%;
 }
 
 .search-products-box {
-    display: flex;
+    flex: 1;
+    gap: 1px;
     align-items: center;
-    width: 45%;
+    width: 45vw;
     /* o cualquier otro porcentaje que funcione para ti */
     padding: 5px;
     border-radius: 6px;
     border: 2px solid rgba(134, 134, 134, 0.31);
     background: rgba(128, 128, 128, 0.26);
     margin-right: 50px;
+    transition: width 0.3s ease-out;
 }
 
 .input-search-products {
@@ -75,5 +78,36 @@
     border-radius: 6px;
     border: 2px solid rgba(134, 134, 134, 0.31);
     background: rgba(128, 128, 128, 0.26);
-    margin-right: 34px;
+    margin-left: 15px;
+}
+
+@media screen and (max-width: 768px) {
+    .search-bar-container {
+        /* Esto apila los elementos en vertical */
+        align-items: center;
+    }
+
+    .search-products-box {
+        width: 100%;
+        /* Ocupa todo el ancho disponible */
+        margin-top: 10px;
+        /* Agrega un margen superior para separar de otros elementos */
+    }
+
+    .search-products-box-user {
+        width: 50%;
+        margin-top: 1px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    /* Ajustes para pantallas <= 1200px */
+}
+
+@media screen and (max-width: 1000px) {
+    /* Ajustes adicionales para pantallas <= 1000px */
+}
+
+@media screen and (max-width: 800px) {
+    /* Ajustes adicionales para pantallas <= 800px */
 }

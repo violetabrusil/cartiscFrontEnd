@@ -14,6 +14,7 @@ const image = process.env.PUBLIC_URL + "/images/car.png";
 const userIcon = process.env.PUBLIC_URL + "/images/icons/username.png";
 const passwordVisible = process.env.PUBLIC_URL + "/images/icons/password_visible.png";
 const passwordInvisible = process.env.PUBLIC_URL + "/images/icons/password_invisible.png";
+const passwordIcon = process.env.PUBLIC_URL + "/images/icons/password.png";
 
 const Login = () => {
 
@@ -94,14 +95,6 @@ const Login = () => {
                 <div className="form-container">
                     <form onSubmit={handleLogin}>
                         <div className="input-wrapper">
-                            <input
-                                className="form-input"
-                                type="text"
-                                placeholder="Ingrese su usuario"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                               
-                            />
 
                             <img
                                 src={userIcon}
@@ -109,9 +102,26 @@ const Login = () => {
                                 className="input-icon"
                             />
 
+                            <input
+                                className="form-input"
+                                type="text"
+                                placeholder="Ingrese su usuario"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+
+                            />
+
+
+
                         </div>
 
                         <div className="password-wrapper">
+
+                            <img
+                                src={passwordIcon}
+                                alt="User Icon"
+                                className="input-icon"
+                            />
 
                             <input
                                 className="form-input"

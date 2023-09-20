@@ -9,6 +9,7 @@ import './Modal.css';
 import './NewClient.css';
 
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import PuffLoader from "react-spinners/PuffLoader";
 import Login from "./pages/Login";
 import LoginExpress from './pages/LoginExpress';
 import Home from './pages/Home';
@@ -29,17 +30,21 @@ import InformationWorkOrder from './pages/workOrders/InformationWorkOrder';
 import ChangePassword from './pages/welcome/changePassword';
 import ChangePIN from './pages/welcome/changePIN';
 import Welcome from './pages/welcome/Welcome';
+import ClientProvider from './provider/ClientProvider';
 
 function App() {
   const { isLoading } = useContext(AuthContext);
 
-    if (isLoading) {
-        return <div>Loading...</div>;  // Puedes reemplazar esto con un spinner o un componente de pantalla de carga.
-    }
+  if (isLoading) {
+    return <div className="spinner-container-app">
+      <PuffLoader color="#316EA8" loading={isLoading} size={60} />
+    </div>;
+  }
 
   return (
-  
-      <Router>
+
+    <Router>
+      <ClientProvider>
         <div>
           <Routes>
             <Route path="/" element={<Login />} />
@@ -62,8 +67,9 @@ function App() {
             <Route path="/paymentReceipt" element={<PaymentReceipts />} />
           </Routes>
         </div>
+      </ClientProvider>
 
-      </Router>
+    </Router>
 
 
 

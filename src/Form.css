@@ -20,7 +20,7 @@
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 20px;
-  padding-right: 40px;
+  padding-left: 41px;
 }
 
 .button-form {
@@ -49,12 +49,10 @@
 
 .input-icon {
   position: absolute;
-  right: 15px;
-  /* posición del ícono dentro del contenedor */
+  left: 10px;
   top: 35%;
   transform: translateY(-50%);
   width: 20px;
-  /* o el tamaño que prefieras */
 }
 
 .toggle-password-icon {
@@ -64,6 +62,21 @@
   top: 35%;
   transform: translateY(-50%);
   cursor: pointer;
+  width: 20px;
+  /* o el tamaño que prefieras */
+}
+
+.input-wrapper-pin {
+  position: relative;
+  width: 100%;
+}
+
+.input-pin-icon {
+  position: absolute;
+  left: 50px;
+  /* posición del ícono dentro del contenedor */
+  top: 39%;
+  transform: translateY(-50%);
   width: 20px;
   /* o el tamaño que prefieras */
 }

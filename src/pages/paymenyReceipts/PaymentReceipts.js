@@ -26,8 +26,8 @@ const PaymentReceipts = () => {
         () => [
             { Header: "Código orden de trabajo", accessor: "work_order.work_order_code" },
             { Header: "Tipo de comprobante", accessor: "invoice_type" },
-            { Header: "Cliente", accessor: "name"},
-            { Header: "Placa", accessor: "plate"},
+            { Header: "Cliente", accessor: "name" },
+            { Header: "Placa", accessor: "plate" },
             { Header: "Forma de pago", accessor: "payment_type" },
             { Header: "Fecha", accessor: "created_at" },
             {
@@ -95,13 +95,13 @@ const PaymentReceipts = () => {
         try {
             const response = await apiClient.post('/sales-receipts/search', data);
             console.log(response.data);
-    
+
             // Si response.data es null o undefined, cierra el modal y retorna.
             if (!response.data) {
                 setModalOpen(false);
                 return;
             }
-    
+
             const transformedPaymentReceipts = response.data.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
@@ -113,15 +113,15 @@ const PaymentReceipts = () => {
                     payment_type: translatedPaymentType
                 };
             })
-    
+
             setPaymentReceipts(transformedPaymentReceipts);
             setModalOpen(false)
-    
+
         } catch (error) {
             console.log("Ha ocurrido un error", error);
         }
     };
-    
+
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
@@ -134,7 +134,7 @@ const PaymentReceipts = () => {
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
                 const translatedPaymentType = paymentTypeMaping[payment.payment_type] || payment.payment_type;
                 const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
-              
+
                 return {
                     ...payment,
                     created_at: newDateStart,
@@ -176,7 +176,7 @@ const PaymentReceipts = () => {
     const sendEmail = async (paymentId) => {
         try {
             const response = await apiClient.get(`/sales-receipts/send-email/${paymentId}`);
-            if ( response.status === 200) {
+            if (response.status === 200) {
                 toast.success('Email enviado', {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -187,7 +187,7 @@ const PaymentReceipts = () => {
 
             }
 
-       
+
         } catch (error) {
             console.error('Error al enviar el email', error);
         }
@@ -208,7 +208,7 @@ const PaymentReceipts = () => {
 
             <div className="container-payment-receipts">
 
-                <div style={{display: 'flex'}}>
+                <div style={{ display: 'flex' }}>
                     <CustomTitleSection
                         title="Comprobantes de pagos" />
 
@@ -218,11 +218,15 @@ const PaymentReceipts = () => {
                     </button>
                 </div>
 
-                <DataTable
-                    data={paymentReceipts}
-                    columns={columns}
-                    highlightRows={false}
-                />
+              
+                    <DataTable
+                        data={paymentReceipts}
+                        columns={columns}
+                        highlightRows={false}
+                    />
+
+        
+
             </div>
 
             {isModalOpen && (

@@ -5,6 +5,7 @@ import { AuthContext } from "../contexts/AuthContext";
 
 const menuButton = process.env.PUBLIC_URL + "/images/icons/menu-button.png";
 const logo = process.env.PUBLIC_URL + "/images/cartics-black.png";
+const logoClose = process.env.PUBLIC_URL + "/images/cartics-icon.png";
 const settingsIconGray = process.env.PUBLIC_URL + "/images/icons/settingsIcon-gray.png";
 const settingsIconBlue = process.env.PUBLIC_URL + "/images/icons/settingsIcon-blue.png";
 const homeIconGray = process.env.PUBLIC_URL + "/images/icons/homeIcon-gray.png";
@@ -31,7 +32,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const [activeIndex, setActiveIndex] = useState(null);
     const { user } = useContext(AuthContext);
 
-    console.log("user logeado",user)
+    console.log("user logeado", user)
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -93,7 +94,8 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                     </Link>
                 ))}
 
-                <img src={logo} alt="Logo Vertical" className="imagen-vertical" />
+                <img src={isOpen ? logoClose : logo} alt="Logo Vertical" className="imagen-vertical" />
+
 
                 <div className={`icono-menu ${isOpen ? "open" : ""}`}>
                     <button className="button-menu" onClick={toggleMenu}>

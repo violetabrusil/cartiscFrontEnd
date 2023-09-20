@@ -98,6 +98,12 @@
   margin-top: 50px;
 }
 
+.content-image-express {
+  position: static;
+  margin-left: 30px;
+  margin-top: 50px;
+}
+
 .content-image-login {
   position: absolute;
   bottom: 0;
@@ -112,6 +118,19 @@
   left: 50%;
   /* Centrar en el contenedor */
   transform: translateX(0%);
+  /* Ajustar al centro exacto */
+  z-index: 10;
+  opacity: 0.5;
+}
+
+.blurred-image-express {
+  max-height: 250px !important;
+  max-width: 550px !important;
+  position: absolute;
+  bottom: 0;
+  left: 73%;
+  /* Centrar en el contenedor */
+  transform: translateX(-170%);
   /* Ajustar al centro exacto */
   z-index: 10;
   opacity: 0.5;
@@ -394,8 +413,25 @@
   margin-bottom: 10px;
 }
 
+
+.spinner-container-app {
+  display: grid;
+  place-items: center; /* Centrar en ambos ejes */
+  position: fixed;     /* Hacerlo fijo en la posición */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0; 
+}
+
+
 @media screen and (max-width: 900px) {
   .blurred-image {
+    max-height: 180px;
+    max-width: 400px;
+  }
+
+  .blurred-image-express {
     max-height: 180px;
     max-width: 400px;
   }
@@ -403,6 +439,11 @@
 
 @media screen and (max-width: 600px) {
   .blurred-image {
+    max-height: 120px;
+    max-width: 250px;
+  }
+
+  .blurred-image-express {
     max-height: 120px;
     max-width: 250px;
   }
@@ -421,6 +462,11 @@
     max-height: 80px;
     max-width: 150px;
   }
+
+  .blurred-image-express {
+    max-height: 80px;
+    max-width: 150px;
+  }
 }
 
 /* Estilo específico para tablets en orientación horizontal */
@@ -432,14 +478,22 @@
     margin-bottom: 15px;
   }
 
+  .blurred-image-express {
+    max-height: 200px !important;
+    max-width: 300px !important;
+    margin-bottom: 15px;
+  }
+
 }
 
 /* Estilo para tablets en orientación horizontal */
 @media screen and (min-width: 1340px) and (max-width: 1340px) and (min-height: 800px) and (max-height: 800px)  {
   .blurred-image {
     max-height: 400px;
-    /* Ajusta el tamaño de la imagen según tus necesidades */
     max-width: 800px;
-    /* Ajusta el tamaño de la imagen según tus necesidades */
+  }
+  .blurred-image-express {
+    max-height: 400px;
+    max-width: 800px;
   }
 }

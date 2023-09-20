@@ -56,7 +56,8 @@
 }
 
 .input-form {
-    width: 95%;
+    width: 83%;
+    max-width: 95%;
     height: 30px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
@@ -64,6 +65,20 @@
     padding: 8px;
     margin-bottom: 20px;
     margin-top: 8px;
+    padding-left: 50px;
+}
+
+.input-form-add-vehicle {
+    width: 91%;
+    max-width: 91%;
+    height: 30px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+    padding-left: 50px;
 }
 
 .custom-select-control {
@@ -169,6 +184,31 @@
 }
 
 .alert {
+    width: 30px;
+    height: 30px;
+}
+
+.input-form-new-client {
+    position: relative;
+    width: 100%;
+}
+
+.input-new-client-icon {
+    position: absolute;
+    left: 13px;
+    top: 42%;
+    transform: translateY(-50%);
+    width: 26px;
+}
+
+.button-arrow-new-client {
+    background: none;
+    border: none;
+    margin-left: -9px;
+    margin-top: 5px;
+}
+
+.arrow-icon-new-client {
     width: 30px;
     height: 30px;
 }

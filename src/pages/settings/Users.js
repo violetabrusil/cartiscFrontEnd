@@ -17,6 +17,9 @@ const userIcon = process.env.PUBLIC_URL + "/images/user.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 const editIconWhite = process.env.PUBLIC_URL + "/images/icons/editIcon-white.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
+const nameIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
+const passwordIcon = process.env.PUBLIC_URL + "/images/icons/password.png";
+const pinIcon = process.env.PUBLIC_URL + "/images/icons/pin.png";
 
 const Users = () => {
 
@@ -649,15 +652,24 @@ const Users = () => {
                                     <>
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Nombre de usuario</label>
-                                            <input
-                                                className="input-name-user"
-                                                value={username}
-                                                onChange={(e) => {
-                                                    console.log("Input changed!", e.target.value);
-                                                    setUsername(e.target.value);
-                                                }}
-                                                readOnly={actionType === 'view'}
-                                            />
+                                            <div className="input-form-new-user">
+                                                <input
+                                                    className="input-name-user"
+                                                    value={username}
+                                                    onChange={(e) => {
+                                                        console.log("Input changed!", e.target.value);
+                                                        setUsername(e.target.value);
+                                                    }}
+                                                    readOnly={actionType === 'view'}
+                                                />
+
+                                                <img
+                                                    src={nameIcon}
+                                                    alt="Name user Icon"
+                                                    className="input-new-user-icon"
+                                                />
+                                            </div>
+
                                         </div>
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Rol</label>
@@ -735,13 +747,13 @@ const Users = () => {
             {isOpenModal && (
                 <div className="filter-modal-overlay">
                     <div className="filter-modal">
-                        <div style={{display: 'flex'}}>
+                        <div style={{ display: 'flex' }}>
                             <h3>
                                 {modalAction === 'create' && 'Credenciales de acceso'}
                                 {modalAction === 'resetPassword' && 'Ingrese una contraseña temporal'}
                                 {modalAction === 'resetPin' && 'Ingrese un PIN temporal'}
                             </h3>
-                            <button style={{marginTop: '16px'}} className="button-close-modal" onClick={closeModal}  >
+                            <button style={{ marginTop: '16px' }} className="button-close-modal" onClick={closeModal}  >
                                 <img src={closeIcon} alt="Close Icon" className="modal-close-icon"></img>
                             </button>
                         </div>
@@ -757,11 +769,19 @@ const Users = () => {
                             {(modalAction === 'create' || modalAction === 'resetPassword') && (
                                 <div>
                                     <label>Ingrese la contraseña</label>
-                                    <input
-                                        type="text"
-                                        value={password}
-                                        onChange={handlePasswordChange}
-                                    />
+                                    <div className="input-form-new-user-modal">
+                                        <img
+                                            src={passwordIcon}
+                                            alt="Password Icon"
+                                            className="input-new-user-icon"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={password}
+                                            onChange={handlePasswordChange}
+                                        />
+                                    </div>
+
                                 </div>
                             )}
                             {passwordError && <span style={{ color: 'red' }}>{passwordError}</span>}
@@ -770,12 +790,23 @@ const Users = () => {
                             {(modalAction === 'create' || modalAction === 'resetPin') && (
                                 <div>
                                     <label>Ingrese el pin</label>
-                                    <input
-                                        type="number"
-                                        style={{ marginLeft: '63px' }}
-                                        value={pin}
-                                        onChange={handlePinChange}
-                                    />
+                                    <div className="input-form-new-user-modal">
+                                        <img
+                                            style={{left: '73px'}}
+                                            src={pinIcon}
+                                            alt="Pin Icon"
+                                            className="input-new-user-icon"
+                                        />
+                                        <input
+                                            type="number"
+                                            style={{ marginLeft: '63px', width: '154px', paddingLeft: '43px' }}
+                                            value={pin}
+                                            onChange={handlePinChange}
+                                        />
+
+
+                                    </div>
+
                                 </div>
                             )}
                             {pinError && <span style={{ color: 'red' }}>{pinError}</span>}

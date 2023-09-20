@@ -17,6 +17,7 @@ import Modal from "../../modal/Modal";
 import VehiclePlans from "../../vehicle-plans/VehiclePlans";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import apiClient from "../../services/apiClient";
+import ClientContext from "../../contexts/ClientContext";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
@@ -48,7 +49,9 @@ const NewWorkOrder = () => {
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const debounceTimeout = useRef(null);
     const [clients, setClients] = useState([]);
-    const [selectedClient, setSelectedClient] = useState(null);
+    const { selectedClient, setSelectedClient } = useContext(ClientContext);
+    const { selectedVehicle } = useContext(ClientContext);
+
     const [selectedVehicleId, setSelectedVehicleId] = useState(null);
     const [isKmModalOpen, setIsKmModalOpen] = useState(false);
 
@@ -347,7 +350,7 @@ const NewWorkOrder = () => {
         vehicleStatus.general_observations = observations;
 
         const payload = {
-            vehicle_id: selectedVehicleId,
+            vehicle_id: selectedVehicleId ? selectedVehicleId : selectedVehicle?.id,
             comments: comments,
             work_order_status: workOrderStatus,
             date_start: dateStart,
@@ -426,8 +429,21 @@ const NewWorkOrder = () => {
         }
     }, [symptoms]);
 
+    useEffect(() => {
+        if (selectedClient && selectedClient.id) {
+            getVehicleOfClient(selectedClient.id);
+        }
+    }, [selectedClient]);
+
+    useEffect(() => {
+        if (selectedVehicle && selectedVehicle.km) {
+            setActualKm(selectedVehicle.km);
+        }
+    }, [selectedVehicle]);
+
 
     return (
+
         <div>
 
             <ToastContainer />
@@ -569,7 +585,7 @@ const NewWorkOrder = () => {
                                 {vehicles.map((vehicle, index) => (
                                     <div
                                         key={index}
-                                        className={`carousel ${vehicle.id === selectedVehicleId ? 'selected' : ''}`}
+                                        className={`carousel ${vehicle.id === selectedVehicleId || (selectedVehicle && vehicle.id === selectedVehicle.id) ? 'selected' : ''}`}
                                         onClick={() => setSelectedVehicleId(vehicle.id)}
                                     >
                                         <img

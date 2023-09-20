@@ -1,14 +1,15 @@
 .users-container-title {
     display: flex;
     justify-content: space-between;
-    width: 250px;
-    margin-left: 38px;
-    margin-top: 38px;
+    width: 20%;
+    margin-left: 2rem;
+    margin-top: 2rem;
     align-items: center;
+    gap: 30px
 }
 
 .users-container-title label {
-    font-size: 29px;
+    font-size: 2em;
     font-weight: 700;
 }
 
@@ -45,6 +46,7 @@
 
 .general-user-right {
     flex: 2;
+    overflow-x: auto;
 }
 
 .general-user-left {
@@ -80,8 +82,9 @@
     border-radius: 10px;
     border: 1px solid #D4D4D4;
     background: #F8F8F8;
-    width: 330px;
-    height: 565px;
+    width: 20vw;
+    max-width: 330px;
+    height: auto;
 }
 
 .container-button-edit-user {
@@ -138,7 +141,6 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-    width: 300px;
     padding: 20px;
 }
 
@@ -194,6 +196,7 @@
 .container-button-user-action {
     display: grid;
     margin-top: 33px;
+    margin-bottom: 20px;
     gap: 20px;
     justify-content: center;
     align-items: center;
@@ -259,12 +262,12 @@
 }
 
 .container-modal-fields input {
-    width: 200px; 
+    width: 160px;
     height: 33px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
-    padding-left: 5px;
+    padding-left: 40px;
 }
 
 .label-modal-message {
@@ -285,3 +288,39 @@
     color: red;
     font-size: 12px;
 }
+
+.input-form-new-user {
+    position: relative;
+    width: 100%;
+}
+
+.input-form-new-user-modal {
+    position: relative;
+}
+
+.input-new-user-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 23px;
+}
+
+@media screen and (max-width: 768px) { /* Tablet y dispositivos móviles */
+    .general-user-right {
+        width: 40%;
+    }
+
+    .container-user-information {
+        padding: 1rem;
+        /* otros ajustes */
+    }
+}
+
+@media screen and (max-width: 480px) { /* Dispositivos móviles */
+    .users-container-title label {
+        font-size: 1.5em; /* reducir el tamaño de la fuente */
+    }
+
+    /* Adapta otras clases según sea necesario */
+} 

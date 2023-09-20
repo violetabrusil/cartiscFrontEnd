@@ -1,16 +1,32 @@
-import "../../NewClient.css"
-import "../../Modal.css"
-import React, { useState } from "react";
+import "../../NewClient.css";
+import "../../Modal.css";
+import 'react-toastify/dist/ReactToastify.css';
+import React, { useState, useContext } from "react";
+import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Select from 'react-select';
 import apiClient from "../../services/apiClient";
 import ModalNewClient from "../../modal/ModalNewClient";
+import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
+import ClientContext from "../../contexts/ClientContext";
 
 const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const checkedIcon = process.env.PUBLIC_URL + "/images/icons/checkedIcon.png";
 const canceledIcon = process.env.PUBLIC_URL + "/images/icons/canceledIcon.png";
+const cedulaIcon = process.env.PUBLIC_URL + "/images/icons/cedula.png";
+const nameIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
+const addressIcon = process.env.PUBLIC_URL + "/images/icons/address.png";
+const emailIcon = process.env.PUBLIC_URL + "/images/icons/email.png";
+const phoneIcon = process.env.PUBLIC_URL + "/images/icons/phone.png";
+const yearIcon = process.env.PUBLIC_URL + "/images/icons/year.png";
+const kmIcon = process.env.PUBLIC_URL + "/images/icons/km.png";
+const brandIcon = process.env.PUBLIC_URL + "/images/icons/brand.png";
+const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
+const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
+const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
+const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const NewClient = () => {
 
@@ -20,15 +36,19 @@ const NewClient = () => {
     const [address, setAddress] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
+    const [userData, setUserData] = useState([]);
+    const { setSelectedClient } = useContext(ClientContext);
 
     //Variables para el formulario de AddCar
     const [carPlate, setCarPlate] = useState("");
     const [year, setYear] = useState("");
-    const [typeCar, setTypeCar] = useState(null);
-    const [cylinderCapacity, setCylinderCapacity] = useState("");
-    const [makeCar, setMakeCar] = useState("");
-    const [actualMileage, setActualMileage] = useState("");
+    const [category, setCategory] = useState("");
+    const [km, setKm] = useState("");
+    const [brand, setBrand] = useState('');
+    const [model, setModel] = useState('');
+    const [motor, setMotor] = useState('');
     const [isInputFocused, setIsInputFocused] = useState(false);
+    const { setSelectedVehicle } = useContext(ClientContext);
 
     const navigate = useNavigate();
 
@@ -66,24 +86,8 @@ const NewClient = () => {
         setIsInputFocused(false);
     };
 
-    const handleYearChange = (e) => {
-        setYear(e.target.value);
-    };
-
-    const handleTypeCarChange = (typeCar) => {
-        setTypeCar(typeCar);
-    };
-
-    const handleCylinderCapacityChange = (e) => {
-        setCylinderCapacity(e.target.value);
-    };
-
-    const handleMakeCarChange = (e) => {
-        setMakeCar(e.target.value);
-    };
-
-    const handleActualMileageChange = (e) => {
-        setActualMileage(e.target.value);
+    const handleTypeCarChange = (selectedOptionCategoryCar) => {
+        setCategory(selectedOptionCategoryCar.value);
     };
 
     const handleSaveClick = async (event) => {
@@ -91,9 +95,11 @@ const NewClient = () => {
         event.preventDefault();
 
         try {
-            await apiClient.post('/clients/register', { cedula, name, address, phone, email });
+            const response = await apiClient.post('/clients/register', { cedula, name, address, phone, email });
             setShowModal(true);
             setModalType('success');
+            setUserData(response.data);
+            setSelectedClient(response.data);
 
         } catch (error) {
             console.log("Error al guardar un cliente", error)
@@ -127,15 +133,45 @@ const NewClient = () => {
         setModalType(''); // Opcional, para restablecer el tipo de modal.
     };
 
-    const handleAddCarClick = () => {
-        // Lógica para guardar los datos del cliente
-        console.log("Guardar datos del vehículo");
-        openWorkOrderModal();
+    const transformPlateForSaving = (plateWithDash) => {
+        return plateWithDash.replace(/-/g, '');
+    };
+
+    const handleAddVehicle = async (event) => {
+        // Para evitar que el formulario recargue la página
+        const client_id = userData.id;
+        const plate = transformPlateForSaving(carPlate);
+        event.preventDefault();
+        try {
+            const response = await apiClient.post('/vehicles/register', { client_id, category, plate, brand, model, year, motor, km });
+            setSelectedVehicle(response.data);
+            toast.success('Vehículo registrado', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setTimeout(() => {
+                openWorkOrderModal();
+            }, 3000);
+
+        } catch (error) {
+            console.log("error", error)
+            toast.error('Error al guardar un vehiculo', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+
     };
 
     const handleAlertClick = () => {
         openAlertModal();
-    }
+    };
+
+    const handleAddWorkOrder = () => {
+        navigate("/workOrders/newWorkOrder")
+    };
+
+    const handleGoBack = () => {
+        navigate("/clients");
+    };
 
     const [isWorkOrderModalOpen, setIsWorkOrderModalOpen] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
@@ -157,17 +193,17 @@ const NewClient = () => {
     };
 
     const options = [
-        { value: 'auto', label: 'Auto' },
-        { value: 'camioneta', label: 'Camioneta' },
-        { value: 'buseta', label: 'Buseta' },
-        { value: 'camion', label: 'Camión' }
+        { value: 'car', label: 'Auto' },
+        { value: 'van', label: 'Camioneta' },
+        { value: 'bus', label: 'Buseta' },
+        { value: 'truck', label: 'Camión' }
     ];
 
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '97%', // Estilo personalizado para el ancho
+            width: '98%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
@@ -183,6 +219,10 @@ const NewClient = () => {
             ...provided,
             className: 'custom-select-option',
             // otros estilos personalizados si los necesitas
+        }),
+        menu: (provided, state) => ({
+            ...provided,
+            width: '100%', // puedes ajustar el ancho del menú aquí
         }),
     };
 
@@ -202,23 +242,93 @@ const NewClient = () => {
                         <form>
                             <label className="label-form">
                                 Cédula
-                                <input className="input-form" type="text" value={cedula} onChange={(e) => setCedula(e.target.value)} />
+                                <div className="input-form-new-client">
+                                    <input
+                                        className="input-form"
+                                        type="text"
+                                        value={cedula}
+                                        onChange={(e) => setCedula(e.target.value)}
+                                    />
+
+                                    <img
+                                        src={cedulaIcon}
+                                        alt="Id Icon"
+                                        className="input-new-client-icon"
+                                    />
+                                </div>
+
                             </label>
                             <label className="label-form">
                                 Nombre completo
-                                <input className="input-form" type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                                <div className="input-form-new-client">
+                                    <input
+                                        className="input-form"
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+
+                                    <img
+                                        src={nameIcon}
+                                        alt="Name Icon"
+                                        className="input-new-client-icon"
+                                    />
+                                </div>
+
                             </label>
                             <label className="label-form">
                                 Dirección
-                                <input className="input-form" type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                <div className="input-form-new-client">
+                                    <input
+                                        className="input-form"
+                                        type="text"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                    />
+
+                                    <img
+                                        src={addressIcon}
+                                        alt="Address Icon"
+                                        className="input-new-client-icon"
+                                    />
+                                </div>
+
                             </label>
                             <label className="label-form">
                                 Email
-                                <input className="input-form" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <div className="input-form-new-client">
+                                    <input
+                                        className="input-form"
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+
+                                    <img
+                                        src={emailIcon}
+                                        alt="Email Icon"
+                                        className="input-new-client-icon"
+                                    />
+                                </div>
+
                             </label>
                             <label className="label-form">
                                 Teléfono
-                                <input className="input-form" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                                <div className="input-form-new-client">
+                                    <input
+                                        className="input-form"
+                                        type="text"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
+
+                                    <img
+                                        src={phoneIcon}
+                                        alt="Phone Icon"
+                                        className="input-new-client-icon"
+                                    />
+                                </div>
+
                             </label>
 
 
@@ -235,6 +345,9 @@ const NewClient = () => {
                 <div className="right-section-new-client">
                     {showForm && (
                         <div className="containerNewClientTitle">
+                            <button onClick={handleGoBack} className="button-arrow-new-client">
+                                <img src={arrowLeftIcon} className="arrow-icon-new-client" alt="Arrow Icon" />
+                            </button>
                             <h2>Agregar auto</h2>
                         </div>
                     )}
@@ -242,40 +355,129 @@ const NewClient = () => {
                         <div className="container-add-car-form">
                             <div className="form-scroll">
                                 <form>
+                                    <ToastContainer />
                                     <div className={`input-container ${isInputFocused ? "active" : ""}`}>
-                                        <input className="input-plate" type="text" value={carPlate} onChange={handleCarPlateChange}
-                                            onFocus={handleInputFocus} onBlur={handleInputBlur} />
+                                        <input
+                                            className="input-plate"
+                                            type="text"
+                                            value={carPlate}
+                                            onChange={handleCarPlateChange}
+                                            onFocus={handleInputFocus}
+                                            onBlur={handleInputBlur}
+                                        />
+                                        <img src={flagIcon} alt="Flag" className="flag-icon" />
                                         <label>ECUADOR</label>
-                                        <button className="button-alert" type="button" onClick={handleAlertClick}>
+                                        {/* <button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />
-                                        </button>
+                    </button> */}
                                     </div>
 
                                     <label className="label-form">
                                         Año
-                                        <input className="input-form" type="text" value={year} onChange={handleYearChange} />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="text"
+                                                value={year}
+                                                onChange={(e) => setYear(parseInt(e.target.value))}
+                                            />
+
+                                            <img
+                                                src={yearIcon}
+                                                alt="Year Icon"
+                                                className="input-new-client-icon"
+                                            />
+
+                                        </div>
+
                                     </label>
                                     <label className="label-form">
-                                        Tipo
+                                        Categoría
+
                                         <Select
+                                            components={{ Placeholder: CustomPlaceholder }}
                                             isSearchable={false}
                                             options={options}
-                                            value={typeCar}
+                                            value={options.find(option => option.value === category)}
                                             onChange={handleTypeCarChange}
                                             styles={customStyles}
-                                            placeholder="Seleccionar" />
+                                            placeholder="Seleccionar"
+                                            menuPortalTarget={document.body} />
+
                                     </label>
                                     <label className="label-form">
-                                        Cilindraje
-                                        <input className="input-form" type="text" value={cylinderCapacity} onChange={handleCylinderCapacityChange} />
+                                        Kilometraje actual
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="number"
+                                                value={km}
+                                                onChange={(e) => setKm(parseInt(e.target.value))}
+                                            />
+
+                                            <img
+                                                src={kmIcon}
+                                                alt="Km Icon"
+                                                className="input-new-client-icon"
+                                                style={{ width: '30px' }}
+                                            />
+                                        </div>
+
                                     </label>
                                     <label className="label-form">
                                         Marca
-                                        <input className="input-form" type="email" value={makeCar} onChange={handleMakeCarChange} />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="text"
+                                                value={brand}
+                                                onChange={(e) => setBrand(e.target.value)}
+                                            />
+                                            <img
+                                                src={brandIcon}
+                                                alt="Brand Icon"
+                                                className="input-new-client-icon"
+                                            />
+
+                                        </div>
+
                                     </label>
                                     <label className="label-form">
-                                        Teléfono
-                                        <input className="input-form" type="text" value={actualMileage} onChange={handleActualMileageChange} />
+                                        Modelo
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="text"
+                                                value={model}
+                                                onChange={(e) => setModel(e.target.value)}
+                                            />
+                                            <img
+                                                src={modelIcon}
+                                                alt="Model Icon"
+                                                className="input-new-client-icon"
+                                                style={{ top: '35%' }}
+                                            />
+
+                                        </div>
+
+                                    </label>
+                                    <label className="label-form">
+                                        Motor
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="number"
+                                                value={motor}
+                                                onChange={(e) => setMotor(e.target.value)}
+                                            />
+                                            <img
+                                                src={motorIcon}
+                                                alt="Motor Icon"
+                                                className="input-new-client-icon"
+
+                                            />
+                                        </div>
+
                                     </label>
                                 </form>
                             </div>
@@ -283,7 +485,7 @@ const NewClient = () => {
                     )}
                     {showForm && (
                         <div className="container-button-next">
-                            <button className="button-next" onClick={handleAddCarClick}>
+                            <button className="button-next" onClick={handleAddVehicle}>
                                 GUARDAR
                             </button>
                         </div>
@@ -304,7 +506,7 @@ const NewClient = () => {
                                     </button>
                                 </div>
                                 <div className="half">
-                                    <button className="optionYes-button" onClick={closeWorkOrderModal}>
+                                    <button className="optionYes-button" onClick={handleAddWorkOrder}>
                                         Si
                                     </button>
 
@@ -347,7 +549,7 @@ const NewClient = () => {
                     secondaryMessage={modalType === 'success' ?
                         "Desea agregar un vehículo" : "Intente nuevamente en unos minutos, si persiste contacte con soporte"}
                     handleNo={handleNo}
-                    handleYes={modalType === 'error' ? handleReturn : handleYes }
+                    handleYes={modalType === 'error' ? handleReturn : handleYes}
                     icon={modalType === 'success' ? checkedIcon : canceledIcon}
                     modalType={modalType}
                 />

@@ -117,28 +117,26 @@
 }
 
 .menu-lateral.open .imagen-vertical {
-  width: 120px;
-  bottom: 76px;
-  right: -12px;
-  transform: rotate(-90deg);
-  /* Restablece la rotación de la imagen al estar abierto */
+  width: 45px;
+  bottom: 40px;
+  right: 28px;
   margin-top: 0;
   margin-left: auto;
-  margin-right: -20px;
+  margin-right: -20px
 }
 
 .menu-lateral.open .button-menu {
   background: none;
   border: none;
-  margin-left: 27px;
+  margin-left: 25px;
   margin-bottom: 30px;
 }
 
 .menu-lateral .button-menu {
   background: none;
   border: none;
-  margin-left: 27px;
-  margin-bottom: 44px;
+  margin-left: 32px;
+  margin-bottom: 50px;
 }
 
 @media screen and (max-width: 768px) {
@@ -175,14 +173,12 @@
   }
 
   .menu-lateral.open .imagen-vertical {
-    right: -18px;
-    max-width: 60%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
+    right: 23px;
+    margin-top: 10px;
   }
 
   .menu-lateral.open .icono-menu {
-    left: -10px;
+    left: -19px;
   }
 
 
@@ -203,7 +199,7 @@
   }
 
   .menu-lateral.open .imagen-vertical {
-    bottom: 104px;
+    bottom: 60px;
     left: -50px;
     max-width: 300%;
     object-fit: contain;
