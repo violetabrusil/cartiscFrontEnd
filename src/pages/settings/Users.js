@@ -10,6 +10,8 @@ import Select from 'react-select';
 import { userTypeMaping } from "../../constants/userRoleConstants";
 import { userStatusMaping } from "../../constants/userStatusConstants";
 import { useDebounce } from "../../useDebounce";
+import { CustomPlaceholderWithLabel } from "../../customPlaceholder/CustomPlaceholderWithLabel";
+import { CustomSingleValueWithLabel } from "../../customSingleValue/CustomSingleValueWithLabel";
 
 const addUserIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -20,6 +22,8 @@ const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const nameIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
 const passwordIcon = process.env.PUBLIC_URL + "/images/icons/password.png";
 const pinIcon = process.env.PUBLIC_URL + "/images/icons/pin.png";
+const operatorIcon = process.env.PUBLIC_URL + "/images/icons/operator.png";
+const adminIcon = process.env.PUBLIC_URL + "/images/icons/admin.png";
 
 const Users = () => {
 
@@ -37,7 +41,7 @@ const Users = () => {
     const [imageBase64, setImageBase64] = useState(null);
     const fileInputRef = useRef(null);
     const [role, setRole] = useState(null);
-    const [status, setStatus] = useState(actionType === 'add' ? 'active' : null);
+    const [status, setStatus] = useState('active');
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
     const [passwordError, setPasswordError] = useState("");
@@ -241,7 +245,7 @@ const Users = () => {
     const selectStyles = {
         control: (provided, state) => ({
             ...provided,
-            width: '295px',
+            width: '287px',
             height: '40px',
             minHeight: '40px',
             border: '1px solid rgb(0 0 0 / 34%)',
@@ -276,8 +280,8 @@ const Users = () => {
     ];
 
     const roleOptions = [
-        { value: 'admin', label: 'Administrador' },
-        { value: 'operator', label: 'Operador' }
+        { value: 'admin', label: 'Administrador', icon: adminIcon },
+        { value: 'operator', label: 'Operador', icon: operatorIcon }
     ];
 
     const statusOptions = [
@@ -300,7 +304,7 @@ const Users = () => {
         console.log("action", actionType)
 
         if (selectedUser) {
-            setUsername(selectedUser.user.username)
+            setUsername(selectedUser.username)
             setStatus(selectedUser.user_status);
             setRole(selectedUser.user_type);
         } else if (user) {
@@ -469,17 +473,23 @@ const Users = () => {
         // Añade profile_picture a userData solo si imageBase64 tiene valor
         if (imageBase64) {
             userData.profile_picture = imageBase64;
+        } else if (selectedUser && selectedUser.profile_picture) {
+            // Si no se ha seleccionado una nueva imagen, pero el usuario seleccionado tiene una imagen,
+            // se usa esa imagen existente.
+            userData.profile_picture = selectedUser.profile_picture;
         }
 
         console.log("data a enviar", userData);
 
         try {
-            await apiAdmin.put(`/update-user/${selectedUser.id}`, userData);
+            const response = await apiAdmin.put(`/update-user/${selectedUser.id}`, userData);
+            const newUser = response.data;
+            console.log("datos del usuario actualizado", newUser)
+            setSelectedUser(newUser);
             toast.success('Usuario actualizado con éxito', {
                 position: toast.POSITION.TOP_RIGHT
             });
             setActionType('view');
-            setSelectedUser(null);
             fetchData();
         } catch (error) {
             toast.error('Error al actualizar el usuario', {
@@ -500,12 +510,13 @@ const Users = () => {
         };
 
         try {
-            await apiAdmin.post('/create-user', userData)
+            const response = await apiAdmin.post('/create-user', userData);
+            const newUser = response.data;
+            setSelectedUser(newUser);
             toast.success('Usuario creado con éxito', {
                 position: toast.POSITION.TOP_RIGHT
             });
             setActionType('view');
-            setSelectedUser(null);
             setIsOpenModal(false);
             fetchData();
         } catch (error) {
@@ -611,7 +622,7 @@ const Users = () => {
                         <div>
                             <div className="container-button-edit-user">
                                 <label className="label-title-view">
-                                    {actionType === 'edit' ? 'Editar' : (actionType === 'add' ? 'Agregar cliente' : '')}
+                                    {actionType === 'edit' ? 'Editar' : (actionType === 'add' ? 'Agregar usuario' : '')}
                                 </label>
 
                                 {actionType === 'view' && (
@@ -677,8 +688,11 @@ const Users = () => {
                                                 isSearchable={false}
                                                 styles={selectStyles}
                                                 options={roleOptions}
-                                                placeholder="Seleccione"
                                                 value={roleOptions.find(option => option.value === role)}
+                                                placeholder={<CustomPlaceholderWithLabel />}
+                                                components={{
+                                                    SingleValue: CustomSingleValueWithLabel
+                                                }}
                                                 onChange={selectedOption => {
                                                     console.log("Role selected!", selectedOption.value);
                                                     setRole(selectedOption.value);
@@ -711,8 +725,8 @@ const Users = () => {
                                 {actionType === 'view' && (
                                     <>
                                         <label className="label-status-user">Estado:</label>
-                                        <label className="label-status" style={{ color: statusColors[selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]] }}>
-                                            {selectedUser ? selectedUser.translated_user_status : userStatusMaping[user.user_status]}
+                                        <label className="label-status" style={{ color: statusColors[selectedUser ? userStatusMaping[selectedUser.user_status] : userStatusMaping[user.user_status]] }}>
+                                            {selectedUser ? userStatusMaping[selectedUser.user_status] : userStatusMaping[user.user_status]}
                                         </label>
 
                                     </>
@@ -792,7 +806,7 @@ const Users = () => {
                                     <label>Ingrese el pin</label>
                                     <div className="input-form-new-user-modal">
                                         <img
-                                            style={{left: '73px'}}
+                                            style={{ left: '73px' }}
                                             src={pinIcon}
                                             alt="Pin Icon"
                                             className="input-new-user-icon"

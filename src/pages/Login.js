@@ -7,7 +7,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import { userTypeMaping } from '../constants/userRoleConstants';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png";
@@ -73,6 +73,17 @@ const Login = () => {
             console.log("Error en el inicio de sesión", error);
             console.error("msg error", error.message);
             console.error("msg stack", error.stack);
+
+            if (error.message === "Network Error") {
+                toast.error('Error en el servidor. Conéctese con soporte técnico.', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            } else {
+                // Puedes manejar otros errores aquí o mostrar un mensaje genérico
+                toast.error('Error en el inicio de sesión. Nombre de usuario o contraseña incorrectos', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
         }
     };
 

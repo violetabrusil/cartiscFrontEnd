@@ -201,6 +201,14 @@
     width: 26px;
 }
 
+.icon-role-option {
+    position: absolute;
+    left: 13px;
+    top: 42%;
+    transform: translateY(-50%);
+    width: 23px;
+}
+
 .button-arrow-new-client {
     background: none;
     border: none;

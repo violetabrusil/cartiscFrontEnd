@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+
 import apiClient from '../services/apiClient';
 import { userTypeMaping } from '../constants/userRoleConstants';
 
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         const checkAuth = async () => {
             try {
                 const response = await apiClient.get('/check-auth');
-                
+
                 if (response.data && response.data.user) {
                     // Si el servidor devuelve un usuario, establece ese usuario
                     const modifiedUser = {
@@ -42,15 +43,19 @@ export const AuthProvider = ({ children }) => {
                 }
             } catch (error) {
                 console.error('Error checking authentication', error);
-                // También puedes manejar aquí errores específicos, como redireccionar al usuario o mostrarle un mensaje
+                if (error.response && error.response.status === 401) {
+                    // Elimina el token y el usuario del localStorage
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
             } finally {
                 setIsLoading(false);
             }
         };
-        
+
 
         checkAuth();
-        
+
     }, []);
 
 

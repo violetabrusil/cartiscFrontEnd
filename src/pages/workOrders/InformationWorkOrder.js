@@ -61,6 +61,8 @@ const InformationWorkOrder = () => {
     const [isTextareaEditable, setTextareaEditable] = useState(false);
     const [isEditState, setIsEditState] = useState(false);
     const [workOrderItems, setWorkOrderItems] = useState([]);
+    const [workOrderOperations, setWorkOrderOperations] = useState({});
+    const [workOrderServices, setWorkOrderServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [nextStatus, setNextStatus] = useState(null); // Mantener el siguiente estado para la confirmación
 
@@ -224,7 +226,7 @@ const InformationWorkOrder = () => {
     const handleSelectChange = (option) => {
         const currentStatus = workOrderStatus.value;
         const nextStatus = option.value;
-    
+
         if (validTransitions[currentStatus].includes(nextStatus)) {
             if (nextStatus === 'cancelled' || nextStatus === 'completed') {
                 // Mostrar modal de confirmación
@@ -242,7 +244,7 @@ const InformationWorkOrder = () => {
             toast.warn("El cambio de estado de la orden de trabajo no es válido");
             return; // Detener la ejecución aquí
         }
-    };    
+    };
 
     const openConfirmationModal = (status) => {
         setNextStatus(status);
@@ -302,7 +304,15 @@ const InformationWorkOrder = () => {
             setFuelLevel(response.data.vehicle_status.fuel_level);
             setIdVehicleStatus(response.data.vehicle_status.id);
             setWorkOrderItems(response.data.work_order_items || []);
-
+            setWorkOrderOperations(response.data.work_order_operations || []);
+            setWorkOrderServices(response.data.work_order_services || []);
+            if (Array.isArray(response.data.work_order_services)) {
+                const allOperationsFromApiResponse = response.data.work_order_services.flatMap(item => item.operations);
+                setServicesWithOperations(allOperationsFromApiResponse);
+            } else {
+                console.error('work_order_services is not an array:', response.data.work_order_services);
+            }
+            console.log("operaciones de servicios", response.data.work_order_services.operations)
             const receivedSymptoms = response.data.vehicle_status.presented_symptoms;
             if (typeof receivedSymptoms === 'string') {
                 const symptomsArray = receivedSymptoms.split(',').map(symptom => symptom.trim()).filter(Boolean);
@@ -504,6 +514,20 @@ const InformationWorkOrder = () => {
             setSelectedProducts(workOrderItems);
         }
     }, [workOrderItems]);
+
+    useEffect(() => {
+        if (workOrderOperations && workOrderOperations.length > 0) {
+            setSelectedOperations(workOrderOperations);
+        }
+    }, [workOrderOperations]);
+
+    useEffect(() => {
+        if (workOrderServices && workOrderServices.length > 0) {
+            setSelectedServicesList(workOrderServices);
+
+        }
+        console.log("servicios", workOrderServices)
+    }, [workOrderServices]);
 
     useEffect(() => {
         console.log("selectedServicesList ha cambiado en el componente padre:", selectedServicesList);
@@ -950,6 +974,9 @@ const InformationWorkOrder = () => {
                     onServiceOperationsUpdated={handleServiceOperationsUpdated}
                     onOperationServiceCostUpdated={setOperationServiceCosts}
                     onServicesListUpdate={handleServicesListUpdate}
+                    workOrderId={workOrderId}
+                    workOrderOperations={workOrderOperations}
+                    workOrderServices={workOrderServices}
                 />
             )}
 

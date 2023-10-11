@@ -17,13 +17,16 @@ const SearchServicesOperationsModal = ({
     onOperationUpdated,
     operationCost: initialOperationCost,
     onOperationCostUpdated,
-    selectedServicesList = [],
+    selectedServicesList = () => { },
     setSelectedServicesList = () => { },
     servicesWithOperations,
     operationServiceCost: initialOperationServiceCost,
     onOperationServiceCostUpdated,
     onServiceOperationsUpdated,
-    onServicesListUpdate
+    onServicesListUpdate,
+    workOrderId,
+    workOrderOperations,
+    workOrderServices
 }) => {
 
     const [activeTab, setActiveTab] = useState('services');
@@ -53,7 +56,7 @@ const SearchServicesOperationsModal = ({
             breakpoint: { max: 464, min: 0 },
             items: 1,
         },
-    };    
+    };
 
     const handleTabChange = (tabName) => {
         setActiveTab(tabName);
@@ -169,7 +172,7 @@ const SearchServicesOperationsModal = ({
     const columnServices = React.useMemo(
         () => [
             { Header: "Código", accessor: "service_code" },
-            { Header: "Título", accessor: "title" },
+            { Header: "Título", accessor: "service_title" },
             {
                 Header: "",
                 Cell: ({ row }) => {
@@ -302,7 +305,7 @@ const SearchServicesOperationsModal = ({
             if (prevOperations.some(op => op.operation_code === operationToAdd.operation_code)) {
                 return prevOperations;
             }
-            return [...prevOperations, operationToAdd];
+            return [...prevOperations, { ...operationToAdd, isNew: true }];
         });
     };
 
@@ -327,14 +330,14 @@ const SearchServicesOperationsModal = ({
 
         try {
             const response = await apiClient.get(`/services/${service.id}`);
-            if (response.data && response.data.Operations && response.data.Operations.length > 0) {
+            if (response.data && response.data.operations && response.data.operations.length > 0) {
 
                 // Aquí está la lógica clave:
                 // Verificamos si alguna de las operaciones del servicio a agregar ya se encuentra en las operaciones seleccionadas.
-                console.log("Operaciones en el servicio que se está intentando agregar:", response.data.Operations);
+                console.log("Operaciones en el servicio que se está intentando agregar:", response.data.operations);
                 console.log("Operaciones actualmente seleccionadas:", selectedOperationsRef.current);
 
-                const operationAlreadyAdded = response.data.Operations.some(op => operationExistsInAddedOperations(op));
+                const operationAlreadyAdded = response.data.operations.some(op => operationExistsInAddedOperations(op));
 
                 if (operationAlreadyAdded) {
                     toast.warn("Una operación del Servicio seleccionado, ya se encuentra agregada", {
@@ -348,11 +351,18 @@ const SearchServicesOperationsModal = ({
                     ...prevServices,
                     {
                         ...response.data,
-                        Operations: response.data.Operations
+                        operations: response.data.operations.map(op => ({ ...op, isNew: true, serviceId: service.id, serviceTitle: service.service_title }))
                     }
                 ]);
-                setServiceOperations(prevOperations => [...prevOperations, ...response.data.Operations]);
-                onServiceOperationsUpdated(prevOperations => [...prevOperations, ...response.data.Operations]);
+                const newOperations = response.data.operations.map(op => ({
+                    ...op,
+                    isNew: true,
+                    serviceId: service.id,
+                    serviceTitle: service.service_title
+                }));
+                console.log("Nuevas operaciones agregadas:", newOperations);
+                setServiceOperations(prevOperations => [...prevOperations, ...newOperations]);
+                onServiceOperationsUpdated(prevOperations => [...prevOperations, ...newOperations]);
                 console.log("operaciones de servicio", response.data.Operations);
             } else {
                 toast.warn('El servicio seleccionado no tiene operaciones', {
@@ -381,13 +391,104 @@ const SearchServicesOperationsModal = ({
         return merged;
     };
 
-    const handleConfirmChangesOperations = () => {
+    const handleAddOperations = async (operationsToAdd) => {
+        const payloadToAdd = {
+            work_order_operations: operationsToAdd.map(operation => ({
+                work_order_id: parseInt(workOrderId, 10),
+                operation_code: operation.operation_code,
+                title: operation.title,
+                cost: operation.cost,
+                work_order_service_id: null
+            })),
+        };
+        return await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, payloadToAdd);
+    };
+
+    const handleUpdateOperations = async (operationsToUpdate) => {
+        const payloadToUpdate = {
+            work_order_operations: operationsToUpdate.map(operation => ({
+                work_order_id: parseInt(workOrderId, 10),
+                operation_code: operation.operation_code,
+                title: operation.title,
+                cost: operation.cost,
+                work_order_service_id: null
+            })),
+        };
+        return await apiClient.post(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdate);
+    };
+
+    const handleAddServiceOperations = async (serviceOpsToAdd) => {
+        // Agrupar operaciones por servicio
+        const groupedByService = serviceOpsToAdd.reduce((acc, operation) => {
+            const { serviceId, serviceTitle } = operation;
+            if (!acc[serviceId]) {
+                acc[serviceId] = {
+                    service_title: serviceTitle,
+                    service_id: serviceId,
+                    operations: []
+                };
+            }
+            acc[serviceId].operations.push({
+                operation_code: operation.operation_code,
+                title: operation.title,
+                cost: operation.cost,
+                work_order_service_id: operation.serviceId
+            });
+            return acc;
+        }, {});
+
+        // Crear el payload con un array de servicios
+        const payloadToAddOperationServices = {
+            work_order_services: Object.values(groupedByService)
+        };
+
+        console.log("datos a enviar de servicios", payloadToAddOperationServices);
+        return await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, payloadToAddOperationServices);
+    };
+
+    const handleUpdateServiceOperations = async (serviceOpsToUpdate) => {
+        console.log("entro")
+        // Agrupar operaciones por servicio
+        const groupedByService = serviceOpsToUpdate.reduce((acc, operation) => {
+            const { serviceId, serviceTitle } = operation;
+            if (!acc[serviceId]) {
+                acc[serviceId] = {
+                    service_title: serviceTitle,
+                    service_id: serviceId,
+                    operations: []
+                };
+            }
+            acc[serviceId].operations.push({
+                operation_code: operation.operation_code,
+                title: operation.title,
+                cost: operation.cost,
+                work_order_service_id: operation.serviceId
+            });
+            return acc;
+        }, {});
+
+        // Crear el payload con un array de servicios
+        const payloadToUpdateOperationServices = {
+            work_order_services: Object.values(groupedByService)
+        };
+
+        console.log("datos a enviar de servicios", payloadToUpdateOperationServices);
+
+        return await apiClient.post(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdateOperationServices);
+    };
+
+    const handleConfirmChangesOperations = async () => {
+
+        console.log("La función handleConfirmChangesOperations ha sido llamada.");
+        console.log("servicios enocntrados", workOrderServices)
+
         const updatedOperations = selectedOperations.map((operation) => {
             const operation_code = operation.operation_code;
-            const cost = operationCost[operation_code] || operation.cost;
+            const cost = parseFloat(operationCost[operation_code] || operation.cost);
             return {
                 ...operation,
                 cost: cost,
+                isModified: cost !== operation.cost
             };
         });
 
@@ -395,15 +496,65 @@ const SearchServicesOperationsModal = ({
             if (!service.Operations) return service;
             return {
                 ...service,
-                Operations: service.Operations.map(op => {
+                operations: service.operations.map(op => {
                     const cost = operationServiceCost[op.operation_code] || op.cost;
                     return {
                         ...op,
                         cost: cost,
+                        isModified: cost !== op.cost
                     };
                 })
             };
         });
+
+        try {
+            const existingOperationCodes = workOrderOperations.map(op => op.operation_code);
+
+            const operationsToAdd = selectedOperations.filter(op => !existingOperationCodes.includes(op.operation_code));
+            const operationsToUpdate = selectedOperations.filter(op => existingOperationCodes.includes(op.operation_code));
+
+            const existingServiceOperationCodes = workOrderServices.flatMap(service =>
+                service.operations.map(op => op.operation_code)
+            );
+
+            const serviceOpsToAdd = serviceOperations.filter(op =>
+                !existingServiceOperationCodes.includes(op.operation_code)
+            );
+
+            const serviceOpsToUpdate = serviceOperations.filter(op =>
+                existingServiceOperationCodes.includes(op.operation_code) && op.isModified
+            );
+
+            if (operationsToAdd.length > 0) {
+                const response = await handleAddOperations(operationsToAdd);
+                handleApiResponse(response, 'Operaciones añadidas');
+            }
+
+            
+            if (serviceOpsToAdd.length > 0) {
+                const payloadToAdd = serviceOpsToAdd.map(({ isNew, isModified, ...relevantData }) => relevantData);
+
+                // Aquí envías payloadToAdd al API para agregar las operaciones
+                const response = await handleAddServiceOperations(payloadToAdd);
+                handleApiResponse(response, 'Operaciones de servicio añadidas');
+            };
+
+            if (operationsToUpdate.length > 0) {
+                const response = await handleUpdateOperations(operationsToUpdate);
+                handleApiResponse(response, 'Operaciones actualizadas');
+            }
+
+            if (serviceOpsToUpdate.length > 0) {
+                const payloadToUpdate = serviceOpsToUpdate.map(({ isNew, isModified, ...relevantData }) => relevantData);
+
+                // Aquí envías payloadToUpdate al API para actualizar las operaciones
+                const response = await handleUpdateServiceOperations(payloadToUpdate);
+                handleApiResponse(response, 'Operaciones de servicio actualizadas');
+            };
+
+        } catch (error) {
+            console.error("Error al manejar las operaciones:", error);
+        }
 
         // Usar mergeOperations para combinar y actualizar servicesWithOperations
         const updatedServicesWithOps = mergeOperations(servicesWithOperations, updatedServicesList);
@@ -417,8 +568,19 @@ const SearchServicesOperationsModal = ({
         onServiceOperationsUpdated(updatedServicesWithOps);
         onServicesListUpdate(updatedServicesList);
 
-
         onClose();
+    };
+
+    const handleApiResponse = (response, type) => {
+        if (response.status === 200) {
+            toast.success(`${type} guardados con éxito!`, {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        } else {
+            toast.error(`Error al guardar ${type}`, {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
     };
 
     const handleRemoveService = (serviceCodeToRemove) => {
@@ -544,12 +706,20 @@ const SearchServicesOperationsModal = ({
                     <div style={{ flex: '1' }}></div>
                     {(selectedServicesList && selectedServicesList.length > 0) || selectedOperations.length > 0 ? (
                         //Si hay operaciones seleccionadas, muestra el botón de "Guardar"
-                        <button style={{ width: '100px', height: '33px', marginRight: '25px' }}
-                            className="confirm-button" onClick={handleConfirmChangesOperations}>
-                            <span className="text-confirm-button">
-                                Guardar
-                            </span>
-                        </button>
+                        <div style={{ display: 'flex' }}>
+                            <button style={{ width: '100px', height: '33px', marginRight: '18px' }}
+                                className="confirm-button" onClick={handleConfirmChangesOperations}>
+                                <span className="text-confirm-button">
+                                    Guardar
+                                </span>
+                            </button>
+
+                            <button style={{ marginTop: '3px', marginRight: '13px' }} className="button-close" onClick={onClose}>
+                                <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                            </button>
+
+                        </div>
+
                     ) : (
                         //Si no hay operaciones seleccionadas, muestra el botón "X" (cerrar)
                         <button className="button-close-modal" onClick={onClose}  >
@@ -576,16 +746,16 @@ const SearchServicesOperationsModal = ({
                         {selectedServicesList && selectedServicesList.length > 0 && (
                             <Carousel responsive={responsive}>
                                 {selectedServicesList.map((service) => (
-                                    <div key={service.service_code} className="carousel-services">
+                                    <div key={service.id} className="carousel-services">
                                         <div className="div-title-carousel">
-                                            <h4 style={{marginLeft: '9px'}}>{service.title}</h4>
-                                            <button className="button-add-product-modal" onClick={() => handleRemoveService(service.service_code)}>
+                                            <h4 style={{ marginLeft: '9px' }}>{service.service_title}</h4>
+                                            <button className="button-add-product-modal" onClick={() => handleRemoveService(service.id)}>
                                                 <img src={deleteIcon} alt="Add Product Icon" className="add-product-modal-icon " />
                                             </button>
                                         </div>
-                                        <div style={{marginTop: '-10px'}}>
+                                        <div style={{ marginTop: '-10px' }}>
                                             <DataTable
-                                                data={service.Operations}
+                                                data={service.operations}
                                                 columns={columnsServicesWithOperationsSelected}
                                                 highlightRows={false}
                                                 initialPageSize={5}
