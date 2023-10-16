@@ -222,7 +222,7 @@ const Users = () => {
     const userSelectStyles = {
         control: (base, state) => ({
             ...base,
-            width: '200px',
+            width: '300px',
             height: '40px',
             minHeight: '40px',
             border: '1px solid rgb(0 0 0 / 34%)',
@@ -238,7 +238,7 @@ const Users = () => {
             ...provided,
             className: 'custom-select-option-user',
         }),
-        menuPortal: base => ({ ...base, width: '15%', zIndex: 9999 }),
+        menuPortal: base => ({ ...base, width: '15.8%', zIndex: 9999 }),
 
     };
 

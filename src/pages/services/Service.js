@@ -33,7 +33,7 @@ const Services = () => {
     });
 
     //Variables para la búsqueda de servicios y operaciones
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState('Título');
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
@@ -58,8 +58,7 @@ const Services = () => {
     const [selectedOperations, setSelectedOperations] = useState([]);
 
     {/* Decidir cuál arreglo de operaciones usar basado en el modo */ }
-    const operationsToShow = mode === 'edit' ? selectedService.Operations : selectedOperations;
-
+    const operationsToShow = mode === 'edit' ? selectedService.operations : selectedOperations;
 
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
@@ -151,9 +150,10 @@ const Services = () => {
             const response = await apiClient.get(`/services/${selectedServ.id}`);
 
             // Aquí 'response.data' es la respuesta del servidor que debería contener la información del servicio.
+            console.log("servicio seleccionado", response.data)
             setSelectedService(response.data);
-            setTitle(response.data.title);
-            console.log("datos seleccionados", response.data.Operations)
+            setTitle(response.data.service_title);
+            console.log("datos seleccionados", response.data.operations)
             setMode('edit');
             setCurrentSection('addService');
             setLastActiveSection(prevState => ({
@@ -227,7 +227,7 @@ const Services = () => {
 
     const handleAddOperationModal = (operationToAdd) => {
         // Decide a qué conjunto de operaciones agregar dependiendo del modo
-        const operationsToModify = mode === 'edit' ? selectedService.Operations : selectedOperations;
+        const operationsToModify = mode === 'edit' ? selectedService.operations : selectedOperations;
 
         // Verifica si la operación ya está en la lista
         if (operationsToModify.some(op => op.id === operationToAdd.id)) {
@@ -239,7 +239,7 @@ const Services = () => {
         if (mode === 'edit') {
             setSelectedService(prevState => ({
                 ...prevState,
-                Operations: [...prevState.Operations, operationToAdd]
+                operations: [...prevState.operations, operationToAdd]
             }));
         } else {
             // Si no, modifica las operaciones seleccionadas normales
@@ -252,7 +252,7 @@ const Services = () => {
         if (mode === 'edit') {
             setSelectedService(prevState => ({
                 ...prevState,
-                Operations: prevState.Operations.filter(op => op.id !== operationIdToRemove)
+                operations: prevState.operations.filter(op => op.id !== operationIdToRemove)
             }));
         } else {
             // Si estás en modo add, elimina de selectedOperations
@@ -290,7 +290,7 @@ const Services = () => {
         previousPage,
     } = useTable({
         columns,
-        data: mode === 'edit' ? selectedService.Operations : selectedOperations,
+        data: mode === 'edit' ? selectedService.operations : selectedOperations,
         initialState: { pageSize: 5 }
     }, usePagination);
 
@@ -356,7 +356,7 @@ const Services = () => {
 
     //Calcular el total del costo del servicio mediante el valor
     //de cada operación seleccionada
-    let operationsData = mode === 'edit' ? selectedService.Operations : selectedOperations;
+    let operationsData = mode === 'edit' ? selectedService.operations : selectedOperations;
 
     let totalCost = operationsData.reduce((sum, operation) => {
         const cost = parseFloat(operation.cost);
@@ -372,6 +372,7 @@ const Services = () => {
 
     //Función para crear un nuevo servicio 
     const handleSaveOrUpdateService = async (event) => {
+        console.log("entro")
         // Para evitar que el formulario recargue la página
         event.preventDefault();
         const id_operations = selectedOperations.map(operation => operation.id);
@@ -383,6 +384,7 @@ const Services = () => {
                 toast.success('Servicio registrado', {
                     position: toast.POSITION.TOP_RIGHT
                 });
+                resetForm();
                 setLastUpdated(Date.now());
                 setCurrentSection(null);
 
@@ -393,7 +395,7 @@ const Services = () => {
                 });
             }
         } else {
-            const id_operations = selectedService.Operations.map(operation => operation.id);
+            const id_operations = selectedService.operations.map(operation => operation.id);
             console.log("datos servicio seleccionado", title, id_operations)
             try {
 
@@ -427,7 +429,7 @@ const Services = () => {
             const response = await apiClient.delete(`/services/delete/${selectedService.id}`)
 
             if (response.status === 200) {
-                toast.success('Operación eliminada', {
+                toast.success('Servicio eliminado', {
                     position: toast.POSITION.TOP_RIGHT
                 });
                 setLastUpdated(Date.now());
@@ -600,7 +602,7 @@ const Services = () => {
                                     </div>
 
                                     <div className="operation-name-section">
-                                        <label className="operation-name">{serviceData.title}</label>
+                                        <label className="operation-name">{serviceData.service_title}</label>
                                     </div>
 
                                     <div className="operation-eye-section">
@@ -740,7 +742,7 @@ const Services = () => {
                                     onClick={handleOpenModalSearchOperation}
                                     disabled={!isEditing}  >
                                     <span className="text-button">
-                                        {((mode === 'edit' ? selectedService.Operations : selectedOperations).length > 0) ? "Editar Operación" : "Agregar Operación"}
+                                        {((mode === 'edit' ? selectedService.operations : selectedOperations).length > 0) ? "Editar Operación" : "Agregar Operación"}
                                     </span>
                                 </button>
                                 <button
@@ -788,6 +790,7 @@ const Services = () => {
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
                     options={['Código', 'Título']}
+                    defaultOption="Título"
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />

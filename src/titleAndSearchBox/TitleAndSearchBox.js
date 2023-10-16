@@ -9,6 +9,9 @@ const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOptio
     const searchBoxClass = isSpecial ? "search-box-special" : "search-box";
     const buttonClass = isSpecial ? "button-filter-special" : "button-filter";
     const iconClass = isSpecial ? "filter-icon-special" : "filter-icon";
+    
+    // Define el texto del placeholder según selectedOption
+    let placeholderText = `Buscar por ${selectedOption}`;
 
     return (
         <div>
@@ -26,11 +29,11 @@ const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOptio
                     type="text"
                     className="input-search"
                     onChange={e => onSearchChange(e.target.value, selectedOption)}
+                    placeholder={placeholderText} // Usa el placeholderText aquí
                 />
             </div>
 
         </div>
-
     )
 };
 

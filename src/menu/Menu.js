@@ -69,7 +69,10 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
 
     return (
         <div className="Menu">
-            <div className={`menu-lateral ${isOpen ? "open" : ""}`}>
+            <div className={`menu-lateral ${isOpen ? "open" : ""}`}
+                onMouseEnter={() => setIsOpen(false)}
+                onMouseLeave={() => setIsOpen(true)}
+            >
                 {menuOptions.map((option, index) => (
                     <Link
                         to={option.path}

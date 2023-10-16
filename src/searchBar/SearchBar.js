@@ -18,13 +18,13 @@ const SearchBar = ({
         { value: 'branch', label: 'Marca' }
     ] }) => {
 
-    const [selectedOption, setSelectedOption] = useState("");
+    const [selectedOption, setSelectedOption] = useState(options[0]);
     const [searchTerm, setSearchTerm] = useState("");
 
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);
         setSearchTerm(""); //Para resetear el valor del input de búsqueda
-        onFilter(selectedOption, "");
+        onFilter(selectedOption, searchTerm);
 
     };
 
@@ -66,7 +66,7 @@ const SearchBar = ({
             className: 'custom-select-option-product',
             // otros estilos personalizados si los necesitas
         }),
-        menuPortal: base => ({ ...base, width: '41%', zIndex: 9999 }),
+        menuPortal: base => ({ ...base, width: '29%', zIndex: 9999 }),
 
     };
 

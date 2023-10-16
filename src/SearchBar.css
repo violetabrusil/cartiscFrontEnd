@@ -5,9 +5,13 @@
     margin-left: 38px;
     margin-top: 13px;
     max-width: 50%;
+    gap: 30px;
+    max-width: 100%;
 }
 
 .search-products-box {
+    display: flex; /* Esto asegurará que los elementos internos se alineen en fila */
+    align-items: center; 
     flex: 1;
     gap: 1px;
     align-items: center;

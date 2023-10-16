@@ -20,6 +20,7 @@ import { workOrderStatus } from "../../constants/workOrderConstants";
 import SearchModalWorkOrder from "../../modal/SearchModalWorkOrder";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 import { CustomSingleValue } from "../../customSingleValue/CustomSingleValue";
+import { useNavigate } from "react-router-dom";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -39,7 +40,7 @@ const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 const Cars = () => {
 
     //Variable para el filtro y la búsqueda de vehículos y clientes
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState('Placa');
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('cédula');
     const [searchClienTerm, setSearchClientTerm] = useState('');
@@ -98,6 +99,8 @@ const Cars = () => {
     const optionsMaintance = ['Cambio de aceite', 'Cambio de motor'];
     const [selectedOptions, setSelectedOptions] = useState([]);
 
+    const navigate = useNavigate();
+
     const transformPlateForSaving = (plateWithDash) => {
         return plateWithDash.replace(/-/g, '');
     };
@@ -106,7 +109,7 @@ const Cars = () => {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '98%', // Estilo personalizado para el ancho
+            width: '99%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
@@ -214,9 +217,13 @@ const Cars = () => {
         {
             Header: "",
             Cell: ({ row }) => {
-                const product = row.original;
+                const workOrder = row.original;
                 return (
-                    <button className="button-eye-car-work-order">
+                    <button 
+                        className="button-eye-car-work-order"
+                        onClick={() => handleShowInformationWorkOrderClick(workOrder.id)}
+                    >
+                            
                         <img src={eyeIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
                         />
                     </button>
@@ -607,6 +614,11 @@ const Cars = () => {
         setShowCarInformation(false);
     };
 
+    const handleShowInformationWorkOrderClick = (workOrderId) => {
+        console.log("codigo orden de trabajo", workOrderId)
+        navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
+    };
+
     //Para realizar la búsqueda del cliente en el modal
     useEffect(() => {
         // Al montar el componente
@@ -906,7 +918,7 @@ const Cars = () => {
                                 <button onClick={handleGoBackButton} className="button-arrow-new-client">
                                     <img src={arrowLeftIcon} className="arrow-icon-new-client" alt="Arrow Icon" />
                                 </button>
-                                <h2 style={{ marginRight: '31%' }}>Historial de Órdenes de trabajo</h2>
+                                <h2 style={{ marginRight: '52%' }}>Historial de Órdenes de trabajo</h2>
                                 <button className="button-maintenance-filter" onClick={handleOpenModalWorkOrder}>
                                     <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
                                     <span className="button-maintenance-text-filter">Filtro</span>
@@ -918,9 +930,6 @@ const Cars = () => {
                                 <DataTable
                                     data={workOrders}
                                     columns={columns}
-                                    onRowClick={(row, index) => {
-                                        console.log("Fila seleccionada:", row);
-                                    }}
                                     highlightRows={true}
                                 />
                             </div>
@@ -1136,6 +1145,7 @@ const Cars = () => {
                         isOpen={isFilterModalOpen}
                         onClose={closeFilterModal}
                         options={['Placa', 'Nombre Titular']}
+                        defaultOption="Placa"
                         onOptionChange={handleOptionChange}
                         onSelect={handleSelectClick}
                     />

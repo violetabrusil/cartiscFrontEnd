@@ -65,7 +65,12 @@
     justify-content: flex-end;
     align-items: flex-end;
     margin-top: auto;
-    height: 55vh;
+    margin-right: 20px;
+    position: fixed; /* Fija el contenedor al viewport */
+    bottom: 0; /* Coloca el contenedor en la parte inferior */
+    left: 0; /* Alineación izquierda */
+    right: 0; /* Alineación derecha */
+    padding: 10px; /* Espacio alrededor del contenedor, opcional */
 }
 
 .accept-button {

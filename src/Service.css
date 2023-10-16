@@ -11,6 +11,9 @@
     /* Divide la pantalla en partes de 1/3 y 2/3 */
     grid-gap: 0px;
     /* Espacio entre las secciones */
+    height: calc(100vh - 80px);
+    /* Altura del viewport menos 80px de la parte superior */
+    overflow: hidden;
 }
 
 .left-section-service {
@@ -18,11 +21,17 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
 }
 
 .right-section-service {
     background-color: #d0d0d0;
     padding: 20px;
+    overflow-y: auto;
+    height: 100%;
+    /* Hace que ocupe todo el espacio disponible en .containerClients */
+    box-sizing: border-box;
 }
 
 .button-add {
@@ -135,15 +144,20 @@ td {
 .container-buttons {
     display: flex;
     justify-content: flex-end;
-    align-items: flex-end;
-    margin-top: auto;
+    align-items: center;
+    box-sizing: border-box;
+    margin-right: 20px;
+    position: fixed; /* Fija el contenedor al viewport */
+    bottom: 0; /* Coloca el contenedor en la parte inferior */
+    left: 0; /* Alineación izquierda */
+    right: 0; /* Alineación derecha */
+    padding: 10px; /* Espacio alrededor del contenedor, opcional */
 }
 
 .container-general {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 84vh;
 }
 
 .tabs-service-operation {
@@ -183,15 +197,20 @@ td {
 }
 
 .search-results-operations {
+    flex: 1;
+    /* Esto hará que ocupe todo el espacio no utilizado en .left-section */
     overflow-y: auto;
-    height: 60vh;
+    max-height: 82%;
+    /* Esto asegura que no exceda el espacio de su contenedor padre */
     overflow-x: hidden;
 }
 
 .result-operations {
     display: flex;
-    justify-content: space-between; /* Distribuye los elementos de manera uniforme a lo largo del contenedor */
-    align-items: center; /* Centra los elementos verticalmente */
+    justify-content: space-between;
+    /* Distribuye los elementos de manera uniforme a lo largo del contenedor */
+    align-items: center;
+    /* Centra los elementos verticalmente */
     max-width: 98%;
     height: 50px;
     background: #FFF;
@@ -201,20 +220,20 @@ td {
 
 .operation-code-section {
     flex: none;
-    width: 20%; 
+    width: 20%;
     text-align: center;
 }
 
 .operation-name-section {
-    flex: none; 
-    width: 57%; 
-    text-align: left; 
+    flex: none;
+    width: 57%;
+    text-align: left;
 }
 
 .operation-eye-section {
-    flex: none; 
-    width: 25%; 
-    text-align: center; 
+    flex: none;
+    width: 25%;
+    text-align: center;
 }
 
 .operation-code {
@@ -282,7 +301,8 @@ td {
 }
 
 .operation-table {
-    font-size: 12px; /* Ajusta este valor al tamaño deseado */
+    font-size: 12px;
+    /* Ajusta este valor al tamaño deseado */
 }
 
 .operation-table tbody tr:nth-child(odd) {
@@ -309,7 +329,8 @@ td {
 }
 
 .operation-selected-table {
-    font-size: 12px; /* Ajusta este valor al tamaño deseado */
+    font-size: 12px;
+    /* Ajusta este valor al tamaño deseado */
 }
 
 .operation-selected-table tbody tr:nth-child(odd) {
@@ -332,7 +353,7 @@ td {
 
 .table-container {
     background-color: white;
-    max-height: 300px;  
+    max-height: 300px;
     overflow: auto;
 }
 

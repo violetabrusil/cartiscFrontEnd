@@ -17,7 +17,7 @@ const Suppliers = () => {
 
     const [suppliers, setSuppliers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState('Nombre');
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [mode, setMode] = useState('add');
     const [isEditing, setIsEditing] = useState(true);
@@ -305,7 +305,7 @@ const Suppliers = () => {
                                         value={name}
                                         onChange={e => setName(e.target.value)}
                                         className="name-supplier"
-                                        style={{ marginLeft: "118px" }}
+                                        style={{ marginLeft: "140px" }}
                                         disabled={!isEditing}
                                     />
                                 </div>
@@ -315,7 +315,7 @@ const Suppliers = () => {
                                     <input
                                         type="number"
                                         className="phone-supplier"
-                                        style={{ marginLeft: "115px" }}
+                                        style={{ marginLeft: "136px" }}
                                         value={phone}
                                         onChange={e => setPhone(e.target.value)}
                                         disabled={!isEditing}
@@ -326,7 +326,7 @@ const Suppliers = () => {
                                     <label style={{ marginBottom: "94px" }}>Detalle de contacto</label>
                                     <textarea
                                         className="text-area-supplier"
-                                        style={{ marginLeft: "20px" }}
+                                        style={{ marginLeft: "37px" }}
                                         value={contact_details}
                                         onChange={e => setContactDetails(e.target.value)}
                                         disabled={!isEditing}
@@ -361,6 +361,7 @@ const Suppliers = () => {
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
                     options={['Código', 'Nombre']}
+                    defaultOption="Nombre"
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />

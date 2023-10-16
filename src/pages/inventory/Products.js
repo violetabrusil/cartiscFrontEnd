@@ -1,5 +1,6 @@
 import "../../Products.css";
 import React, { useEffect, useState, useCallback } from "react";
+import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
@@ -17,6 +18,7 @@ const Products = ({ viewMode, setViewMode }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [refreshCount, setRefreshCount] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -117,26 +119,27 @@ const Products = ({ viewMode, setViewMode }) => {
         fetchData();
         setViewMode('general');
         setRefreshCount(refreshCount + 1);
-       
+
     };
 
     const handleUpdateProduct = () => {
         fetchData();
         setViewMode('general');
-       
+
     };
 
     const handleSuspendProduct = () => {
         fetchData();
         setViewMode('general');
         setRefreshCount(refreshCount + 1);
-       
+
     };
 
     //Función que permite obtener todos los productos
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
+        setLoading(true);
         console.log("entro");
 
         //Endpoint por defecto
@@ -178,8 +181,9 @@ const Products = ({ viewMode, setViewMode }) => {
             console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
-            console.log("Error al obtener los datos de los productos",error);
+            console.log("Error al obtener los datos de los productos", error);
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -201,8 +205,15 @@ const Products = ({ viewMode, setViewMode }) => {
                     </div>
 
                     <SearchBar onFilter={handleFilter} />
+                    {loading ? (
+                        <div className="spinner-container-products ">
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
 
-                    <DataTable data={allProducts} columns={columns} highlightRows={false} />
+                    ) : (
+                        <DataTable data={allProducts} columns={columns} highlightRows={false} />
+                    )
+                    }
 
                 </div>
             )}

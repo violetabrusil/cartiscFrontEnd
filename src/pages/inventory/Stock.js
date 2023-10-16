@@ -1,6 +1,7 @@
 import "../../Stock.css";
 import React, { useState, useCallback, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
@@ -17,12 +18,13 @@ const Stock = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [stockToUpdate, setStockToUpdate] = useState(null);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     //Función que permite obtener todos los productos
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
-
+        setLoading(true);
         //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
@@ -64,6 +66,7 @@ const Stock = () => {
         } catch (error) {
             console.log("Error al obtener los datos de los servicios");
         }
+        setLoading(false);
     };
 
     const handleFilter = useCallback((option, term) => {
@@ -155,13 +158,22 @@ const Stock = () => {
             <ToastContainer />
             <div>
                 <SearchBar onFilter={handleFilter} />
-                <DataTable
-                    data={allProducts}
-                    columns={columns}
-                    onRowClick={handleRowClick}
-                    highlightRows={true}
-                    selectedRowIndex={selectedRowIndex}
-                />
+                {loading ? (
+                    <div className="spinner-container-stock">
+                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                    </div>
+
+                ) : (
+                    <DataTable
+                        data={allProducts}
+                        columns={columns}
+                        onRowClick={handleRowClick}
+                        highlightRows={true}
+                        selectedRowIndex={selectedRowIndex}
+                    />
+                )
+                }
+
             </div>
 
             <div className="label-input-container">

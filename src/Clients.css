@@ -1,16 +1,13 @@
 .containerClients {
     position: absolute;
     top: 80px;
-    /* Ajusta la altura del header */
     bottom: 0;
     left: 60px;
-    /* Ancho del menú cerrado */
     right: 0;
     display: grid;
     grid-template-columns: 1fr 2fr;
-    /* Divide la pantalla en partes de 1/3 y 2/3 */
     grid-gap: 0px;
-    /* Espacio entre las secciones */
+    height: calc(100vh - 80px); /* Altura del viewport menos 80px de la parte superior */
     overflow: hidden;
 }
 
@@ -19,11 +16,16 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto; 
+    height: 100%; /* Hace que ocupe todo el espacio disponible en .containerClients */
 }
 
 .right-section {
     background-color: #d0d0d0;
     padding: 20px;
+    overflow-y: auto;
+    height: 100%; /* Hace que ocupe todo el espacio disponible en .containerClients */
+    box-sizing: border-box;
 }
 
 .button-delete {
@@ -43,8 +45,9 @@
 }
 
 .container-list-client {
+    flex: 1; /* Esto hará que ocupe todo el espacio no utilizado en .left-section */
     overflow-y: auto;
-    height: 67vh;
+    max-height: 82%; /* Esto asegura que no exceda el espacio de su contenedor padre */
     overflow-x: hidden;
 }
 
@@ -222,8 +225,12 @@
     justify-content: flex-end;
     align-items: center;
     box-sizing: border-box;
-    height: 20vh;
     margin-right: 20px;
+    position: fixed; /* Fija el contenedor al viewport */
+    bottom: 0; /* Coloca el contenedor en la parte inferior */
+    left: 0; /* Alineación izquierda */
+    right: 0; /* Alineación derecha */
+    padding: 10px; /* Espacio alrededor del contenedor, opcional */
 }
 
 .button-edit-data-client {

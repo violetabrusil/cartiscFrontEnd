@@ -1,9 +1,9 @@
 import "../Modal.css"
 import React, { useState } from "react";
 
-const Modal = ({ options, onSelect }) => {
+const Modal = ({ options, onSelect, defaultOption  }) => {
 
-    const [selectedOption, setSelectedOption] = useState(null);
+    const [selectedOption, setSelectedOption] = useState(defaultOption || null);
 
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
@@ -27,6 +27,7 @@ const Modal = ({ options, onSelect }) => {
                             value={option}
                             name="filterOption"
                             onChange={handleOptionChange}
+                            checked={option === selectedOption}
                         />
                         <label htmlFor={option}>{option}</label>
                     </div>

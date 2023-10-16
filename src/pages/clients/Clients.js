@@ -15,6 +15,7 @@ import Modal from "../../modal/Modal";
 import { getVehicleCategory } from "../../constants/vehicleCategoryConstants";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -24,6 +25,17 @@ const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png"
 const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
 //const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
+const cedulaIcon = process.env.PUBLIC_URL + "/images/icons/cedula.png";
+const nameIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
+const addressIcon = process.env.PUBLIC_URL + "/images/icons/address.png";
+const emailIcon = process.env.PUBLIC_URL + "/images/icons/email.png";
+const phoneIcon = process.env.PUBLIC_URL + "/images/icons/phone.png";
+const categoryIcon = process.env.PUBLIC_URL + "/images/icons/category.png";
+const yearIcon = process.env.PUBLIC_URL + "/images/icons/year.png";
+const kmIcon = process.env.PUBLIC_URL + "/images/icons/km.png";
+const brandIcon = process.env.PUBLIC_URL + "/images/icons/brand.png";
+const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
+const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
 const Clients = () => {
 
@@ -32,7 +44,7 @@ const Clients = () => {
     //Variables para la sección de clientes
     const [clients, setClients] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState('Nombre');
     const [selectedClient, setSelectedClient] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [clientSuspended, setClientSuspended] = useState(false);
@@ -280,7 +292,7 @@ const Clients = () => {
         setIsAlertClientSuspend(false);
         try {
 
-            const response = await apiClient.post(`/clients/suspend/${selectedClient.client.id}`)
+            const response = await apiClient.put(`/clients/suspend/${selectedClient.client.id}`)
 
             if (response.status === 200) {
                 setClientSuspended(prevState => !prevState);
@@ -480,7 +492,7 @@ const Clients = () => {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '97%', // Estilo personalizado para el ancho
+            width: '93%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
@@ -496,6 +508,11 @@ const Clients = () => {
             ...provided,
             className: 'custom-select-option',
             // otros estilos personalizados si los necesitas
+        }),
+        menu: (provided, state) => ({
+            ...provided,
+            width: '93%', // puedes ajustar el ancho del menú aquí
+            marginTop: '-17px'
         }),
 
     };
@@ -623,12 +640,11 @@ const Clients = () => {
                                         {vehicle.category === "truck" && (
                                             <img src={camionIcon} alt="Camion Icon" className="camion-icon" />
                                         )}
-                                        <label className="vehicle-plate">{vehicle.plate}</label>
+                                        <label className="vehicle-plate"> {formatPlate(vehicle.plate)}</label>
                                     </div>
                                 </div>
                             ))}
                         </div>
-
 
                     )}
 
@@ -649,53 +665,94 @@ const Clients = () => {
                                 <form>
                                     <label className="label-form">
                                         Cédula
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={cedula}
-                                            onChange={(e) => setCedula(e.target.value)}
-                                            readOnly={!isEditMode}
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={cedula}
+                                                onChange={(e) => setCedula(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
+
+                                            <img
+                                                src={cedulaIcon}
+                                                alt="Id Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Nombre completo
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            readOnly={!isEditMode}
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
+
+                                            <img
+                                                src={nameIcon}
+                                                alt="Name Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Dirección
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={address}
-                                            onChange={(e) => setAddress(e.target.value)}
-                                            readOnly={!isEditMode}
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={address}
+                                                onChange={(e) => setAddress(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
+
+                                            <img
+                                                src={addressIcon}
+                                                alt="Address Icon"
+                                                className="input-new-client-icon"
+                                            />
+
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Email
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            readOnly={!isEditMode}
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
+
+                                            <img
+                                                src={emailIcon}
+                                                alt="Email Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Teléfono
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                            readOnly={!isEditMode}
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                                readOnly={!isEditMode}
+                                            />
+
+                                            <img
+                                                src={phoneIcon}
+                                                alt="Phone Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
 
                                     {isEditMode &&
@@ -718,11 +775,11 @@ const Clients = () => {
                     {/*Información del vehículo del cliente */}
 
                     {selectedVehicle && (
-                        <CustomTitleSection 
-                        title={selectedClientData?.client?.name}
-                        onBack={handleGoBack}
-                        showDisableIcon={true}
-                        onDisable={openAlertModalVehicleSuspend}
+                        <CustomTitleSection
+                            title={selectedClientData?.client?.name}
+                            onBack={handleGoBack}
+                            showDisableIcon={true}
+                            onDisable={openAlertModalVehicleSuspend}
                         />
                     )}
 
@@ -747,56 +804,103 @@ const Clients = () => {
 
                                     <label className="label-form">
                                         Año
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={vehicleData ? vehicleData.year : ""}
-                                            readOnly
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={vehicleData ? vehicleData.year : ""}
+                                                readOnly
+                                            />
+
+                                            <img
+                                                src={yearIcon}
+                                                alt="Year Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Categoría
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={vehicleData ? getVehicleCategory(vehicleData.category) : ""}
-                                            readOnly
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={vehicleData ? getVehicleCategory(vehicleData.category) : ""}
+                                                readOnly
+                                            />
+                                            <img
+                                                src={categoryIcon}
+                                                alt="Category Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Kilometraje actual
-                                        <input
-                                            className="input-form"
-                                            value={vehicleData ? vehicleData.km : ""}
-                                            readOnly
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                value={vehicleData ? vehicleData.km : ""}
+                                                readOnly
+                                            />
+                                            <img
+                                                src={kmIcon}
+                                                alt="Km Icon"
+                                                className="input-new-client-icon"
+                                                style={{ width: '30px' }}
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Marca
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={vehicleData ? vehicleData.brand : ""}
-                                            readOnly
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={vehicleData ? vehicleData.brand : ""}
+                                                readOnly
+                                            />
+                                            <img
+                                                src={brandIcon}
+                                                alt="Brand Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Modelo
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={vehicleData ? vehicleData.model : ""}
-                                            readOnly
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={vehicleData ? vehicleData.model : ""}
+                                                readOnly
+                                            />
+                                            <img
+                                                src={modelIcon}
+                                                alt="Model Icon"
+                                                className="input-new-client-icon"
+                                                style={{ top: '35%' }}
+                                            />
+                                        </div>
+
                                     </label>
                                     <label className="label-form">
                                         Motor
-                                        <input
-                                            className="input-form"
-                                            type="text"
-                                            value={vehicleData ? vehicleData.motor : ""}
-                                            readOnly
-                                        />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-detail"
+                                                type="text"
+                                                value={vehicleData ? vehicleData.motor : ""}
+                                                readOnly
+                                            />
+                                            <img
+                                                src={motorIcon}
+                                                alt="Motor Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
+
                                     </label>
                                 </form>
                             </div>
@@ -829,11 +933,27 @@ const Clients = () => {
 
                                     <label className="label-form">
                                         Año
-                                        <input className="input-form" type="number" value={year} onChange={(e) => setYear(parseInt(e.target.value))} />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form"
+                                                type="number"
+                                                value={year}
+                                                onChange={(e) => setYear(parseInt(e.target.value))}
+                                            />
+
+                                            <img
+                                                src={yearIcon}
+                                                alt="Year Icon"
+                                                className="input-new-client-icon"
+                                            />
+
+                                        </div>
+
                                     </label>
                                     <label className="label-form">
                                         Categoría
                                         <Select
+                                            components={{ Placeholder: CustomPlaceholder }}
                                             isSearchable={false}
                                             options={options}
                                             value={options.find(option => option.value === category)}
@@ -843,19 +963,72 @@ const Clients = () => {
                                     </label>
                                     <label className="label-form">
                                         Kilometraje actual
-                                        <input className="input-form" type="number" value={km} onChange={(e) => setKm(parseInt(e.target.value))} />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form"
+                                                type="number"
+                                                value={km}
+                                                onChange={(e) => setKm(parseInt(e.target.value))}
+                                            />
+                                            <img
+                                                src={kmIcon}
+                                                alt="Km Icon"
+                                                className="input-new-client-icon"
+                                                style={{ width: '30px' }}
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Marca
-                                        <input className="input-form" type="text" value={brand} onChange={(e) => setBrand(e.target.value)} />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form"
+                                                type="text"
+                                                value={brand}
+                                                onChange={(e) => setBrand(e.target.value)}
+                                            />
+                                            <img
+                                                src={brandIcon}
+                                                alt="Brand Icon"
+                                                className="input-new-client-icon"
+                                            />
+                                        </div>
                                     </label>
                                     <label className="label-form">
                                         Modelo
-                                        <input className="input-form" type="text" value={model} onChange={(e) => setModel(e.target.value)} />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form"
+                                                type="text"
+                                                value={model} onChange={(e) => setModel(e.target.value)}
+                                            />
+                                             <img
+                                                src={modelIcon}
+                                                alt="Model Icon"
+                                                className="input-new-client-icon"
+                                                style={{ top: '35%' }}
+                                            />
+
+                                        </div>
+
                                     </label>
                                     <label className="label-form">
                                         Motor
-                                        <input className="input-form" type="text" value={motor} onChange={(e) => setMotor(e.target.value)} />
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form"
+                                                type="text"
+                                                value={motor}
+                                                onChange={(e) => setMotor(e.target.value)}
+                                            />
+                                            <img
+                                                src={motorIcon}
+                                                alt="Motor Icon"
+                                                className="input-new-client-icon"
+                                            />
+
+                                        </div>
+
                                     </label>
                                 </form>
                             </div>
@@ -906,6 +1079,7 @@ const Clients = () => {
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
                     options={['Cédula', 'Nombre']}
+                    defaultOption="Nombre"
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />

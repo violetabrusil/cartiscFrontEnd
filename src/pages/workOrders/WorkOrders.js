@@ -16,7 +16,7 @@ const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
 const WorkOrders = () => {
 
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState('Placa');
     const [searchTerm, setSearchTerm] = useState('');
     const [workOrders, setWorkOrders] = useState([]);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -92,7 +92,6 @@ const WorkOrders = () => {
         navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
     };
     
-
     useEffect(() => {
         const fetchData = async () => {
             let endpoint = '/work-orders/all';
@@ -215,6 +214,7 @@ const WorkOrders = () => {
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
                     options={['Placa', 'Nombre Titular']}
+                    defaultOption="Placa"
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />

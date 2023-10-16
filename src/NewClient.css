@@ -56,7 +56,20 @@
 }
 
 .input-form {
-    width: 83%;
+    width: 88%;
+    max-width: 95%;
+    height: 30px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+    padding-left: 50px;
+}
+
+.input-form-detail {
+    width: 94%;
     max-width: 95%;
     height: 30px;
     border: 1px solid rgb(0 0 0 / 34%);
@@ -69,8 +82,8 @@
 }
 
 .input-form-add-vehicle {
-    width: 91%;
-    max-width: 91%;
+    width: 94%;
+    max-width: 94%;
     height: 30px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
@@ -104,7 +117,7 @@
 }
 
 .input-plate {
-    width: 33%;
+    width: 22%;
     height: 68px;
     border: 5px solid #000;
     background: #fff;
@@ -132,7 +145,7 @@
 .input-container label {
     position: absolute;
     top: 23%;
-    left: 13%;
+    left: 6%;
     transform: translateY(-50%);
     transition: transform 0.3s ease-out, font-size 0.3s ease-out;
     pointer-events: none;
@@ -147,7 +160,7 @@
     width: 26px;
     position: absolute;
     top: 24%;
-    left: calc(50% - 359px);
+    left: calc(50% - 402px);
     transform: translateY(-50%);
 }
 
@@ -170,8 +183,8 @@
 }
 
 .form-scroll {
-    max-height: 513px;
-    overflow: auto;
+    max-height: 74%;
+    overflow-y: auto;
 }
 
 .button-alert {

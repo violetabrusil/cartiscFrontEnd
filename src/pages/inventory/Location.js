@@ -2,6 +2,7 @@ import "../../Location.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useCallback, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
@@ -20,6 +21,7 @@ const Location = () => {
     const [rowUpdate, setRowUpdate] = useState(null);
     const [columnUpdate, setColumnUpdate] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -107,7 +109,7 @@ const Location = () => {
     //por número de serie, categoría o título
 
     const fetchData = async () => {
-
+        setLoading(true);
         //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
@@ -149,6 +151,7 @@ const Location = () => {
         } catch (error) {
             console.log("Error al obtener los datos de los servicios");
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -161,12 +164,21 @@ const Location = () => {
             <ToastContainer />
             <div>
                 <SearchBar onFilter={handleFilter} />
-                <DataTable
-                    data={allProducts}
-                    columns={columns}
-                    onRowClick={handleRowProductClick}
-                    highlightRows={true}
-                    selectedRowIndex={selectedRowIndex} />
+                {loading ? (
+                    <div className="spinner-container-products ">
+                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                    </div>
+
+                ) : (
+                    <DataTable
+                        data={allProducts}
+                        columns={columns}
+                        onRowClick={handleRowProductClick}
+                        highlightRows={true}
+                        selectedRowIndex={selectedRowIndex} />
+                )
+                }
+
             </div>
 
             <div className="input-location-container">
@@ -174,7 +186,7 @@ const Location = () => {
                     <label>Fila</label>
                     <input
                         type="text"
-                        style={{color: "#255177"}}
+                        style={{ color: "#255177" }}
                         value={isEditing ? rowUpdate : selectedProductRow}
                         readOnly={!isEditing}
                         onChange={e => setRowUpdate(e.target.value)}
@@ -185,7 +197,7 @@ const Location = () => {
                     <label>Columna</label>
                     <input
                         type="text"
-                        style={{color: "#5a98cb"}}
+                        style={{ color: "#5a98cb" }}
                         value={isEditing ? columnUpdate : selectedProductColumn}
                         readOnly={!isEditing}
                         onChange={e => setColumnUpdate(e.target.value)}
