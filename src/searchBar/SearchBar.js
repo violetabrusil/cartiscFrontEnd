@@ -18,7 +18,7 @@ const SearchBar = ({
         { value: 'branch', label: 'Marca' }
     ] }) => {
 
-    const [selectedOption, setSelectedOption] = useState(options[0]);
+    const [selectedOption, setSelectedOption] = useState(options[1]);
     const [searchTerm, setSearchTerm] = useState("");
 
     const handleOptionsChange = (selectedOption) => {

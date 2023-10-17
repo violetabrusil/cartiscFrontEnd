@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import Select from 'react-select';
 import PuffLoader from "react-spinners/PuffLoader";
+import { useNavigate } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import VehiclePlans from "../../vehicle-plans/VehiclePlans";
@@ -16,6 +17,7 @@ import ModalHistoryWorkOrder from '../../modal/ModalHistoryWorkOrder';
 import SearchProductsModal from '../../modal/SearchProductsModal';
 import DataTable from '../../dataTable/DataTable';
 import SearchServicesOperationsModal from '../../modal/SearchServicesOperationsModal';
+import { AssignModal } from '../../modal/AssignModal';
 
 const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
@@ -23,6 +25,7 @@ const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const clockIcon = process.env.PUBLIC_URL + "/images/icons/clockIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
+const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const InformationWorkOrder = () => {
 
@@ -65,7 +68,9 @@ const InformationWorkOrder = () => {
     const [workOrderServices, setWorkOrderServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [nextStatus, setNextStatus] = useState(null); // Mantener el siguiente estado para la confirmación
-
+    const [orderHistory, setOrderHistory] = useState([]);
+    const [showAssignModal, setShowAssignModal] = useState(false);
+    const navigate = useNavigate();
 
     const keyMapping = {
         "Antena": "antenna",
@@ -95,13 +100,12 @@ const InformationWorkOrder = () => {
 
     const validTransitions = {
         'to_start': ['assigned', 'stand_by', 'cancelled'],
-        'assigned': ['in_development', 'stand_by', 'cancelled'],
+        'assigned': ['assigned', 'in_development', 'stand_by', 'cancelled'],
         'in_development': ['assigned', 'stand_by', 'cancelled', 'completed'],
         'stand_by': ['assigned'],
         'completed': [],
         'cancelled': []
     };
-
 
     const toggleComponentes = (sectionId) => {
         setVisibleSections(prevSections => ({
@@ -228,17 +232,15 @@ const InformationWorkOrder = () => {
         const nextStatus = option.value;
 
         if (validTransitions[currentStatus].includes(nextStatus)) {
-            if (nextStatus === 'cancelled' || nextStatus === 'completed') {
-                // Mostrar modal de confirmación
+
+            if (nextStatus === 'assigned') {
+                setShowAssignModal(true);
+            } else if (nextStatus === 'cancelled' || nextStatus === 'completed') {
                 openConfirmationModal(nextStatus);
-                return;  // Detener la ejecución aquí
             } else {
-                // Si es una transición válida, muestra toast de éxito
-                toast.success("El cambio de estado de la orden de trabajo es válido");
-                changeOrderStatus(nextStatus); // Función que realizará la petición al backend
-                setWorkOrderStatus(option); // Actualizar el estado local
-                return; // Detener la ejecución aquí
+                changeOrderStatus(nextStatus);
             }
+
         } else {
             // Mostrar toast de advertencia si no es una transición válida
             toast.warn("El cambio de estado de la orden de trabajo no es válido");
@@ -258,9 +260,22 @@ const InformationWorkOrder = () => {
 
     const changeOrderStatus = async (newStatus) => {
         try {
-            await apiClient.put(`/work-orders/change-status/${workOrderId}?work_order_status=${newStatus}`);
-            // Actualizar el estado local después de cambiar el estado en el backend
-            setWorkOrderStatus({ value: newStatus, label: WorkOrderStatusOptions.find(option => option.value === newStatus).label });
+            const url = `/work-orders/change-status/${workOrderId}?work_order_status=${newStatus}`;
+
+            const response = await apiClient.put(url);
+
+            if (response.status === 200 && response.data) {
+                const lastHistory = response.data.work_order_history.slice(-1)[0];
+                updateLocalStatusAndHistory({
+                    newStatus: newStatus,
+                    dateChanged: new Date().toISOString(),
+                    created_by: lastHistory.created_by || 'Unknown',
+                    notes: lastHistory.notes
+                });
+
+                toast.success("El cambio de estado de la orden de trabajo es válido");
+                console.log("datos de la orden con el estado actualizado", response.data);
+            }
         } catch (error) {
             toast.error("Error al cambiar el estado de la orden de trabajo");
             console.error("Error al cambiar el estado de la orden de trabajo:", error);
@@ -327,6 +342,23 @@ const InformationWorkOrder = () => {
             console.log('Error al obtener el detalle de la orden de trabajo', error)
             setLoading(false);
         }
+    };
+
+    const updateLocalStatusAndHistory = (assignmentInfo) => {
+        setWorkOrderStatus({
+            value: assignmentInfo.newStatus,
+            label: WorkOrderStatusOptions.find(option => option.value === assignmentInfo.newStatus).label
+        });
+
+        setWorkOrderDetail(prevState => ({
+            ...prevState,
+            work_order_history: [...prevState.work_order_history, {
+                work_order_status: assignmentInfo.newStatus,
+                date_changed: assignmentInfo.dateChanged,
+                created_by: assignmentInfo.created_by,
+                notes: assignmentInfo.notes
+            }]
+        }));
     };
 
     const handleKeyPress = (event) => {
@@ -493,6 +525,18 @@ const InformationWorkOrder = () => {
         }
     };
 
+    const openAssignModal = () => {
+        setShowAssignModal(true);
+    };
+
+    const closeAssignModal = () => {
+        setShowAssignModal(false);
+    };
+
+    const onBack = () => {
+        navigate("/workOrders");
+    };
+
     useEffect(() => {
         getWorkOrderDetailById();
     }, []);
@@ -544,7 +588,7 @@ const InformationWorkOrder = () => {
 
     return (
         <div>
-            <ToastContainer />
+            {!showAssignModal && <ToastContainer />}
 
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
@@ -562,6 +606,9 @@ const InformationWorkOrder = () => {
 
                         <div className="new-work-order-general-container">
                             <div className="new-work-order-title-container">
+                                <button onClick={onBack} className="button-arrow-client">
+                                    <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
+                                </button>
                                 <h2>Detalle Orden de Trabajo {workOrderDetail.work_order_code}</h2>
                                 <img src={clockIcon} alt="Clock Icon" className="clock-icon" onClick={openHistoryModal} />
                                 <div className="div-container-select">
@@ -1016,6 +1063,20 @@ const InformationWorkOrder = () => {
                     </div>
                 </div>
             )}
+
+            {showAssignModal && (
+                <AssignModal
+                    isOpen={openAssignModal}
+                    onClose={closeAssignModal}
+                    onConfirm={(assignmentInfo) => {
+                        updateLocalStatusAndHistory(assignmentInfo);
+                        setShowAssignModal(false);
+                    }}
+                    workOrderId={workOrderId}
+                />
+
+            )}
+
         </div>
 
 

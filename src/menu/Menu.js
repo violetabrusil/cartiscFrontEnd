@@ -99,12 +99,13 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
 
                 <img src={isOpen ? logoClose : logo} alt="Logo Vertical" className="imagen-vertical" />
 
-
-                <div className={`icono-menu ${isOpen ? "open" : ""}`}>
-                    <button className="button-menu" onClick={toggleMenu}>
-                        <img src={isOpen ? menuButton : menuButton} alt="Menu" />
-                    </button>
-                </div>
+                {!isOpen && (
+                    <div className="icono-menu">
+                        <button className="button-menu" onClick={toggleMenu}>
+                            <img src={menuButton} alt="Menu" />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

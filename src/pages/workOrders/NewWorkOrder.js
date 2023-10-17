@@ -391,6 +391,10 @@ const NewWorkOrder = () => {
 
     };
 
+    const onBack = () => {
+        navigate("/workOrders");
+    };
+
     useEffect(() => {
 
         if (searchTerm) {
@@ -455,6 +459,9 @@ const NewWorkOrder = () => {
 
 
                 <div className="new-work-order-title-container">
+                    <button onClick={onBack} className="button-arrow-client">
+                        <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
+                    </button>
                     <h2>Nueva Orden de Trabajo</h2>
                     <button className="confirm-button" onClick={handleWorkOrderCreation}>
                         <span className="text-confirm-button ">Confirmar</span>

@@ -10,6 +10,16 @@ export function ModalHistoryWorkOrder({ isOpen, onClose, orderHistory, workOrder
 
     const sortedOrderHistory = orderHistory.sort((a, b) => new Date(b.date_changed) - new Date(a.date_changed));
 
+    const statusColors = {
+        "Por iniciar": "#316EA8",
+        "Asignada": "#0C1F31",
+        "En ejecución": "#4caf50",
+        "En espera": "#fbc02d",
+        "Cancelada": "#e74c3c",
+        "Completada": "#2e7d32",
+        "Eliminada": "#6E757D"
+    };
+
     return (
 
         <div className='filter-modal-overlay'>
@@ -26,21 +36,25 @@ export function ModalHistoryWorkOrder({ isOpen, onClose, orderHistory, workOrder
                 </div>
 
                 <div className="div-container-history">
-                    {sortedOrderHistory.map(entry => (
-                        <div className={entry.isCompleted ? "entry entry-completed" : "entry entry-pending"} key={entry.id}>
-                            <div>{new Date(entry.date_changed).toLocaleDateString()} - {entry.created_by}</div>
-                            <div style={{marginTop: '8px', fontWeight: '600'}}>{workOrderStatus[entry.work_order_status] || entry.work_order_status}</div>
-                            <div style={{marginTop: '8px'}}>{entry.notes}</div>
+                    {sortedOrderHistory.map((entry, index) => (
+                        <div
+                            className={`entry ${entry.isCompleted ? "entry-completed" : "entry-pending"} entry-color`}
+                            key={index}
+                            style={{ "--entry-color": statusColors[workOrderStatus[entry.work_order_status] || entry.work_order_status] }}
+                        >
+                            <div
+                                style={{
+                                    marginTop: '8px',
+                                    fontWeight: '600',
+                                    color: statusColors[workOrderStatus[entry.work_order_status] || entry.work_order_status]
+                                }}>
+                                {workOrderStatus[entry.work_order_status] || entry.work_order_status}
+                            </div>
+                            <div>{new Date(entry.date_changed).toLocaleDateString()} {new Date(entry.date_changed).toLocaleTimeString()} - {entry.created_by}</div>
+                            <div>{entry.notes}</div>
                         </div>
                     ))}
                 </div>
-
-
-
-
-
-
-
 
             </div>
         </div>
