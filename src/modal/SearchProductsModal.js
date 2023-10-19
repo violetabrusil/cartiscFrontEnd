@@ -253,7 +253,7 @@ export function SearchProductsModal({ onClose,
     const removeProduct = (productToRemove) => {
         onProductsSelected(prevProducts => prevProducts.filter(p => p.sku !== productToRemove.sku));
     };
-
+    
     const calculatedProducts = selectedProducts.map(product => {
         const price = productPrices[product.sku] !== undefined ? productPrices[product.sku] : product.price;
         const quantity = productQuantities[product.sku] !== undefined ? productQuantities[product.sku] : 1;
@@ -448,8 +448,7 @@ export function SearchProductsModal({ onClose,
             <div style={{ maxWidth: '850px' }} className="modal-payment">
                 <div style={{ display: 'flex', marginLeft: '10px', marginBottom: '0px', marginTop: '0px' }}>
                     <h3 style={{ marginBottom: '0px', flex: "1" }}>Productos</h3>
-                    {selectedProducts.length > 0 ? (
-                        // Si hay productos seleccionados, muestra el botón "Guardar"
+                   
                         <div style={{display: 'flex'}}>
                             <button style={{ width: '100px', height: '33px', marginTop: '11px', marginRight: '10px' }}
                                 className="confirm-button" onClick={handleSaveUpdateProducts}>
@@ -463,15 +462,6 @@ export function SearchProductsModal({ onClose,
                             </button>
 
                         </div>
-
-
-
-                    ) : (
-                        // Si no hay productos seleccionados, muestra el botón "X" (cerrar)
-                        <button style={{ marginTop: '14px', marginRight: '13px' }} className="button-close" onClick={onClose}>
-                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                        </button>
-                    )}
 
                 </div>
 

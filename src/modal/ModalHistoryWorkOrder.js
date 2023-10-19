@@ -24,7 +24,7 @@ export function ModalHistoryWorkOrder({ isOpen, onClose, orderHistory, workOrder
 
         <div className='filter-modal-overlay'>
             <div style={{ maxWidth: '570px' }} className="modal-payment">
-                <div className="title-modal-hitory">
+                <div className="title-modal-history">
                     <img style={{ marginTop: '13px' }} src={clockIcon} alt="Clock Icon" className="clock-icon" />
                     <h4>Información del estado de la Orden de Trabajo</h4>
                     <label className="label-history-work-order">{workOrderCode}</label>

@@ -100,6 +100,18 @@
     height: 45px;
 }
 
+.button-payment-receipt {
+    border: none;
+    background: none;
+    margin-right: -11px;
+}
+
+.payment-receipt-icon {
+    background: none;
+    width: 49px;
+    height: 45px;
+}
+
 .custom-select-option-payment {
     background-color: transparent;
 }
@@ -127,6 +139,31 @@
     font-weight: bold;
 }
 
+.status-box {
+    border-radius: 15px;
+    padding: 5px 10px;
+    text-align: center;
+    color: #FFFFFF; 
+    font-weight: 500;
+}
+
+.status-por-cobrar {
+    background-color: #FFD966;
+    color: #0C1F31;
+}
+
+.status-cobrado {
+    background-color: #316EA8;
+    color: white;
+}
+
+.bold-text {
+    font-weight: 600;
+}
+
+.large-text {
+    font-size: 1.2em;
+}
 
 
 @media screen and (max-width: 768px) {

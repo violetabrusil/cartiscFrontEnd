@@ -1,5 +1,4 @@
 import "../Modal.css";
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { ToastContainer, toast } from "react-toastify";
 import SearchBar from "../searchBar/SearchBar";
@@ -9,7 +8,6 @@ import apiClient from "../services/apiClient";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const userIcon = process.env.PUBLIC_URL + "/images/user.png";
-
 
 export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
 
@@ -178,7 +176,7 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
                 <div style={{ maxWidth: '600px' }} className="modal-payment">
                     <ToastContainer containerId="modal-toast-container" />
 
-                    <div className="title-modal-hitory">
+                    <div className="title-modal-history">
                         <h4>Asignar Orden de Trabajo</h4>
                         <div style={{ flex: "1", marginTop: '18px' }}>
                             <button className="button-close" onClick={onClose}  >

@@ -372,13 +372,11 @@ const Services = () => {
 
     //Función para crear un nuevo servicio 
     const handleSaveOrUpdateService = async (event) => {
-        console.log("entro")
-        // Para evitar que el formulario recargue la página
+        console.log("entro");
         event.preventDefault();
         const id_operations = selectedOperations.map(operation => operation.id);
         if (mode === 'add') {
             try {
-
                 const response = await apiClient.post('/services/create', { title, id_operations });
                 setServices(response.data);
                 toast.success('Servicio registrado', {
@@ -387,18 +385,19 @@ const Services = () => {
                 resetForm();
                 setLastUpdated(Date.now());
                 setCurrentSection(null);
-
             } catch (error) {
-                console.log("error", error)
-                toast.error('Error al guardar el servicio', {
+                console.log("error", error);
+                const mensajesError = error.response && error.response.data && error.response.data.errors 
+                                      ? error.response.data.errors.map(err => err.message).join(" / ")
+                                      : 'Error al guardar el servicio';
+                toast.error(mensajesError, {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
         } else {
             const id_operations = selectedService.operations.map(operation => operation.id);
-            console.log("datos servicio seleccionado", title, id_operations)
+            console.log("datos servicio seleccionado", title, id_operations);
             try {
-
                 const response = await apiClient.put(`/services/update/${selectedService.id}`, { title, id_operations });
                 setServices(response.data);
                 toast.success('Servicio actualizado', {
@@ -406,17 +405,17 @@ const Services = () => {
                 });
                 setLastUpdated(Date.now());
                 setIsEditing(false);
-                
             } catch (error) {
-                console.log("error", error)
-                toast.error('Error al actualizar el servicio', {
+                console.log("error", error);
+                const mensajesError = error.response && error.response.data && error.response.data.errors 
+                                      ? error.response.data.errors.map(err => err.message).join(" / ")
+                                      : 'Error al actualizar el servicio';
+                toast.error(mensajesError, {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
         }
-
-
-    };
+    };    
 
     //Función para eliminar un servicio
     const handleDeleteService = async (event) => {

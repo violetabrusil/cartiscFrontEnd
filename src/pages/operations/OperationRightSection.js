@@ -21,28 +21,32 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
     };
 
     const handleAddNewOperation = async (event) => {
-        // Para evitar que el formulario recargue la página
         event.preventDefault();
-
+    
         try {
-
             const response = await apiClient.post('/operations/create', { title, cost });
             if (response.data) {
                 onOperationChange(response.data, "ADD");
             }
-            // Notificar al componente padre sobre la nueva operación
-
             toast.success('Operación registrada', {
                 position: toast.POSITION.TOP_RIGHT
             });
-
         } catch (error) {
-            console.log("error", error)
-            toast.error('Error al guardar la operación', {
+            console.log("error", error.response.data);
+            
+            // Extrae todos los mensajes de error del objeto de respuesta
+            let mensajesError = [];
+            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
+                mensajesError = error.response.data.errors.map(err => err.message);
+            }
+    
+            // Une todos los mensajes en uno solo
+            const mensajeFinal = mensajesError.join(" / ");
+    
+            toast.error(mensajeFinal || "Hubo un error desconocido", {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
-
     };
     
     const handleUpdateOperation = async () => {

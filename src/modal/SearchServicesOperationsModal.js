@@ -211,7 +211,6 @@ const SearchServicesOperationsModal = ({
                         });
                     }
 
-
                     return (
                         <div>
                             <span style={{ margin: '0 5px' }}>$</span>
@@ -283,16 +282,14 @@ const SearchServicesOperationsModal = ({
     const selectedOperationsRef = useRef([]);
 
     const addOperation = (operationToAdd) => {
-
         let operationExistsInAnyService = selectedServicesListRef.current.some(service => {
-            console.log("servicio", service)
-            if (!service.Operations) {
+            // Corregimos "Operations" a "operations"
+            if (!service.operations) {
                 return false;
             }
 
-            return service.Operations.some(op => op.operation_code === operationToAdd.operation_code);
+            return service.operations.some(op => op.operation_code === operationToAdd.operation_code);
         });
-
 
         if (operationExistsInAnyService) {
             toast.warn('La operación seleccionada ya se encuentra en Servicios.', {
@@ -303,6 +300,9 @@ const SearchServicesOperationsModal = ({
 
         onOperationsSelected(prevOperations => {
             if (prevOperations.some(op => op.operation_code === operationToAdd.operation_code)) {
+                toast.warn('La operación seleccionada ya ha sido agregada.', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
                 return prevOperations;
             }
             return [...prevOperations, { ...operationToAdd, isNew: true }];
@@ -332,14 +332,18 @@ const SearchServicesOperationsModal = ({
             const response = await apiClient.get(`/services/${service.id}`);
             if (response.data && response.data.operations && response.data.operations.length > 0) {
 
-                // Aquí está la lógica clave:
-                // Verificamos si alguna de las operaciones del servicio a agregar ya se encuentra en las operaciones seleccionadas.
                 console.log("Operaciones en el servicio que se está intentando agregar:", response.data.operations);
                 console.log("Operaciones actualmente seleccionadas:", selectedOperationsRef.current);
 
                 const operationAlreadyAdded = response.data.operations.some(op => operationExistsInAddedOperations(op));
 
-                if (operationAlreadyAdded) {
+                const operationInOtherServices = response.data.operations.some(op =>
+                    selectedServicesListRef.current.some(service =>
+                        service.operations && service.operations.some(existingOp => existingOp.operation_code === op.operation_code)
+                    )
+                );
+
+                if (operationAlreadyAdded || operationInOtherServices) {
                     toast.warn("Una operación del Servicio seleccionado, ya se encuentra agregada", {
                         position: toast.POSITION.TOP_RIGHT
                     });
@@ -414,7 +418,7 @@ const SearchServicesOperationsModal = ({
                 work_order_service_id: null
             })),
         };
-        return await apiClient.post(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdate);
+        return await apiClient.put(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdate);
     };
 
     const handleAddServiceOperations = async (serviceOpsToAdd) => {
@@ -474,7 +478,7 @@ const SearchServicesOperationsModal = ({
 
         console.log("datos a enviar de servicios", payloadToUpdateOperationServices);
 
-        return await apiClient.post(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdateOperationServices);
+        return await apiClient.put(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdateOperationServices);
     };
 
     const handleConfirmChangesOperations = async () => {
@@ -530,7 +534,6 @@ const SearchServicesOperationsModal = ({
                 handleApiResponse(response, 'Operaciones añadidas');
             }
 
-            
             if (serviceOpsToAdd.length > 0) {
                 const payloadToAdd = serviceOpsToAdd.map(({ isNew, isModified, ...relevantData }) => relevantData);
 
@@ -573,7 +576,7 @@ const SearchServicesOperationsModal = ({
 
     const handleApiResponse = (response, type) => {
         if (response.status === 200) {
-            toast.success(`${type} guardados con éxito!`, {
+            toast.success(`${type} con éxito!`, {
                 position: toast.POSITION.TOP_RIGHT
             });
         } else {
@@ -583,15 +586,22 @@ const SearchServicesOperationsModal = ({
         }
     };
 
-    const handleRemoveService = (serviceCodeToRemove) => {
+    const handleRemoveService = (e, serviceCodeToRemove) => {
+        e.stopPropagation();
+        console.log("entro", selectedServicesList)
+
         // Encuentra el servicio que va a ser eliminado
-        const serviceToRemove = selectedServicesList.find(service => service.service_code === serviceCodeToRemove);
+        const serviceToRemove = selectedServicesList.find(service => service.service_id === serviceCodeToRemove);
 
         // Obtener las operaciones asociadas con ese servicio
-        const operationsToRemove = serviceToRemove ? serviceToRemove.Operations : [];
+        const operationsToRemove = serviceToRemove ? serviceToRemove.operations : [];
+
+        console.log("Service to remove:", serviceToRemove);
+        console.log("Operations to remove:", operationsToRemove);
+
 
         // Elimina el servicio
-        setSelectedServicesList(prevServices => prevServices.filter(service => service.service_code !== serviceCodeToRemove));
+        setSelectedServicesList(prevServices => prevServices.filter(service => service.service_id !== serviceCodeToRemove));
 
         // Elimina todas las operaciones asociadas a ese servicio en servicesWithOperations
         onServiceOperationsUpdated(prevOperations => {
@@ -704,28 +714,21 @@ const SearchServicesOperationsModal = ({
             <div style={{ maxWidth: '850px' }} className="modal-payment">
                 <div style={{ display: 'flex', marginLeft: '10px', marginBottom: '0px', marginTop: '0px' }}>
                     <div style={{ flex: '1' }}></div>
-                    {(selectedServicesList && selectedServicesList.length > 0) || selectedOperations.length > 0 ? (
-                        //Si hay operaciones seleccionadas, muestra el botón de "Guardar"
-                        <div style={{ display: 'flex' }}>
-                            <button style={{ width: '100px', height: '33px', marginRight: '18px' }}
-                                className="confirm-button" onClick={handleConfirmChangesOperations}>
-                                <span className="text-confirm-button">
-                                    Guardar
-                                </span>
-                            </button>
 
-                            <button style={{ marginTop: '3px', marginRight: '13px' }} className="button-close" onClick={onClose}>
-                                <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                            </button>
-
-                        </div>
-
-                    ) : (
-                        //Si no hay operaciones seleccionadas, muestra el botón "X" (cerrar)
-                        <button className="button-close-modal" onClick={onClose}  >
-                            <img src={closeIcon} alt="Close Icon" className="modal-close-icon"></img>
+                    <div style={{ display: 'flex' }}>
+                        <button style={{ width: '100px', height: '33px', marginRight: '18px' }}
+                            className="confirm-button" onClick={handleConfirmChangesOperations}>
+                            <span className="text-confirm-button">
+                                Guardar
+                            </span>
                         </button>
-                    )}
+
+                        <button style={{ marginTop: '3px', marginRight: '13px' }} className="button-close" onClick={onClose}>
+                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                        </button>
+
+                    </div>
+
                 </div>
 
                 <div className="tabs-modal">
@@ -749,7 +752,7 @@ const SearchServicesOperationsModal = ({
                                     <div key={service.id} className="carousel-services">
                                         <div className="div-title-carousel">
                                             <h4 style={{ marginLeft: '9px' }}>{service.service_title}</h4>
-                                            <button className="button-add-product-modal" onClick={() => handleRemoveService(service.id)}>
+                                            <button className="button-add-product-modal" onClick={(e) => handleRemoveService(e, service.service_id)}>
                                                 <img src={deleteIcon} alt="Add Product Icon" className="add-product-modal-icon " />
                                             </button>
                                         </div>

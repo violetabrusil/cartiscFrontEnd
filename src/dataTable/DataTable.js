@@ -2,7 +2,7 @@ import "../DataTable.css"
 import React from 'react';
 import { useTable, usePagination } from 'react-table';
 
-const DataTable = ({ data, columns, onRowClick = () => {}, highlightRows, selectedRowIndex, initialPageSize = 8 }) => {
+const DataTable = ({ data, columns, onRowClick = () => { }, highlightRows, selectedRowIndex, initialPageSize = 8, selectedRowId, customFontSize = false }) => {
 
     const {
         getTableProps,
@@ -26,7 +26,7 @@ const DataTable = ({ data, columns, onRowClick = () => {}, highlightRows, select
 
     return (
         <div className="container-table">
-            <table {...getTableProps()} className="products-table">
+            <table {...getTableProps()} className={`products-table ${customFontSize ? 'custom-font-size' : ''}`}>
                 <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -39,17 +39,31 @@ const DataTable = ({ data, columns, onRowClick = () => {}, highlightRows, select
                 <tbody {...getTableBodyProps()}>
                     {page.map((row, index) => {
                         prepareRow(row);
+
+                        let isHighlighted = false;
+
+                        // Si el selectedRowId se ha proporcionado, usarlo para determinar el resaltado
+                        if (selectedRowId !== undefined) {
+                            isHighlighted = row.original.id === selectedRowId;
+                        }
+                        // De lo contrario, usar el selectedRowIndex
+                        else if (selectedRowIndex !== undefined) {
+                            isHighlighted = index === selectedRowIndex;
+                        }
+
                         return (
                             <tr
                                 {...row.getRowProps()}
                                 onClick={() => onRowClick(row, index)}
-                                style={index === selectedRowIndex && highlightRows ? { backgroundColor: '#d1e2f1' } : {}}>
+                                style={isHighlighted ? { backgroundColor: '#d1e2f1' } : {}}
+                            >
                                 {row.cells.map(cell => (
                                     <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                                 ))}
                             </tr>
                         );
                     })}
+
                 </tbody>
             </table>
             <div className="container-table-buttons">

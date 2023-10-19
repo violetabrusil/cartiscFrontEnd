@@ -303,7 +303,7 @@
     color: #6E757D;
 }
 
-.title-modal-hitory {
+.title-modal-history {
     display: flex;
     border-bottom: 1px solid #b9b9b9;
 }
@@ -408,6 +408,37 @@
     cursor: not-allowed;  /* Cambia el cursor para indicar que el botón está desactivado */
 }
 
+.modal-message {
+    text-align: center;
+    font-size: 17px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.icon-question {
+    width: 65px;
+    height: 65px;
+}
+
+.notes-textarea {
+    width: 90%;
+    height: 90px;
+    text-align: justify;
+}
+
+.container-label {
+    display: grid;
+    gap: 20px;
+}
+
+.container-label label {
+    font-weight: 600;
+}
+
+.container-label span {
+    font-size: 16px;
+    font-weight: normal;
+}
 
 /* Media queries para tamaños de pantalla */
 

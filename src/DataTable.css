@@ -37,3 +37,7 @@
     margin: auto;
     padding-top: 10px;
 }
+
+.custom-font-size {
+    font-size: 17px; 
+}

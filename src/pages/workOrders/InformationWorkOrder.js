@@ -18,6 +18,7 @@ import SearchProductsModal from '../../modal/SearchProductsModal';
 import DataTable from '../../dataTable/DataTable';
 import SearchServicesOperationsModal from '../../modal/SearchServicesOperationsModal';
 import { AssignModal } from '../../modal/AssignModal';
+import { ConfirmationModal } from '../../modal/ConfirmationModal';
 
 const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
@@ -29,12 +30,15 @@ const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png"
 
 const InformationWorkOrder = () => {
 
-    const [visibleSections, setVisibleSections] = useState({});
+    const [visibleSections, setVisibleSections] = useState({
+        products: true,
+        services: true
+    });
     const [iconsRotation, setIconsRotation] = useState({
         comments: false,
         state: false,
-        products: false,
-        services: false,
+        products: true,
+        services: true,
     });
     const { workOrderId } = useParams();
     const [workOrderDetail, setWorkOrderDetail] = useState([]);
@@ -67,9 +71,14 @@ const InformationWorkOrder = () => {
     const [workOrderOperations, setWorkOrderOperations] = useState({});
     const [workOrderServices, setWorkOrderServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [modalConfig, setModalConfig] = useState({});
     const [nextStatus, setNextStatus] = useState(null); // Mantener el siguiente estado para la confirmación
-    const [orderHistory, setOrderHistory] = useState([]);
     const [showAssignModal, setShowAssignModal] = useState(false);
+    const [totalValue, setTotalValue] = useState(0);
+    const [rawIntegerPart, rawDecimalPart] = totalValue ? totalValue.split('.') : [];
+    const integerPart = rawIntegerPart || '0';
+    const decimalPart = rawDecimalPart || '00';
+
     const navigate = useNavigate();
 
     const keyMapping = {
@@ -205,12 +214,18 @@ const InformationWorkOrder = () => {
 
     function formatDate(isoDate) {
         const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
-        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
 
-        return `${day}/${month}/${year}`;
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = date.getUTCFullYear();
+
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
+
 
     const customStylesStatusWorkOrder = {
         control: (provided, state) => ({
@@ -235,8 +250,34 @@ const InformationWorkOrder = () => {
 
             if (nextStatus === 'assigned') {
                 setShowAssignModal(true);
+            } else if (nextStatus === 'in_development') {
+                setModalConfig({
+                    title: "Confirmación",
+                    message: "Una vez empezado el desarrollo de una orden de trabajo su comentario y estado de entrega del vehículo no se pueden editar. ¿Desea continuar?",
+                    onConfirm: () => {
+                        changeOrderStatus('in_development');
+                        setShowModal(false);
+                    },
+                    onCancel: () => {
+                        setShowModal(false);
+                    }
+                });
+                setShowModal(true);
             } else if (nextStatus === 'cancelled' || nextStatus === 'completed') {
-                openConfirmationModal(nextStatus);
+                const action = nextStatus === 'cancelled' ? "cancelada" : "completada";
+                setModalConfig({
+                    title: "Confirmación",
+                    message: `Una vez ${action} una orden de trabajo el cambio es permanente. ¿Desea continuar?`,
+                    showNotes: nextStatus === 'completed', // Esta línea determina si se muestra el campo de notas.
+                    onConfirm: (notes) => {  // Recibe las notas como un argumento.
+                        changeOrderStatus(nextStatus, notes);  // Llama a `changeOrderStatus` con las notas.
+                        setShowModal(false);
+                    },
+                    onCancel: () => {
+                        setShowModal(false);
+                    }
+                });
+                setShowModal(true);
             } else {
                 changeOrderStatus(nextStatus);
             }
@@ -248,19 +289,15 @@ const InformationWorkOrder = () => {
         }
     };
 
-    const openConfirmationModal = (status) => {
-        setNextStatus(status);
-        setShowModal(true);
-    };
-
-    const closeConfirmationModal = () => {
-        setNextStatus(null);
-        setShowModal(false);
-    };
-
-    const changeOrderStatus = async (newStatus) => {
+    const changeOrderStatus = async (newStatus, notes) => {
         try {
-            const url = `/work-orders/change-status/${workOrderId}?work_order_status=${newStatus}`;
+            const baseEndpoint = `/work-orders/change-status/${workOrderId}`;
+            let params = `?work_order_status=${newStatus}`;
+
+            if (newStatus === 'completed' && notes) {
+                params += `&notes=${encodeURIComponent(notes)}`; // Añade las notas a la petición solo si existen.
+            }
+            const url = `${baseEndpoint}${params}`;
 
             const response = await apiClient.put(url);
 
@@ -270,11 +307,30 @@ const InformationWorkOrder = () => {
                     newStatus: newStatus,
                     dateChanged: new Date().toISOString(),
                     created_by: lastHistory.created_by || 'Unknown',
-                    notes: lastHistory.notes
+                    notes: lastHistory.notes || '' // Esto garantiza que las notas no estén undefined.
                 });
 
                 toast.success("El cambio de estado de la orden de trabajo es válido");
                 console.log("datos de la orden con el estado actualizado", response.data);
+
+                if (newStatus === 'completed') {
+                    getWorkOrderDetailById();
+                    console.log("workOrderDetail.total", workOrderDetail);
+                    navigate('/paymentReceipt', {
+                        state: {
+                            fromWorkOrder: true,
+                            workOrderData: {
+                                id: workOrderId,
+                                workOrderCode: workOrderDetail.work_order_code,
+                                clientName: workOrderDetail.client.name,
+                                plate: workOrderDetail.vehicle.plate,
+                                subtotal: totalValue,
+                                clientId: workOrderDetail.client.id
+                            }
+                        }
+                    });
+
+                }
             }
         } catch (error) {
             toast.error("Error al cambiar el estado de la orden de trabajo");
@@ -537,6 +593,14 @@ const InformationWorkOrder = () => {
         navigate("/workOrders");
     };
 
+    const shouldShowButton = () => {
+        return workOrderStatus.value === 'to_start' || workOrderStatus.value === 'assigned';
+    };
+
+    const shouldShowButtonDeveloped = () => {
+        return workOrderStatus.value === 'in_development';
+    };
+
     useEffect(() => {
         getWorkOrderDetailById();
     }, []);
@@ -585,6 +649,24 @@ const InformationWorkOrder = () => {
     useEffect(() => {
         console.log("servicios de operaciones en el componente padre:", servicesWithOperations);
     }, [servicesWithOperations]);
+
+    useEffect(() => {
+        const calculateTotal = (arr, field) => {
+            return arr.reduce((acc, item) => {
+                const value = parseFloat(item[field]);
+                return acc + (isNaN(value) ? 0 : value);
+            }, 0);
+        }
+
+        const totalProductsValue = calculateTotal(selectedProducts, 'price');
+        const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
+        const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
+
+        const total = totalProductsValue + totalOperationsValue + totalServicesValue;
+
+        setTotalValue(total.toFixed(2));
+
+    }, [selectedProducts, selectedOperations, servicesWithOperations]);
 
     return (
         <div>
@@ -660,6 +742,10 @@ const InformationWorkOrder = () => {
                                     <div className="container-right-div-information-vehicle">
                                         <div className='div-information-vehicle'>
 
+                                            <div style={{ marginTop: '-32px' }}>
+                                                <h2>Vehículo</h2>
+                                            </div>
+
                                             <div className="div-information-vehicle-fields">
                                                 <div className="vehicle-fields">
                                                     <label className="label-vehicle">Placa:</label>
@@ -727,7 +813,9 @@ const InformationWorkOrder = () => {
 
                                             <div className="vehicle-fields">
                                                 <label style={{ marginLeft: '9px' }} className="label-vehicle">Total:</label>
-                                                <label></label>
+                                                <label className="total-value">
+                                                    ${integerPart}.<span style={{ fontSize: '28px' }}>{decimalPart}</span>
+                                                </label>
                                             </div>
 
 
@@ -740,9 +828,13 @@ const InformationWorkOrder = () => {
                                 <div className="title-second-section-container">
                                     <div style={{ display: 'flex' }}>
                                         <h3>Comentarios</h3>
-                                        <button onClick={handleTextareaEdit} className="custom-button-edit-work-order">
-                                            <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
-                                        </button>
+                                        {
+                                            shouldShowButton() &&
+                                            <button onClick={handleTextareaEdit} className="custom-button-edit-work-order">
+                                                <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
+                                            </button>
+                                        }
+
                                     </div>
 
                                     <button onClick={() => toggleComponentes('comments')} className="button-toggle">
@@ -769,9 +861,13 @@ const InformationWorkOrder = () => {
                                 <div className="title-second-section-container">
                                     <div style={{ display: 'flex' }}>
                                         <h3>Estado de Entrega</h3>
-                                        <button onClick={handleStateEdit} className="custom-button-edit-work-order">
-                                            <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
-                                        </button>
+                                        {
+                                            shouldShowButton() &&
+                                            <button onClick={handleStateEdit} className="custom-button-edit-work-order">
+                                                <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
+                                            </button>
+                                        }
+
                                     </div>
 
                                     <button className="button-toggle" onClick={() => toggleComponentes('state')}>
@@ -919,12 +1015,16 @@ const InformationWorkOrder = () => {
                                     <>
                                         <div className="div-products">
                                             <div className="container-div-products">
-                                                <img
-                                                    className="icon-container"
-                                                    src={addIcon}
-                                                    alt="Open Modal"
-                                                    onClick={handleOpenModalProducts}
-                                                />
+
+                                                {
+                                                    shouldShowButtonDeveloped() &&
+                                                    <img
+                                                        className="icon-container"
+                                                        src={addIcon}
+                                                        alt="Open Modal"
+                                                        onClick={handleOpenModalProducts}
+                                                    />
+                                                }
 
                                                 <div className="div-table-products">
                                                     {selectedProducts.length > 0 && (
@@ -957,12 +1057,15 @@ const InformationWorkOrder = () => {
                                         <div className="div-services">
 
                                             <div className="container-div-services">
-                                                <img
-                                                    className="icon-container"
-                                                    src={addIcon}
-                                                    alt="Open Modal"
-                                                    onClick={handleOpenModalServices}
-                                                />
+
+                                                {shouldShowButtonDeveloped() &&
+                                                    <img
+                                                        className="icon-container"
+                                                        src={addIcon}
+                                                        alt="Open Modal"
+                                                        onClick={handleOpenModalServices}
+                                                    />
+                                                }
 
                                                 <div className="div-table-products">
                                                     {allOperations.length > 0 && (
@@ -1037,31 +1140,14 @@ const InformationWorkOrder = () => {
             )}
 
             {showModal && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <h3>Confirmación</h3>
-                        <p>
-                            ¿Estás seguro de que quieres {nextStatus === 'cancelled' ? "cancelar" : "completar"} la orden de trabajo?
-                        </p>
-                        <div className="button-options">
-                            <div className="half">
-                                <button className="optionNo-button" onClick={closeConfirmationModal}>
-                                    No
-                                </button>
-                            </div>
-                            <div className="half">
-                                <button className="optionYes-button" onClick={() => {
-                                    changeOrderStatus(nextStatus);
-                                    closeConfirmationModal();
-                                }}>
-                                    Si
-                                </button>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+                <ConfirmationModal
+                    isOpen={showModal}
+                    title={modalConfig.title}
+                    message={modalConfig.message}
+                    onConfirm={modalConfig.onConfirm}
+                    onCancel={modalConfig.onCancel}
+                    showNotes={modalConfig.showNotes}
+                />
             )}
 
             {showAssignModal && (

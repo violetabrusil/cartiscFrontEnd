@@ -44,7 +44,7 @@ const NewWorkOrder = () => {
     const { user } = useContext(AuthContext);
     console.log("usuario logeado", user)
 
-    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOption, setSelectedOption] = useState('Nombre');
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const debounceTimeout = useRef(null);
@@ -324,6 +324,16 @@ const NewWorkOrder = () => {
         // Aquí simplemente cierras el modal. El usuario deberá ingresar el kilometraje manualmente en el formulario
     };
 
+    const resetForm = () => {
+        setSelectedClient(null);
+        setSearchTerm("");
+        setClients([]);
+        setActualKm("");
+        setSymptoms([]);
+        setObservations("");
+        setPointsOfInterest([]);
+     };
+
     const createNewWorkOrder = async () => {
         const vehicleStatus = {};
         Object.keys(optionsCheckBox).forEach(group => {
@@ -365,6 +375,8 @@ const NewWorkOrder = () => {
         try {
 
             const response = await apiClient.post('/work-orders/create', payload)
+            console.log("response de create", response.data)
+            const workOrderId = response.data.id;
             console.log("estado", response.status)
             if (response.status === 201) {
                 console.log("Dentro del if de éxito")
@@ -372,7 +384,8 @@ const NewWorkOrder = () => {
                     position: toast.POSITION.TOP_RIGHT
                 });
                 setTimeout(() => {
-                    navigate('/workOrders');
+                    navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
+                    resetForm();
                 }, 3000);
 
             } else {
@@ -588,7 +601,7 @@ const NewWorkOrder = () => {
 
                         <div className="right-div">
                             {/* Contenido del segundo div derecho */}
-                            <Carousel responsive={responsive} className="carousel-vehicles ">
+                            <Carousel responsive={responsive} className="carousel-vehicles">
                                 {vehicles.map((vehicle, index) => (
                                     <div
                                         key={index}
@@ -795,6 +808,7 @@ const NewWorkOrder = () => {
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
                     options={['Cédula', 'Nombre']}
+                    defaultOption="Nombre"
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />

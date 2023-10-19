@@ -103,7 +103,7 @@
 }
 
 .container-right-div-information-vehicle:first-child {
-    min-height: 40%;
+    min-height: 47%;
     /* puedes ajustar este valor según necesites */
 }
 
@@ -146,4 +146,11 @@
 
 .btn-select-all:disabled {
     color: #6E757D;
+}
+
+.total-value {
+    font-size: 41px;
+    margin-top: -20px;
+    font-weight: 600;
+    color: #1C4A74 ;
 }

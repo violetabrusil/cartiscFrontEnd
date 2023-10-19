@@ -2,6 +2,7 @@ import "../../PaymentReceipts.css";
 import "../../Modal.css"
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import DataTable from "../../dataTable/DataTable";
@@ -11,20 +12,55 @@ import { SearchModalPayment } from "../../modal/SearchModalPayment";
 import { invoiceTypeMaping } from "../../constants/invoiceTypeConstants";
 import { paymentTypeMaping } from "../../constants/paymentTypeConstants";
 import { paymentStatusMaping } from "../../constants/paymentReceiptsStatusConstants";
-
+import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
 const emailIcon = process.env.PUBLIC_URL + "/images/icons/emailIcon.png";
+const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
 const PaymentReceipts = () => {
 
     const [paymentReceipts, setPaymentReceipts] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isWorkOrderModalOpen, setWorkOrderModalOpen] = useState(false);
+    const [workOrderData, setWorkOrderData] = useState(null);
+    const [discount, setDiscount] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [vat, setVat] = useState(0);
+    const [lastAddedReceiptId, setLastAddedReceiptId] = useState(null);
+    const [paymentModal, setPaymentModal] = useState(false);
+    const [selectedReceipt, setSelectedReceipt] = useState(null);
+    const [payAll, setPayAll] = useState(false);
+    const [amountToPay, setAmountToPay] = useState(0);
+
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const columns = React.useMemo(
         () => [
-            { Header: "Código orden de trabajo", accessor: "work_order.work_order_code" },
+            {
+                Header: "Código orden de trabajo",
+                accessor: "work_order.work_order_code",
+                Cell: ({ value }) => <span className="bold-text">{value}</span>,
+                headerClassName: 'bold-text'
+            },
+            {
+                Header: "Estado",
+                accessor: "sales_receipt_status",
+                Cell: ({ value }) => {
+                    let statusClass = '';
+                    if (value === 'Por cobrar') statusClass = 'status-por-cobrar';
+                    else if (value === 'Cobrado') statusClass = 'status-cobrado';
+
+                    return (
+                        <div className={`status-box ${statusClass}`}>
+                            {value}
+                        </div>
+                    );
+                }
+            },
             { Header: "Tipo de comprobante", accessor: "invoice_type" },
             { Header: "Cliente", accessor: "name" },
             { Header: "Placa", accessor: "plate" },
@@ -35,16 +71,37 @@ const PaymentReceipts = () => {
                 accessor: "subtotal",
                 Cell: ({ value }) => `$ ${value}` // Agrega un signo de dólar antes del valor
             },
-            { Header: "Descuento", accessor: "discount" },
-            { Header: "IVA", accessor: "vat" },
+            {
+                Header: "Descuento",
+                accessor: "discount",
+                Cell: ({ value }) => `${value} %`
+            },
+            {
+                Header: "IVA",
+                accessor: "vat",
+                Cell: ({ value }) => `${value} %`
+            },
             {
                 Header: "Total",
                 accessor: "total",
-                Cell: ({ value }) => `$${value}` // Agrega un signo de dólar antes del valor
+                Cell: ({ value }) => <span style={{ color: '#316EA8' }} className="bold-text large-text">$ {value}</span>,
+                headerClassName: 'bold-text large-text'
             },
             {
-                Header: "Estado",
-                accessor: "sales_receipt_status"
+                Header: "",
+                Cell: ({ row }) => {
+                    const payment = row.original;
+                    if (payment.total !== payment.paid) {
+                        return (
+                            <button className="button-payment-receipt" onClick={() => handleOpenPaymentModal(payment)}>
+                                <img src={pdfIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
+                            </button>
+                        );
+                    } else {
+                        return null; // No renderizar nada si el total es igual al pagado.
+                    }
+                },
+                id: 'payment-receipt-button'
             },
             {
                 Header: "",
@@ -92,6 +149,7 @@ const PaymentReceipts = () => {
     };
 
     const handleConfirm = async (data) => {
+
         try {
             const response = await apiClient.post('/sales-receipts/search', data);
             console.log(response.data);
@@ -193,8 +251,60 @@ const PaymentReceipts = () => {
         }
     };
 
+    const handleWorkOrderConfirm = async () => {
+        try {
+            // Construir el payload
+            const payload = {
+                client_id: workOrderData.clientId,
+                work_order_id: parseInt(workOrderData.id, 10),
+                invoice_type: 'sales_note',
+                subtotal: parseInt(workOrderData.subtotal, 10),
+                discount: discount / 100,
+                vat: 0,
+                total: total,
+            };
+
+            console.log("datos a enviar", payload)
+
+            // Llamada a la API
+            const response = await apiClient.post('/sales-receipts/create', payload);
+
+            if (response.status === 201) {
+                toast.success('Operación exitosa', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                setLastAddedReceiptId(response.data.id);
+                fetchData();
+            }
+
+            setWorkOrderModalOpen(false);
+
+        } catch (error) {
+            console.error('Error al procesar la orden de trabajo', error);
+        }
+    };
+
+    const handleOpenPaymentModal = (receipt) => {
+        setSelectedReceipt(receipt);
+        setPaymentModal(true);
+    };
+
+    const handleClosePaymentModal = () => {
+        setPaymentModal(false);
+        setPayAll(false);
+        setAmountToPay(0);
+    };
+    
     useEffect(() => {
         fetchData();
+    }, []);
+
+    useEffect(() => {
+        if (location.state?.fromWorkOrder) {
+            setWorkOrderData(location.state.workOrderData);
+            setWorkOrderModalOpen(true);
+            navigate('/paymentReceipt', { replace: true }); // Esto reemplaza la entrada actual en el historial.
+        }
     }, []);
 
     return (
@@ -218,14 +328,14 @@ const PaymentReceipts = () => {
                     </button>
                 </div>
 
-              
-                    <DataTable
-                        data={paymentReceipts}
-                        columns={columns}
-                        highlightRows={false}
-                    />
 
-        
+                <DataTable
+                    data={paymentReceipts}
+                    columns={columns}
+                    highlightRows={true}
+                    selectedRowId={lastAddedReceiptId}
+                    customFontSize={true}
+                />
 
             </div>
 
@@ -237,6 +347,86 @@ const PaymentReceipts = () => {
                 />
             )}
 
+            {isWorkOrderModalOpen && (
+                <WorkOrderInfoModal
+                    isOpen={isWorkOrderModalOpen}
+                    workOrderData={workOrderData}
+                    onConfirm={handleWorkOrderConfirm}
+                    discount={discount}
+                    setDiscount={setDiscount}
+                    total={total}
+                    setTotal={setTotal}
+                    vat={vat}
+                    setVat={setVat}
+
+                />
+
+            )}
+
+            {paymentModal && (
+                <div className="filter-modal-overlay">
+                    <div className="modal-content">
+                        <div className="title-modal-history">
+                            <h4>Nuevo Pago</h4>
+                            <div style={{ flex: "1", marginTop: '18px' }}>
+                                <button className="button-close" onClick={handleClosePaymentModal}  >
+                                    <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="container-label" style={{ marginTop: '20px' }}>
+                            <label>Total a pagar:
+                                <span> {selectedReceipt?.total}</span>
+                            </label>
+
+                            <label>Total pagado:
+                                <span> {selectedReceipt?.paid}</span>
+                            </label>
+
+                            <div>
+                                <label>Valor a pagar: 
+                                    <input
+                                        value={amountToPay}
+                                        onChange={(e) => {
+                                            setAmountToPay(Number(e.target.value));
+                                            if (payAll) {
+                                                setPayAll(false); // Desactivar el checkbox si el usuario cambia el valor manualmente.
+                                            }
+                                        }}
+                                    />
+                                </label>
+                            </div>
+
+
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    checked={payAll}
+                                    onChange={(e) => {
+                                        setPayAll(e.target.checked);
+                                        if (e.target.checked && selectedReceipt) {
+                                            setAmountToPay(selectedReceipt.total - selectedReceipt.paid);
+                                        } else {
+                                            setAmountToPay(0); // O cualquier valor predeterminado.
+                                        }
+                                    }}
+                                    
+                                />
+                                <label> Pagar todo</label>
+                            </div>
+
+
+                        </div>
+
+                        <div className="button-options" style={{ justifyContent: 'center' }}>
+                            <button className="accept-button-modal">Cobrar</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            )}
 
         </div>
     )

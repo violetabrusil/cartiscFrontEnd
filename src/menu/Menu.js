@@ -32,8 +32,6 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const [activeIndex, setActiveIndex] = useState(null);
     const { user } = useContext(AuthContext);
 
-    console.log("user logeado", user)
-
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };

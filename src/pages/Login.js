@@ -24,68 +24,66 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
-
     const handleLogin = async (event) => {
-        // Para evitar que el formulario recargue la página
         event.preventDefault();
-
+    
         try {
             const response = await apiLogin.post('/login', { username, password });
             const token = response.data.token;
-            //document.cookie = `jwt=${token}; path=/; samesite=none, HttpOnly`;
             localStorage.setItem('token', token);
-            console.log("response", response.data);
-
-            // Transformamos la respuesta del servidor
+            
             const translatedUserType = userTypeMaping[response.data.user.user_type] || response.data.user.user_type;
-
             const modifiedUser = {
                 ...response.data.user,
                 translated_user_type: translatedUserType,
             };
-
-            // Actualiza el estado global del usuario con los valores transformados
+            
             setUser(modifiedUser);
             localStorage.setItem('user', JSON.stringify(modifiedUser));
-            console.log("user loegado", modifiedUser)
-
-            //Verifica si la contraseña ha sido cambiada
+    
             if (response.data.user.change_password) {
                 navigate("/changePassword");
-                console.log("usuario enviado", modifiedUser)
-                console.log('change_password:', response.data.user.change_password);
                 return;
             }
-
+    
             if (response.data.user.change_pin) {
                 navigate("/changePIN");
-                console.log('change_pin:', response.data.user.change_pin);
                 return;
             }
-
+    
             if (modifiedUser.translated_user_type === "Administrador") {
                 navigate("/settings");
             } else {
                 navigate("/home");
             }
-
+    
         } catch (error) {
-            console.log("Error en el inicio de sesión", error);
+            console.error("Error en el inicio de sesión", error);
             console.error("msg error", error.message);
             console.error("msg stack", error.stack);
-
+    
+            let mensajesError = [];
+            if (error.response && error.response.data && error.response.data.errors) {
+                mensajesError = error.response.data.errors.map(err => err.message);
+            }
+    
+            const mensajeFinal = mensajesError.length ? mensajesError.join(" / ") : null;
+    
             if (error.message === "Network Error") {
                 toast.error('Error en el servidor. Conéctese con soporte técnico.', {
                     position: toast.POSITION.TOP_RIGHT
                 });
+            } else if (mensajeFinal) {
+                toast.error(mensajeFinal, {
+                    position: toast.POSITION.TOP_RIGHT
+                });
             } else {
-                // Puedes manejar otros errores aquí o mostrar un mensaje genérico
                 toast.error('Error en el inicio de sesión. Nombre de usuario o contraseña incorrectos', {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
         }
-    };
+    };    
 
     return (
 

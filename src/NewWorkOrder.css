@@ -48,6 +48,8 @@
     width: 40%;
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
+    max-height: 500px;  /* Puedes ajustar este valor según lo necesites */
+    overflow-y: auto; 
 }
 
 .right-div-container {
@@ -148,10 +150,11 @@
     background: #FFF;
     border: 1px solid #D4D4D4;
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     grid-gap: 1px;
     border-radius: 5px;
     margin-left: 26px;
+    margin-bottom: 10px;
 }
 
 .first-result-work-order {
@@ -273,31 +276,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 126px;
+    width: 50%;
     height: 91px;
     border-radius: 10px;
     border: 2px solid rgba(0, 0, 0, 0.20);
     padding: 10px;
     box-sizing: border-box;
     margin: 15px;
-    margin-left: 61px;
+    padding-left: 10px;
     position: relative;
 }
 
 .carousel.selected {
     background-color: #d1e2f1;  
-}
-
-.carousel-vehicles li.react-multi-carousel-item--active {
-    flex: 1 1 auto !important;
-    position: relative !important;
-    width: 190px !important;
-}
-
-.carousel-vehicles li.react-multi-carousel-item .carousel {
-    width: 150px;
-    height: 93px;
-    margin-left: 40px
 }
 
 .carousel .react-multiple-carousel__arrow--left:before {
