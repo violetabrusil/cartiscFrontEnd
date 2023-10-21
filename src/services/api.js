@@ -7,6 +7,7 @@ const apiLogin = axios.create({
         'Content-Type': 'application/json',
         'Accept': '*/*',
     },
+     timeout: 300000 // 5 minutos
 });
 
 apiLogin.interceptors.request.use((config) => {

@@ -235,6 +235,9 @@ const NewClient = () => {
                 <div className="left-section-new-client">
 
                     <div className="containerNewClientTitle">
+                        <button onClick={handleGoBack} className="button-arrow">
+                            <img src={arrowLeftIcon} className="arrow-icon" alt="Arrow Icon" />
+                        </button>
                         <h2>Información del cliente</h2>
                     </div>
 

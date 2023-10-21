@@ -1,10 +1,12 @@
 import "../../Service.css";
 import "../../Modal.css";
+import "../../Loader.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useTable, usePagination } from "react-table";
 import { debounce } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
+import PuffLoader from "react-spinners/PuffLoader";
 import axios from "axios";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
@@ -25,6 +27,7 @@ const Services = () => {
 
     //Variables para controlar el tab de servicios y operaciones
     const [activeTab, setActiveTab] = useState('servicios');
+    const [loading, setLoading] = useState(true);
     const [currentSection, setCurrentSection] = useState(null);
     const showButtons = currentSection === null;
     const [lastActiveSection, setLastActiveSection] = useState({
@@ -62,24 +65,24 @@ const Services = () => {
 
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
-    
+
         if (tabName === 'operaciones') { // Asumiendo que el nombre del tab de operaciones es 'operaciones'
             setCurrentSection(null);  // Muestra la sección de botones
         } else {
             const lastSectionForTab = lastActiveSection[tabName];
             console.log('Tab actual:', tabName);
             console.log('Última sección para el tab:', lastSectionForTab);
-    
+
             if (lastSectionForTab) {
                 setCurrentSection(lastSectionForTab);
             } else {
                 setCurrentSection(null);
             }
         }
-    
+
         console.log('Valor de showButtons tras el click:', showButtons);
     };
-    
+
 
     const handleSearchServiceChange = (term, filter) => {
         console.log("term y filtro", term, filter)
@@ -160,7 +163,7 @@ const Services = () => {
                 ...prevState,
                 operaciones: 'addService'
             }));
-            
+
         } catch (error) {
             console.error("Error fetching service information:", error);
             // Aquí puedes manejar los errores, por ejemplo mostrar un mensaje al usuario.
@@ -387,9 +390,9 @@ const Services = () => {
                 setCurrentSection(null);
             } catch (error) {
                 console.log("error", error);
-                const mensajesError = error.response && error.response.data && error.response.data.errors 
-                                      ? error.response.data.errors.map(err => err.message).join(" / ")
-                                      : 'Error al guardar el servicio';
+                const mensajesError = error.response && error.response.data && error.response.data.errors
+                    ? error.response.data.errors.map(err => err.message).join(" / ")
+                    : 'Error al guardar el servicio';
                 toast.error(mensajesError, {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -407,15 +410,15 @@ const Services = () => {
                 setIsEditing(false);
             } catch (error) {
                 console.log("error", error);
-                const mensajesError = error.response && error.response.data && error.response.data.errors 
-                                      ? error.response.data.errors.map(err => err.message).join(" / ")
-                                      : 'Error al actualizar el servicio';
+                const mensajesError = error.response && error.response.data && error.response.data.errors
+                    ? error.response.data.errors.map(err => err.message).join(" / ")
+                    : 'Error al actualizar el servicio';
                 toast.error(mensajesError, {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
         }
-    };    
+    };
 
     //Función para eliminar un servicio
     const handleDeleteService = async (event) => {
@@ -485,9 +488,14 @@ const Services = () => {
                 console.log("endpoint operacioes", endpoint)
                 console.log("response", response.data);
                 setOperations(response.data);
-
+                setLoading(false);
 
             } catch (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.error('La solicitud ha superado el tiempo límite.');
+                } else {
+                    console.error('Otro error ocurrió:', error.message);
+                }
                 console.log("Error al obtener los datos de las operaciones");
             }
         }
@@ -523,7 +531,13 @@ const Services = () => {
                 console.log("endpoint", endpoint)
                 console.log("Respuesta del servidor:", response.data);
                 setServices(response.data);
+                setLoading(false);
             } catch (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.error('La solicitud ha superado el tiempo límite.');
+                } else {
+                    console.error('Otro error ocurrió:', error.message);
+                }
                 setServices([]);
                 console.log("Error al obtener los datos de los servicios");
             }
@@ -592,52 +606,70 @@ const Services = () => {
                         />
                     </div>
 
-                    {activeTab === 'servicios' &&
-                        <div className="search-results-operations">
-                            {Array.isArray(services) && services.map(serviceData => (
-                                <div key={`service-${serviceData.id}`} className="result-operations">
-                                    <div className="operation-code-section">
-                                        <label className="operation-code">{serviceData.service_code}</label>
-                                    </div>
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
+                    ) : (
+                        <>
+                            {activeTab === 'servicios' &&
+                                <div className="search-results-operations">
+                                    {Array.isArray(services) && services.map(serviceData => (
+                                        <div key={`service-${serviceData.id}`} className="result-operations">
+                                            <div className="operation-code-section">
+                                                <label className="operation-code">{serviceData.service_code}</label>
+                                            </div>
 
-                                    <div className="operation-name-section">
-                                        <label className="operation-name">{serviceData.service_title}</label>
-                                    </div>
+                                            <div className="operation-name-section">
+                                                <label className="operation-name">{serviceData.service_title}</label>
+                                            </div>
 
-                                    <div className="operation-eye-section">
-                                        <button className="button-eye-operation" onClick={(event) => handleShowServiceInformation(serviceData.id, event)}>
-                                            <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
-                                        </button>
-                                    </div>
+                                            <div className="operation-eye-section">
+                                                <button className="button-eye-operation" onClick={(event) => handleShowServiceInformation(serviceData.id, event)}>
+                                                    <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
+                                                </button>
+                                            </div>
+
+                                        </div>
+
+                                    ))}
 
                                 </div>
+                            }
+                        </>
 
-                            ))}
+                    )}
 
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
                         </div>
-                    }
-                    {activeTab === 'operaciones' &&
-                        <div className="search-results-operations">
-                            {operations.map(operationData => (
-                                <div key={`operation-${operationData.id}`} className="result-operations">
-                                    <div className="operation-code-section">
-                                        <label className="operation-code">{operationData.operation_code}</label>
-                                    </div>
+                    ) : (
+                        <>
+                            {activeTab === 'operaciones' &&
+                                <div className="search-results-operations">
+                                    {operations.map(operationData => (
+                                        <div key={`operation-${operationData.id}`} className="result-operations">
+                                            <div className="operation-code-section">
+                                                <label className="operation-code">{operationData.operation_code}</label>
+                                            </div>
 
-                                    <div className="operation-name-section">
-                                        <label className="operation-name">{operationData.title}</label>
-                                    </div>
+                                            <div className="operation-name-section">
+                                                <label className="operation-name">{operationData.title}</label>
+                                            </div>
 
-                                    <div className="operation-eye-section">
-                                        <button className="button-eye-operation" onClick={(event) => handleShowOperationInformation(operationData.id, event)}>
-                                            <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
-                                        </button>
-                                    </div>
+                                            <div className="operation-eye-section">
+                                                <button className="button-eye-operation" onClick={(event) => handleShowOperationInformation(operationData.id, event)}>
+                                                    <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
+                                                </button>
+                                            </div>
 
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    }
+                            }
+                        </>
+                    )}
 
                 </div>
 
@@ -784,146 +816,154 @@ const Services = () => {
 
             {/*Modal del filtro de búsqueda*/}
 
-            {isFilterModalOpen && (
-                <Modal
-                    isOpen={isFilterModalOpen}
-                    onClose={closeFilterModal}
-                    options={['Código', 'Título']}
-                    defaultOption="Título"
-                    onOptionChange={handleOptionChange}
-                    onSelect={handleSelectClick}
-                />
-            )}
+            {
+                isFilterModalOpen && (
+                    <Modal
+                        isOpen={isFilterModalOpen}
+                        onClose={closeFilterModal}
+                        options={['Código', 'Título']}
+                        defaultOption="Título"
+                        onOptionChange={handleOptionChange}
+                        onSelect={handleSelectClick}
+                    />
+                )
+            }
 
-            {isSearchOperationModalOpen && (
-                <div className="filter-modal-overlay">
-                    <div className="modal-content">
-                        <button className="button-close" onClick={handleCloseModalSearchOperation}  >
-                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                        </button>
-                        <div className="tabs">
-                            <button className={`button-tab ${activeTabOperation === 'código' ? 'active' : ''}`}
-                                onClick={() => handleTabChange('código')}>
-                                Código
-                                <div className="line"></div>
+            {
+                isSearchOperationModalOpen && (
+                    <div className="filter-modal-overlay">
+                        <div className="modal-content">
+                            <button className="button-close" onClick={handleCloseModalSearchOperation}  >
+                                <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
                             </button>
-                            <button className={`button-tab ${activeTabOperation === 'título' ? 'active' : ''}`}
-                                onClick={() => handleTabChange('título')}>
-                                Título
-                                <div className="line"></div>
-                            </button>
-                        </div>
-                        <div className="search-operation-box">
-                            <img src={searchIcon} alt="Search Icon" className="search-operation-icon" />
-                            <input
-                                className="input-search-operation"
-                                value={searchOperationTerm}
-                                onChange={e => {
-                                    const value = e.target.value;
-                                    if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
-                                    if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
-                                    setSearchOperationTerm(value);
-                                }}
-                                placeholder={`Buscar por ${activeTabOperation}`}
-                                pattern={activeTabOperation === 'código' ? "[0-9]*" : "[a-zA-Z ]*"}
-                            />
-                        </div>
-
-                        {/* Tabla de operaciones seleccionadas */}
-                        {operationsToShow.length > 0 && (
-                            <div className="selected-operations-scroll-container">
-                                <h5>Operaciones seleccionadas</h5>
-                                <table className="operation-table selected">
-                                    <thead>
-                                        <tr>
-                                            <th>Código</th>
-                                            <th>Título</th>
-                                            <th style={{ textAlign: "center" }}>Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {operationsToShow.map(selectOperation => (
-                                            <tr key={selectOperation.id}>
-                                                <td>{selectOperation.operation_code}</td>
-                                                <td>{selectOperation.title}</td>
-                                                <td style={{ textAlign: "center" }}>
-                                                    <img
-                                                        className="less-operation-icon"
-                                                        src={deleteIcon}
-                                                        alt="Remove operation"
-                                                        onClick={() => handleRemoveOperation(selectOperation.id)}
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-
-                        {operation.length > 0 && (
-                            <div className="list-operations-scroll-container">
-                                <h5>Lista de operaciones</h5>
-                                <table className="operation-table list">
-                                    <thead>
-                                        <tr>
-                                            <th>Código</th>
-                                            <th>Título</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {operation.map(listOperation => (
-                                            <tr key={listOperation.id} >
-                                                <td>{listOperation.operation_code}</td>
-                                                <td>{listOperation.title}</td>
-                                                <td>
-                                                    <img
-                                                        className="add-operation-icon"
-                                                        src={addIcon}
-                                                        alt="Add operation"
-                                                        onClick={() => handleAddOperationModal(listOperation)}
-                                                    />
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-
-                        )}
-
-                    </div>
-
-                </div>
-            )}
-
-            {isAlertServiceSuspend && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <h3 style={{ textAlign: "center" }}>¿Está seguro de eliminar el servicio?</h3>
-                        <div className="button-options">
-                            <div className="half">
-                                <button className="optionNo-button" onClick={closeAlertModalServiceSuspend}>
-                                    No
+                            <div className="tabs">
+                                <button className={`button-tab ${activeTabOperation === 'código' ? 'active' : ''}`}
+                                    onClick={() => handleTabChange('código')}>
+                                    Código
+                                    <div className="line"></div>
+                                </button>
+                                <button className={`button-tab ${activeTabOperation === 'título' ? 'active' : ''}`}
+                                    onClick={() => handleTabChange('título')}>
+                                    Título
+                                    <div className="line"></div>
                                 </button>
                             </div>
-                            <div className="half">
-                                <button className="optionYes-button" onClick={handleDeleteService}  >
-                                    Si
-                                </button>
-
+                            <div className="search-operation-box">
+                                <img src={searchIcon} alt="Search Icon" className="search-operation-icon" />
+                                <input
+                                    className="input-search-operation"
+                                    value={searchOperationTerm}
+                                    onChange={e => {
+                                        const value = e.target.value;
+                                        if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
+                                        if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
+                                        setSearchOperationTerm(value);
+                                    }}
+                                    placeholder={`Buscar por ${activeTabOperation}`}
+                                    pattern={activeTabOperation === 'código' ? "[0-9]*" : "[a-zA-Z ]*"}
+                                />
                             </div>
+
+                            {/* Tabla de operaciones seleccionadas */}
+                            {operationsToShow.length > 0 && (
+                                <div className="selected-operations-scroll-container">
+                                    <h5>Operaciones seleccionadas</h5>
+                                    <table className="operation-table selected">
+                                        <thead>
+                                            <tr>
+                                                <th>Código</th>
+                                                <th>Título</th>
+                                                <th style={{ textAlign: "center" }}>Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {operationsToShow.map(selectOperation => (
+                                                <tr key={selectOperation.id}>
+                                                    <td>{selectOperation.operation_code}</td>
+                                                    <td>{selectOperation.title}</td>
+                                                    <td style={{ textAlign: "center" }}>
+                                                        <img
+                                                            className="less-operation-icon"
+                                                            src={deleteIcon}
+                                                            alt="Remove operation"
+                                                            onClick={() => handleRemoveOperation(selectOperation.id)}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {operation.length > 0 && (
+                                <div className="list-operations-scroll-container">
+                                    <h5>Lista de operaciones</h5>
+                                    <table className="operation-table list">
+                                        <thead>
+                                            <tr>
+                                                <th>Código</th>
+                                                <th>Título</th>
+                                                <th>Costo</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {operation.map(listOperation => (
+                                                <tr key={listOperation.id} >
+                                                    <td>{listOperation.operation_code}</td>
+                                                    <td>{listOperation.title}</td>
+                                                    <td>$ {parseFloat(listOperation.cost).toFixed(2)}</td>
+                                                    <td>
+                                                        <img
+                                                            className="add-operation-icon"
+                                                            src={addIcon}
+                                                            alt="Add operation"
+                                                            onClick={() => handleAddOperationModal(listOperation)}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                            )}
+
                         </div>
 
                     </div>
-                </div>
+                )
+            }
 
-            )}
+            {
+                isAlertServiceSuspend && (
+                    <div className="filter-modal-overlay">
+                        <div className="filter-modal">
+                            <h3 style={{ textAlign: "center" }}>¿Está seguro de eliminar el servicio?</h3>
+                            <div className="button-options">
+                                <div className="half">
+                                    <button className="optionNo-button" onClick={closeAlertModalServiceSuspend}>
+                                        No
+                                    </button>
+                                </div>
+                                <div className="half">
+                                    <button className="optionYes-button" onClick={handleDeleteService}  >
+                                        Si
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                )
+            }
 
 
-        </div>
+        </div >
     )
 
 };

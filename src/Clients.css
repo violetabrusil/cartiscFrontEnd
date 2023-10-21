@@ -244,6 +244,10 @@
     font-size: 17px;
 }
 
+.no-vehicles{
+    font-size: 13px;
+}
+
 @media screen and (max-width: 768px) {
     .containerClients {
         position: absolute;

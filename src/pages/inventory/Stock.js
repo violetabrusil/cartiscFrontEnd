@@ -13,7 +13,7 @@ const Stock = () => {
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedProductStock, setSelectedProductStock] = useState(0);
+    const [selectedProductStock, setSelectedProductStock] = useState("");
     const [selectedProductId, setSelectedProductId] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [stockToUpdate, setStockToUpdate] = useState(null);
@@ -64,6 +64,11 @@ const Stock = () => {
             console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
+            if (error.code === 'ECONNABORTED') {
+                console.error('La solicitud ha superado el tiempo límite.');
+            } else {
+                console.error('Otro error ocurrió:', error.message);
+            }
             console.log("Error al obtener los datos de los servicios");
         }
         setLoading(false);
@@ -156,7 +161,7 @@ const Stock = () => {
 
         <div className="stock-container">
             <ToastContainer />
-            <div>
+            <div className="content-wrapper">
                 <SearchBar onFilter={handleFilter} />
                 {loading ? (
                     <div className="spinner-container-stock">

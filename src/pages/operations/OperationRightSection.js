@@ -22,7 +22,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
     const handleAddNewOperation = async (event) => {
         event.preventDefault();
-    
+
         try {
             const response = await apiClient.post('/operations/create', { title, cost });
             if (response.data) {
@@ -33,22 +33,22 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
             });
         } catch (error) {
             console.log("error", error.response.data);
-            
+
             // Extrae todos los mensajes de error del objeto de respuesta
             let mensajesError = [];
             if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
                 mensajesError = error.response.data.errors.map(err => err.message);
             }
-    
+
             // Une todos los mensajes en uno solo
             const mensajeFinal = mensajesError.join(" / ");
-    
+
             toast.error(mensajeFinal || "Hubo un error desconocido", {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
     };
-    
+
     const handleUpdateOperation = async () => {
         try {
             const response = await apiClient.put(`/operations/update/${selectedOperation.id}`, { title, cost });
@@ -143,13 +143,19 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
                         <div className="row-operation">
                             <label>Costo</label>
-                            <input
-                                className="input-cost-operation"
-                                type="number"
-                                value={isEditing ? cost : parseFloat(cost).toFixed(2)}
-                                disabled={!isEditing}
-                                onChange={handleInputChange}
-                            />
+                            <div className="input-container">
+                                <span className="dollar-sign">$</span>
+                                <input
+                                    style={{ width: '277px' }}
+                                    className="input-cost-operation"
+                                    type="number"
+                                    value={isEditing ? cost : parseFloat(cost).toFixed(2)}
+                                    disabled={!isEditing}
+                                    onChange={handleInputChange}
+                                />
+
+                            </div>
+
                         </div>
                     </div>
                     {isEditing && (
@@ -182,12 +188,16 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
                         <div className="row-operation">
                             <label>Costo</label>
-                            <input
-                                className="input-cost-operation"
-                                type="number"
-                                value={cost}
-                                onChange={handleInputChange}
-                            />
+                            <div className="input-container">
+                                <span className="dollar-sign">$</span>
+                                <input
+                                    style={{ width: '277px' }}
+                                    className="input-cost-operation"
+                                    type="text"
+                                    value={cost}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
                         </div>
 
                     </div>

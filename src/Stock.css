@@ -2,10 +2,18 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 69vh;
+    height: 100%;
     margin: 0;
     padding: 0;
-    margin-top: -15px
+    margin-top: -15px;
+    position: relative;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;  
 }
 
 .label-input-container {
@@ -14,7 +22,10 @@
     align-items: center;
     gap: 100px;
     justify-content: center;
-    margin-top: 30px;
+    position: fixed;
+    bottom: 50px; /* Esto asegurará que siempre esté al fondo del contenedor padre */
+    left: 0;
+    right: 0;
 }
 
 .label-input-container label {
@@ -53,4 +64,8 @@
     align-items: center;     /* Centrar verticalmente */
     height: 50vh;           /* Ocupar toda la altura de la vista */
     width: 100%;
+}
+
+.Toastify__toast-container.Toastify__toast-container--top-right {
+    top: 75px;
 }

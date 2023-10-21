@@ -141,8 +141,7 @@ const SearchServicesOperationsModal = ({
                         <div>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
-                                type="number"
-                                step="0.01"
+                                type="text"
                                 defaultValue={parseFloat(currentCost).toFixed(2)}
                                 onBlur={handleBlur}
                                 style={{ width: '60px', fontWeight: '600', textAlign: 'center' }}
@@ -215,8 +214,7 @@ const SearchServicesOperationsModal = ({
                         <div>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
-                                type="number"
-                                step="0.01"
+                                type="text"
                                 defaultValue={parseFloat(currentCost).toFixed(2)}
                                 onBlur={handleBlur}
                                 style={{ width: '60px', fontWeight: '600', textAlign: 'center' }}
@@ -305,7 +303,7 @@ const SearchServicesOperationsModal = ({
                 });
                 return prevOperations;
             }
-            return [...prevOperations, { ...operationToAdd, isNew: true }];
+            return [...prevOperations, { ...operationToAdd }];
         });
     };
 
@@ -355,12 +353,11 @@ const SearchServicesOperationsModal = ({
                     ...prevServices,
                     {
                         ...response.data,
-                        operations: response.data.operations.map(op => ({ ...op, isNew: true, serviceId: service.id, serviceTitle: service.service_title }))
+                        operations: response.data.operations.map(op => ({ ...op, serviceId: service.id, serviceTitle: service.service_title }))
                     }
                 ]);
                 const newOperations = response.data.operations.map(op => ({
                     ...op,
-                    isNew: true,
                     serviceId: service.id,
                     serviceTitle: service.service_title
                 }));
@@ -395,98 +392,9 @@ const SearchServicesOperationsModal = ({
         return merged;
     };
 
-    const handleAddOperations = async (operationsToAdd) => {
-        const payloadToAdd = {
-            work_order_operations: operationsToAdd.map(operation => ({
-                work_order_id: parseInt(workOrderId, 10),
-                operation_code: operation.operation_code,
-                title: operation.title,
-                cost: operation.cost,
-                work_order_service_id: null
-            })),
-        };
-        return await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, payloadToAdd);
-    };
-
-    const handleUpdateOperations = async (operationsToUpdate) => {
-        const payloadToUpdate = {
-            work_order_operations: operationsToUpdate.map(operation => ({
-                work_order_id: parseInt(workOrderId, 10),
-                operation_code: operation.operation_code,
-                title: operation.title,
-                cost: operation.cost,
-                work_order_service_id: null
-            })),
-        };
-        return await apiClient.put(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdate);
-    };
-
-    const handleAddServiceOperations = async (serviceOpsToAdd) => {
-        // Agrupar operaciones por servicio
-        const groupedByService = serviceOpsToAdd.reduce((acc, operation) => {
-            const { serviceId, serviceTitle } = operation;
-            if (!acc[serviceId]) {
-                acc[serviceId] = {
-                    service_title: serviceTitle,
-                    service_id: serviceId,
-                    operations: []
-                };
-            }
-            acc[serviceId].operations.push({
-                operation_code: operation.operation_code,
-                title: operation.title,
-                cost: operation.cost,
-                work_order_service_id: operation.serviceId
-            });
-            return acc;
-        }, {});
-
-        // Crear el payload con un array de servicios
-        const payloadToAddOperationServices = {
-            work_order_services: Object.values(groupedByService)
-        };
-
-        console.log("datos a enviar de servicios", payloadToAddOperationServices);
-        return await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, payloadToAddOperationServices);
-    };
-
-    const handleUpdateServiceOperations = async (serviceOpsToUpdate) => {
-        console.log("entro")
-        // Agrupar operaciones por servicio
-        const groupedByService = serviceOpsToUpdate.reduce((acc, operation) => {
-            const { serviceId, serviceTitle } = operation;
-            if (!acc[serviceId]) {
-                acc[serviceId] = {
-                    service_title: serviceTitle,
-                    service_id: serviceId,
-                    operations: []
-                };
-            }
-            acc[serviceId].operations.push({
-                operation_code: operation.operation_code,
-                title: operation.title,
-                cost: operation.cost,
-                work_order_service_id: operation.serviceId
-            });
-            return acc;
-        }, {});
-
-        // Crear el payload con un array de servicios
-        const payloadToUpdateOperationServices = {
-            work_order_services: Object.values(groupedByService)
-        };
-
-        console.log("datos a enviar de servicios", payloadToUpdateOperationServices);
-
-        return await apiClient.put(`work-orders/update-services-operations/${workOrderId}`, payloadToUpdateOperationServices);
-    };
-
     const handleConfirmChangesOperations = async () => {
-
-        console.log("La función handleConfirmChangesOperations ha sido llamada.");
-        console.log("servicios enocntrados", workOrderServices)
-
-        const updatedOperations = selectedOperations.map((operation) => {
+    
+        selectedOperations = selectedOperations.map((operation) => {
             const operation_code = operation.operation_code;
             const cost = parseFloat(operationCost[operation_code] || operation.cost);
             return {
@@ -496,8 +404,8 @@ const SearchServicesOperationsModal = ({
             };
         });
 
-        const updatedServicesList = selectedServicesList.map(service => {
-            if (!service.Operations) return service;
+        selectedServicesList = selectedServicesList.map(service => {
+            if (!service.operations) return service;
             return {
                 ...service,
                 operations: service.operations.map(op => {
@@ -511,65 +419,55 @@ const SearchServicesOperationsModal = ({
             };
         });
 
+        // Construyendo el payload para operaciones
+        const operationsPayload = selectedOperations.map(operation => ({
+            work_order_id: parseInt(workOrderId, 10),
+            operation_code: operation.operation_code,
+            title: operation.title,
+            cost: operation.cost,
+            work_order_service_id: null
+        }));
+        
+        const groupedByService = selectedServicesList.map(service => ({
+            service_id: service.id,
+            service_title: service.service_title,
+            operations: service.operations
+        }));
+
+        const combinedPayload = {
+            work_order_operations: operationsPayload,
+            work_order_services: Object.values(groupedByService)
+        };
+
+        const allServiceOperations = selectedServicesList.flatMap(service => service.operations);
+
+        console.log("operaciones servicios actualiza",allServiceOperations )
         try {
-            const existingOperationCodes = workOrderOperations.map(op => op.operation_code);
-
-            const operationsToAdd = selectedOperations.filter(op => !existingOperationCodes.includes(op.operation_code));
-            const operationsToUpdate = selectedOperations.filter(op => existingOperationCodes.includes(op.operation_code));
-
-            const existingServiceOperationCodes = workOrderServices.flatMap(service =>
-                service.operations.map(op => op.operation_code)
-            );
-
-            const serviceOpsToAdd = serviceOperations.filter(op =>
-                !existingServiceOperationCodes.includes(op.operation_code)
-            );
-
-            const serviceOpsToUpdate = serviceOperations.filter(op =>
-                existingServiceOperationCodes.includes(op.operation_code) && op.isModified
-            );
-
-            if (operationsToAdd.length > 0) {
-                const response = await handleAddOperations(operationsToAdd);
-                handleApiResponse(response, 'Operaciones añadidas');
+            // Llamada a la API para añadir
+            if (workOrderOperations.length === 0 && workOrderServices.length === 0) {
+                console.log("datos a enviar", combinedPayload)
+                const addResponse = await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, combinedPayload);
+                handleApiResponse(addResponse, 'Operaciones añadidas');
+            } else {
+                console.log("datos a actualizar", combinedPayload)
+                const updateResponse = await apiClient.put(`work-orders/update-services-operations/${workOrderId}`, combinedPayload);
+                handleApiResponse(updateResponse, 'Operaciones actualizadas');
             }
-
-            if (serviceOpsToAdd.length > 0) {
-                const payloadToAdd = serviceOpsToAdd.map(({ isNew, isModified, ...relevantData }) => relevantData);
-
-                // Aquí envías payloadToAdd al API para agregar las operaciones
-                const response = await handleAddServiceOperations(payloadToAdd);
-                handleApiResponse(response, 'Operaciones de servicio añadidas');
-            };
-
-            if (operationsToUpdate.length > 0) {
-                const response = await handleUpdateOperations(operationsToUpdate);
-                handleApiResponse(response, 'Operaciones actualizadas');
-            }
-
-            if (serviceOpsToUpdate.length > 0) {
-                const payloadToUpdate = serviceOpsToUpdate.map(({ isNew, isModified, ...relevantData }) => relevantData);
-
-                // Aquí envías payloadToUpdate al API para actualizar las operaciones
-                const response = await handleUpdateServiceOperations(payloadToUpdate);
-                handleApiResponse(response, 'Operaciones de servicio actualizadas');
-            };
 
         } catch (error) {
-            console.error("Error al manejar las operaciones:", error);
+            toast.error(`Error al guardar las operaciones`, {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            
+            console.error("Error al manejar las operaciones y servicios:", error);
         }
 
-        // Usar mergeOperations para combinar y actualizar servicesWithOperations
-        const updatedServicesWithOps = mergeOperations(servicesWithOperations, updatedServicesList);
-        //setServicesWithOperations(updatedServicesWithOps);
-
-        console.log("RESULTADO DESPUES DE LA AACT", updatedServicesWithOps)
-
+       
         onOperationCostUpdated(operationCost);
-        onOperationUpdated(updatedOperations);
+        onOperationUpdated(selectedOperations);
         onOperationServiceCostUpdated(operationServiceCost);
-        onServiceOperationsUpdated(updatedServicesWithOps);
-        onServicesListUpdate(updatedServicesList);
+        onServiceOperationsUpdated(allServiceOperations);
+        onServicesListUpdate(selectedServicesList);
 
         onClose();
     };

@@ -2,10 +2,19 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 69vh;
+    height: 100%;
     margin: 0;
     padding: 0;
     margin-top: -30px;
+    position: relative;
+}
+
+.content-location-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;  
+    margin-top: 10px;
 }
 
 .input-location-container {
@@ -13,6 +22,10 @@
     justify-content: center;
     width: 100%;
     gap: 100px;
+    position: fixed;
+    bottom: 50px; /* Esto asegurará que siempre esté al fondo del contenedor padre */
+    left: 0;
+    right: 0;
 }
 
 .label-input-location-container {
@@ -50,4 +63,8 @@
     color: white;
     font-weight: bold;
     font-size: 19px;
+}
+
+.Toastify__toast-container.Toastify__toast-container--top-right {
+    top: 75px;
 }

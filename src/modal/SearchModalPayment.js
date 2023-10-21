@@ -14,6 +14,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
     const [clientId, setClientId] = useState(null);
     const [status, setStatus] = useState(null);
     const [paymentType, setPaymentType] = useState(null);
+    const [invoiceType, setInvoiceType] = useState(null);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
@@ -36,7 +37,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
 
     const paymentStatus = [
         { value: 'receivable', label: 'Por cobrar' },
-        { value: 'charged', label: 'Cargado' },
+        { value: 'charged', label: 'Cobrado' },
     ];
 
     const paymentTypeOptions = [
@@ -47,7 +48,13 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
         { value: 'other', label: 'Otro' },
     ];
 
+    const invoiceTypeOptions = [
+        { value: 'pro_forma', label: 'Proforma'},
+        { value: 'sales_note', label: 'Nota de venta'}
+    ];
+
     const handleConfirm = () => {
+        console.log("entro")
         onConfirm({
             work_order_code: orderCode,
             vehicle_plate: vehiclePlate,
@@ -55,13 +62,13 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
             client_cedula: clientId,
             sales_receipt_status: status,
             payment_type: paymentType,
+            invoice_type: invoiceType,
             date_start_of_search: startDate,
             date_finish_of_search: endDate,
             //start_total_amount
             //end_total_amount
         });
-    };
-
+    };  
 
     if (!isOpen) return null;
 
@@ -119,6 +126,16 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                         styles={selectPaymentStyles}
                         options={paymentTypeOptions}
                         onChange={selectedOption => setPaymentType(selectedOption.value)}
+                        placeholder="Seleccione"
+                    />
+                </div>
+                <div className="input-group-payment">
+                    <label className="label-fields-payment">Tipo de comprobante</label>
+                    <Select
+                        isSearchable={false}
+                        styles={selectPaymentStyles}
+                        options={invoiceTypeOptions}
+                        onChange={selectedOption => setInvoiceType(selectedOption.value)}
                         placeholder="Seleccione"
                     />
                 </div>

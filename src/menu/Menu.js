@@ -30,11 +30,20 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const [isOpen, setIsOpen] = useState(true);
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(null);
+    const [manualToggle, setManualToggle] = useState(false);
+
     const { user } = useContext(AuthContext);
 
     const toggleMenu = () => {
-        setIsOpen(!isOpen);
+        setManualToggle(true);
+        setIsOpen(prevIsOpen => !prevIsOpen);
     };
+
+    const handleImageClick = () => {
+        setManualToggle(true);
+        setIsOpen(false);
+    };
+    
 
     const menuOptions = useMemo(() => {
 
@@ -68,8 +77,16 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     return (
         <div className="Menu">
             <div className={`menu-lateral ${isOpen ? "open" : ""}`}
-                onMouseEnter={() => setIsOpen(false)}
-                onMouseLeave={() => setIsOpen(true)}
+                onMouseEnter={() => {
+                    if (!manualToggle) {
+                        setIsOpen(false);
+                    }
+                }}
+                onMouseLeave={() => {
+                    if (!manualToggle) {
+                        setIsOpen(true);
+                    }
+                }}
             >
                 {menuOptions.map((option, index) => (
                     <Link
@@ -95,7 +112,12 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                     </Link>
                 ))}
 
-                <img src={isOpen ? logoClose : logo} alt="Logo Vertical" className="imagen-vertical" />
+                <img
+                    src={isOpen ? logoClose : logo}
+                    alt="Logo Vertical"
+                    className="imagen-vertical"
+                    onClick={handleImageClick}
+                />
 
                 {!isOpen && (
                     <div className="icono-menu">

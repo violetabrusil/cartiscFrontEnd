@@ -2,10 +2,12 @@ import "../../Clients.css";
 import "../../Modal.css";
 import "../../NewClient.css";
 import 'react-toastify/dist/ReactToastify.css';
+import "../../Loader.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
+import PuffLoader from "react-spinners/PuffLoader";
 import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
@@ -49,6 +51,7 @@ const Clients = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [clientSuspended, setClientSuspended] = useState(false);
     const [isAlertClientSuspend, setIsAlertClientSuspend] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const [cedula, setCedula] = useState('');
     const [name, setName] = useState('');
@@ -456,8 +459,14 @@ const Clients = () => {
                 const response = await apiClient.get(endpoint);
                 setClients(response.data);
                 console.log("clientes obtenidos", response.data)
+                setLoading(false);
 
             } catch (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.error('La solicitud ha superado el tiempo límite.');
+                } else {
+                    console.error('Otro error ocurrió:', error.message);
+                }
                 console.log("Error al obtener los datos de los clientes", error);
 
             }
@@ -533,72 +542,93 @@ const Clients = () => {
                     />
 
                     {/*Lista de clientes*/}
-                    <div className="container-list-client">
-                        {clients.map(clientData => (
-                            <div className="result-client" onClick={(event) => handleClientCarInformation(clientData.client.id, event)} key={clientData.client.id}>
-                                <div className="first-result">
-                                    <img src={clientIcon} alt="Client Icon" className="icon-client" />
-                                    <div className="container-data">
-                                        <label className="name-client">{clientData.client.name}</label>
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="container-list-client">
+                                {clients.map(clientData => (
+                                    <div className="result-client" onClick={(event) => handleClientCarInformation(clientData.client.id, event)} key={clientData.client.id}>
+                                        <div className="first-result">
+                                            <img src={clientIcon} alt="Client Icon" className="icon-client" />
+                                            <div className="container-data">
+                                                <label className="name-client">{clientData.client.name}</label>
 
-                                        <div className="vehicle-count-container">
-                                            {/* Si el vehicles_count es vacío */}
-                                            <div className="container-car-number">
-                                                <label className="car-number">{(clientData.vehicles_count && clientData.vehicles_count.car) || 0}</label>
-                                                <img src={autoIcon} alt="Car client" className="icon-car" />
-                                            </div>
+                                                <div className="vehicle-count-container">
 
-                                            {/* Si vehicles_count no es vacío, muestra los otros íconos */}
-                                            {clientData.vehicles_count && (
-                                                <>
-
-                                                    {clientData.vehicles_count.van && (
-                                                        <div className="container-car-number">
-                                                            <label className="car-number"> {clientData.vehicles_count.van}
-                                                            </label>
-                                                            <div className="van-container">
-                                                                <img src={camionetaIcon} alt="Van client" className="icon-van"></img>
+                                                    {
+                                                        (!clientData.vehicles_count ||
+                                                            Object.values(clientData.vehicles_count).every(val => val === 0)
+                                                        ) ? (
+                                                            <div className="no-vehicles">
+                                                                Sin vehículos
                                                             </div>
+                                                        ) : (
+                                                            <>
 
-                                                        </div>
-                                                    )}
+                                                                {clientData.vehicles_count.car > 0 && (
+                                                                    <div className="container-car-number">
+                                                                        <label className="car-number">{clientData.vehicles_count.car}</label>
+                                                                        <img src={autoIcon} alt="Car client" className="icon-car" />
+                                                                    </div>
+                                                                )}
 
-                                                    {clientData.vehicles_count.bus && (
-                                                        <div className="container-car-number">
-                                                            <label className="car-number"> {clientData.vehicles_count.bus}
-                                                            </label>
-                                                            <img src={busetaIcon} alt="Bus client" className="icon-bus"></img>
-                                                        </div>
+                                                                {clientData.vehicles_count.van > 0 && (
+                                                                    <div className="container-car-number">
+                                                                        <label className="car-number"> {clientData.vehicles_count.van}
+                                                                        </label>
+                                                                        <div className="van-container">
+                                                                            <img src={camionetaIcon} alt="Van client" className="icon-van"></img>
+                                                                        </div>
 
-                                                    )}
+                                                                    </div>
+                                                                )}
 
-                                                    {clientData.vehicles_count.truck && (
-                                                        <div className="container-car-number">
-                                                            <label className="car-number"> {clientData.vehicles_count.truck}
-                                                            </label>
-                                                            <img src={camionIcon} alt="Truck client" className="icon-car"></img>
-                                                        </div>
+                                                                {clientData.vehicles_count.bus > 0 && (
+                                                                    <div className="container-car-number">
+                                                                        <label className="car-number"> {clientData.vehicles_count.bus}
+                                                                        </label>
+                                                                        <img src={busetaIcon} alt="Bus client" className="icon-bus"></img>
+                                                                    </div>
 
-                                                    )}
-                                                </>
-                                            )}
+                                                                )}
+
+                                                                {clientData.vehicles_count.truck > 0 && (
+                                                                    <div className="container-car-number">
+                                                                        <label className="car-number"> {clientData.vehicles_count.truck}
+                                                                        </label>
+                                                                        <img src={camionIcon} alt="Truck client" className="icon-car"></img>
+                                                                    </div>
+
+                                                                )}
+                                                            </>
+
+                                                        )
+                                                    }
+
+                                                </div>
+
+
+
+                                            </div>
                                         </div>
 
-
+                                        <div className="second-result">
+                                            <button className="button-eye" onClick={(event) => handleClientInformation(clientData.client.id, event)}>
+                                                <img src={eyeIcon} alt="Eye Icon" className="icon-eye" />
+                                            </button>
+                                        </div>
 
                                     </div>
-                                </div>
 
-                                <div className="second-result">
-                                    <button className="button-eye" onClick={(event) => handleClientInformation(clientData.client.id, event)}>
-                                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye" />
-                                    </button>
-                                </div>
-
+                                ))}
                             </div>
+                        </>
+                    )
+                    }
 
-                        ))}
-                    </div>
 
                 </div>
 
@@ -659,6 +689,7 @@ const Clients = () => {
                                 onDisable={openAlertModalClientSuspend}
                                 showEditIcon={true}
                                 onEdit={() => setIsEditMode(true)}
+                                
                             />
 
                             <div className="container-data-client-form">
@@ -1002,7 +1033,7 @@ const Clients = () => {
                                                 type="text"
                                                 value={model} onChange={(e) => setModel(e.target.value)}
                                             />
-                                             <img
+                                            <img
                                                 src={modelIcon}
                                                 alt="Model Icon"
                                                 className="input-new-client-icon"

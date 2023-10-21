@@ -42,11 +42,11 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
 
         // Determinar el lado
         const side = roundedX < imageWidth / 2 ? 'left' : 'right';
-        newPoints[index] = { 
-            ...newPoints[index], 
-            x: roundedX, 
-            y: roundedY, 
-            side 
+        newPoints[index] = {
+            ...newPoints[index],
+            x: roundedX,
+            y: roundedY,
+            side
         };
 
         setPoints(newPoints);
@@ -62,20 +62,24 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
 
     return (
         <div className="container-vehicle-plan">
-            <Stage width={imageWidth} height={imageHeight} onClick={handleStageClick}>
-                <Layer>
-                    <Image image={image}
-                        width={imageWidth}
-                        height={imageHeight}
-                        x={(imageWidth - imageWidth) / 2}
-                        y={(imageHeight - imageHeight) / 2} />
-                    {points.map((point, index) => (
-                        <Circle key={index} x={point.x} y={point.y} radius={10} fill="#ffea00"
-                            draggable={isEditable}
-                            onDragEnd={handleDragEnd(index)} />
-                    ))}
-                </Layer>
-            </Stage>
+            <div style={{margin: '20px'}}>
+                <Stage width={imageWidth} height={imageHeight} onClick={handleStageClick}>
+                    <Layer>
+                        <Image image={image}
+                            width={imageWidth}
+                            height={imageHeight}
+                            x={(imageWidth - imageWidth) / 2}
+                            y={(imageHeight - imageHeight) / 2} />
+                        {points.map((point, index) => (
+                            <Circle key={index} x={point.x} y={point.y} radius={10} fill="#ffea00"
+                                draggable={isEditable}
+                                onDragEnd={handleDragEnd(index)} />
+                        ))}
+                    </Layer>
+                </Stage>
+
+            </div>
+
 
         </div>
     )

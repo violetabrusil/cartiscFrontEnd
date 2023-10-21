@@ -1,4 +1,5 @@
 import "../../Products.css";
+import "../../CustomTitleSection.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import Select from 'react-select';
@@ -15,6 +16,7 @@ const rowIcon = process.env.PUBLIC_URL + "/images/icons/row.png";
 const stockIcon = process.env.PUBLIC_URL + "/images/icons/stock.png";
 const columnIcon = process.env.PUBLIC_URL + "/images/icons/column.png";
 const supplierIcon = process.env.PUBLIC_URL + "/images/icons/supplierIcon-blue.png";
+const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 export function ProductForm({
     mode = "add",
@@ -33,7 +35,8 @@ export function ProductForm({
         compatibility_notes: ""
     },
     onSubmit,
-    onSuspendSuccess }) {
+    onSuspendSuccess,
+    onBack }) {
 
     const [suppliers, setSuppliers] = useState([]);
     const [selectedOptionSupplier, setSelectedOptionSupplier] = useState("");
@@ -41,6 +44,7 @@ export function ProductForm({
     const [searchType, setSearchType] = useState('Código');  // Por defecto buscará por código
     const [isEditable, setIsEditable] = useState(mode === "add");
     const [isAlertProductSuspend, setIsAlertProductSuspend] = useState(false);
+
 
     //Variables para guardar los datos de entrada de producto
     const [productId, setProductId] = useState(productData.id);
@@ -277,7 +281,7 @@ export function ProductForm({
     }, [searchTermSupplier, selectedOptionSupplier, searchType]);
 
     useEffect(() => {
-        if (mode === "edit") {
+        if (mode === "edit" && productData) {
             setProductId(productData.id);
             setTitleProduct(productData.title);
             setImageBase64(productData.product_picture);
@@ -297,20 +301,31 @@ export function ProductForm({
         }
     }, [productData, mode]);
 
+    if (!productData) {
+        return null;
+    }
+
     return (
         <div>
             <ToastContainer />
 
             <div className="form-scroll-products">
-                {mode === 'edit' && (
+                {mode === 'edit' ? (
                     <CustomTitleSection
                         title="Información del Producto"
                         showDisableIcon={true}
                         onDisable={openAlertModalProductSuspend}
                         showEditIcon={true}
                         onEdit={handleEditClick}
+                        onBack={onBack}
                     />
 
+                ) : (
+                    <>
+                        <button onClick={onBack} className="button-arrow">
+                            <img src={arrowLeftIcon} className="arrow-icon" alt="Arrow Icon" />
+                        </button>
+                    </>
                 )}
 
                 <div className="product-container-image">

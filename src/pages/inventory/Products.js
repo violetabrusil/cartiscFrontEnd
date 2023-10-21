@@ -11,13 +11,12 @@ const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
-const Products = ({ viewMode, setViewMode }) => {
+const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }) => {
 
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [refreshCount, setRefreshCount] = useState(0);
-    const [selectedProduct, setSelectedProduct] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const handleFilter = useCallback((option, term) => {
@@ -49,40 +48,58 @@ const Products = ({ viewMode, setViewMode }) => {
                     );
                 }
             },
-            { Header: "Título", accessor: "title" },
-            { Header: "Categoría", accessor: "category" },
+            {
+                Header: "Título",
+                accessor: "title",
+                Cell: ({ value }) => (
+                    <div>
+                        {value !== 'NULL' ? value : '-'}
+                    </div>
+                )
+            },
+            {
+                Header: "Categoría",
+                accessor: "category",
+                Cell: ({ value }) => (
+                    <div>
+                        {value !== 'NULL' ? value : '-'}
+                    </div>
+                )
+            },
             {
                 Header: "Precio",
                 accessor: "price",
-                Cell: ({ value }) =>
-                    <div style={{ fontSize: "16px" }}>
-                        $ {parseFloat(value).toFixed(2)}
+                Cell: ({ value }) => (
+                    <div>
+                        {value !== 'NULL' ? `$ ${parseFloat(value).toFixed(2)}` : '-'}
                     </div>
-            },
+                )
+            },            
             {
                 Header: "Stock",
                 accessor: "stock",
                 Cell: ({ value }) =>
                     <div style={{ fontSize: "16px" }}>
-                        {value}
+                      {value !== 'NULL' ? value : '-'}
                     </div>
 
-            },
-            {
-                Header: "Fila",
-                accessor: "row",
-                Cell: ({ value }) =>
-                    <div style={{ fontSize: "16px" }}>
-                        {value}
-                    </div>
             },
             {
                 Header: "Columna",
                 accessor: "column",
                 Cell: ({ value }) =>
                     <div style={{ fontSize: "16px" }}>
-                        {value}
+                       {value !== 'NULL' ? value : '-'}
                     </div>
+            },
+            {
+                Header: "Fila",
+                accessor: "row",
+                Cell: ({ value }) => (
+                    <div style={{ fontSize: "16px" }}>
+                        {value !== 'NULL' ? value : '-'}
+                    </div>
+                )
             },
             {
                 Header: "",
@@ -181,6 +198,11 @@ const Products = ({ viewMode, setViewMode }) => {
             console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
+            if (error.code === 'ECONNABORTED') {
+                console.error('La solicitud ha superado el tiempo límite.');
+            } else {
+                console.error('Otro error ocurrió:', error.message);
+            }
             console.log("Error al obtener los datos de los productos", error);
         }
         setLoading(false);
@@ -219,11 +241,11 @@ const Products = ({ viewMode, setViewMode }) => {
             )}
 
             {viewMode === 'add' && (
-                <ProductForm mode="add" onSubmit={handleNewProduct} />
+                <ProductForm mode="add" onSubmit={handleNewProduct} onBack={() => setViewMode('general')}  />
             )}
 
-            {viewMode === 'edit' && (
-                <ProductForm mode="edit" productData={selectedProduct} onSubmit={handleUpdateProduct} onSuspendSuccess={handleSuspendProduct} />
+            {viewMode === 'edit' && selectedProduct && (
+                <ProductForm mode="edit" productData={selectedProduct} onSubmit={handleUpdateProduct} onSuspendSuccess={handleSuspendProduct} onBack={() => setViewMode('general')}  />
             )}
 
         </div>

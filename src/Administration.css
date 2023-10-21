@@ -59,3 +59,7 @@
     font-size: 16px;
     font-weight: bold;
 }
+
+.Toastify__toast-container.Toastify__toast-container--top-right {
+    top: 75px;
+}

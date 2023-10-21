@@ -171,6 +171,19 @@
 
 .input-cost-operation {
     padding-left: 10px;
+    display: inline-block;
+}
+
+.input-cost-operation {
+    padding-left: 25px; /* Espacio para el signo de dólar */
+}
+
+.dollar-sign {
+    position: absolute;
+    left: 61px;
+    top: 50%;
+    transform: translateY(-50%); /* Centrar verticalmente */
+    font-size: 1em;
 }
 
 .input-title-service {

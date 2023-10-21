@@ -149,6 +149,11 @@ const Location = () => {
             console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
+            if (error.code === 'ECONNABORTED') {
+                console.error('La solicitud ha superado el tiempo límite.');
+            } else {
+                console.error('Otro error ocurrió:', error.message);
+            }
             console.log("Error al obtener los datos de los servicios");
         }
         setLoading(false);
@@ -162,7 +167,7 @@ const Location = () => {
 
         <div className="location-container">
             <ToastContainer />
-            <div>
+            <div className="content-location-wrapper">
                 <SearchBar onFilter={handleFilter} />
                 {loading ? (
                     <div className="spinner-container-products ">
@@ -183,25 +188,28 @@ const Location = () => {
 
             <div className="input-location-container">
                 <div className="label-input-location-container">
-                    <label>Fila</label>
-                    <input
-                        type="text"
-                        style={{ color: "#255177" }}
-                        value={isEditing ? rowUpdate : selectedProductRow}
-                        readOnly={!isEditing}
-                        onChange={e => setRowUpdate(e.target.value)}
-                    />
-                </div>
-
-                <div className="label-input-location-container">
                     <label>Columna</label>
                     <input
                         type="text"
                         style={{ color: "#5a98cb" }}
-                        value={isEditing ? columnUpdate : selectedProductColumn}
+                        value={(isEditing ? columnUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? columnUpdate : selectedProductColumn)}
                         readOnly={!isEditing}
                         onChange={e => setColumnUpdate(e.target.value)}
                     />
+
+                </div>
+
+                <div className="label-input-location-container">
+                    <label>Fila</label>
+                    <input
+                        type="text"
+                        style={{ color: "#255177" }}
+                        value={(isEditing ? rowUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? rowUpdate : selectedProductRow)}
+                        readOnly={!isEditing}
+                        onChange={e => setRowUpdate(e.target.value)}
+                    />
+
+
                     <button className="location-button" onClick={handleEditOrSave}>
                         <span className="span-location-button">
                             {isEditing ? 'Guardar' : 'Editar'}

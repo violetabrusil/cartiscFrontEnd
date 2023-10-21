@@ -1,8 +1,10 @@
 import "../../Users.css";
 import "../../Modal.css"
+import "../../Loader.css";
 import React, { useEffect, useState, useCallback, useRef, useContext } from "react";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
+import PuffLoader from "react-spinners/PuffLoader";
 import apiAdmin from "../../services/apiAdmin";
 import { AuthContext } from "../../contexts/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
@@ -36,6 +38,7 @@ const Users = () => {
     const [actionType, setActionType] = useState('view');
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [modalAction, setModalAction] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     //Variables para creación y edición de usuarios
     const [imageBase64, setImageBase64] = useState(null);
@@ -214,6 +217,7 @@ const Users = () => {
 
             console.log("Respuesta del servidor:", transformedUserData);
             setallUsers(transformedUserData);
+            setLoading(false);
         } catch (error) {
             console.log("Error al obtener los datos de los usuarios", error);
         }
@@ -609,11 +613,19 @@ const Users = () => {
                         options={userOptions}
                     />
 
-                    <DataTable
-                        data={allUsers}
-                        columns={columns}
-                        highlightRows={false}
-                    />
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
+                    ) : (
+                        <>
+                            <DataTable
+                                data={allUsers}
+                                columns={columns}
+                                highlightRows={false}
+                            />
+                        </>
+                    )}
 
                 </div>
 

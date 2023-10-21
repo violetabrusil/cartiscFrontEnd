@@ -332,7 +332,7 @@ const NewWorkOrder = () => {
         setSymptoms([]);
         setObservations("");
         setPointsOfInterest([]);
-     };
+    };
 
     const createNewWorkOrder = async () => {
         const vehicleStatus = {};
@@ -427,6 +427,16 @@ const NewWorkOrder = () => {
         };
 
     }, [searchTerm, selectedOption])
+
+    const selectAllCheckboxes = () => {
+        let newSelections = { ...selections };
+
+        Object.keys(optionsCheckBox).forEach(group => {
+            newSelections[group] = newSelections[group].map(() => true);
+        });
+
+        setSelections(newSelections);
+    };
 
     useEffect(() => {
         if (user) {
@@ -660,6 +670,7 @@ const NewWorkOrder = () => {
                                         options={WorkOrderStatusOptions}
                                         placeholder="Seleccione"
                                         classNamePrefix="react-select"
+                                        isDisabled={!selectedClient || !selectedVehicleId}
                                     />
                                 </div>
 
@@ -696,6 +707,14 @@ const NewWorkOrder = () => {
 
                 <div className="title-second-section-container">
                     <h3>Estado entrega de vehículo</h3>
+                </div>
+
+                <div style={{ textAlign: "right", marginBottom: '10px' }}>
+                    <button
+                        className="btn-select-all"
+                        onClick={selectAllCheckboxes}>
+                        Seleccionar todos
+                    </button>
                 </div>
 
                 <div className="checkbox-container">

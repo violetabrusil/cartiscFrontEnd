@@ -1,9 +1,11 @@
 import "../../WorkOrders.css";
+import "../../Loader.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { debounce } from 'lodash';
 import { ToastContainer } from "react-toastify";
+import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
@@ -20,6 +22,7 @@ const WorkOrders = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [workOrders, setWorkOrders] = useState([]);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const handleSearchWorOrderChange = (term, filter) => {
@@ -55,10 +58,10 @@ const WorkOrders = () => {
         const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
         const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
         const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
-    
+
         return `${day}/${month}/${year}`;
     };
-    
+
     const formatPlate = (plateInput) => {
         const regex = /^([A-Z]{3})(\d{3,4})$/;
 
@@ -91,7 +94,7 @@ const WorkOrders = () => {
     const handleShowInformationWorkOrderClick = (workOrderId) => {
         navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
     };
-    
+
     useEffect(() => {
         const fetchData = async () => {
             let endpoint = '/work-orders/all';
@@ -124,9 +127,15 @@ const WorkOrders = () => {
                 });
 
                 setWorkOrders(transformedWorkOrders);
+                setLoading(false);
                 console.log("respuesta servidor", transformedWorkOrders);
 
             } catch (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.error('La solicitud ha superado el tiempo límite.');
+                } else {
+                    console.error('Otro error ocurrió:', error.message);
+                }
                 console.log("Error al obtener las órdenes de trabajo", error);
             }
         }
@@ -155,51 +164,61 @@ const WorkOrders = () => {
                     />
 
                     {/*Lista de órdenes de trabajo */}
-                    <div className="container-list-work-orders">
-                        {workOrders.map(workOrderData => (
-                            <div key={workOrderData.id} className="result-work-order" onClick={() => handleShowInformationWorkOrderClick(workOrderData.id)}>
-                                <div className="first-result-work-orders">
-                                    <div className="div-label-work-order-code">
-                                        <label>
-                                            {workOrderData.work_order_code}
-                                        </label>
-                                    </div>
-                                    <div className="div-label-work-order-client">
-                                        <label>
-                                            {workOrderData.client_name}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="second-result-work-order">
-                                    <div className="input-plate-container-work-order">
-                                        <input
-                                            className="input-plate-vehicle-work-order"
-                                            type="text"
-                                            value={workOrderData.vehicle_plate}
-                                            readOnly
-                                        />
-                                        <img src={flagIcon} alt="Flag" className="ecuador-icon" />
-                                        <label>ECUADOR</label>
-                                    </div>
 
-                                </div>
-                                <div className="third-result-work-order">
-                                    <div className="div-label-status">
-                                        <label style={{ color: statusColors[workOrderData.work_order_status] }}>
-                                            {workOrderData.work_order_status}
-                                        </label>
-                                    </div>
-                                    <div className="div-label-date">
-                                        <label>{workOrderData.date_start}</label>
-                                    </div>
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px'}}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="container-list-work-orders">
+                                {workOrders.map(workOrderData => (
+                                    <div key={workOrderData.id} className="result-work-order" onClick={() => handleShowInformationWorkOrderClick(workOrderData.id)}>
+                                        <div className="first-result-work-orders">
+                                            <div className="div-label-work-order-code">
+                                                <label>
+                                                    {workOrderData.work_order_code}
+                                                </label>
+                                            </div>
+                                            <div className="div-label-work-order-client">
+                                                <label>
+                                                    {workOrderData.client_name}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div className="second-result-work-order">
+                                            <div className="input-plate-container-work-order">
+                                                <input
+                                                    className="input-plate-vehicle-work-order"
+                                                    type="text"
+                                                    value={workOrderData.vehicle_plate}
+                                                    readOnly
+                                                />
+                                                <img src={flagIcon} alt="Flag" className="ecuador-icon" />
+                                                <label>ECUADOR</label>
+                                            </div>
 
-                                </div>
+                                        </div>
+                                        <div className="third-result-work-order">
+                                            <div className="div-label-status">
+                                                <label style={{ color: statusColors[workOrderData.work_order_status] }}>
+                                                    {workOrderData.work_order_status}
+                                                </label>
+                                            </div>
+                                            <div className="div-label-date">
+                                                <label>{workOrderData.date_start}</label>
+                                            </div>
 
+                                        </div>
+
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </>
+                    )}
 
                 </div>
+
                 <div className="right-section-work-order">
                     <CustomButtonContainer>
                         <CustomButton title="AGREGAR ORDEN DE TRABAJO" onClick={handleAddNewWorkOrder} />

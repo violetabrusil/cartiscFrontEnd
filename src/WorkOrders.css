@@ -166,6 +166,10 @@
     font-size: 17px;
 }
 
+.Toastify__toast-container.Toastify__toast-container--top-right {
+    top: 75px;
+}
+
 @media screen and (max-width: 768px) {
     .work-order-container {
         position: absolute;

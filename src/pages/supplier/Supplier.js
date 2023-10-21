@@ -1,8 +1,10 @@
 import "../../Supplier.css";
+import "../../Loader.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
+import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
@@ -28,6 +30,7 @@ const Suppliers = () => {
     const [showAddSupplier, setShowAddSupplier] = useState(false);
     const [showSupplierInformation, setShowSupplierInformation] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(Date.now());
+    const [loading, setLoading] = useState(true);
 
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
@@ -232,9 +235,14 @@ const Suppliers = () => {
                 const response = await apiClient.get(endpoint);
                 console.log("response", response.data);
                 setSuppliers(response.data);
-
+                setLoading(false);
 
             } catch (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.error('La solicitud ha superado el tiempo límite.');
+                } else {
+                    console.error('Otro error ocurrió:', error.message);
+                }
                 console.log("Error al obtener los datos de las operaciones");
             }
         }
@@ -256,28 +264,38 @@ const Suppliers = () => {
                         onSearchChange={handleSearchWithDebounce}
                         onButtonClick={openFilterModal}
                     />
-                    <div className="search-results-suppliers">
-                        {Array.isArray(suppliers) && suppliers.map(supplierData => (
-                            <div key={`suppliers-${supplierData.id}`} className="result-suppliers">
-                                <div className="supplier-code-section">
-                                    <label className="supplier-code">{supplierData.supplier_code}</label>
-                                </div>
 
-                                <div className="supplier-name-section">
-                                    <label className="supplier-name">{supplierData.name}</label>
-                                </div>
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="search-results-suppliers">
+                                {Array.isArray(suppliers) && suppliers.map(supplierData => (
+                                    <div key={`suppliers-${supplierData.id}`} className="result-suppliers">
+                                        <div className="supplier-code-section">
+                                            <label className="supplier-code">{supplierData.supplier_code}</label>
+                                        </div>
 
-                                <div className="supplier-eye-section">
-                                    <button className="button-eye-supplier" onClick={(event) => handleSupplierInformation(supplierData.id, event)}>
-                                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
-                                    </button>
-                                </div>
+                                        <div className="supplier-name-section">
+                                            <label className="supplier-name">{supplierData.name}</label>
+                                        </div>
+
+                                        <div className="supplier-eye-section">
+                                            <button className="button-eye-supplier" onClick={(event) => handleSupplierInformation(supplierData.id, event)}>
+                                                <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                ))}
 
                             </div>
+                        </>
+                    )}
 
-                        ))}
-
-                    </div>
                 </div>
                 <div className="right-section-supplier">
                     <ToastContainer />

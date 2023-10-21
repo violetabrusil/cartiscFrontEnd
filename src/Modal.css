@@ -438,6 +438,19 @@
 .container-label span {
     font-size: 16px;
     font-weight: normal;
+    margin-left: 40px;
+}
+
+.paid-input {
+    width: 20%;
+    height: 25px;
+    margin-left: 94px;
+    border-radius: 3px;
+    border: 1px solid #E1E1E4;
+}
+
+.Toastify__toast-container.Toastify__toast-container--top-right {
+    top: 75px;
 }
 
 /* Media queries para tamaños de pantalla */

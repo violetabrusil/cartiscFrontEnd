@@ -179,8 +179,7 @@ export function SearchProductsModal({ onClose,
                         <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '80px' }}>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
-                                type="number"
-                                step="0.01"
+                                type="text"
                                 defaultValue={parseFloat(currentPrice).toFixed(2)}
                                 onBlur={handleBlur}
                                 style={{ width: '60px', fontWeight: '600' }}
@@ -193,25 +192,43 @@ export function SearchProductsModal({ onClose,
                 Header: "Cantidad",
                 accessor: "quantity",
                 Cell: ({ value, row }) => {
+                    const [localQuantity, setLocalQuantity] = useState('1');
                     const sku = row.original.sku;
-                    const currentQuantity = productQuantities[sku] || 1;
+                    const currentQuantity = productQuantities[sku] || '1';
+
+                    useEffect(() => {
+                        setLocalQuantity(currentQuantity);
+                    }, [currentQuantity]);
+
+                    const handleLocalChange = (e) => {
+                        const newValue = e.target.value;
+                        if (newValue === '' || (!isNaN(newValue) && parseInt(newValue, 10) > 0)) {
+                            setLocalQuantity(newValue);
+                        }
+                    };
+
+                    const handleGlobalChange = () => {
+                        if (localQuantity === '') {
+                            handleQuantityChange(sku, '1');
+                            setLocalQuantity('1');
+                        } else {
+                            handleQuantityChange(sku, localQuantity);
+                        }
+                    };
 
                     return (
                         <input
                             key={sku}
-                            type="number"
-                            value={currentQuantity}
-                            onChange={(e) => {
-                                const newValue = parseInt(e.target.value, 10);
-                                handleQuantityChange(sku, newValue);
-                            }}
+                            type="text"
+                            value={localQuantity}
+                            onChange={handleLocalChange}
+                            onBlur={handleGlobalChange}
                             style={{ width: '30px', fontWeight: '600', textAlign: 'center' }}
                             max={row.original.stock}
                             min="1"
                         />
                     );
                 }
-
             },
             {
                 Header: "",
@@ -253,7 +270,7 @@ export function SearchProductsModal({ onClose,
     const removeProduct = (productToRemove) => {
         onProductsSelected(prevProducts => prevProducts.filter(p => p.sku !== productToRemove.sku));
     };
-    
+
     const calculatedProducts = selectedProducts.map(product => {
         const price = productPrices[product.sku] !== undefined ? productPrices[product.sku] : product.price;
         const quantity = productQuantities[product.sku] !== undefined ? productQuantities[product.sku] : 1;
@@ -290,8 +307,8 @@ export function SearchProductsModal({ onClose,
                 work_order_items: updatedProducts.map(product => ({
                     sku: product.sku,
                     title: product.title,
-                    quantity: product.quantity,
-                    price: product.price,
+                    quantity: parseInt(product.quantity, 10),
+                    price: parseInt(product.price, 10),
                 })),
             };
             console.log("data del producto a enviar", payload)
@@ -323,8 +340,8 @@ export function SearchProductsModal({ onClose,
                 work_order_items: updatedProducts.map(product => ({
                     sku: product.sku,
                     title: product.title,
-                    quantity: product.quantity,
-                    price: product.price,
+                    quantity: parseInt(product.quantity, 10),
+                    price: parseInt(product.price, 10),
                 })),
             };
             console.log("data del producto  actualizado a enviar", payload)
@@ -448,20 +465,20 @@ export function SearchProductsModal({ onClose,
             <div style={{ maxWidth: '850px' }} className="modal-payment">
                 <div style={{ display: 'flex', marginLeft: '10px', marginBottom: '0px', marginTop: '0px' }}>
                     <h3 style={{ marginBottom: '0px', flex: "1" }}>Productos</h3>
-                   
-                        <div style={{display: 'flex'}}>
-                            <button style={{ width: '100px', height: '33px', marginTop: '11px', marginRight: '10px' }}
-                                className="confirm-button" onClick={handleSaveUpdateProducts}>
-                                <span className="text-confirm-button">
-                                    Guardar
-                                </span>
-                            </button>
 
-                            <button style={{ marginTop: '14px', marginRight: '13px' }} className="button-close" onClick={onClose}>
-                                <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                            </button>
+                    <div style={{ display: 'flex' }}>
+                        <button style={{ width: '100px', height: '33px', marginTop: '11px', marginRight: '10px' }}
+                            className="confirm-button" onClick={handleSaveUpdateProducts}>
+                            <span className="text-confirm-button">
+                                Guardar
+                            </span>
+                        </button>
 
-                        </div>
+                        <button style={{ marginTop: '14px', marginRight: '13px' }} className="button-close" onClick={onClose}>
+                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                        </button>
+
+                    </div>
 
                 </div>
 

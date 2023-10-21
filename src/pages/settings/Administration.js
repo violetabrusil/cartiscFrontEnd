@@ -1,7 +1,9 @@
 import "../../Administration.css";
+import "../../Loader.css";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import Select from 'react-select';
+import PuffLoader from "react-spinners/PuffLoader";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { userStatusMaping } from "../../constants/userStatusConstants";
@@ -12,6 +14,7 @@ const Administration = () => {
     const [selectedOption, setSelectedOption] = useState('');
     const [data, setData] = useState([]);
     const [columns, setColumns] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const administrationSelectStyles = {
         control: (base, state) => ({
@@ -61,6 +64,24 @@ const Administration = () => {
                 }
             },
             {
+                Header: "Fecha de Suspención",
+                accessor: "updated_at",
+                Cell: ({ value }) => {
+                    const date = new Date(value);
+
+                    // Añadir un cero adelante si es un solo dígito
+                    const formatNumber = (num) => num.toString().padStart(2, '0');
+
+                    const day = formatNumber(date.getDate());
+                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const year = date.getFullYear();
+                    const hours = formatNumber(date.getHours());
+                    const minutes = formatNumber(date.getMinutes());
+
+                    return `${day}/${month}/${year} ${hours}:${minutes}`;
+                }
+            },
+            {
                 Header: "",
                 Cell: ({ row }) => {
                     const client = row.original;
@@ -87,6 +108,24 @@ const Administration = () => {
                             {value}
                         </span>
                     )
+                }
+            },
+            {
+                Header: "Fecha de Suspención",
+                accessor: "updated_at",
+                Cell: ({ value }) => {
+                    const date = new Date(value);
+
+                    // Añadir un cero adelante si es un solo dígito
+                    const formatNumber = (num) => num.toString().padStart(2, '0');
+
+                    const day = formatNumber(date.getDate());
+                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const year = date.getFullYear();
+                    const hours = formatNumber(date.getHours());
+                    const minutes = formatNumber(date.getMinutes());
+
+                    return `${day}/${month}/${year} ${hours}:${minutes}`;
                 }
             },
             {
@@ -128,6 +167,24 @@ const Administration = () => {
                 }
             },
             {
+                Header: "Fecha de Suspención",
+                accessor: "updated_at",
+                Cell: ({ value }) => {
+                    const date = new Date(value);
+
+                    // Añadir un cero adelante si es un solo dígito
+                    const formatNumber = (num) => num.toString().padStart(2, '0');
+
+                    const day = formatNumber(date.getDate());
+                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const year = date.getFullYear();
+                    const hours = formatNumber(date.getHours());
+                    const minutes = formatNumber(date.getMinutes());
+
+                    return `${day}/${month}/${year} ${hours}:${minutes}`;
+                }
+            },
+            {
                 Header: "",
                 Cell: ({ row }) => {
                     const operation = row.original;
@@ -155,6 +212,24 @@ const Administration = () => {
                 }
             },
             {
+                Header: "Fecha de Suspención",
+                accessor: "updated_at",
+                Cell: ({ value }) => {
+                    const date = new Date(value);
+
+                    // Añadir un cero adelante si es un solo dígito
+                    const formatNumber = (num) => num.toString().padStart(2, '0');
+
+                    const day = formatNumber(date.getDate());
+                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const year = date.getFullYear();
+                    const hours = formatNumber(date.getHours());
+                    const minutes = formatNumber(date.getMinutes());
+
+                    return `${day}/${month}/${year} ${hours}:${minutes}`;
+                }
+            },
+            {
                 Header: "",
                 Cell: ({ row }) => {
                     const supplier = row.original;
@@ -179,6 +254,24 @@ const Administration = () => {
                             $ {parseFloat(value).toFixed(2)}
                         </span>
                     )
+                }
+            },
+            {
+                Header: "Fecha de Suspención",
+                accessor: "updated_at",
+                Cell: ({ value }) => {
+                    const date = new Date(value);
+
+                    // Añadir un cero adelante si es un solo dígito
+                    const formatNumber = (num) => num.toString().padStart(2, '0');
+
+                    const day = formatNumber(date.getDate());
+                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const year = date.getFullYear();
+                    const hours = formatNumber(date.getHours());
+                    const minutes = formatNumber(date.getMinutes());
+
+                    return `${day}/${month}/${year} ${hours}:${minutes}`;
                 }
             },
             {
@@ -233,6 +326,7 @@ const Administration = () => {
             const response = await apiClient.get(`/${resourceType}/suspended`);
             const transformedData = transformData(response.data);
             setData(transformedData);
+            setLoading(false);
         } catch (error) {
             console.log("Ha ocurrido un error al obtener los datos", error);
         }
@@ -318,15 +412,27 @@ const Administration = () => {
 
             </div>
 
-            <div style={{ marginTop: '-60px' }}>
-                <DataTable
-                    data={data}
-                    columns={columns}
-                    highlightRows={false}
-                />
-            </div>
+            {data.length > 0 && (
+                <div style={{ marginTop: '-60px' }}>
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
+                    ) : (
+                        <>
+                            <DataTable
+                                data={data}
+                                columns={columns}
+                                highlightRows={false}
+                            />
+                        </>
+                    )}
 
-        </div>
+                </div>
+            )
+            }
+
+        </div >
 
     )
 

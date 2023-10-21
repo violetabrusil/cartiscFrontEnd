@@ -1,5 +1,5 @@
 import "../../Inventory.css"
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -11,6 +11,14 @@ const Inventory = () => {
 
     const [activeTab, setActiveTab] = React.useState(0);
     const [viewMode, setViewMode] = useState('general');
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+    useEffect(() => {
+        if (activeTab === 0) { 
+            setSelectedProduct(null);
+        }
+        setViewMode('general');
+    }, [activeTab])
 
     return (
         <div>
@@ -32,7 +40,11 @@ const Inventory = () => {
                     </TabList>
 
                     <TabPanel>
-                        <Products viewMode={viewMode} setViewMode={setViewMode} />
+                        <Products 
+                        viewMode={viewMode} 
+                        setViewMode={setViewMode}
+                        selectedProduct={selectedProduct}
+                        setSelectedProduct={setSelectedProduct} />
                     </TabPanel>
 
                     <TabPanel>

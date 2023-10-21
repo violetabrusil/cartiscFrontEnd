@@ -90,26 +90,29 @@
 
 .button-email {
     border: none;
-    background: none;
-    margin-right: -15px;
+    background-image: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);
+    border-radius: 10px;
+    padding-top: 4px;
 }
 
 .email-icon {
     background: none;
-    width: 45px;
-    height: 45px;
+    width: 33px;
+    height: 35px;
 }
 
 .button-payment-receipt {
     border: none;
-    background: none;
-    margin-right: -11px;
+    background-image: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);
+    margin-right: -10px;
+    border-radius: 10px;
+    margin-top: -3%;
 }
 
 .payment-receipt-icon {
     background: none;
-    width: 49px;
-    height: 45px;
+    width: 34px;
+    height: 37px;
 }
 
 .custom-select-option-payment {
@@ -161,10 +164,37 @@
     font-weight: 600;
 }
 
-.large-text {
-    font-size: 1.2em;
+.whole-part {
+    font-size: 24px;  /* Tamaño para la parte entera */
 }
 
+.decimal-part {
+    font-size: 18px;  /* Tamaño para la parte decimal */
+}
+
+.flex-container {
+    display: flex;
+    align-items: center; /* Alinea verticalmente en el centro */
+    gap: 80px; /* Espacio entre el label y el Select */
+}
+
+.button-eye-workorder-payment {
+    width: 100px;
+    height: 40px;
+    border: none;
+    margin-top: 3px;
+    background: none;
+}
+
+.icon-eye-workorder-payment {
+    width: 30px;
+    height: 30px;
+    opacity: 50%;
+}
+
+.small-row {
+    width: 15px;; 
+}
 
 @media screen and (max-width: 768px) {
 

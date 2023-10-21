@@ -2,6 +2,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import "../../NewWorkOrder.css";
 import "../../InformationWorkOrder.css";
 import "../../Modal.css";
+import "../../Loader.css";
 import React, { useEffect, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
@@ -138,6 +139,7 @@ const InformationWorkOrder = () => {
 
     const handleOpenModalServices = () => {
         setIsModalOpenServices(true);
+        getWorkOrderDetailById();
     };
 
     const handleCloseModalServices = () => {
@@ -661,6 +663,8 @@ const InformationWorkOrder = () => {
         const totalProductsValue = calculateTotal(selectedProducts, 'price');
         const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
         const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
+        
+        console.log("valor de servicios", totalServicesValue )
 
         const total = totalProductsValue + totalOperationsValue + totalServicesValue;
 
@@ -678,7 +682,7 @@ const InformationWorkOrder = () => {
             <div className="spinner-container">
 
                 {loading ? (
-                    <div>
+                    <div className="loader-container">
                         <PuffLoader color="#316EA8" loading={loading} size={60} />
                     </div>
 
@@ -984,17 +988,13 @@ const InformationWorkOrder = () => {
                                             <h3>Puntos de interés</h3>
                                         </div>
 
-                                        <div>
-                                            <VehiclePlans
-                                                imgSrc={carPlan}
-                                                updatePoints={(points) => setPointsOfInterest(points)}
-                                                initialPoints={workOrderDetail.vehicle_status.points_of_interest}
-                                                isEditable={isEditState}
-                                            />
 
-                                        </div>
-
-
+                                        <VehiclePlans
+                                            imgSrc={carPlan}
+                                            updatePoints={(points) => setPointsOfInterest(points)}
+                                            initialPoints={workOrderDetail.vehicle_status.points_of_interest}
+                                            isEditable={isEditState}
+                                        />
 
                                     </>
                                 )
@@ -1026,16 +1026,22 @@ const InformationWorkOrder = () => {
                                                     />
                                                 }
 
-                                                <div className="div-table-products">
-                                                    {selectedProducts.length > 0 && (
-                                                        <DataTable
-                                                            data={selectedProducts}
-                                                            columns={columnsProducts}
-                                                            highlightRows={false}
-                                                            initialPageSize={4}
-                                                        />
-                                                    )}
-                                                </div>
+                                                {!isModalOpenProducts ? (
+                                                    <div className="div-table-products">
+                                                        {selectedProducts.length > 0 && (
+                                                            <DataTable
+                                                                data={selectedProducts}
+                                                                columns={columnsProducts}
+                                                                highlightRows={false}
+                                                                initialPageSize={4}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <></>
+                                                )}
+
+
                                             </div>
                                         </div>
                                     </>
@@ -1067,16 +1073,21 @@ const InformationWorkOrder = () => {
                                                     />
                                                 }
 
-                                                <div className="div-table-products">
-                                                    {allOperations.length > 0 && (
-                                                        <DataTable
-                                                            data={allOperations}
-                                                            columns={columnsOperations}
-                                                            highlightRows={false}
-                                                            initialPageSize={4}
-                                                        />
-                                                    )}
-                                                </div>
+                                                {!isModalOpenServices ? (
+                                                    <div className="div-table-products">
+                                                        {allOperations.length > 0 && (
+                                                            <DataTable
+                                                                data={allOperations}
+                                                                columns={columnsOperations}
+                                                                highlightRows={false}
+                                                                initialPageSize={4}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <></>
+                                                )}
+
                                             </div>
 
 

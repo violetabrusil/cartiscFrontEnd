@@ -2,11 +2,13 @@ import "../../Car.css";
 import "../../Modal.css";
 import "../../NewClient.css";
 import "../../Clients.css";
+import "../../Loader.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { debounce } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select';
+import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
@@ -47,6 +49,7 @@ const Cars = () => {
     const [clients, setClients] = useState([]);
     const [selectedClientId, setSelectedClientId] = useState(null);
     const [nameClient, setNameClient] = useState('');
+    const [loading, setLoading] = useState(true);
 
     //Varibales para el manejo de los vehículos
     const [vehicles, setVehicles] = useState([]);
@@ -98,6 +101,7 @@ const Cars = () => {
     const [showAddVehicle, setShowAddVehicle] = useState(false);
     const optionsMaintance = ['Cambio de aceite', 'Cambio de motor'];
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [isWorkOrderModalOpen, setIsWorkOrderModalOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -200,7 +204,10 @@ const Cars = () => {
         {
             Header: 'Fecha fin',
             accessor: 'date_finish',
-        },
+            Cell: ({ value }) => {
+                return value === 'NaN/NaN/NaN' ? '-' : value;
+            }
+        },        
         {
             Header: 'Total',
             accessor: 'total',
@@ -219,11 +226,11 @@ const Cars = () => {
             Cell: ({ row }) => {
                 const workOrder = row.original;
                 return (
-                    <button 
+                    <button
                         className="button-eye-car-work-order"
                         onClick={() => handleShowInformationWorkOrderClick(workOrder.id)}
                     >
-                            
+
                         <img src={eyeIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
                         />
                     </button>
@@ -232,6 +239,18 @@ const Cars = () => {
             id: 'edit-product-button'
         },
     ];
+
+    const openWorkOrderModal = () => {
+        setIsWorkOrderModalOpen(true);
+    };
+
+    const closeWorkOrderModal = () => {
+        setIsWorkOrderModalOpen(false);
+    };
+
+    const handleAddWorkOrder = () => {
+        navigate("/workOrders/newWorkOrder")
+    };
 
     function formatDate(isoDate) {
         const date = new Date(isoDate);
@@ -482,6 +501,9 @@ const Cars = () => {
             toast.success('Vehículo registrado', {
                 position: toast.POSITION.TOP_RIGHT
             });
+            setTimeout(() => {
+                openWorkOrderModal();
+            }, 3000);
             setShowButtonAddVehicle(true);
 
             // Restablecer el estado del formulario de agregar auto
@@ -674,6 +696,7 @@ const Cars = () => {
                     });
 
                     setVehicles(formattedVehicles);
+                    setLoading(false);
                     console.log("vehiculos obtenidos", formattedVehicles)
                 } else {
                     console.log("No se encontraron vehículos");
@@ -681,6 +704,11 @@ const Cars = () => {
                 }
 
             } catch (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.error('La solicitud ha superado el tiempo límite.');
+                } else {
+                    console.error('Otro error ocurrió:', error.message);
+                }
                 console.log("Error al obtener los datos del vehículo");
             }
         }
@@ -716,39 +744,49 @@ const Cars = () => {
                         onButtonClick={openFilterModal}
                     />
 
-                    {/*Lista de vehículos */}
-                    <div className="container-list-vehicle ">
-                        {vehicles.map(vehicleData => (
-                            <div key={vehicleData.id} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)}>
-                                <div className="first-result-car">
-                                    <div className="input-plate-container">
-                                        <input
-                                            className="input-plate-vehicle"
-                                            type="text"
-                                            value={vehicleData.plate}
-                                            readOnly />
-                                        <img src={flagIcon} alt="Flag" className="ecuador-icon" />
-                                        <label>ECUADOR</label>
-                                    </div>
-                                </div>
-                                <div className="second-result-car">
-                                    <div className="div-label">
-                                        <label>{vehicleData.client_name}</label>
-                                    </div>
-                                    <div className="div-icon-vehicle">
-                                        <img className="icon-vehicle" src={vehicleData.iconSrc} alt="Icon Vehicle" />
-                                    </div>
-                                </div>
-                                <div className="third-result-car">
-                                    <button className="button-eye-car">
-                                        <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car"
-                                            onClick={(event) => handleCarInformation(vehicleData, event)} />
-                                    </button>
-                                </div>
+                    {loading ? (
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        </div>
+                    ) : (
 
+                        <>
+                            {/*Lista de vehículos */}
+                            <div className="container-list-vehicle ">
+                                {vehicles.map(vehicleData => (
+                                    <div key={vehicleData.id} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)}>
+                                        <div className="first-result-car">
+                                            <div className="input-plate-container">
+                                                <input
+                                                    className="input-plate-vehicle"
+                                                    type="text"
+                                                    value={vehicleData.plate}
+                                                    readOnly />
+                                                <img src={flagIcon} alt="Flag" className="ecuador-icon" />
+                                                <label>ECUADOR</label>
+                                            </div>
+                                        </div>
+                                        <div className="second-result-car">
+                                            <div className="div-label">
+                                                <label>{vehicleData.client_name}</label>
+                                            </div>
+                                            <div className="div-icon-vehicle">
+                                                <img className="icon-vehicle" src={vehicleData.iconSrc} alt="Icon Vehicle" />
+                                            </div>
+                                        </div>
+                                        <div className="third-result-car">
+                                            <button className="button-eye-car">
+                                                <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car"
+                                                    onClick={(event) => handleCarInformation(vehicleData, event)} />
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </>
+
+                    )}
 
                 </div>
 
@@ -1272,6 +1310,28 @@ const Cars = () => {
                         onSearch={handleSearhWorkOrder}
                         onClose={handleCloseModalWorkOrder}
                     />
+                )}
+
+                {isWorkOrderModalOpen && (
+                    <div className="filter-modal-overlay">
+                        <div className="filter-modal">
+                            <h3 style={{ textAlign: "center" }}>Desea generar una nueva orden de trabajo?</h3>
+                            <div className="button-options">
+                                <div className="half">
+                                    <button className="optionNo-button" onClick={closeWorkOrderModal}>
+                                        No
+                                    </button>
+                                </div>
+                                <div className="half">
+                                    <button className="optionYes-button" onClick={handleAddWorkOrder}>
+                                        Si
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 )}
 
             </div>

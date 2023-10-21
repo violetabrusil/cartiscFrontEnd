@@ -3,6 +3,8 @@ import "../../Modal.css"
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
+import PuffLoader from "react-spinners/PuffLoader";
+import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import DataTable from "../../dataTable/DataTable";
@@ -16,8 +18,10 @@ import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
-const emailIcon = process.env.PUBLIC_URL + "/images/icons/emailIcon.png";
+const emailIcon = process.env.PUBLIC_URL + "/images/icons/email-icon.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
+const paymentIcon = process.env.PUBLIC_URL + "/images/icons/payment-icon.png";
+const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
 const PaymentReceipts = () => {
 
@@ -33,10 +37,58 @@ const PaymentReceipts = () => {
     const [selectedReceipt, setSelectedReceipt] = useState(null);
     const [payAll, setPayAll] = useState(false);
     const [amountToPay, setAmountToPay] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [paymentType, setPaymentType] = useState(null);
 
+    const paymentTypeOptions = [
+        { value: 'pending', label: 'Pendiente' },
+        { value: 'cash', label: 'Efectivo' },
+        { value: 'electronic_money', label: 'Transferencia' },
+        { value: 'debit_credit_card', label: 'Tarjeta de crédito' },
+        { value: 'other', label: 'Otro' },
+    ];
 
     const location = useLocation();
     const navigate = useNavigate();
+
+    const formatPlate = (plateInput) => {
+        const regex = /^([A-Z]{3})(\d{3,4})$/;
+
+        if (regex.test(plateInput)) {
+            return plateInput.replace(
+                regex,
+                (match, p1, p2) => {
+                    return p1 + "-" + p2;
+                }
+            );
+        }
+        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
+    };
+
+    const navigateToDetail = (workOrderId) => {
+        navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
+    };
+
+    const selectTypePaymentStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            width: '220px',
+            height: '45px',
+            minHeight: '45px',
+            marginTop: '10px',
+            marginBottom: '10px',
+            border: '1px solid rgb(0 0 0 / 34%)'
+        }),
+        placeholder: (provided, state) => ({
+            ...provided,
+            color: 'rgb(0 0 0 / 34%)',
+            fontWeight: '600',
+        }),
+        menu: (provided, state) => ({
+            ...provided,
+            width: '100%', // puedes ajustar el ancho del menú aquí
+        }),
+    };
 
     const columns = React.useMemo(
         () => [
@@ -45,6 +97,16 @@ const PaymentReceipts = () => {
                 accessor: "work_order.work_order_code",
                 Cell: ({ value }) => <span className="bold-text">{value}</span>,
                 headerClassName: 'bold-text'
+            },
+            {
+                Header: "",
+                accessor: "work_order.id",
+                Cell: ({ value }) => (
+                    <button className="button-eye-workorder-payment" onClick={() => navigateToDetail(value)}>
+                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-payment" />
+                    </button>
+                ),
+                className: "small-row"
             },
             {
                 Header: "Estado",
@@ -63,28 +125,52 @@ const PaymentReceipts = () => {
             },
             { Header: "Tipo de comprobante", accessor: "invoice_type" },
             { Header: "Cliente", accessor: "name" },
-            { Header: "Placa", accessor: "plate" },
-            { Header: "Forma de pago", accessor: "payment_type" },
+            {
+                Header: "Placa",
+                accessor: "plate",
+                Cell: ({ value }) => formatPlate(value)
+            },
+            {
+                Header: "Forma de pago",
+                accessor: "payment_type",
+                Cell: ({ value }) => paymentTypeMaping[value] || value
+            },            
             { Header: "Fecha", accessor: "created_at" },
             {
                 Header: "Subtotal",
                 accessor: "subtotal",
-                Cell: ({ value }) => `$ ${value}` // Agrega un signo de dólar antes del valor
+                Cell: ({ value }) => {
+                    const formattedValue = parseFloat(value).toFixed(2);
+                    return <span>$ {formattedValue}</span>;
+                }
             },
             {
                 Header: "Descuento",
                 accessor: "discount",
-                Cell: ({ value }) => `${value} %`
+                Cell: ({ value }) => `${value}%`
             },
             {
                 Header: "IVA",
                 accessor: "vat",
-                Cell: ({ value }) => `${value} %`
+                Cell: ({ value }) => `${value}%`
             },
             {
                 Header: "Total",
                 accessor: "total",
-                Cell: ({ value }) => <span style={{ color: '#316EA8' }} className="bold-text large-text">$ {value}</span>,
+                Cell: ({ value }) => {
+                    // Asegurarse de que el valor tenga dos decimales
+                    const formattedValue = parseFloat(value).toFixed(2);
+
+                    // Divide el valor en partes entera y decimal
+                    const [wholePart, decimalPart] = formattedValue.split(".");
+
+                    return (
+                        <div style={{ display: 'inline-block', color: '#316EA8', fontWeight: '600' }}>
+                            <span className="whole-part">$ {wholePart}.</span>
+                            <span className="decimal-part">{decimalPart}</span>
+                        </div>
+                    );
+                },
                 headerClassName: 'bold-text large-text'
             },
             {
@@ -94,7 +180,7 @@ const PaymentReceipts = () => {
                     if (payment.total !== payment.paid) {
                         return (
                             <button className="button-payment-receipt" onClick={() => handleOpenPaymentModal(payment)}>
-                                <img src={pdfIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
+                                <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
                             </button>
                         );
                     } else {
@@ -150,6 +236,7 @@ const PaymentReceipts = () => {
 
     const handleConfirm = async (data) => {
 
+        console.log("data recibida para la bsuqeda", data)
         try {
             const response = await apiClient.post('/sales-receipts/search', data);
             console.log(response.data);
@@ -164,11 +251,13 @@ const PaymentReceipts = () => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
                 const translatedPaymentType = paymentTypeMaping[payment.payment_type] || payment.payment_type;
+                const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
                 return {
                     ...payment,
                     created_at: newDateStart,
                     invoice_type: translatedInvoiceType,
-                    payment_type: translatedPaymentType
+                    payment_type: translatedPaymentType,
+                    sales_receipt_status: translatedPaymentStatus
                 };
             })
 
@@ -190,26 +279,28 @@ const PaymentReceipts = () => {
             const transformedPaymentReceipts = response.data.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
-                const translatedPaymentType = paymentTypeMaping[payment.payment_type] || payment.payment_type;
                 const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
 
                 return {
                     ...payment,
                     created_at: newDateStart,
                     invoice_type: translatedInvoiceType,
-                    payment_type: translatedPaymentType,
                     sales_receipt_status: translatedPaymentStatus
                 };
             });
             setPaymentReceipts(transformedPaymentReceipts);
+            setLoading(false);
             console.log("data recibida", response.data)
 
         } catch (error) {
+            if (error.code === 'ECONNABORTED') {
+                console.error('La solicitud ha superado el tiempo límite.');
+            } else {
+                console.error('Otro error ocurrió:', error.message);
+            }
             console.log("Error al obtener los recibos", error)
 
         }
-
-
     };
 
     const downloadPDF = async (paymentId) => {
@@ -286,15 +377,48 @@ const PaymentReceipts = () => {
 
     const handleOpenPaymentModal = (receipt) => {
         setSelectedReceipt(receipt);
+        setPaymentType(receipt.payment_type); 
+        setAmountToPay(0); // o si deseas que esté preconfigurado con algún valor, cámbialo aquí
+        setPayAll(false);
         setPaymentModal(true);
     };
+    
 
     const handleClosePaymentModal = () => {
         setPaymentModal(false);
         setPayAll(false);
         setAmountToPay(0);
+        fetchData();
     };
-    
+
+    const handleChargeReceipt = async () => {
+        try {
+            const id = selectedReceipt.id;
+
+            const response = await apiClient.put(`/sales-receipts/charge/${id}`, null, {
+                params: {
+                    payment_type: paymentType,
+                    paid: amountToPay
+                }
+            });
+
+            handleClosePaymentModal();
+
+            toast.success('Pago procesado con éxito.', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+
+        } catch (error) {
+            console.log("Error al procesar el pago", error)
+
+            toast.error('Error al procesar el pago.', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+
+        }
+
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -306,6 +430,8 @@ const PaymentReceipts = () => {
             navigate('/paymentReceipt', { replace: true }); // Esto reemplaza la entrada actual en el historial.
         }
     }, []);
+
+    console.log(paymentType);
 
     return (
 
@@ -328,14 +454,21 @@ const PaymentReceipts = () => {
                     </button>
                 </div>
 
-
-                <DataTable
-                    data={paymentReceipts}
-                    columns={columns}
-                    highlightRows={true}
-                    selectedRowId={lastAddedReceiptId}
-                    customFontSize={true}
-                />
+                {loading ? (
+                    <div className="loader-container">
+                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                    </div>
+                ) : (
+                    <>
+                        <DataTable
+                            data={paymentReceipts}
+                            columns={columns}
+                            highlightRows={true}
+                            selectedRowId={lastAddedReceiptId}
+                            customFontSize={true}
+                        />
+                    </>
+                )}
 
             </div>
 
@@ -376,24 +509,56 @@ const PaymentReceipts = () => {
                         </div>
 
                         <div className="container-label" style={{ marginTop: '20px' }}>
+
                             <label>Total a pagar:
-                                <span> {selectedReceipt?.total}</span>
+                                <span style={{ marginLeft: '94px' }}>{selectedReceipt?.total ? parseFloat(selectedReceipt.total).toFixed(2) : '0.00'}</span>
                             </label>
 
                             <label>Total pagado:
-                                <span> {selectedReceipt?.paid}</span>
+                                <span style={{ marginLeft: '94px' }} >{selectedReceipt?.paid ? parseFloat(selectedReceipt.paid).toFixed(2) : '0.00'}</span>
                             </label>
 
+                            <label>Pendiente por pagar:
+                                <span>
+                                    {
+                                        selectedReceipt
+                                            ? parseFloat(selectedReceipt.total - (selectedReceipt.paid || 0)).toFixed(2)
+                                            : '0.00'
+                                    }
+                                </span>
+
+                            </label>
+
+                            <div className="flex-container">
+                                <label>Forma de pago:</label>
+                                <Select
+                                    isSearchable={false}
+                                    styles={selectTypePaymentStyles}
+                                    options={paymentTypeOptions}
+                                    onChange={selectedOption => setPaymentType(selectedOption.value)}
+                                    value={paymentTypeOptions.find(option => option.value === paymentType)}
+                                    placeholder="Seleccione"
+                                />
+
+                            </div>
+
                             <div>
-                                <label>Valor a pagar: 
+                                <label>Valor a pagar:
                                     <input
+                                        type="number"
+                                        step="0.01"
+                                        className="paid-input"
                                         value={amountToPay}
                                         onChange={(e) => {
-                                            setAmountToPay(Number(e.target.value));
-                                            if (payAll) {
-                                                setPayAll(false); // Desactivar el checkbox si el usuario cambia el valor manualmente.
+                                            const value = e.target.value;
+                                            if (/^\d*\.?\d{0,2}$/.test(value) || value === "") {
+                                                setAmountToPay(value);
+                                                if (payAll) {
+                                                    setPayAll(false); // Desactivar el checkbox si el usuario cambia el valor manualmente.
+                                                }
                                             }
                                         }}
+
                                     />
                                 </label>
                             </div>
@@ -401,6 +566,7 @@ const PaymentReceipts = () => {
 
                             <div>
                                 <input
+                                    style={{ marginLeft: '5px' }}
                                     type="checkbox"
                                     checked={payAll}
                                     onChange={(e) => {
@@ -411,16 +577,16 @@ const PaymentReceipts = () => {
                                             setAmountToPay(0); // O cualquier valor predeterminado.
                                         }
                                     }}
-                                    
+
                                 />
-                                <label> Pagar todo</label>
+                                <label style={{ marginLeft: '10px' }}> Pagar todo</label>
                             </div>
 
 
                         </div>
 
                         <div className="button-options" style={{ justifyContent: 'center' }}>
-                            <button className="accept-button-modal">Cobrar</button>
+                            <button className="accept-button-modal" onClick={handleChargeReceipt}>Cobrar</button>
                         </div>
 
                     </div>

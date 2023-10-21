@@ -1,6 +1,6 @@
 .menu-lateral {
   height: calc(100% - 80px);
-  max-width: 225px;
+  width: 280px;
   position: absolute;
   z-index: 1;
   top: 80px;
@@ -16,7 +16,7 @@
 .menu-lateral a {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 16px;
   color: #6E757D;
   display: block;
   transition: 0.3s;
@@ -108,12 +108,11 @@
   height: auto;
   position: absolute;
   bottom: 5px;
-  right: 53px;
   transform: rotate(0deg);
   object-fit: contain;
   transition: transform 0.3s;
   margin-top: auto;
-  margin-left: auto;
+  margin-left: 55px;
 }
 
 .menu-lateral.open .imagen-vertical {
@@ -134,7 +133,7 @@
 .menu-lateral .button-menu {
   background: none;
   border: none;
-  margin-left: 32px;
+  margin-left: 66px;
   margin-bottom: 50px;
 }
 
