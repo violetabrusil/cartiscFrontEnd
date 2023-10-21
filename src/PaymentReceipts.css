@@ -196,6 +196,23 @@
     width: 15px;; 
 }
 
+.data-table-container {
+    position: relative; 
+}
+
+.absolute-loader-container {
+    position: absolute; /* Se posiciona respecto al contenedor más cercano con posicionamiento relativo o absoluto */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center; /* Centrar verticalmente */
+    justify-content: center; /* Centrar horizontalmente */
+    background: rgba(255,255,255,0.7); /* Puedes agregar un fondo blanco semi-transparente si lo deseas */
+    z-index: 10; /* Asegurarse de que esté encima de otros contenidos */
+}
+
 @media screen and (max-width: 768px) {
 
     .container-title-payment-receipts {

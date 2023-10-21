@@ -16,14 +16,13 @@ const Welcome = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Verifica si el usuario ya ha visitado la pantalla inicial
-        const hasVisitedBefore = localStorage.getItem("hasVisitedBefore");
-
-        if (hasVisitedBefore) {
+        const storedUser = localStorage.getItem("user");
+        
+        if (storedUser !== null && storedUser !== "null" && storedUser !== "") {
             navigate("/login");
         }
     }, [navigate]);
-
+    
     const handleContinue = () => {
         // Guarda en el localStorage que el usuario ya ha visitado la pantalla inicial
         localStorage.setItem("hasVisitedBefore", "true");
@@ -50,7 +49,7 @@ const Welcome = () => {
 
 
                 <div className="div-next" >
-                    <img src={arrowLeftIcon} alt="Next Icon" className="next-icon" />
+                    <img src={arrowLeftIcon} alt="Next Icon" className="next-icon" onClick={handleContinue} />
                 </div>
 
 

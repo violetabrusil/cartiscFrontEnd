@@ -7,6 +7,7 @@ import apiLogin from '../services/api';
 const logoutIcon = process.env.PUBLIC_URL + "/images/icons/logout1Icon.png";
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const carticsLogo = process.env.PUBLIC_URL + "/images/cartics-white.png";
+const userIcon = process.env.PUBLIC_URL + "/images/user.png";
 
 function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showLogoutButton }) {
 
@@ -23,25 +24,25 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
         };
         localStorage.setItem('expressLoginData', JSON.stringify(expressLoginData));
     };
-    
+
     const handleLogout = async (event) => {
         event.preventDefault();
-    
+
         // Guarda la información del usuario para el login express antes de cerrar sesión.
         saveUserForExpressLogin(user);
-    
+
         try {
             await apiLogin.post('/logout');
-            
+
             // Limpia el usuario del contexto y del localStorage.
             localStorage.removeItem('user');  // Remueve el usuario actual.
-            
+
             navigate("/loginExpress");
         } catch (error) {
             console.log("Error al cerrar sesión", error);
         }
     };
-    
+
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -82,14 +83,18 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
             </div>
 
             <div className="header-right">
-                {showCarticsLogo && <img src={carticsLogo} alt="Cartics Logo" className="cartics-logo" /> }
-                {showPhoto && <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />}
+                {showCarticsLogo && <img src={carticsLogo} alt="Cartics Logo" className="cartics-logo" />}
+                {showPhoto ? (
+                    <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />
+                ) : (
+                    <img src={userIcon} alt="Default User Icon" className="default-user-icon" />
+                )}
                 <div className="profile-text">
                     {showUser && <label className="profile-name">{user.username}</label>}
                     {showRol && <label className="profile-role">{user.translated_user_type}</label>}
                 </div>
                 {showLogoutButton &&
-                    <div style={{marginLeft: "auto"}}>
+                    <div style={{ marginLeft: "auto" }}>
                         <button className="logout-button" onClick={handleLogout}>
                             <img className="logout-icon" src={logoutIcon} alt="Logout" />
                         </button>

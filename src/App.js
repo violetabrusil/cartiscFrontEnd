@@ -49,6 +49,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/changePassword" element={<ChangePassword />} />
             <Route path="/changePIN" element={<ChangePIN />} />
             <Route path="/loginExpress" element={<LoginExpress />} />

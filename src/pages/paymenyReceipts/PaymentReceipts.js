@@ -39,6 +39,8 @@ const PaymentReceipts = () => {
     const [amountToPay, setAmountToPay] = useState(0);
     const [loading, setLoading] = useState(true);
     const [paymentType, setPaymentType] = useState(null);
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
+    const [sendingEmail, setSendingEmail] = useState(false);
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },
@@ -134,7 +136,7 @@ const PaymentReceipts = () => {
                 Header: "Forma de pago",
                 accessor: "payment_type",
                 Cell: ({ value }) => paymentTypeMaping[value] || value
-            },            
+            },
             { Header: "Fecha", accessor: "created_at" },
             {
                 Header: "Subtotal",
@@ -304,7 +306,9 @@ const PaymentReceipts = () => {
     };
 
     const downloadPDF = async (paymentId) => {
+
         try {
+            setDownloadingPdf(true)
             const response = await apiClient.get(`/sales-receipts/generate-pdf/${paymentId}`);
 
             // Crear un enlace virtual en memoria para simular un enlace de descarga
@@ -317,28 +321,52 @@ const PaymentReceipts = () => {
 
             // Limpieza: quitar el enlace cuando haya terminado
             link.parentNode.removeChild(link);
+            if (response.status === 200) {
+                setDownloadingPdf(false);
+                toast.success('Archivo descargado', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            } else {
+                setDownloadingPdf(false);
+                toast.error('Error al descarar el archivo', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
         } catch (error) {
             console.error('Error descargando el archivo', error);
+
+            // Mostrar un toast de error
+            toast.error('Error descargando el archivo');
         }
+        setDownloadingPdf(false);
     };
 
     const sendEmail = async (paymentId) => {
         try {
+            setSendingEmail(true);
+            console.log('sendingEmail state:', sendingEmail);  // Verifica que se establezca correctamente
+
             const response = await apiClient.get(`/sales-receipts/send-email/${paymentId}`);
             if (response.status === 200) {
+                setSendingEmail(false);
                 toast.success('Email enviado', {
                     position: toast.POSITION.TOP_RIGHT
                 });
             } else {
+                setSendingEmail(false);
                 toast.error('Error al enviar el email', {
                     position: toast.POSITION.TOP_RIGHT
                 });
-
             }
-
-
         } catch (error) {
+            setSendingEmail(false);
+            toast.error('Error al enviar el email', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setSendingEmail(false);
             console.error('Error al enviar el email', error);
+        } finally {
+            console.log("entro")
         }
     };
 
@@ -377,12 +405,12 @@ const PaymentReceipts = () => {
 
     const handleOpenPaymentModal = (receipt) => {
         setSelectedReceipt(receipt);
-        setPaymentType(receipt.payment_type); 
+        setPaymentType(receipt.payment_type);
         setAmountToPay(0); // o si deseas que esté preconfigurado con algún valor, cámbialo aquí
         setPayAll(false);
         setPaymentModal(true);
     };
-    
+
 
     const handleClosePaymentModal = () => {
         setPaymentModal(false);
@@ -431,8 +459,6 @@ const PaymentReceipts = () => {
         }
     }, []);
 
-    console.log(paymentType);
-
     return (
 
         <div>
@@ -459,7 +485,19 @@ const PaymentReceipts = () => {
                         <PuffLoader color="#316EA8" loading={loading} size={60} />
                     </div>
                 ) : (
-                    <>
+                    <div className="data-table-container">
+                        {downloadingPdf && (
+                            <div className="absolute-loader-container">
+                                <PuffLoader color="#316EA8" loading={true} size={60} />
+                            </div>
+                        )}
+
+                        {sendingEmail && (
+                            <div className="absolute-loader-container">
+                                <PuffLoader color="#316EA8" loading={true} size={60} />
+                            </div>
+                        )}
+
                         <DataTable
                             data={paymentReceipts}
                             columns={columns}
@@ -467,7 +505,8 @@ const PaymentReceipts = () => {
                             selectedRowId={lastAddedReceiptId}
                             customFontSize={true}
                         />
-                    </>
+                    </div>
+
                 )}
 
             </div>
