@@ -6,8 +6,8 @@ let mainWindow
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
+    width: 1920,
+    height: 1080,
     minWidth: 1024,
     minHeight: 768,
     title: "Cartics",
@@ -28,7 +28,6 @@ function createWindow() {
     mainWindow = null
   })
 
-  mainWindow.webContents.openDevTools();
 }
 app.whenReady().then(createWindow);
 
