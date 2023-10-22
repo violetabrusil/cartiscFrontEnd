@@ -29,7 +29,7 @@ const PaymentReceipts = () => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [isWorkOrderModalOpen, setWorkOrderModalOpen] = useState(false);
     const [workOrderData, setWorkOrderData] = useState(null);
-    const [discount, setDiscount] = useState(1);
+    const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
     const [vat, setVat] = useState(0);
     const [lastAddedReceiptId, setLastAddedReceiptId] = useState(null);
@@ -238,10 +238,8 @@ const PaymentReceipts = () => {
 
     const handleConfirm = async (data) => {
 
-        console.log("data recibida para la bsuqeda", data)
         try {
             const response = await apiClient.post('/sales-receipts/search', data);
-            console.log(response.data);
 
             // Si response.data es null o undefined, cierra el modal y retorna.
             if (!response.data) {
@@ -267,7 +265,9 @@ const PaymentReceipts = () => {
             setModalOpen(false)
 
         } catch (error) {
-            console.log("Ha ocurrido un error", error);
+            toast.error('Ha ocurrido un error', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
@@ -275,9 +275,16 @@ const PaymentReceipts = () => {
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
-
         try {
             const response = await apiClient.get('/sales-receipts/all');
+
+            if (!response.data || response.data.length === 0) {
+                setLoading(false);
+                // Puedes también establecer algún estado aquí para mostrar un mensaje al usuario
+                // setNoData(true);
+                return;
+            }
+
             const transformedPaymentReceipts = response.data.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
@@ -290,18 +297,17 @@ const PaymentReceipts = () => {
                     sales_receipt_status: translatedPaymentStatus
                 };
             });
+
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
-            console.log("data recibida", response.data)
 
         } catch (error) {
+            setLoading(false);
             if (error.code === 'ECONNABORTED') {
                 console.error('La solicitud ha superado el tiempo límite.');
             } else {
                 console.error('Otro error ocurrió:', error.message);
             }
-            console.log("Error al obtener los recibos", error)
-
         }
     };
 
@@ -309,13 +315,12 @@ const PaymentReceipts = () => {
 
         try {
             setDownloadingPdf(true)
-            const response = await apiClient.get(`/sales-receipts/generate-pdf/${paymentId}`);
-
-            // Crear un enlace virtual en memoria para simular un enlace de descarga
+            const response = await apiClient.get(`/sales-receipts/generate-pdf/${paymentId}`, { responseType: 'blob' });
+            console.log("response", response)
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'file.pdf'); // El nombre que quieras para el archivo descargado
+            link.setAttribute('download', 'comprobante_venta.pdf'); // El nombre que quieras para el archivo descargado
             document.body.appendChild(link);
             link.click();
 
@@ -344,8 +349,6 @@ const PaymentReceipts = () => {
     const sendEmail = async (paymentId) => {
         try {
             setSendingEmail(true);
-            console.log('sendingEmail state:', sendingEmail);  // Verifica que se establezca correctamente
-
             const response = await apiClient.get(`/sales-receipts/send-email/${paymentId}`);
             if (response.status === 200) {
                 setSendingEmail(false);
@@ -366,7 +369,7 @@ const PaymentReceipts = () => {
             setSendingEmail(false);
             console.error('Error al enviar el email', error);
         } finally {
-            console.log("entro")
+           
         }
     };
 
@@ -377,13 +380,11 @@ const PaymentReceipts = () => {
                 client_id: workOrderData.clientId,
                 work_order_id: parseInt(workOrderData.id, 10),
                 invoice_type: 'sales_note',
-                subtotal: parseInt(workOrderData.subtotal, 10),
+                subtotal: parseFloat(workOrderData.subtotal).toFixed(2),
                 discount: discount / 100,
                 vat: 0,
                 total: total,
             };
-
-            console.log("datos a enviar", payload)
 
             // Llamada a la API
             const response = await apiClient.post('/sales-receipts/create', payload);
@@ -437,7 +438,6 @@ const PaymentReceipts = () => {
             });
 
         } catch (error) {
-            console.log("Error al procesar el pago", error)
 
             toast.error('Error al procesar el pago.', {
                 position: toast.POSITION.TOP_RIGHT
@@ -498,13 +498,18 @@ const PaymentReceipts = () => {
                             </div>
                         )}
 
-                        <DataTable
-                            data={paymentReceipts}
-                            columns={columns}
-                            highlightRows={true}
-                            selectedRowId={lastAddedReceiptId}
-                            customFontSize={true}
-                        />
+                        {paymentReceipts.length > 0 && (
+                            <DataTable
+                                data={paymentReceipts}
+                                columns={columns}
+                                highlightRows={true}
+                                selectedRowId={lastAddedReceiptId}
+                                customFontSize={true}
+                            />
+
+                        )}
+
+
                     </div>
 
                 )}

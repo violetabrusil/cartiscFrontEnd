@@ -36,7 +36,8 @@ export function ProductForm({
     },
     onSubmit,
     onSuspendSuccess,
-    onBack }) {
+    onBack,
+    onProductChange }) {
 
     const [suppliers, setSuppliers] = useState([]);
     const [selectedOptionSupplier, setSelectedOptionSupplier] = useState("");
@@ -114,10 +115,7 @@ export function ProductForm({
         let endpoint = '/suppliers/all';
         const searchPerSupplierCode = "supplier_code";
         const searchPerName = "name";
-        //Si hay un filtro de búsqueda
-        console.log("selectedoption", selectedOptionSupplier)
-        console.log("console", searchTermSupplier)
-
+    
         if (searchTermSupplier) {
             switch (selectedOptionSupplier) {
                 case 'Código':
@@ -132,7 +130,6 @@ export function ProductForm({
         }
         try {
             const response = await apiClient.get(endpoint);
-            console.log("response", response.data);
             const supplierOptions = response.data.map(supplier => ({
                 value: supplier.id,
                 label: `${supplier.name} (${supplier.supplier_code})`
@@ -141,7 +138,9 @@ export function ProductForm({
             setSuppliers(supplierOptions);
 
         } catch (error) {
-            console.log("Error al obtener los datos de las operaciones");
+            toast.error('Error al obtener los datos de las operaciones.', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
 
     };
@@ -157,7 +156,6 @@ export function ProductForm({
     const handleImageUpload = event => {
         const file = event.target.files[0];
         const reader = new FileReader();
-        console.log("entro")
 
         reader.onloadend = () => {
             let result = reader.result;
@@ -165,7 +163,6 @@ export function ProductForm({
             // Eliminar el prefijo
             const regex = /^data:image\/[a-z]+;base64,/i;
             result = result.replace(regex, "");
-            console.log("imagen", result)
             setImageBase64(result);
 
         }
@@ -185,7 +182,7 @@ export function ProductForm({
         const product = {
             title: titleProduct,
             product_picture: imageBase64,
-            supplier_id: selectedSupplier.value,
+            supplier_id: selectedSupplier.value || 0,
             description,
             category,
             brand,
@@ -207,12 +204,12 @@ export function ProductForm({
     };
 
     const createProduct = async (product) => {
-        console.log("product", product, suppliers)
         try {
             const response = await apiClient.post('/products/create', product)
             toast.success('Producto creado', {
                 position: toast.POSITION.TOP_RIGHT
             });
+            onProductChange();
             return response.data;
         } catch (error) {
             toast.error('Hubo un error al crear el producto', {
@@ -228,6 +225,7 @@ export function ProductForm({
             toast.success('Producto actualizado con éxito!', {
                 position: toast.POSITION.TOP_RIGHT
             });
+            onProductChange();
             return response.data;
         } catch (error) {
             toast.error('Hubo un error al actualizar el producto', {
@@ -260,6 +258,7 @@ export function ProductForm({
                     position: toast.POSITION.TOP_RIGHT
                 });
                 onSuspendSuccess();
+                onProductChange();
                 return response.data;
 
             } else {
@@ -269,7 +268,6 @@ export function ProductForm({
             }
 
         } catch (error) {
-            console.log('Error al suspender el producto', error);
             toast.error('Error al suspender el producto. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -289,7 +287,6 @@ export function ProductForm({
                 value: productData.supplier.id,
                 label: `${productData.supplier.name} (${productData.supplier.supplier_code})`
             });
-            console.log("proveedor edit", selectedSupplier)
             setDescription(productData.description);
             setCategory(productData.category);
             setBrand(productData.brand);
@@ -380,7 +377,6 @@ export function ProductForm({
                                         } else if (selectedOption.value === 'search_by_name') {
                                             setSearchType('Nombre');
                                         } else {
-                                            console.log("proveedor seleccionado", selectedOption)
                                             setSelectedSupplier(selectedOption);
                                         }
                                     }}

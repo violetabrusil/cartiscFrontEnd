@@ -74,14 +74,12 @@ const ChangePIN = () => {
 
         try {
             await apiAdmin.put(`/change-pin/${userId}`, userData);
-            console.log("user enviado", user)
             toast.success('PIN actualizado', {
                 position: toast.POSITION.TOP_RIGHT
             });
             navigate("/login"); // O redirige a donde corresponda después de cambiar el PIN
 
         } catch (error) {
-            console.error("Hubo un error al cambiar el PIN:", error);
             toast.error('Error al cambiar el PIN. Inténtalo de nuevo.', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -189,8 +187,8 @@ const ChangePIN = () => {
 
             </div>
 
-            <div style={{ marginTop: '150px' }} className="content-image" >
-                <img className="blurred-image" src={image} alt='Car' />
+            <div className="content-image-express" >
+                <img className="blurred-image-express" src={image} alt='Car' />
             </div>
 
 

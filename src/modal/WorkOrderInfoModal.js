@@ -3,8 +3,6 @@ import { useEffect } from 'react';
 
 export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, discount, setDiscount, total, setTotal, vat, setVat }) => {
 
-    console.log("workorderdata", workOrderData);
-
     useEffect(() => {
         const subtotal = parseFloat(workOrderData.subtotal);
         const calculatedTotal = subtotal + (subtotal * vat) - (subtotal * (discount / 100));

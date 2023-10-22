@@ -61,10 +61,8 @@ export function SearchProductsModal({ onClose,
 
     // Función para manejar cambios en la cantidad
     const handleQuantityChange = useCallback((sku, newQuantity) => {
-        console.log(`Inicio de handleQuantityChange con SKU: ${sku} y Cantidad: ${newQuantity}`);
-        console.log('allProducts:', allProducts);
+        
         const product = allProducts.find(p => p.sku === sku) || selectedProducts.find(p => p.sku === sku);
-        console.log('Producto encontrado:', product);
 
         if (!product) return;
 
@@ -78,25 +76,21 @@ export function SearchProductsModal({ onClose,
 
         const updatedPrice = originalUnitPrice * newQuantity;
 
-        console.log('Actualizando precios y cantidades...');
 
         setProductPrices(prevPrices => {
-            console.log('Precio anterior:', prevPrices);
             const newPrices = {
                 ...prevPrices,
                 [sku]: updatedPrice
             };
-            console.log('Nuevo precio:', newPrices);
             return newPrices;
         });
 
         setProductQuantities(prevQuantities => {
-            console.log('Cantidad anterior:', prevQuantities);
             const newQuantities = {
                 ...prevQuantities,
                 [sku]: newQuantity
             };
-            console.log('Nueva cantidad:', newQuantities);
+            
             return newQuantities;
         });
     }, [allProducts]); // allProducts es la dependencia
@@ -171,7 +165,6 @@ export function SearchProductsModal({ onClose,
                     const sku = row.original.sku;
                     const currentPrice = productPrices[sku] !== undefined ? productPrices[sku] : value;
                     const handleBlur = (e) => {
-                        console.log("Actualizando precio para code", sku, "con valor", parseFloat(e.target.value).toFixed(2));
                         handleCostChange(sku, parseFloat(e.target.value));
                     };
 
@@ -251,7 +244,6 @@ export function SearchProductsModal({ onClose,
             console.error(`Invalid price for product code: ${productCode}`);
             return;
         }
-        console.log(`Changing cost for operation cod: ${productCode} to ${newCost}`);
         setProductPrices(prevCost => ({
             ...prevCost,
             [productCode]: newCost,
@@ -308,17 +300,15 @@ export function SearchProductsModal({ onClose,
                     sku: product.sku,
                     title: product.title,
                     quantity: parseInt(product.quantity, 10),
-                    price: parseInt(product.price, 10),
+                    price: parseFloat(parseFloat(product.price).toFixed(2))
                 })),
             };
-            console.log("data del producto a enviar", payload)
             await apiClient.post(`work-orders/add-products/${workOrderId}`, payload)
             toast.success('Productos agregados', {
                 position: toast.POSITION.TOP_RIGHT
             });
 
         } catch (error) {
-            console.log("error", error)
             toast.error('Error al guardar los productos', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -341,17 +331,15 @@ export function SearchProductsModal({ onClose,
                     sku: product.sku,
                     title: product.title,
                     quantity: parseInt(product.quantity, 10),
-                    price: parseInt(product.price, 10),
+                    price: parseFloat(parseFloat(product.price).toFixed(2))
                 })),
             };
-            console.log("data del producto  actualizado a enviar", payload)
             await apiClient.put(`work-orders/update-products/${workOrderId}`, payload)
             toast.success('Productos actualizados', {
                 position: toast.POSITION.TOP_RIGHT
             });
 
         } catch (error) {
-            console.log("error", error)
             toast.error('Error al actualizar los productos', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -379,7 +367,6 @@ export function SearchProductsModal({ onClose,
 
 
     const fetchData = async () => {
-        console.log("entro");
 
         //Endpoint por defecto
         let endpoint = '/products/all';
@@ -390,7 +377,6 @@ export function SearchProductsModal({ onClose,
         const searchPerBrand = "brand";
 
         if (searchTerm) {
-            console.log(selectedOption);
             switch (selectedOption.value) {
 
                 case 'sku':
@@ -412,19 +398,18 @@ export function SearchProductsModal({ onClose,
                 default:
                     break;
             }
-            console.log("Using endpoint:", endpoint);
         }
         try {
-            console.log("Endpoint to fetch:", endpoint);
             const response = await apiClient.get(endpoint);
-            console.log("Respuesta del servidor:", response.data);
             const data = response.data.map(product => ({
                 ...product,
                 price: parseFloat(product.price),
             }));
             setAllProducts(data);
         } catch (error) {
-            console.log("Error al obtener los datos de los productos", error);
+            toast.error('Error al obtener los datos de los productos.', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
         }
     };
 
@@ -433,7 +418,6 @@ export function SearchProductsModal({ onClose,
     }, [selectedOption, searchTerm]);
 
     useEffect(() => {
-        console.log("Actualización de selectedProducts:", selectedProducts);
     }, [selectedProducts]);
 
     useEffect(() => {
@@ -446,10 +430,6 @@ export function SearchProductsModal({ onClose,
         setProductPrices(initialPrices);
         setProductQuantities(initialQuantities);
     }, [selectedProducts]);
-
-    useEffect(() => {
-        console.log('Componente renderizado');
-    });
 
     useEffect(() => {
         if (selectedProducts.length > 0) {

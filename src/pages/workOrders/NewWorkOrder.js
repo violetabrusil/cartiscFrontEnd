@@ -42,7 +42,6 @@ const NewWorkOrder = () => {
     ];
 
     const { user } = useContext(AuthContext);
-    console.log("usuario logeado", user)
 
     const [selectedOption, setSelectedOption] = useState('Nombre');
     const [searchTerm, setSearchTerm] = useState('');
@@ -70,7 +69,6 @@ const NewWorkOrder = () => {
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
 
     const handleSearchClientChange = (term, filter) => {
-        console.log(term, filter);
         setSearchTerm(term);
         setSelectedOption(filter);
     };
@@ -90,7 +88,6 @@ const NewWorkOrder = () => {
     };
 
     const handleSelectClick = (option) => {
-        console.log(option);
         setSelectedOption(option);
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
@@ -216,7 +213,6 @@ const NewWorkOrder = () => {
                 ...prev[group].slice(index + 1),
             ],
         }));
-        console.log("seleccion", selections)
     };
 
     //Función para manejar los cambios en los porcentajes
@@ -275,7 +271,9 @@ const NewWorkOrder = () => {
             setClients(response.data);
 
         } catch (error) {
-            console.log("Error al obtener los datos de los clientes", error);
+            toast.error('Error al obtener los datos de los clientes', {
+                position: toast.POSITION.TOP_RIGHT
+            });
 
         }
     };
@@ -293,12 +291,16 @@ const NewWorkOrder = () => {
                 });
                 setVehicles(formattedVehicles);
             } else {
-                console.log("No se encontraron vehículos");
+                toast.warn('No se encontraron vehículos', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
 
             }
 
         } catch (error) {
-            console.log("Error al obtener los vehículos del cliente", error);
+            toast.error('"Error al obtener los vehículos del cliente', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
 
     };
@@ -313,7 +315,6 @@ const NewWorkOrder = () => {
 
     const handleNoUpdate = () => {
         const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
-        console.log("km vehiculo seleccionado", kmVehicleSelected.km)
         setActualKm(kmVehicleSelected.km); // Debes tener una función o método para obtener el kilometraje actual del vehículo
         setIsKmModalOpen(false);
         createNewWorkOrder(); // Luego de actualizar el kilometraje, llama a la función para crear la orden de trabajo
@@ -369,17 +370,11 @@ const NewWorkOrder = () => {
             km: Number(actualKm),
         };
 
-        console.log("datos a enviar", payload)
-        console.log(typeof payload.km, payload.km);
-
         try {
 
             const response = await apiClient.post('/work-orders/create', payload)
-            console.log("response de create", response.data)
             const workOrderId = response.data.id;
-            console.log("estado", response.status)
             if (response.status === 201) {
-                console.log("Dentro del if de éxito")
                 toast.success('Orden de trabajo creada exitósamente', {
                     position: toast.POSITION.TOP_RIGHT
                 });

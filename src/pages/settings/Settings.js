@@ -18,7 +18,6 @@ const Settings = () => {
             <Menu onSettingsClick={() => {
                 setActiveTab(0);
                 setViewMode('general');
-                console.log("Se cambió el viewMode a 'general'")
             }} />
 
             <div className="container-settings">

@@ -34,8 +34,6 @@ const Location = () => {
         setSelectedProductRow(row.original.row);
         setSelectedProductColumn(row.original.column);
         setSelectedRowIndex(index);
-        console.log("row slect", row.original.row)
-        console.log("column select", row.original.column)
     };
 
     const handleEditOrSave = async (event) => {
@@ -66,7 +64,6 @@ const Location = () => {
                 }
 
             } catch (error) {
-                console.log('Error actualizar la ubicación del producto', error);
                 toast.error('Error actualizar la ubicación del producto Por favor, inténtalo de nuevo..', {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -119,7 +116,6 @@ const Location = () => {
         const searchPerBrand = "brand";
 
         if (searchTerm) {
-            console.log(selectedOption);
             switch (selectedOption.value) {
 
                 case 'sku':
@@ -141,12 +137,9 @@ const Location = () => {
                 default:
                     break;
             }
-            console.log("Using endpoint:", endpoint);
         }
         try {
-            console.log("Endpoint to fetch:", endpoint);
             const response = await apiClient.get(endpoint);
-            console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
             if (error.code === 'ECONNABORTED') {
@@ -154,7 +147,6 @@ const Location = () => {
             } else {
                 console.error('Otro error ocurrió:', error.message);
             }
-            console.log("Error al obtener los datos de los servicios");
         }
         setLoading(false);
     };

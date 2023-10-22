@@ -178,15 +178,13 @@
 
 .container-button-save-product {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
     box-sizing: border-box;
-    margin-right: 20px;
-    position: fixed; /* Fija el contenedor al viewport */
-    bottom: 0; /* Coloca el contenedor en la parte inferior */
-    left: 0; /* Alineación izquierda */
-    right: 0; /* Alineación derecha */
-    padding: 10px; /* Espacio alrededor del contenedor, opcional */
+    position: fixed;  /* Esto hace que el elemento esté fijo en su posición */
+    bottom: 0;        /* Alinea el elemento en la parte inferior de la página */
+    right: -155px;       /* Alinea el elemento a la izquierda de la página con un pequeño margen */
+    padding: 10px;
+    width: 20%;
 }
 
 .custom-select-control-supplier {

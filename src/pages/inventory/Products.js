@@ -1,11 +1,11 @@
 import "../../Products.css";
 import React, { useEffect, useState, useCallback } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
+import { ToastContainer, toast } from "react-toastify";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { ProductForm } from "./ProductForm";
-import { ToastContainer } from "react-toastify";
 
 const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -123,7 +123,6 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     };
 
     const handleEditProducts = (event, product) => {
-        console.log("producto enviado", product)
         if (event && event.stopPropagation) {
             event.stopPropagation();
         }
@@ -157,7 +156,6 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     //por número de serie, categoría o título
     const fetchData = async () => {
         setLoading(true);
-        console.log("entro");
 
         //Endpoint por defecto
         let endpoint = '/products/all';
@@ -168,7 +166,6 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
         const searchPerBrand = "brand";
 
         if (searchTerm) {
-            console.log(selectedOption);
             switch (selectedOption.value) {
 
                 case 'sku':
@@ -190,20 +187,20 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                 default:
                     break;
             }
-            console.log("Using endpoint:", endpoint);
         }
         try {
-            console.log("Endpoint to fetch:", endpoint);
             const response = await apiClient.get(endpoint);
-            console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
             if (error.code === 'ECONNABORTED') {
-                console.error('La solicitud ha superado el tiempo límite.');
+                toast.error('La solicitud ha superado el tiempo límite.', {
+                    position: toast.POSITION.TOP_RIGHT,
+                });
             } else {
-                console.error('Otro error ocurrió:', error.message);
+                toast.error('Otro error ocurrió.', {
+                    position: toast.POSITION.TOP_RIGHT,
+                });
             }
-            console.log("Error al obtener los datos de los productos", error);
         }
         setLoading(false);
     };
@@ -241,11 +238,11 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
             )}
 
             {viewMode === 'add' && (
-                <ProductForm mode="add" onSubmit={handleNewProduct} onBack={() => setViewMode('general')}  />
+                <ProductForm mode="add" onSubmit={handleNewProduct} onBack={() => setViewMode('general')} onProductChange={fetchData}   />
             )}
 
             {viewMode === 'edit' && selectedProduct && (
-                <ProductForm mode="edit" productData={selectedProduct} onSubmit={handleUpdateProduct} onSuspendSuccess={handleSuspendProduct} onBack={() => setViewMode('general')}  />
+                <ProductForm mode="edit" productData={selectedProduct} onSubmit={handleUpdateProduct} onSuspendSuccess={handleSuspendProduct} onBack={() => setViewMode('general')} onProductChange={fetchData} />
             )}
 
         </div>

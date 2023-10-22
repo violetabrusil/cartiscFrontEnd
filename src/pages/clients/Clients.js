@@ -114,7 +114,6 @@ const Clients = () => {
     const [refreshClients, setRefreshClients] = useState(false);
 
     const handleSearchClientChange = (term, filter) => {
-        console.log(term, filter);
         setSearchTerm(term);
         setSelectedOption(filter);
     };
@@ -134,7 +133,6 @@ const Clients = () => {
     };
 
     const handleSelectClick = (option) => {
-        console.log(option);
         setSelectedOption(option);
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
@@ -165,9 +163,7 @@ const Clients = () => {
         const clientData = clients.find(client => client.client.id === clientId);
         event.stopPropagation();
         fetchVehicleInfoByClientId(clientId);
-        console.log("id client", clientId)
         setSelectedClientData(clientData);
-        console.log(clientData)
         setShowClientInformation(false);
         setShowClientCarInformation(true);
         setShowTitle(true);
@@ -217,7 +213,6 @@ const Clients = () => {
             resetForm();
 
         } catch (error) {
-            console.log("error", error)
             toast.error('Error al guardar un vehiculo', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -314,7 +309,6 @@ const Clients = () => {
             }
 
         } catch (error) {
-            console.log('Error al suspender al cliente', error);
             toast.error('Error al suspender al cliente. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -356,8 +350,19 @@ const Clients = () => {
             }
 
         } catch (error) {
-            console.log('Error al actualizar la información del cliente', error);
             toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            // Extrae todos los mensajes de error del objeto de respuesta
+            let mensajesError = [];
+            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
+                mensajesError = error.response.data.errors.map(err => err.message);
+            }
+
+            // Une todos los mensajes en uno solo
+            const mensajeFinal = mensajesError.join(" / ");
+
+            toast.error(mensajeFinal || "Hubo un error desconocido", {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
@@ -367,7 +372,6 @@ const Clients = () => {
     const fetchVehicleInfoByClientId = async (clientId) => {
         try {
             const response = await apiClient.get(`/vehicles/active/${clientId}`);
-            console.log("data vehiculo", response.data)
             if (response.data && response.data.length > 0) {
                 const formattedVehicles = response.data.map(vehicle => {
                     if (vehicle.plate) {
@@ -378,7 +382,6 @@ const Clients = () => {
 
                 setClientVehicles(formattedVehicles);
             } else {
-                console.log("No se encontraron vehículos para este cliente.");
                 setClientVehicles([]); // O lo que desees hacer si no hay vehículos
             }
         } catch (error) {
@@ -391,7 +394,6 @@ const Clients = () => {
         //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertVehicleSuspend(false);
-        console.log(vehicleData)
 
         try {
 
@@ -411,8 +413,20 @@ const Clients = () => {
             }
 
         } catch (error) {
-            console.log('Error al suspender al vehículo', error);
             toast.error('Error al suspender al vehículo. Por favor, inténtalo de nuevo..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+
+            // Extrae todos los mensajes de error del objeto de respuesta
+            let mensajesError = [];
+            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
+                mensajesError = error.response.data.errors.map(err => err.message);
+            }
+
+            // Une todos los mensajes en uno solo
+            const mensajeFinal = mensajesError.join(" / ");
+
+            toast.error(mensajeFinal || "Hubo un error desconocido", {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
@@ -458,7 +472,6 @@ const Clients = () => {
             try {
                 const response = await apiClient.get(endpoint);
                 setClients(response.data);
-                console.log("clientes obtenidos", response.data)
                 setLoading(false);
 
             } catch (error) {
@@ -467,7 +480,6 @@ const Clients = () => {
                 } else {
                     console.error('Otro error ocurrió:', error.message);
                 }
-                console.log("Error al obtener los datos de los clientes", error);
 
             }
         }

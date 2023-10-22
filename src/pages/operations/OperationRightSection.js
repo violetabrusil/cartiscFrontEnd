@@ -9,8 +9,6 @@ import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
 const OperationRightSection = ({ localOperations, selectedOperation, onOperationChange, goBack }) => {
 
-    console.log("Operación seleccionada en 'OperationRightSection':", selectedOperation);
-
     const [title, setTitleOperation] = useState('');
     const [cost, setCostOperation] = useState('');
     const [isEditing, setIsEditing] = useState(false);
@@ -32,7 +30,6 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
                 position: toast.POSITION.TOP_RIGHT
             });
         } catch (error) {
-            console.log("error", error.response.data);
 
             // Extrae todos los mensajes de error del objeto de respuesta
             let mensajesError = [];
@@ -62,7 +59,6 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
             });
 
         } catch (error) {
-            console.log("error", error)
             toast.error('Error al actualizar la operación', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -99,7 +95,6 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
             }
 
         } catch (error) {
-            console.log('Error al suspender la operación', error);
             toast.error('Error al suspender la operación. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });

@@ -15,6 +15,15 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    let imageToDisplay;
+    if (showPhoto) {
+        if (user && user.profile_picture) {
+            imageToDisplay = <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />;
+        } else {
+            imageToDisplay = <img src={userIcon} alt="Default User Icon" className="profile-image" />;
+        }
+    }    
+
     const saveUserForExpressLogin = (user) => {
         const expressLoginData = {
             name: user.name,
@@ -39,7 +48,6 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
 
             navigate("/loginExpress");
         } catch (error) {
-            console.log("Error al cerrar sesión", error);
         }
     };
 
@@ -84,11 +92,7 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
 
             <div className="header-right">
                 {showCarticsLogo && <img src={carticsLogo} alt="Cartics Logo" className="cartics-logo" />}
-                {showPhoto ? (
-                    <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />
-                ) : (
-                    <img src={userIcon} alt="Default User Icon" className="default-user-icon" />
-                )}
+                {imageToDisplay}
                 <div className="profile-text">
                     {showUser && <label className="profile-name">{user.username}</label>}
                     {showRol && <label className="profile-role">{user.translated_user_type}</label>}

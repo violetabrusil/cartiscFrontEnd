@@ -157,7 +157,6 @@ const Cars = () => {
     };
 
     const handleSearchCarChange = (term, filter) => {
-        console.log(term, filter);
         setSearchTerm(term);
         setSelectedOption(filter);
     };
@@ -179,7 +178,6 @@ const Cars = () => {
     const handleSelectClick = (option) => {
         // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-        console.log(option);
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
@@ -287,12 +285,12 @@ const Cars = () => {
             });
 
             setWorkOrders(transformedWorkOrders);
-            console.log("respuesta servidor", transformedWorkOrders);
 
 
         } catch (error) {
-            console.log("error", error)
-
+            toast.error('Hubo un error al obtener el historial', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
 
     };
@@ -301,9 +299,7 @@ const Cars = () => {
         event.stopPropagation();
         // Guarda el ID del vehículo en el estado para usarlo después
         setSelectedVehicleId(vehicleId);
-        console.log("id vehicle", vehicleId)
         const vehiclePlate = vehicles.find(vehicle => vehicle.id === vehicleId);
-        console.log("datos vehiculo", vehiclePlate.plate)
         setSelectedPlateVehicle(vehiclePlate.plate);
         setShowCarHistory(true);
         setShowCarInformation(false);
@@ -322,7 +318,7 @@ const Cars = () => {
     };
 
     const handleSearhWorkOrder = async (searchData) => {
-        console.log("datos que llegan", searchData);
+    
         const plate = selectedPlateVehicle.replace(/-/g, "");
         // Transformar las claves del objeto searchData
         const transformedSearchData = {
@@ -336,12 +332,10 @@ const Cars = () => {
             vehicle_plate: plate
         };
 
-        console.log("data tranformada", transformedSearchData)
-
         try {
-            console.log("data por enviar", transformedSearchData)
+           
             const response = await apiClient.post('/work-orders/search', transformedSearchData);
-            console.log("respuesta de la API", response.data);
+          
             const transformedWorkOrders = response.data.map(workOrder => {
                 const newDateStart = formatDate(workOrder.date_start);
                 const newDateFinish = formatDate(workOrder.date_finish);
@@ -355,11 +349,12 @@ const Cars = () => {
             });
 
             setWorkOrders(transformedWorkOrders);
-            console.log("workorders search", transformedWorkOrders);
             handleCloseModalWorkOrder();
 
         } catch (error) {
-            console.error("Hubo un error al realizar la búsqueda:", error);
+            toast.error('Hubo un error al realizar la búsqueda.', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
         }
     };
 
@@ -510,7 +505,6 @@ const Cars = () => {
             resetForm();
 
         } catch (error) {
-            console.log("error", error)
             toast.error('Error al guardar un vehiculo', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -523,7 +517,6 @@ const Cars = () => {
             let endpoint = '';
             if (activeTab === 'cédula') {
                 endpoint = `/clients/search-by-cedula/${searchClienTerm}`;
-                console.log("Searching with endpoint:", endpoint);
             } else {
                 endpoint = `/clients/search-by-name/${searchClienTerm}`;
             }
@@ -539,9 +532,13 @@ const Cars = () => {
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    console.log('Previous request cancelled', error.message);
+                    toast.error('Previous request cancelled.', {
+                        position: toast.POSITION.TOP_RIGHT,
+                    });
                 } else {
-                    console.error("Error al buscar:", error);
+                    toast.error('Error al buscar.', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
                 }
             }
         }, 500),
@@ -587,7 +584,6 @@ const Cars = () => {
             }
 
         } catch (error) {
-            console.log('Error al actualizar la información del cliente', error);
             toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -622,7 +618,6 @@ const Cars = () => {
             }
 
         } catch (error) {
-            console.log('Error al suspender al vehículo', error);
             toast.error('Error al suspender al vehículo. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -637,7 +632,6 @@ const Cars = () => {
     };
 
     const handleShowInformationWorkOrderClick = (workOrderId) => {
-        console.log("codigo orden de trabajo", workOrderId)
         navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
     };
 
@@ -646,7 +640,6 @@ const Cars = () => {
         // Al montar el componente
         isMounted.current = true;
 
-        console.log("useEffect triggered with:", searchClienTerm);
         if (searchClienTerm) {
             handleSearchClientWithDebounce();
         } else {
@@ -697,10 +690,8 @@ const Cars = () => {
 
                     setVehicles(formattedVehicles);
                     setLoading(false);
-                    console.log("vehiculos obtenidos", formattedVehicles)
                 } else {
-                    console.log("No se encontraron vehículos");
-
+                    setLoading(false);
                 }
 
             } catch (error) {
@@ -709,7 +700,6 @@ const Cars = () => {
                 } else {
                     console.error('Otro error ocurrió:', error.message);
                 }
-                console.log("Error al obtener los datos del vehículo");
             }
         }
         fetchData();
@@ -721,7 +711,6 @@ const Cars = () => {
             setPlateCar(selectedVehicle.plate);
             setYear(selectedVehicle.year);
             setCategory(selectedVehicle.category);
-            console.log("categoyr", (selectedVehicle.category))
             setKm(selectedVehicle.km);
             setBrand(selectedVehicle.brand);
             setModel(selectedVehicle.model);

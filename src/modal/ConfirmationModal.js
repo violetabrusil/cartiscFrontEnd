@@ -5,8 +5,6 @@ const quesionIcon = process.env.PUBLIC_URL + "/images/icons/question-icon.png"
 
 export const ConfirmationModal = ({ isOpen, title, message, onConfirm, onCancel, showNotes }) => {
 
-    console.log('Valor de showNotes:', showNotes);
-
     const [notes, setNotes] = useState('');
 
     if (!isOpen) return null;

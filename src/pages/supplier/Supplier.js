@@ -50,7 +50,6 @@ const Suppliers = () => {
     };
 
     const handleSearchSupplierChange = (term, filter) => {
-        console.log(term, filter);
         setSearchTerm(term);
         setSelectedOption(filter);
     };
@@ -70,7 +69,6 @@ const Suppliers = () => {
     };
 
     const handleSelectClick = (option) => {
-        console.log(option);
         setSelectedOption(option);
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
@@ -86,7 +84,6 @@ const Suppliers = () => {
 
     const handleSupplierInformation = (supplierId, event) => {
         event.stopPropagation();
-        console.log("id supplier", supplierId)
         const supplier = suppliers.find(supplier => supplier.id === supplierId);
         setSelectedSupplier(supplier);
         setName(supplier.name);
@@ -140,7 +137,6 @@ const Suppliers = () => {
             }
 
         } catch (error) {
-            console.log('Error al suspender al proveedor', error);
             toast.error('Error al suspender al proveedor. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -167,14 +163,17 @@ const Suppliers = () => {
                 setShowButtonAddSupplier(true);
 
             } catch (error) {
-                console.log("error", error)
-                toast.error('Error al guardar el proveedor', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                if (error.response && error.response.status === 400 && error.response.data.errors) {
+                    // Muestra los errores en toasts
+                    error.response.data.errors.forEach(err => {
+                        toast.error(`${err.field}: ${err.message}`, {
+                            position: toast.POSITION.TOP_RIGHT
+                        });
+                    });
+                }
             }
         } else {
             try {
-                console.log("datos", name, phone, contact_details, selectedSupplier.id)
                 const response = await apiClient.put(`/suppliers/update/${selectedSupplier.id}`, { name, phone, contact_details });
                 setSuppliers(response.data);
                 toast.success('Proveedor actualizado', {
@@ -185,7 +184,6 @@ const Suppliers = () => {
                 setShowButtonAddSupplier(true);
 
             } catch (error) {
-                console.log("error", error)
                 toast.error('Error al actualizar el proveedor', {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -216,8 +214,6 @@ const Suppliers = () => {
             const searchPerSupplierCode = "supplier_code";
             const searchPerName = "name";
             //Si hay un filtro de búsqueda
-            console.log("selectedoption", selectedOption)
-            console.log("console", searchTerm)
 
             if (searchTerm) {
                 switch (selectedOption) {
@@ -233,7 +229,6 @@ const Suppliers = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
-                console.log("response", response.data);
                 setSuppliers(response.data);
                 setLoading(false);
 
@@ -243,7 +238,6 @@ const Suppliers = () => {
                 } else {
                     console.error('Otro error ocurrió:', error.message);
                 }
-                console.log("Error al obtener los datos de las operaciones");
             }
         }
         fetchData();

@@ -76,7 +76,6 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
         setSelectedUserId(row.original.unumber);
         setUsername(row.original.username);
         setSelectedRow(index);
-        console.log("Selected User ID:", row.original.unumber, "Selected Username:", row.original.username, "Selected Row:", index);
     };
 
 
@@ -93,7 +92,6 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
         const searchPerUserName = "username";
 
         if (searchTerm) {
-            console.log(selectedOption);
             switch (selectedOption.value) {
 
                 case 'unumber':
@@ -106,15 +104,15 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
                 default:
                     break;
             }
-            console.log("Using endpoint:", endpoint);
         }
         try {
-            console.log("Endpoint to fetch:", endpoint);
             const response = await apiAdmin.get(endpoint);
-            console.log("datos user", response.data)
             setallUsers(response.data);
         } catch (error) {
-            console.log("Error al obtener los datos de los usuarios", error);
+            toast.error('Error al obtener los datos de los usuarios.', {
+                position: toast.POSITION.TOP_RIGHT,
+                containerId: "modal-toast-container"
+            });
         }
     };
 
@@ -166,7 +164,6 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
     }, [selectedOption, searchTerm]);
 
     useEffect(() => {
-        console.log("Username:", username, "Selected Row:", selectedRow);
     }, [username, selectedRow]);
 
     return (

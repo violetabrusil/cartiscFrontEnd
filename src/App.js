@@ -29,7 +29,6 @@ import { AuthContext } from './contexts/AuthContext';
 import InformationWorkOrder from './pages/workOrders/InformationWorkOrder';
 import ChangePassword from './pages/welcome/changePassword';
 import ChangePIN from './pages/welcome/changePIN';
-import Welcome from './pages/welcome/Welcome';
 import ClientProvider from './provider/ClientProvider';
 
 function App() {
@@ -49,7 +48,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/welcome" element={<Welcome />} />
             <Route path="/changePassword" element={<ChangePassword />} />
             <Route path="/changePIN" element={<ChangePIN />} />
             <Route path="/loginExpress" element={<LoginExpress />} />

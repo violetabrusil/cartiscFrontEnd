@@ -96,7 +96,6 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                         onClick={() => {
                             if (option.path === "/inventory") {
                                 if (onInventoryClick) onInventoryClick();
-                                console.log("Icono de Inventario presionado");
                             } else {
                                 if (resetFunction) resetFunction();
                             }

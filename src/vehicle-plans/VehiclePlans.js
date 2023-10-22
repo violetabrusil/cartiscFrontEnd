@@ -29,8 +29,6 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
         if (updatePoints) {
             updatePoints([...points, pointWithSide]);
         }
-        console.log("los puntos 1", pointWithSide);
-        console.log("los puntos", points);
     };
 
     const handleDragEnd = (index) => (event) => {

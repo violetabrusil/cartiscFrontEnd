@@ -30,11 +30,25 @@ function Footer() {
     marginTop: contentHeight > window.innerHeight ? "0" : window.innerHeight - contentHeight + "px",
   };
 
+  const legendStyle = {
+    position: 'absolute',
+    textAlign: 'center',
+    fontSize: '13px',
+    bottom: '10px',
+    right: '10px',
+    color: 'white',
+    zIndex: 1000 
+  };
+
   return (
     <>
-      <div id="content-container">
+      <div style={{ position: 'relative' }} id="content-container">
         {/* Aquí va el contenido de tu página */}
       </div>
+      <div style={legendStyle}>
+        Creaciones Tecnológicas Sierra. Version 1.3.50
+      </div>
+
       <footer style={styleFooter}></footer>
     </>
   );

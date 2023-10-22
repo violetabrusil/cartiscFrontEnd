@@ -93,30 +93,32 @@ const NewClient = () => {
     const handleSaveClick = async (event) => {
         // Para evitar que el formulario recargue la página
         event.preventDefault();
-
+    
         try {
             const response = await apiClient.post('/clients/register', { cedula, name, address, phone, email });
-            setShowModal(true);
-            setModalType('success');
+            
+            toast.success('Cliente registrado', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setTimeout(() => {
+                setShowModal(true);
+                setModalType('success');
+            }, 3000);
             setUserData(response.data);
             setSelectedClient(response.data);
-
+    
         } catch (error) {
-            console.log("Error al guardar un cliente", error)
 
-            if (error.response) {
-                //Lista de códigos de estado del servidor en caso de error
-                const errorStatusCode = [500, 404, 403, 401]
-
-                if (errorStatusCode.includes(error.response.status)) {
-                    setShowModal(true);
-                    setModalType('error');
-                }
+            if (error.response && error.response.status === 400 && error.response.data.errors) {
+                // Muestra los errores en toasts
+                error.response.data.errors.forEach(err => {
+                    toast.error(`${err.field}: ${err.message}`, {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                });
             }
         }
-
-        // Lógica para guardar los datos del cliente
-    };
+    };    
 
     const handleYes = () => {
         setShowModal(false);
@@ -124,8 +126,8 @@ const NewClient = () => {
     };
 
     const handleNo = () => {
-        navigate("/clients");
         setShowModal(false);
+        navigate("/clients");
     };
 
     const handleReturn = () => {
@@ -153,7 +155,6 @@ const NewClient = () => {
             }, 3000);
 
         } catch (error) {
-            console.log("error", error)
             toast.error('Error al guardar un vehiculo', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -182,6 +183,7 @@ const NewClient = () => {
 
     const closeWorkOrderModal = () => {
         setIsWorkOrderModalOpen(false);
+        navigate("/clients")
     };
 
     const openAlertModal = () => {
@@ -230,6 +232,8 @@ const NewClient = () => {
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
+
+            <ToastContainer />
 
             <div className="containerNewClient">
                 <div className="left-section-new-client">

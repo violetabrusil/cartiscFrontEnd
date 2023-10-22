@@ -2,6 +2,7 @@ import '../App.css';
 import '../Form.css';
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from '../contexts/AuthContext';
 import apiLogin from '../services/api';
 import Footer from "../footer/Footer";
@@ -11,6 +12,7 @@ const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png";
 const deletIconNumber = process.env.PUBLIC_URL + "/images/icons/deleteNumberIcon.png";
 const pinIcon = process.env.PUBLIC_URL + "/images/icons/pin.png";
+const userIcon = process.env.PUBLIC_URL + "/images/user.png";
 
 const LoginExpress = () => {
 
@@ -46,7 +48,14 @@ const LoginExpress = () => {
                 navigate("/home");
             }
         } catch (error) {
-            console.log("Error en el inicio de sesión", error)
+            if (error.response && error.response.status === 400 && error.response.data.errors) {
+                // Muestra los errores en toasts
+                error.response.data.errors.forEach(err => {
+                    toast.error(`${err.field}: ${err.message}`, {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                });
+            }
         }
     };
 
@@ -65,6 +74,8 @@ const LoginExpress = () => {
 
             <Header showCarticsLogo={true}></Header>
 
+            <ToastContainer />
+
             <div className="content-container">
                 <img src={logo} alt="Logo" className="logo" />
             </div>
@@ -82,8 +93,13 @@ const LoginExpress = () => {
                         </div>
 
                         <div className="profile-container">
-                            <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-pic" />
+                            <img
+                                src={user && user.profile_picture ? `data:image/jpeg;base64,${user.profile_picture}` : userIcon}
+                                alt="Profile"
+                                className="profile-pic"
+                            />
                         </div>
+
                     </div>
 
                 </div>

@@ -313,11 +313,9 @@ const InformationWorkOrder = () => {
                 });
 
                 toast.success("El cambio de estado de la orden de trabajo es válido");
-                console.log("datos de la orden con el estado actualizado", response.data);
 
                 if (newStatus === 'completed') {
                     getWorkOrderDetailById();
-                    console.log("workOrderDetail.total", workOrderDetail);
                     navigate('/paymentReceipt', {
                         state: {
                             fromWorkOrder: true,
@@ -326,7 +324,7 @@ const InformationWorkOrder = () => {
                                 workOrderCode: workOrderDetail.work_order_code,
                                 clientName: workOrderDetail.client.name,
                                 plate: workOrderDetail.vehicle.plate,
-                                subtotal: totalValue,
+                                subtotal: parseFloat(totalValue).toFixed(2),
                                 clientId: workOrderDetail.client.id
                             }
                         }
@@ -371,7 +369,6 @@ const InformationWorkOrder = () => {
             }
 
             setWorkOrderDetail(response.data);
-            console.log("datos de la orden de trabajo", response.data)
             const selectionFromApi = transformVehicleStatusToSelections(response.data.vehicle_status);
             setSelections(selectionFromApi);
             setFuelLevel(response.data.vehicle_status.fuel_level);
@@ -385,7 +382,6 @@ const InformationWorkOrder = () => {
             } else {
                 console.error('work_order_services is not an array:', response.data.work_order_services);
             }
-            console.log("operaciones de servicios", response.data.work_order_services.operations)
             const receivedSymptoms = response.data.vehicle_status.presented_symptoms;
             if (typeof receivedSymptoms === 'string') {
                 const symptomsArray = receivedSymptoms.split(',').map(symptom => symptom.trim()).filter(Boolean);
@@ -393,12 +389,12 @@ const InformationWorkOrder = () => {
             } else {
                 console.error('Unexpected type for presented_symptoms:', typeof receivedSymptoms);
             }
-            console.log("detalle de la orden de trabajo", response.data);
             setLoading(false);
 
         } catch (error) {
-            console.log('Error al obtener el detalle de la orden de trabajo', error)
-            setLoading(false);
+            toast.error('Error al obtener el detalle de la orden de trabajo', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
@@ -497,7 +493,6 @@ const InformationWorkOrder = () => {
     };
 
     const handleServiceOperationsUpdated = (serviceOps) => {
-        console.log("Actualizando servicesWithOperations en el componente padre:", serviceOps);
         setServicesWithOperations(serviceOps);
     };
 
@@ -558,8 +553,6 @@ const InformationWorkOrder = () => {
             comments: comments,
             vehicle_status: vehicleStatus,
         };
-
-        console.log("datos a enviar", payload);
 
         try {
 
@@ -636,20 +629,15 @@ const InformationWorkOrder = () => {
             setSelectedServicesList(workOrderServices);
 
         }
-        console.log("servicios", workOrderServices)
     }, [workOrderServices]);
 
     useEffect(() => {
-        console.log("selectedServicesList ha cambiado en el componente padre:", selectedServicesList);
-        // Si necesitas realizar alguna lógica adicional cuando cambia selectedServicesList, hazlo aquí
     }, [selectedServicesList]);
 
     useEffect(() => {
-        console.log("operationServiceCosts en el componente padre:", operationServiceCosts);
     }, [operationServiceCosts]);
 
     useEffect(() => {
-        console.log("servicios de operaciones en el componente padre:", servicesWithOperations);
     }, [servicesWithOperations]);
 
     useEffect(() => {
@@ -663,8 +651,6 @@ const InformationWorkOrder = () => {
         const totalProductsValue = calculateTotal(selectedProducts, 'price');
         const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
         const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
-        
-        console.log("valor de servicios", totalServicesValue )
 
         const total = totalProductsValue + totalOperationsValue + totalServicesValue;
 

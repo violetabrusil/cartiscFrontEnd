@@ -88,7 +88,7 @@ const Login = () => {
     return (
 
         <div className="page-container">
-            <Header showCarticsLogo={true}></Header>
+            <Header showCarticsLogo={true} showPhoto={false}></Header>
             <ToastContainer />
 
             <div className="content-container">

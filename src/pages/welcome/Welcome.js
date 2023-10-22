@@ -12,6 +12,7 @@ const image = process.env.PUBLIC_URL + "/images/car.png"
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const Welcome = () => {
+    /*
 
     const navigate = useNavigate();
 
@@ -64,7 +65,7 @@ const Welcome = () => {
         </div>
 
 
-    )
+    )*/
 }
 
 export default Welcome;

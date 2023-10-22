@@ -83,7 +83,6 @@ const SearchServicesOperationsModal = ({
             console.error(`Invalid price for operation code: ${operationCode}`);
             return;
         }
-        console.log(`Changing cost for operation cod: ${operationCode} to ${newCost}`);
         setOperationCost(prevCost => ({
             ...prevCost,
             [operationCode]: newCost,
@@ -133,7 +132,6 @@ const SearchServicesOperationsModal = ({
                     const operation_code = row.original.operation_code;
                     const currentCost = operationCost[operation_code] !== undefined ? operationCost[operation_code] : value;
                     const handleBlur = (e) => {
-                        console.log("Actualizando precio para code", operation_code, "con valor", parseFloat(e.target.value).toFixed(2));
                         handleCostChange(operation_code, parseFloat(e.target.value));
                     }
 
@@ -201,7 +199,6 @@ const SearchServicesOperationsModal = ({
                     const operation_code = row.original.operation_code;
                     const currentCost = operationServiceCost[operation_code] !== undefined ? operationServiceCost[operation_code] : value;
                     const handleBlur = (e) => {
-                        console.log("Actualizando precio para code", operation_code, "con valor", parseFloat(e.target.value).toFixed(2));
                         handleCostChange(operation_code, parseFloat(e.target.value));
 
                         onOperationServiceCostUpdated({
@@ -330,9 +327,6 @@ const SearchServicesOperationsModal = ({
             const response = await apiClient.get(`/services/${service.id}`);
             if (response.data && response.data.operations && response.data.operations.length > 0) {
 
-                console.log("Operaciones en el servicio que se está intentando agregar:", response.data.operations);
-                console.log("Operaciones actualmente seleccionadas:", selectedOperationsRef.current);
-
                 const operationAlreadyAdded = response.data.operations.some(op => operationExistsInAddedOperations(op));
 
                 const operationInOtherServices = response.data.operations.some(op =>
@@ -361,39 +355,35 @@ const SearchServicesOperationsModal = ({
                     serviceId: service.id,
                     serviceTitle: service.service_title
                 }));
-                console.log("Nuevas operaciones agregadas:", newOperations);
                 setServiceOperations(prevOperations => [...prevOperations, ...newOperations]);
                 onServiceOperationsUpdated(prevOperations => [...prevOperations, ...newOperations]);
-                console.log("operaciones de servicio", response.data.Operations);
             } else {
                 toast.warn('El servicio seleccionado no tiene operaciones', {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
         } catch (error) {
-            console.log("Error al obtener las operaciones del servicio", error);
+            toast.error('Error al obtener las operaciones del servicio', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
     function mergeOperations(servicesWithOps, selectedServices) {
-        console.log("servicesWithOps dentro de mergeOperations:", servicesWithOps);
 
         const allSelectedOps = selectedServices.flatMap(service => service.Operations || []);
-        console.log("Operaciones seleccionadas (allSelectedOps):", allSelectedOps);
 
         const merged = servicesWithOps.map(op => {
             const selectedOp = allSelectedOps.find(selected => selected.operation_code === op.operation_code);
             const result = selectedOp ? { ...op, ...selectedOp } : op;
-            console.log(`Mergiendo operación ${op.operation_code}:`, result);
             return result;
         });
 
-        console.log("Resultado final después de la fusión:", merged);
         return merged;
     };
 
     const handleConfirmChangesOperations = async () => {
-    
+
         selectedOperations = selectedOperations.map((operation) => {
             const operation_code = operation.operation_code;
             const cost = parseFloat(operationCost[operation_code] || operation.cost);
@@ -427,7 +417,7 @@ const SearchServicesOperationsModal = ({
             cost: operation.cost,
             work_order_service_id: null
         }));
-        
+
         const groupedByService = selectedServicesList.map(service => ({
             service_id: service.id,
             service_title: service.service_title,
@@ -441,15 +431,12 @@ const SearchServicesOperationsModal = ({
 
         const allServiceOperations = selectedServicesList.flatMap(service => service.operations);
 
-        console.log("operaciones servicios actualiza",allServiceOperations )
         try {
             // Llamada a la API para añadir
             if (workOrderOperations.length === 0 && workOrderServices.length === 0) {
-                console.log("datos a enviar", combinedPayload)
                 const addResponse = await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, combinedPayload);
                 handleApiResponse(addResponse, 'Operaciones añadidas');
             } else {
-                console.log("datos a actualizar", combinedPayload)
                 const updateResponse = await apiClient.put(`work-orders/update-services-operations/${workOrderId}`, combinedPayload);
                 handleApiResponse(updateResponse, 'Operaciones actualizadas');
             }
@@ -458,11 +445,8 @@ const SearchServicesOperationsModal = ({
             toast.error(`Error al guardar las operaciones`, {
                 position: toast.POSITION.TOP_RIGHT
             });
-            
-            console.error("Error al manejar las operaciones y servicios:", error);
         }
 
-       
         onOperationCostUpdated(operationCost);
         onOperationUpdated(selectedOperations);
         onOperationServiceCostUpdated(operationServiceCost);
@@ -486,17 +470,12 @@ const SearchServicesOperationsModal = ({
 
     const handleRemoveService = (e, serviceCodeToRemove) => {
         e.stopPropagation();
-        console.log("entro", selectedServicesList)
 
         // Encuentra el servicio que va a ser eliminado
         const serviceToRemove = selectedServicesList.find(service => service.service_id === serviceCodeToRemove);
 
         // Obtener las operaciones asociadas con ese servicio
         const operationsToRemove = serviceToRemove ? serviceToRemove.operations : [];
-
-        console.log("Service to remove:", serviceToRemove);
-        console.log("Operations to remove:", operationsToRemove);
-
 
         // Elimina el servicio
         setSelectedServicesList(prevServices => prevServices.filter(service => service.service_id !== serviceCodeToRemove));
@@ -528,10 +507,11 @@ const SearchServicesOperationsModal = ({
         }
         try {
             const response = await apiClient.get(endpoint);
-            console.log("Respuesta del servidor:", response.data);
             setServices(response.data);
         } catch (error) {
-            console.log("Error al obtener los datos de los servicios", error);
+            toast.error('Error al obtener los datos de los servicios', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
@@ -542,9 +522,6 @@ const SearchServicesOperationsModal = ({
         const searchTypeOperationCode = "operation_code";
         const searchTypeTitle = "title";
         //Si hay un filtro de búsqueda
-        console.log("selectedoption", selectedOption)
-        console.log("console", searchTerm)
-
         if (searchTerm) {
             switch (selectedOption.value) {
                 case 'operation_code':
@@ -559,13 +536,11 @@ const SearchServicesOperationsModal = ({
         }
         try {
             const response = await apiClient.get(endpoint);
-            console.log("endpoint operaciones", endpoint)
-            console.log("response", response.data);
-
-            setOperations(response.data);
-            console.log("luego de ser guarada", response.data);
+           setOperations(response.data);
         } catch (error) {
-            console.log("Error al obtener los datos de las operaciones", error);
+            toast.error('"Error al obtener los datos de las operaciones', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
@@ -578,7 +553,6 @@ const SearchServicesOperationsModal = ({
     }, [selectedServicesList]);
 
     useEffect(() => {
-        console.log("selectedServicesList después de la actualización:", selectedServicesList);
     }, [selectedServicesList]);
 
 
@@ -591,7 +565,6 @@ const SearchServicesOperationsModal = ({
     }, [searchTerm, selectedOption]);
 
     useEffect(() => {
-        console.log("selectedOperations recibido en SearchServicesOperationsModal:", selectedOperations);
     }, [selectedOperations]);
 
     useEffect(() => {
@@ -603,7 +576,6 @@ const SearchServicesOperationsModal = ({
     }, [selectedOperations]);
 
     useEffect(() => {
-        console.log("servicesWithOperations actualizado:", servicesWithOperations);
     }, [servicesWithOperations]);
 
     return (

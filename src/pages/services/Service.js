@@ -70,9 +70,7 @@ const Services = () => {
             setCurrentSection(null);  // Muestra la sección de botones
         } else {
             const lastSectionForTab = lastActiveSection[tabName];
-            console.log('Tab actual:', tabName);
-            console.log('Última sección para el tab:', lastSectionForTab);
-
+            
             if (lastSectionForTab) {
                 setCurrentSection(lastSectionForTab);
             } else {
@@ -80,12 +78,10 @@ const Services = () => {
             }
         }
 
-        console.log('Valor de showButtons tras el click:', showButtons);
     };
 
 
     const handleSearchServiceChange = (term, filter) => {
-        console.log("term y filtro", term, filter)
         setSearchTerm(term);
         setSelectedOption(filter);
     };
@@ -93,7 +89,6 @@ const Services = () => {
     const handleSearchServiceWithDebounce = debounce(handleSearchServiceChange, 500);
 
     const handleSearchOperationChange = (term, filter) => {
-        console.log("term filter operation", term, filter);
         setSearchTerm(term);
         setSelectedOption(filter);
     };
@@ -110,7 +105,6 @@ const Services = () => {
 
     const handleShowOperationInformation = (operationId, event) => {
         event.stopPropagation();
-        console.log("id operation", operationId);
         const selectedOp = operations.find(op => op.id === operationId);
         setSelectedOperation(selectedOp);
         setCurrentSection('editOperation');
@@ -118,7 +112,6 @@ const Services = () => {
             ...prevState,
             operaciones: 'editOperation'
         }));
-        console.log("lastActiveSection después de update:", lastActiveSection);
         //setShowButtons(false);
     };
 
@@ -129,7 +122,6 @@ const Services = () => {
     const handleSelectClick = (option) => {
         // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-        console.log(selectedOption);
 
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
@@ -140,23 +132,19 @@ const Services = () => {
         setActiveTab('servicios');
         setCurrentSection('addService');
         setLastActiveSection(prevState => ({ ...prevState, servicios: 'addService' }));
-        console.log("lastActiveSection después de update:", lastActiveSection);
         // setShowButtons(false);
     };
 
     const handleShowServiceInformation = async (serviceId, event) => {
         event.stopPropagation();
-        console.log("id service", serviceId);
         const selectedServ = services.find(serv => serv.id === serviceId);
         try {
             // Hacer una petición al backend para obtener la información del servicio
             const response = await apiClient.get(`/services/${selectedServ.id}`);
 
             // Aquí 'response.data' es la respuesta del servidor que debería contener la información del servicio.
-            console.log("servicio seleccionado", response.data)
             setSelectedService(response.data);
             setTitle(response.data.service_title);
-            console.log("datos seleccionados", response.data.operations)
             setMode('edit');
             setCurrentSection('addService');
             setLastActiveSection(prevState => ({
@@ -202,7 +190,6 @@ const Services = () => {
             let endpoint = '';
             if (activeTabOperation === 'código') {
                 endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchOperationTerm}`;
-                console.log("Searching with endpoint:", endpoint);
             } else {
                 endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchOperationTerm}`
             }
@@ -215,13 +202,16 @@ const Services = () => {
                 // Solo actualiza el estado si el componente sigue montado
                 if (isMounted.current) {
                     setOperation(response.data);
-                    console.log("operaciones modal", response.data)
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    console.log('Previous request cancelled', error.message);
+                    toast.error('Previous request cancelled', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
                 } else {
-                    console.error("Error al buscar:", error);
+                    toast.error('Error al buscar', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
                 }
             }
         }, 500),
@@ -297,18 +287,12 @@ const Services = () => {
         initialState: { pageSize: 5 }
     }, usePagination);
 
-    const handleDelete = (row) => {
-        console.log("Eliminar fila: ", row);
-        // Aquí puedes manejar la lógica para eliminar la fila
-    };
-
     const handleAddOperation = (event) => {
         event.stopPropagation();
         setSelectedOperation(null);
         setActiveTab('operaciones');
         setCurrentSection('addOperation');
         setLastActiveSection(prevState => ({ ...prevState, operaciones: 'addOperation' }));
-        console.log("lastActiveSection después de update:", lastActiveSection);
         //setShowButtons(false);
     };
 
@@ -375,7 +359,6 @@ const Services = () => {
 
     //Función para crear un nuevo servicio 
     const handleSaveOrUpdateService = async (event) => {
-        console.log("entro");
         event.preventDefault();
         const id_operations = selectedOperations.map(operation => operation.id);
         if (mode === 'add') {
@@ -389,7 +372,6 @@ const Services = () => {
                 setLastUpdated(Date.now());
                 setCurrentSection(null);
             } catch (error) {
-                console.log("error", error);
                 const mensajesError = error.response && error.response.data && error.response.data.errors
                     ? error.response.data.errors.map(err => err.message).join(" / ")
                     : 'Error al guardar el servicio';
@@ -399,7 +381,6 @@ const Services = () => {
             }
         } else {
             const id_operations = selectedService.operations.map(operation => operation.id);
-            console.log("datos servicio seleccionado", title, id_operations);
             try {
                 const response = await apiClient.put(`/services/update/${selectedService.id}`, { title, id_operations });
                 setServices(response.data);
@@ -409,7 +390,6 @@ const Services = () => {
                 setLastUpdated(Date.now());
                 setIsEditing(false);
             } catch (error) {
-                console.log("error", error);
                 const mensajesError = error.response && error.response.data && error.response.data.errors
                     ? error.response.data.errors.map(err => err.message).join(" / ")
                     : 'Error al actualizar el servicio';
@@ -443,7 +423,6 @@ const Services = () => {
             }
 
         } catch (error) {
-            console.log('Error al eliminar el servicio', error);
             toast.error('Error al eliminar el servicio. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -468,9 +447,6 @@ const Services = () => {
             const searchTypeOperationCode = "operation_code";
             const searchTypeTitle = "title";
             //Si hay un filtro de búsqueda
-            console.log("selectedoption", selectedOption)
-            console.log("console", searchTerm)
-
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Código':
@@ -485,18 +461,19 @@ const Services = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
-                console.log("endpoint operacioes", endpoint)
-                console.log("response", response.data);
                 setOperations(response.data);
                 setLoading(false);
 
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
+                    toast.error('La solicitud ha superado el tiempo límite.', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
                 } else {
-                    console.error('Otro error ocurrió:', error.message);
+                    toast.error('Otro error ocurrió', {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
                 }
-                console.log("Error al obtener los datos de las operaciones");
             }
         }
         fetchData();
@@ -528,8 +505,6 @@ const Services = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
-                console.log("endpoint", endpoint)
-                console.log("Respuesta del servidor:", response.data);
                 setServices(response.data);
                 setLoading(false);
             } catch (error) {
@@ -539,7 +514,6 @@ const Services = () => {
                     console.error('Otro error ocurrió:', error.message);
                 }
                 setServices([]);
-                console.log("Error al obtener los datos de los servicios");
             }
         }
         fetchData();
@@ -550,7 +524,6 @@ const Services = () => {
         // Al montar el componente
         isMounted.current = true;
 
-        console.log("useEffect triggered with:", searchOperationTerm);
         if (searchOperationTerm) {
             handleSearchOperationsWithDebounce();
         } else {

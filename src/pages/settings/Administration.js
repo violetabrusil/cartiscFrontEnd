@@ -291,16 +291,12 @@ const Administration = () => {
 
     const handleSelect = (optionSelected) => {
         setSelectedOption(optionSelected);
-        console.log("opcion seleccionada", optionSelected.value)
     };
 
     const transformData = (originalData) => {
-        console.log("Original Data:", originalData);
 
         return originalData.map(item => {
             let transformedItem = { ...item };
-
-            console.log("Item antes de transformar:", item);
 
             if (selectedOption.value === 'clients') {
                 const transformedStatus = userStatusMaping[item.client_status] || item.client_status;
@@ -314,21 +310,27 @@ const Administration = () => {
                 transformedItem.supplier_status = userStatusMaping[item.supplier_status] || item.supplier_status;
             }
 
-            console.log("Item transformado:", transformedItem);
-
             return transformedItem;
         });
     };
 
     const fetchData = async (resourceType) => {
-        console.log("Fetching data for", resourceType);
         try {
             const response = await apiClient.get(`/${resourceType}/suspended`);
+    
+            // Verifica si response.data es null o no está definido
+            if (!response.data) {
+                setData([]);
+                return;
+            }
+    
             const transformedData = transformData(response.data);
             setData(transformedData);
             setLoading(false);
         } catch (error) {
-            console.log("Ha ocurrido un error al obtener los datos", error);
+            toast.error('Ha ocurrido un error al obtener los datos..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
@@ -352,7 +354,6 @@ const Administration = () => {
         let endpoint = "";
         if (resourceConfig[recordType].specialEndpoint) {
             endpoint = `${resourceConfig[recordType].specialEndpoint}${recordId}`;
-            console.log("rutac", endpoint)
         } else {
             const statusField = resourceConfig[recordType].statusField;
             endpoint = `/${recordType}/change-status/${recordId}?${statusField}=active`;
@@ -364,12 +365,10 @@ const Administration = () => {
                 position: toast.POSITION.TOP_RIGHT
             });
             fetchData(recordType);
-            console.log(response.data);
         } catch (error) {
             toast.error('Error activando el registro', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            console.log('Error activando el registro', error);
         }
     }
 

@@ -26,7 +26,6 @@ const WorkOrders = () => {
     const navigate = useNavigate();
 
     const handleSearchWorOrderChange = (term, filter) => {
-        console.log(term, filter);
         setSearchTerm(term);
         setSelectedOption(filter);
     };
@@ -48,7 +47,6 @@ const WorkOrders = () => {
     const handleSelectClick = (option) => {
         // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-        console.log(option);
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
@@ -128,7 +126,6 @@ const WorkOrders = () => {
 
                 setWorkOrders(transformedWorkOrders);
                 setLoading(false);
-                console.log("respuesta servidor", transformedWorkOrders);
 
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
@@ -136,7 +133,6 @@ const WorkOrders = () => {
                 } else {
                     console.error('Otro error ocurrió:', error.message);
                 }
-                console.log("Error al obtener las órdenes de trabajo", error);
             }
         }
 

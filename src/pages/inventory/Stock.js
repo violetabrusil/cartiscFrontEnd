@@ -34,7 +34,6 @@ const Stock = () => {
         const searchPerBrand = "brand";
 
         if (searchTerm) {
-            console.log(selectedOption);
             switch (selectedOption.value) {
 
                 case 'sku':
@@ -56,12 +55,9 @@ const Stock = () => {
                 default:
                     break;
             }
-            console.log("Using endpoint:", endpoint);
         }
         try {
-            console.log("Endpoint to fetch:", endpoint);
             const response = await apiClient.get(endpoint);
-            console.log("Respuesta del servidor:", response.data);
             setAllProducts(response.data);
         } catch (error) {
             if (error.code === 'ECONNABORTED') {
@@ -69,7 +65,6 @@ const Stock = () => {
             } else {
                 console.error('Otro error ocurrió:', error.message);
             }
-            console.log("Error al obtener los datos de los servicios");
         }
         setLoading(false);
     };
@@ -84,8 +79,6 @@ const Stock = () => {
         setSelectedProductStock(row.original.stock);
         setSelectedProductId(row.original.id);
         setSelectedRowIndex(index);
-        console.log("stock slect", row.original.stock)
-        console.log("id select", row.original.id)
     };
 
     const handleEditOrSave = async (event) => {
@@ -114,7 +107,6 @@ const Stock = () => {
                 }
 
             } catch (error) {
-                console.log('Error actualizar el stock del producto', error);
                 toast.error('Error actualizar el stock del producto Por favor, inténtalo de nuevo..', {
                     position: toast.POSITION.TOP_RIGHT
                 });

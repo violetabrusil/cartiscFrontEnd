@@ -54,7 +54,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
     ];
 
     const handleConfirm = () => {
-        console.log("entro")
+      
         onConfirm({
             work_order_code: orderCode,
             vehicle_plate: vehiclePlate,

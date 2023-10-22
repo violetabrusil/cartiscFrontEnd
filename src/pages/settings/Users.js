@@ -52,7 +52,7 @@ const Users = () => {
     const [pinError, setPinError] = useState("");
     const debouncedPin = useDebounce(pin, 500);
     const [displayImage, setDisplayImage] = useState(null);
-    const { user } = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
 
     const statusColors = {
         "Activo": "#49A05C",
@@ -170,6 +170,11 @@ const Users = () => {
         return userIcon;
     };
 
+    const resetForm = () => {
+        setPassword('');
+        setPin('')
+    };
+
 
     //Función que permite obtener todos los usuarios
     //cuando inicia la pantalla y las busca por
@@ -182,7 +187,6 @@ const Users = () => {
         const searchPerUserName = "username";
 
         if (searchTerm) {
-            console.log(selectedOption);
             switch (selectedOption.value) {
 
                 case 'unumber':
@@ -195,12 +199,9 @@ const Users = () => {
                 default:
                     break;
             }
-            console.log("Using endpoint:", endpoint);
         }
         try {
-            console.log("Endpoint to fetch:", endpoint);
             const response = await apiAdmin.get(endpoint);
-            console.log("datos user", response.data)
             const transformedUserData = response.data.map(user => {
                 const newDateCreate = formatDate(user.created_at);
                 const newDateUpdate = formatDate(user.updated_at);
@@ -214,12 +215,12 @@ const Users = () => {
                     translated_user_status: translatedStatusUser
                 };
             });
-
-            console.log("Respuesta del servidor:", transformedUserData);
             setallUsers(transformedUserData);
             setLoading(false);
         } catch (error) {
-            console.log("Error al obtener los datos de los usuarios", error);
+            toast.error('Error al obtener los datos de los usuarios', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
@@ -275,7 +276,6 @@ const Users = () => {
         setImageBase64(null);
         setSelectedUser(user);
         setActionType('view');
-        console.log("usuario seleccionad", user)
     };
 
     const userOptions = [
@@ -302,10 +302,7 @@ const Users = () => {
     };
 
     const handleEditUser = () => {
-        console.log('entro')
-        console.log("Selected User before editing:", selectedUser);
         setActionType('edit');
-        console.log("action", actionType)
 
         if (selectedUser) {
             setUsername(selectedUser.username)
@@ -465,6 +462,9 @@ const Users = () => {
     };
 
     const editUser = async () => {
+        // Decide qué usuario editar basado en la presencia de selectedUser
+        const targetUser = selectedUser || user;
+    
         // Construye userData base
         const userData = {
             username: username,
@@ -473,23 +473,27 @@ const Users = () => {
             user_type: role,
             user_status: status
         };
-
+    
         // Añade profile_picture a userData solo si imageBase64 tiene valor
         if (imageBase64) {
             userData.profile_picture = imageBase64;
-        } else if (selectedUser && selectedUser.profile_picture) {
-            // Si no se ha seleccionado una nueva imagen, pero el usuario seleccionado tiene una imagen,
+        } else if (targetUser && targetUser.profile_picture) {
+            // Si no se ha seleccionado una nueva imagen, pero targetUser tiene una imagen,
             // se usa esa imagen existente.
-            userData.profile_picture = selectedUser.profile_picture;
+            userData.profile_picture = targetUser.profile_picture;
         }
-
-        console.log("data a enviar", userData);
-
+    
         try {
-            const response = await apiAdmin.put(`/update-user/${selectedUser.id}`, userData);
+            const response = await apiAdmin.put(`/update-user/${targetUser.id}`, userData);
             const newUser = response.data;
-            console.log("datos del usuario actualizado", newUser)
-            setSelectedUser(newUser);
+            
+            if (selectedUser) {
+                setSelectedUser(newUser);
+            } else {
+                setUser(newUser); 
+                localStorage.setItem('user', JSON.stringify(newUser));
+            }
+            
             toast.success('Usuario actualizado con éxito', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -499,10 +503,9 @@ const Users = () => {
             toast.error('Error al actualizar el usuario', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            console.log("Error al actualizar usuario", error);
         }
     };
-
+    
     const createUser = async () => {
 
         const userData = {
@@ -527,14 +530,13 @@ const Users = () => {
             toast.error('Error al crear el usuario', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            console.log("Error al crear usuario", error);
 
         }
     };
 
     const resetPassword = async () => {
-        const userId = selectedUser.id || user.user.id;
-        console.log("usuario select", userId)
+
+        const userId = (selectedUser && selectedUser.id) || (user && user.id);
 
         const userData = {
             new_password: password,
@@ -548,22 +550,20 @@ const Users = () => {
             });
             setActionType('view');
             setIsOpenModal(false);
+            resetForm();
             fetchData();
 
         } catch (error) {
             toast.error('Error al resetear la contraseña', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            console.log("Error al resetear la contraseña", error);
 
         }
     };
 
     const resetPIN = async () => {
-        console.log("entro al pin")
 
-        const userId = selectedUser.id || user.user.id;
-        console.log("usuario select", userId)
+        const userId = (selectedUser && selectedUser.id) || (user && user.id);
 
         const userData = {
             new_pin: pin,
@@ -577,13 +577,13 @@ const Users = () => {
             });
             setActionType('view');
             setIsOpenModal(false);
+            resetForm();
             fetchData();
 
         } catch (error) {
             toast.error('Error al resetear el PIN', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            console.log("Error al resetear el PIN", error);
 
         }
     };
@@ -667,7 +667,7 @@ const Users = () => {
                                             {selectedUser ? selectedUser.username : user.username}
                                         </label>
                                         <label className="label-rol-user">
-                                            {selectedUser ? selectedUser.translated_user_type : user.translated_user_type}
+                                            {selectedUser ? userTypeMaping[selectedUser.user_type] : userTypeMaping[user.user_type]}
                                         </label>
                                     </>
 
@@ -680,7 +680,6 @@ const Users = () => {
                                                     className="input-name-user"
                                                     value={username}
                                                     onChange={(e) => {
-                                                        console.log("Input changed!", e.target.value);
                                                         setUsername(e.target.value);
                                                     }}
                                                     readOnly={actionType === 'view'}
@@ -706,7 +705,6 @@ const Users = () => {
                                                     SingleValue: CustomSingleValueWithLabel
                                                 }}
                                                 onChange={selectedOption => {
-                                                    console.log("Role selected!", selectedOption.value);
                                                     setRole(selectedOption.value);
                                                 }}
                                                 isDisabled={actionType === 'view'}
@@ -722,7 +720,6 @@ const Users = () => {
                                                 placeholder="Seleccione"
                                                 value={statusOptions.find(option => option.value === status)}
                                                 onChange={selectedOption => {
-                                                    console.log("Status selected!", selectedOption.value);
                                                     setStatus(selectedOption.value);
                                                 }}
                                                 isDisabled={actionType === 'add'}

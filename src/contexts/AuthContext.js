@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // Intenta obtener el usuario de localStorage
         const savedUser = localStorage.getItem('user');
-        console.log("Usuario guardado en localStorage:", savedUser);
         if (savedUser) {
             setUser(JSON.parse(savedUser));
         }
@@ -29,11 +28,9 @@ export const AuthProvider = ({ children }) => {
                     };
                     localStorage.setItem('user', JSON.stringify(modifiedUser));
                     setUser(modifiedUser);
-                    console.log("ususario que llega", modifiedUser);
                 } else {
                     // Si el token no es válido o no hay usuario en la respuesta del servidor, intenta obtenerlo de localStorage
                     const savedUser = localStorage.getItem('user');
-                    console.log("Usuario guardado en localStorage:", savedUser);
                     if (savedUser) {
                         setUser(JSON.parse(savedUser));
                     } else {

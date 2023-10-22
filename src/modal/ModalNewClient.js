@@ -2,7 +2,7 @@ import "../ModalNewClient.css";
 import React from "react";
 
 function ModalNewClient({ primaryMessage, secondaryMessage, handleNo, handleYes, icon, modalType }) {
-    console.log(modalType);
+
     return (
         <div className="filter-modal-new-client-overlay">
             <div className="filter-modal-new-client">

@@ -10,7 +10,6 @@ const Modal = ({ options, onSelect, defaultOption  }) => {
     };
 
     const handleButtonClick = () => {
-        console.log("Opción seleccionada en el Modal:", selectedOption);
         onSelect(selectedOption)
     };
 
