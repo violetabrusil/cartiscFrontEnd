@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import DataTable from "../dataTable/DataTable";
 import SearchBar from "../searchBar/SearchBar";
 import apiClient from "../services/apiClient";
+import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -29,6 +30,8 @@ export function SearchProductsModal({ onClose,
     const [productPrices, setProductPrices] = useState(initialProductPrices || {});
     const [productQuantities, setProductQuantities] = useState(initialProductQuantities || {});
     const [isEditing, setIsEditing] = useState(false);
+    const responsivePageSize = usePageSizeForTabletLandscape(5, 3); 
+    const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 4); 
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -471,7 +474,7 @@ export function SearchProductsModal({ onClose,
                                 data={calculatedProducts}
                                 columns={columnSelectProducts}
                                 highlightRows={false}
-                                initialPageSize={5} />
+                                initialPageSize={responsivePageSize} />
                         </div>
                     )}
                     <div style={{ marginTop: '20px' }}>
@@ -485,7 +488,7 @@ export function SearchProductsModal({ onClose,
                                 data={allProducts}
                                 columns={columns}
                                 highlightRows={false}
-                                initialPageSize={6} />
+                                initialPageSize={responsivePageSizeProducts} />
                         </div>
                     )}
 

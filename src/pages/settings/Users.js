@@ -224,6 +224,8 @@ const Users = () => {
         }
     };
 
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+
     const userSelectStyles = {
         control: (base, state) => ({
             ...base,
@@ -238,6 +240,10 @@ const Users = () => {
         placeholder: (provided, state) => ({
             ...provided,
             color: '#999',
+            fontWeight: '600',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
         }),
         option: (provided, state) => ({
             ...provided,
@@ -250,7 +256,7 @@ const Users = () => {
     const selectStyles = {
         control: (provided, state) => ({
             ...provided,
-            width: '287px',
+            width: isTabletLandscape ? '190px' : '287px',
             height: '40px',
             minHeight: '40px',
             border: '1px solid rgb(0 0 0 / 34%)',

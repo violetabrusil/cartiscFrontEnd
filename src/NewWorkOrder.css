@@ -613,6 +613,18 @@
     margin-right: 10px;
 }
 
+.container-fields-new-work-order-vehicle {
+    display: flex;
+    margin-top: 40px;
+    margin-left: 25px;
+}
+
+.container-fields-new-work-order-vehicle-second {
+    display: flex;
+    margin-top: 35px;
+    margin-left: 25px;
+}
+
 .textarea-work-order {
     width: 88%;
     border-radius: 5px;
@@ -635,3 +647,54 @@
     flex: 1;
     margin-right: 4px;
 }
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+    .input-field-right {
+        width: 80%;
+    }
+
+    .input-field-km {
+        width: 86%;
+    }
+
+    .checkbox-group {
+        margin-left: 20px;
+    }
+    
+    .checkbox-group label,
+    .checkbox-group div {
+        margin-right: 10px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        margin-inline-end: 39px;
+    }
+    
+    .checkbox-group input[type="number"] {
+        margin-inline-end: 0px;
+        margin-left: 50px;
+        margin-right: 5px;
+    }
+
+    .label-title {
+        margin-right: 30px;
+    }
+    
+    .label-input {
+        margin-right: 10px;
+    }
+
+    .container-fields-new-work-order-vehicle {
+        margin-top: 30px;
+        margin-left: 5px;
+    }
+
+    .container-fields-new-work-order-vehicle-second {
+        margin-top: 30px;
+        margin-left: 5px;
+    }
+
+}
+
+
+

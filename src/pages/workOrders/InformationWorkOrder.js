@@ -228,11 +228,12 @@ const InformationWorkOrder = () => {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
 
     const customStylesStatusWorkOrder = {
         control: (provided, state) => ({
             ...provided,
-            width: '200%',
+            width: isTabletLandscape ? '280%' : '200%',
             height: '49px',
             minHeight: '49px',
             border: '1px solid rgb(0 0 0 / 34%)',
@@ -240,7 +241,7 @@ const InformationWorkOrder = () => {
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '250px', // puedes ajustar el ancho del menú aquí
+            width: isTabletLandscape ? '190px' : '250px',
         }),
     };
 
@@ -700,7 +701,7 @@ const InformationWorkOrder = () => {
 
                             <div className="client-search-container">
                                 <div className="left-div">
-                                    <div style={{ marginLeft: '30px', marginRight: '30px', marginTop: '10px' }}>
+                                    <div className="container-data-client-information">
 
                                         <h2>Cliente</h2>
 
@@ -773,27 +774,27 @@ const InformationWorkOrder = () => {
                                     </div>
 
                                     <div className="container-right-div-information-vehicle">
-                                        <div style={{ marginTop: '40px', marginLeft: '25px' }} className="container-fields-new-work-order">
+                                        <div className="container-fields-new-work-order-vehicle">
                                             <div className="vehicle-fields">
-                                                <label style={{ width: '151px' }} className="label-vehicle">Fecha de inicio:</label>
-                                                <label style={{ marginLeft: '-54px' }}>{workOrderDetail.date_start}</label>
+                                                <label className="label-work-order">Fecha de inicio:</label>
+                                                <label className="label-start-date">{workOrderDetail.date_start}</label>
                                             </div>
 
-                                            <div style={{ marginLeft: '38px' }} className="vehicle-fields">
+                                            <div className="container-created">
                                                 <label className="label-vehicle">Creada por:</label>
-                                                <label style={{ marginLeft: '20px' }}>{workOrderDetail.created_by}</label>
+                                                <label className="label-created">{workOrderDetail.created_by}</label>
                                             </div>
 
                                             <div className="vehicle-fields">
-                                                <label style={{ marginLeft: '15px' }} className="label-vehicle">Asignada a:</label>
+                                                <label className="label-asigned">Asignada a:</label>
                                                 <label>{workOrderDetail.assigned}</label>
                                             </div>
 
                                         </div>
-                                        <div style={{ marginTop: '35px', marginLeft: '25px' }} className="container-div-comments" >
+                                        <div className="container-fields-new-work-order-vehicle-second">
                                             <div className="vehicle-fields">
-                                                <label style={{ width: '151px' }} className="label-vehicle">Fecha de fin:</label>
-                                                <label style={{ marginLeft: '-54px' }}>{workOrderDetail.date_finish}</label>
+                                                <label className="label-work-order">Fecha de fin:</label>
+                                                <label className="label-start-date">{workOrderDetail.date_finish}</label>
                                             </div>
 
                                             <div style={{ marginLeft: '36px' }} className="vehicle-fields">
@@ -802,7 +803,7 @@ const InformationWorkOrder = () => {
                                             </div>
 
                                             <div className="vehicle-fields">
-                                                <label style={{ marginLeft: '9px' }} className="label-vehicle">Total:</label>
+                                                <label className="label-total">Total:</label>
                                                 <label className="total-value">
                                                     ${integerPart}.<span style={{ fontSize: '28px' }}>{decimalPart}</span>
                                                 </label>

@@ -97,6 +97,12 @@
     font-weight: 600;
 }
 
+.label-work-order {
+    font-size: 16px;
+    font-weight: 600;
+    width: 151px;
+}
+
 .container-right-div-information-vehicle {
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
@@ -153,4 +159,95 @@
     margin-top: -20px;
     font-weight: 600;
     color: #1C4A74 ;
+}
+
+.container-data-client-information {
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 10px;
+}
+
+.label-start-date {
+    margin-left: -54px;
+}
+
+.container-created {
+    margin-left: 38px;
+    display: flex;
+    width: 100%;
+    gap: 35px;
+
+}
+
+.label-created {
+    margin-left: 20px;
+}
+
+.label-asigned {
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 15px;
+}
+
+.label-total {
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 9px;
+
+}
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+    .container-data-client-information {
+        margin-left: 20px;
+        margin-right: 10px;
+    }
+
+    .vehicle-fields {
+        gap: 25px;
+    }
+    
+    .label-vehicle {
+        margin-left: 20px;
+    }
+
+    .label-work-order {
+       margin-left: 24px;
+        width: 140px;
+    }
+
+    .div-information-vehicle-fields {
+        margin-left: -20px;
+        margin-right: 10px;
+    }
+
+    .label-start-date {
+        margin-left: -30px;
+    }
+
+    .container-created {
+        margin-left: -38px;
+    }
+
+    .label-created {
+        margin-left: -20px;
+    }
+
+    .label-asigned {
+        margin-left: 1px;
+        margin-right: -10px;
+    }
+
+    .label-total {
+        margin-left: 10px;
+    }
+
+    .total-value {
+        margin-right: 10px;
+        margin-left: -10px;
+    }
+
+    .input-full-level {
+        margin-left: 59px;
+    }
+    
 }

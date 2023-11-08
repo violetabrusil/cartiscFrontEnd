@@ -5,6 +5,7 @@ import Carousel from "react-multi-carousel";
 import SearchBar from "../searchBar/SearchBar";
 import DataTable from "../dataTable/DataTable";
 import apiClient from "../services/apiClient";
+import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -37,6 +38,10 @@ const SearchServicesOperationsModal = ({
     const [services, setServices] = useState([]);
     const [serviceOperations, setServiceOperations] = useState([]);
     const [operationServiceCost, setOperationServiceCost] = useState(initialOperationServiceCost || {});
+    const responsivePageSizeServicesSelect = usePageSizeForTabletLandscape(5, 2);
+    const responsivePageSizeServices = usePageSizeForTabletLandscape(6, 2);
+    const responsivePageSizeOperationsSelect = usePageSizeForTabletLandscape(5, 2);
+    const responsivePageSizeOperations = usePageSizeForTabletLandscape(6, 3);
 
     //Configuración para el carousel
     const responsive = {
@@ -536,7 +541,7 @@ const SearchServicesOperationsModal = ({
         }
         try {
             const response = await apiClient.get(endpoint);
-           setOperations(response.data);
+            setOperations(response.data);
         } catch (error) {
             toast.error('"Error al obtener los datos de las operaciones', {
                 position: toast.POSITION.TOP_RIGHT
@@ -628,10 +633,11 @@ const SearchServicesOperationsModal = ({
                                         </div>
                                         <div style={{ marginTop: '-10px' }}>
                                             <DataTable
+                                                key={`datatable-${responsivePageSizeServicesSelect}-${service.id}`}
                                                 data={service.operations}
                                                 columns={columnsServicesWithOperationsSelected}
                                                 highlightRows={false}
-                                                initialPageSize={5}
+                                                initialPageSize={responsivePageSizeServicesSelect}
                                             />
                                         </div>
                                     </div>
@@ -645,10 +651,11 @@ const SearchServicesOperationsModal = ({
                             <div className="products-modal-content">
                                 <h4 style={{ marginLeft: '10px', marginBottom: '10px' }}>Lista de servicios</h4>
                                 <DataTable
+                                    key={`datatable-${responsivePageSizeServices}-${services.id}`}
                                     data={services}
                                     columns={columnServices}
                                     highlightRows={false}
-                                    initialPageSize={6} />
+                                    initialPageSize={responsivePageSizeServices} />
                             </div>
                         }
 
@@ -664,7 +671,7 @@ const SearchServicesOperationsModal = ({
                                     data={selectedOperations}
                                     columns={columnsOperationSelected}
                                     highlightRows={false}
-                                    initialPageSize={5} />
+                                    initialPageSize={responsivePageSizeOperationsSelect} />
                             </div>
                         )}
                         <SearchBar onFilter={handleFilter} customSelectStyles={customSelectOperationsModalStyles} customClasses="div-search-modal" options={options_Operations} placeholderText="Buscar Operaciones" />
@@ -676,7 +683,7 @@ const SearchServicesOperationsModal = ({
                                     data={operations}
                                     columns={columns}
                                     highlightRows={false}
-                                    initialPageSize={6} />
+                                    initialPageSize={responsivePageSizeOperations} />
                             </div>
 
                         }

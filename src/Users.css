@@ -227,7 +227,7 @@
 
 .label-name-user-container {
     display: grid;
-    width: 100%;  
+    width: 100%;
     text-align: left;
     gap: 10px;
 }
@@ -250,14 +250,14 @@
     margin-top: 20px;
 }
 
-.container-modal-fields > div {
+.container-modal-fields>div {
     display: flex;
-    align-items: center; 
-    margin-bottom: 10px; 
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .container-modal-fields label {
-    margin-right: 22px; 
+    margin-right: 22px;
     font-weight: bold;
 }
 
@@ -306,7 +306,9 @@
     width: 23px;
 }
 
-@media screen and (max-width: 768px) { /* Tablet y dispositivos móviles */
+@media screen and (max-width: 768px) {
+
+    /* Tablet y dispositivos móviles */
     .general-user-right {
         width: 40%;
     }
@@ -317,10 +319,45 @@
     }
 }
 
-@media screen and (max-width: 480px) { /* Dispositivos móviles */
+@media screen and (max-width: 480px) {
+
+    /* Dispositivos móviles */
     .users-container-title label {
-        font-size: 1.5em; /* reducir el tamaño de la fuente */
+        font-size: 1.5em;
+        /* reducir el tamaño de la fuente */
     }
 
     /* Adapta otras clases según sea necesario */
-} 
+}
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+
+    .buttons-user {
+        max-width: 75%;
+    }
+
+    .container-button-user-action {
+        margin-left: 65px;
+    }
+
+    .span-button-user {
+        font-size: 16px;
+    }
+
+    .label-status-user {
+        margin-right: 20px;
+        font-size: 25px;
+    }
+
+    .label-status {
+        font-size: 25px;
+    }
+
+    .input-form-new-user {
+        width: 91%;
+    }
+
+    .container-user-information {
+        width: 40vh;
+    }
+}

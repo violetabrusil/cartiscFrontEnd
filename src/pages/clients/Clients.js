@@ -839,7 +839,7 @@ const Clients = () => {
                                             onBlur={handleInputBlur}
                                             readOnly />
                                         <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                        <label>ECUADOR</label>
+                                        <label className="label-flag">ECUADOR</label>
                                         {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />
                                             </button>*/}

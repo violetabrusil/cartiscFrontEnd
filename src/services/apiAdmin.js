@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiAdmin = axios.create({
 
-    baseURL: 'http://localhost:1313/cartics/admin',
+    baseURL: 'http://172.20.10.2:1313/cartics/admin',
     headers: {
         'Content-Type': 'application/json',
         'Accept': '*/*',

@@ -42,3 +42,15 @@
         /* Reduce el espacio inferior del contenido en pantallas más pequeñas */
     }
 }
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+    @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+        .image {
+            position: fixed; /* Cambia la posición a 'fixed' */
+            bottom: 0;
+            right: 40px;
+            max-width: 30%; 
+            overflow-x: hidden;
+        }
+    }
+}
