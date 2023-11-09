@@ -34,8 +34,8 @@
     background: #FFF;
     border: 1px solid #D4D4D4;
     display: grid;
-    grid-template-columns: 0.5fr 1fr 0.5fr;
-    grid-gap: 0;
+    grid-template-columns: minmax(100px, 1fr) 2fr minmax(10px, 0fr);
+    gap: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
 }
@@ -57,8 +57,8 @@
 }
 
 .second-result-car {
-    display: block;
-    width: 100%;
+    max-width: calc(100% - 20px); /* 120px es el espacio que quieres reservar para el botón del ojo */
+    overflow: hidden;
 }
 
 .second-result-car label {
@@ -81,9 +81,7 @@
 }
 
 .third-result-car {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
 }
 
 .first-result-car, .second-result-car, .third-result-car {
@@ -97,6 +95,10 @@
     border: none;
     margin-top: 3px;
     background: none;
+    position: absolute;
+    right: 10px; /* Ajusta esto según tu diseño */
+    top: 50%;
+    transform: translateY(-50%); /* Centrar verticalmente */ 
 }
 
 .icon-eye-car {
@@ -181,13 +183,18 @@
 
 .container-maintenance-filter {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     margin-left: 25px;
+    /* Asegúrate de que tus botones no se empujen fuera de la pantalla */
+    padding-right: 25px; /* Añade el padding si es necesario */
 }
 
-.container-maintenance-filter h4 {
+.container-maintenance-filter h2 {
     flex: 1;
+    flex-shrink: 0; /* Impide que el H2 se encoge */
     text-align: left;
+    margin-right: auto; /* Empuja los elementos a la derecha */
+    font-size: clamp(16px, 2vw, 24px); /* Ajusta los valores a lo que necesites */
 }
 
 .container-checkbox {
@@ -260,7 +267,7 @@
     padding: 8px;
     margin-bottom: 10px;
     margin-top: 11px;
-    margin-left: 20px;
+    margin-left: 5%;
     font-weight: bold;
     font-size: 18px;
     text-align: center;
@@ -413,6 +420,23 @@
     font-size: 17px;
 }
 
+.label-plate-vehicle {
+    position: absolute;
+    top: 23%;
+    left: 10%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease-out, font-size 0.3s ease-out;
+    pointer-events: none;
+    color: black;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.label-history-work-order {
+    margin-right: 52%;
+    max-width: 100%;
+}
+
 @media screen and (max-width: 320px) {
     .containerCars {
         position: static;
@@ -446,6 +470,16 @@
         left: calc(50% - 100px);
         margin-top: -1px;
     }
+
+    .result-car {
+        grid-template-columns: minmax(0px, 2fr) 2fr minmax(100px, 1fr);
+        
+    }
+
+    .label-plate-vehicle {
+        margin-left: 14%;
+    }
+
 
    
 

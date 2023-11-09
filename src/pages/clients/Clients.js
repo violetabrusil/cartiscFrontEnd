@@ -169,6 +169,7 @@ const Clients = () => {
         setShowTitle(true);
         setShowAddVehicle(false);
         setSelectedVehicle(false);
+        resetForm();
 
     };
 
@@ -437,6 +438,7 @@ const Clients = () => {
         setShowClientCarInformation(false);
         setShowClientInformation(false);
         setShowTitle(false);
+        resetForm();
     };
 
     const handleGoBack = () => {
@@ -509,11 +511,13 @@ const Clients = () => {
         // resetea otros estados...
     };
 
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '93%', // Estilo personalizado para el ancho
+            width: isTabletLandscape ? '96%' : '93%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
@@ -532,7 +536,7 @@ const Clients = () => {
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '93%', // puedes ajustar el ancho del menú aquí
+            width: isTabletLandscape ? '96%' : '93%', // puedes ajustar el ancho del menú aquí
             marginTop: '-17px'
         }),
 
@@ -967,7 +971,7 @@ const Clients = () => {
                                         <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
                                             onFocus={handleInputFocus} onBlur={handleInputBlur} />
                                         <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                        <label>ECUADOR</label>
+                                        <label className="label-new-plate-vehicle">ECUADOR</label>
                                         {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />
                                         </button>

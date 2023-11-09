@@ -205,13 +205,9 @@ const Services = () => {
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    toast.error('Previous request cancelled', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                   
                 } else {
-                    toast.error('Error al buscar', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    
                 }
             }
         }, 500),

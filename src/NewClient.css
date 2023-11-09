@@ -117,7 +117,7 @@
 }
 
 .input-plate {
-    width: 22%;
+    width: 25%;
     height: 68px;
     border: 5px solid #000;
     background: #fff;
@@ -145,7 +145,19 @@
 .input-container label {
     position: absolute;
     top: 23%;
-    left: 6%;
+    left: 10%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease-out, font-size 0.3s ease-out;
+    pointer-events: none;
+    color: black;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.label-new-plate-vehicle {
+    position: absolute;
+    top: 23%;
+    left: 10%;
     transform: translateY(-50%);
     transition: transform 0.3s ease-out, font-size 0.3s ease-out;
     pointer-events: none;
@@ -160,7 +172,7 @@
     width: 26px;
     position: absolute;
     top: 24%;
-    left: calc(50% - 402px);
+    left: calc(51% - 486px);
     transform: translateY(-50%);
 }
 
@@ -313,7 +325,7 @@
     }
 
     .input-plate {
-        width: 45%;
+        width: 48%;
     }
 
     .label-flag {
@@ -323,6 +335,22 @@
     .input-container .flag-icon {
         left: 63px;
         margin-top: -2px;
+    }
+
+    .input-container label {
+        left: 7%;
+    }
+
+    .label-new-plate-vehicle {
+        margin-left: 13%;
+    }
+
+    .input-form {
+        width: 100%;
+    }
+
+    .form-scroll {
+        height: 550px;
     }
 
 }

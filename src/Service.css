@@ -386,3 +386,34 @@ td {
     }
 
 }
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+    .container-services  {
+        height: 130vh;
+        grid-template-columns: 1.5fr 2fr;
+    }
+    
+    .input-plate-vehicle {
+        max-width: 33%;
+    }
+
+    .input-plate-container label {
+        left: 22%;
+    }
+    
+    .input-plate-container .ecuador-icon {
+        left: calc(50% - 100px);
+        margin-top: -1px;
+    }
+
+    .result-car {
+        grid-template-columns: minmax(0px, 2fr) 2fr minmax(100px, 1fr);
+        
+    }
+
+    .label-plate-vehicle {
+        margin-left: 14%;
+    }
+
+
+}

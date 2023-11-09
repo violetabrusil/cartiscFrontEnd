@@ -201,11 +201,13 @@ const NewClient = () => {
         { value: 'truck', label: 'Camión' }
     ];
 
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '98%', // Estilo personalizado para el ancho
+            width: isTabletLandscape ? '96%' : '98%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
@@ -373,7 +375,7 @@ const NewClient = () => {
                                             onBlur={handleInputBlur}
                                         />
                                         <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                        <label>ECUADOR</label>
+                                        <label className="label-new-plate-vehicle">ECUADOR</label>
                                         {/* <button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />
                     </button> */}

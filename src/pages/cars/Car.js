@@ -109,11 +109,13 @@ const Cars = () => {
         return plateWithDash.replace(/-/g, '');
     };
 
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '99%', // Estilo personalizado para el ancho
+            width: isTabletLandscape ? '96%' : '99%',
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
@@ -532,13 +534,9 @@ const Cars = () => {
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    toast.error('Previous request cancelled.', {
-                        position: toast.POSITION.TOP_RIGHT,
-                    });
+                    
                 } else {
-                    toast.error('Error al buscar.', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    
                 }
             }
         }, 500),
@@ -741,7 +739,7 @@ const Cars = () => {
 
                         <>
                             {/*Lista de vehículos */}
-                            <div className="container-list-vehicle ">
+                            <div className="container-list-vehicle">
                                 {vehicles.map(vehicleData => (
                                     <div key={vehicleData.id} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)}>
                                         <div className="first-result-car">
@@ -803,7 +801,7 @@ const Cars = () => {
                                             <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
                                                 onFocus={handleInputFocus} onBlur={handleInputBlur} />
                                             <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                            <label>ECUADOR</label>
+                                            <label className="label-plate-vehicle">ECUADOR</label>
                                             {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />
                                         </button>
@@ -945,7 +943,7 @@ const Cars = () => {
                                 <button onClick={handleGoBackButton} className="button-arrow-new-client">
                                     <img src={arrowLeftIcon} className="arrow-icon-new-client" alt="Arrow Icon" />
                                 </button>
-                                <h2 style={{ marginRight: '52%' }}>Historial de Órdenes de trabajo</h2>
+                                <h2>Historial de Órdenes de trabajo</h2>
                                 <button className="button-maintenance-filter" onClick={handleOpenModalWorkOrder}>
                                     <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
                                     <span className="button-maintenance-text-filter">Filtro</span>
@@ -989,7 +987,7 @@ const Cars = () => {
                                                 readOnly={!isEditMode}
                                             />
                                             <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                            <label>ECUADOR</label>
+                                            <label className="label-plate-vehicle">ECUADOR</label>
                                             {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
                                                 <img src={alertIcon} className="alert" alt="Alert" />
                     </button                >*/}
