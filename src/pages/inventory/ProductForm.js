@@ -17,6 +17,8 @@ const stockIcon = process.env.PUBLIC_URL + "/images/icons/stock.png";
 const columnIcon = process.env.PUBLIC_URL + "/images/icons/column.png";
 const supplierIcon = process.env.PUBLIC_URL + "/images/icons/supplierIcon-blue.png";
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
+const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
+const editIconWhite = process.env.PUBLIC_URL + "/images/icons/editIcon-white.png";
 
 export function ProductForm({
     mode = "add",
@@ -67,11 +69,13 @@ export function ProductForm({
         ...suppliers
     ];
 
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control-supplier',
-            width: '775px', // Estilo personalizado para el ancho
+            width: isTabletLandscape ? '80%' : '74%',
             height: '50px', // Estilo personalizado para la altura
             minHeight: '50px',
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
@@ -115,7 +119,7 @@ export function ProductForm({
         let endpoint = '/suppliers/all';
         const searchPerSupplierCode = "supplier_code";
         const searchPerName = "name";
-    
+
         if (searchTermSupplier) {
             switch (selectedOptionSupplier) {
                 case 'Código':
@@ -159,12 +163,9 @@ export function ProductForm({
 
         reader.onloadend = () => {
             let result = reader.result;
-
-            // Eliminar el prefijo
             const regex = /^data:image\/[a-z]+;base64,/i;
             result = result.replace(regex, "");
             setImageBase64(result);
-
         }
 
         if (file) {
@@ -306,7 +307,7 @@ export function ProductForm({
         <div>
             <ToastContainer />
 
-            <div className="form-scroll-products">
+            <div>
                 {mode === 'edit' ? (
                     <CustomTitleSection
                         title="Información del Producto"
@@ -326,249 +327,263 @@ export function ProductForm({
                 )}
 
                 <div className="product-container-image">
+
                     <div className="left-side">
-                        <label>Imagen</label>
-                        {imageBase64 && <img src={`data:image/png;base64,${imageBase64}`} alt="Actual" style={{ width: '100px', height: '100px' }} />}
-                        <input
-                            className="input-image"
-                            type="file"
-                            onChange={handleImageUpload}
-                            accept=".jpg, .jpeg, .png"
-                            disabled={!isEditable} />
+
+                        <div className="form-container-products">
+                            <div className="input-group">
+                                <label htmlFor="titleProduct" className="label-form-product">
+                                    Título
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        id="titleProduct"
+                                        className="input-title-product"
+                                        type="text"
+                                        value={titleProduct}
+                                        onChange={e => setTitleProduct(e.target.value)}
+                                        disabled={!isEditable}
+                                    />
+                                    <img
+                                        src={letterIcon}
+                                        alt="Title Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="supplier" className="label-form-product" style={{ marginRight: "105px" }}>
+                                    Proveedor
+                                </label>
+                                <div className="input-form-new-product">
+                                    <Select
+                                        value={options.find(option => option.value === selectedSupplier.value)}
+                                        options={options}
+                                        onInputChange={(inputValue) => {
+                                            setSearchTermSupplier(inputValue);
+                                        }}
+                                        onChange={(selectedOption) => {
+                                            if (selectedOption.value === 'search_by_code') {
+                                                setSearchType('Código');
+                                            } else if (selectedOption.value === 'search_by_name') {
+                                                setSearchType('Nombre');
+                                            } else {
+                                                setSelectedSupplier(selectedOption);
+                                            }
+                                        }}
+                                        isSearchable={true}
+                                        placeholder="Buscar..."
+                                        styles={customStyles}
+                                        disabled={!isEditable}
+                                        components={{ Placeholder: CustomSingleValueProduct }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="categoryProduct" className="label-form-product" style={{ marginRight: "110px" }}>
+                                    Categoría
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        className="input-title-product"
+                                        type="text"
+                                        value={category}
+                                        onChange={e => setCategory(e.target.value)}
+                                        disabled={!isEditable} />
+
+                                    <img
+                                        src={categoryIcon}
+                                        alt="Category Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="descriptionyProduct" className="label-form-product" style={{ marginRight: "95px" }}>
+                                    Descripción
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        className="input-title-product"
+                                        type="text"
+                                        value={description}
+                                        onChange={e => setDescription(e.target.value)}
+                                        disabled={!isEditable}
+                                    />
+
+                                    <img
+                                        src={letterIcon}
+                                        alt="Description Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="brandProduct" className="label-form-product" style={{ marginRight: "136px" }}>
+                                    Marca
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        className="input-title-product"
+                                        type="text"
+                                        value={brand}
+                                        onChange={e => setBrand(e.target.value)}
+                                        disabled={!isEditable} />
+
+                                    <img
+                                        src={brandIcon}
+                                        alt="Brand Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="priceProduct" className="label-form-product" style={{ marginRight: "134px" }}>
+                                    Precio
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        className="input-title-product"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={price}
+                                        onChange={e => setPrice(e.target.value)}
+                                        disabled={!isEditable} />
+
+                                    <img
+                                        src={priceIcon}
+                                        alt="Price Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="stockProduct" className="label-form-product" style={{ marginRight: "138px" }}>
+                                    Stock
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        className="input-title-product"
+                                        type="number"
+                                        value={stock}
+                                        onChange={handleStockChange}
+                                        disabled={!isEditable} />
+
+                                    <img
+                                        src={stockIcon}
+                                        alt="Stock Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="columnProduct" className="label-form-product" style={{ marginRight: "111px" }}>
+                                    Columna
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        className="input-title-product"
+                                        type="text"
+                                        value={column}
+                                        onChange={e => setColumn(e.target.value)}
+                                        disabled={!isEditable} />
+
+                                    <img
+                                        src={columnIcon}
+                                        alt="Column Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="rowProduct" className="label-form-product" style={{ marginRight: "150px" }}>
+                                    Fila
+                                </label>
+                                <div className="input-form-new-product">
+                                    <input
+                                        className="input-title-product"
+                                        type="text"
+                                        value={row}
+                                        onChange={e => setRow(e.target.value)}
+                                        disabled={!isEditable} />
+
+                                    <img
+                                        src={rowIcon}
+                                        alt="Fila Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label htmlFor="compatibilityProduct" className="label-form-product" style={{ marginRight: "64px" }}>
+                                    Compatibilidad
+                                </label>
+                                <div className="input-form-new-product">
+
+                                    <input
+                                        className="input-title-product"
+                                        type="text"
+                                        value={compatibility}
+                                        onChange={e => setCompatibility(e.target.value)}
+                                        disabled={!isEditable} />
+
+                                    <img
+                                        src={letterIcon}
+                                        alt="Compatibility Icon"
+                                        className="input-new-product-icon"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div className="right-side">
-                        <div className="label-input-pair">
-                            <label htmlFor="titleProduct" className="label-form-product">
-                                Título
-                            </label>
-                            <div className="input-form-new-product">
-                                <input
-                                    id="titleProduct"
-                                    className="input-title-product"
-                                    style={{ width: '69%' }}
-                                    type="text"
-                                    value={titleProduct}
-                                    onChange={e => setTitleProduct(e.target.value)}
-                                    disabled={!isEditable}
-                                />
-                                <img
-                                    src={letterIcon}
-                                    alt="Title Icon"
-                                    className="input-new-product-icon"
-                                />
+                        <label className="label-form-product">Imagen</label>
+                        <div className="image-container-product">
+                            {imageBase64 ? (
+                                <img src={`data:image/png;base64,${imageBase64}`} alt="Actual" className="product-image" />
+                            ) : (
+                                <div className="default-image-container">
+                                    <img src={productIcon} alt="Default Icon Product" className="default-icon" />
+                                </div>
+                            )}
+                            <div className="edit-icon-container" onClick={() => document.getElementById('fileInput').click()}>
+                                <img src={editIconWhite} alt="Edit Icon Product Image" className="edit-icon" />
                             </div>
-                        </div>
-
-                        <div className="label-input-pair">
-                            <label htmlFor="supplier" className="label-form-product" style={{ marginRight: "105px" }}>
-                                Proveedor
-                            </label>
-                            <div className="input-form-new-product">
-                                <Select
-                                    value={options.find(option => option.value === selectedSupplier.value)}
-                                    options={options}
-                                    onInputChange={(inputValue) => {
-                                        setSearchTermSupplier(inputValue);
-                                    }}
-                                    onChange={(selectedOption) => {
-                                        if (selectedOption.value === 'search_by_code') {
-                                            setSearchType('Código');
-                                        } else if (selectedOption.value === 'search_by_name') {
-                                            setSearchType('Nombre');
-                                        } else {
-                                            setSelectedSupplier(selectedOption);
-                                        }
-                                    }}
-                                    isSearchable={true}
-                                    placeholder="Buscar..."
-                                    styles={customStyles}
-                                    disabled={!isEditable}
-                                    components={{ Placeholder: CustomSingleValueProduct }}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="label-input-pair">
-                            <label htmlFor="categoryProduct" className="label-form-product" style={{ marginRight: "110px" }}>
-                                Categoría
-                            </label>
-                            <div className="input-form-new-product">
-                                <input
-                                    className="input-title-product"
-                                    style={{ width: "69%" }}
-                                    type="text"
-                                    value={category}
-                                    onChange={e => setCategory(e.target.value)}
-                                    disabled={!isEditable} />
-
-                                <img
-                                    src={categoryIcon}
-                                    alt="Category Icon"
-                                    className="input-new-product-icon"
-                                />
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div className="form-container-products" >
-
-                    <div className="input-group">
-                        <label htmlFor="descriptionyProduct" className="label-form-product" style={{ marginRight: "95px" }}>
-                            Descripción
-                        </label>
-                        <div className="input-form-new-product">
                             <input
-                                className="input-title-product"
-                                type="text"
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
+                                id="fileInput"
+                                className="input-image"
+                                type="file"
+                                onChange={handleImageUpload}
+                                accept=".jpg, .jpeg, .png"
                                 disabled={!isEditable}
-                            />
+                                style={{ display: 'none' }} />
+                        </div>
 
-                            <img
-                                src={letterIcon}
-                                alt="Description Icon"
-                                className="input-new-product-icon"
-                            />
+                        <div className="container-button-save-product">
+                            <button
+                                className={isEditable ? "button-save-product button-active" : "button-save-product button-disabled"}
+                                onClick={handleFormSubmit}
+                                disabled={!isEditable}>
+                                GUARDAR
+                            </button>
+
                         </div>
                     </div>
 
-                    <div className="input-group">
-                        <label htmlFor="brandProduct" className="label-form-product" style={{ marginRight: "136px" }}>
-                            Marca
-                        </label>
-                        <div className="input-form-new-product">
-                            <input
-                                className="input-title-product"
-                                type="text"
-                                value={brand}
-                                onChange={e => setBrand(e.target.value)}
-                                disabled={!isEditable} />
-
-                            <img
-                                src={brandIcon}
-                                alt="Brand Icon"
-                                className="input-new-product-icon"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="input-group">
-                        <label htmlFor="priceProduct" className="label-form-product" style={{ marginRight: "134px" }}>
-                            Precio
-                        </label>
-                        <div className="input-form-new-product">
-                            <input
-                                className="input-title-product"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={price}
-                                onChange={e => setPrice(e.target.value)}
-                                disabled={!isEditable} />
-
-                            <img
-                                src={priceIcon}
-                                alt="Price Icon"
-                                className="input-new-product-icon"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="input-group">
-                        <label htmlFor="stockProduct" className="label-form-product" style={{ marginRight: "138px" }}>
-                            Stock
-                        </label>
-                        <div className="input-form-new-product">
-                            <input
-                                className="input-title-product"
-                                type="number"
-                                value={stock}
-                                onChange={handleStockChange}
-                                disabled={!isEditable} />
-
-                            <img
-                                src={stockIcon}
-                                alt="Stock Icon"
-                                className="input-new-product-icon"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="input-group">
-                        <label htmlFor="columnProduct" className="label-form-product" style={{ marginRight: "111px" }}>
-                            Columna
-                        </label>
-                        <div className="input-form-new-product">
-                            <input
-                                className="input-title-product"
-                                type="text"
-                                value={column}
-                                onChange={e => setColumn(e.target.value)}
-                                disabled={!isEditable} />
-
-                            <img
-                                src={columnIcon}
-                                alt="Column Icon"
-                                className="input-new-product-icon"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="input-group">
-                        <label htmlFor="rowProduct" className="label-form-product" style={{ marginRight: "150px" }}>
-                            Fila
-                        </label>
-                        <div className="input-form-new-product">
-                            <input
-                                className="input-title-product"
-                                type="text"
-                                value={row}
-                                onChange={e => setRow(e.target.value)}
-                                disabled={!isEditable} />
-
-                            <img
-                                src={rowIcon}
-                                alt="Fila Icon"
-                                className="input-new-product-icon"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="input-group">
-                        <label htmlFor="compatibilityProduct" className="label-form-product" style={{ marginRight: "64px" }}>
-                            Compatibilidad
-                        </label>
-                        <div className="input-form-new-product">
-
-                            <input
-                                className="input-title-product"
-                                type="text"
-                                value={compatibility}
-                                onChange={e => setCompatibility(e.target.value)}
-                                disabled={!isEditable} />
-
-                            <img
-                                src={letterIcon}
-                                alt="Compatibility Icon"
-                                className="input-new-product-icon"
-                            />
-                        </div>
-                    </div>
 
                 </div>
-            </div>
-
-            <div className="container-button-save-product">
-                <button
-                    className={isEditable ? "button-save-product button-active" : "button-save-product button-disabled"}
-                    onClick={handleFormSubmit}
-                    disabled={!isEditable}>
-                    GUARDAR
-                </button>
 
             </div>
 

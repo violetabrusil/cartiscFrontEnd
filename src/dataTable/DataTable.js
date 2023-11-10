@@ -2,7 +2,21 @@ import "../DataTable.css"
 import React from 'react';
 import { useTable, usePagination } from 'react-table';
 
-const DataTable = ({ data, columns, onRowClick = () => { }, highlightRows, selectedRowIndex, initialPageSize = 8, selectedRowId, customFontSize = false }) => {
+
+const DataTable = ({
+    data,
+    columns,
+    onRowClick = () => { },
+    highlightRows,
+    selectedRowIndex,
+    initialPageSize = 8,
+    selectedRowId,
+    customFontSize = false,
+    onAddOperation,
+    onRemoveOperation,
+    addIconSrc,
+    deleteIconSrc
+}) => {
 
     const {
         getTableProps,
@@ -57,9 +71,32 @@ const DataTable = ({ data, columns, onRowClick = () => { }, highlightRows, selec
                                 onClick={() => onRowClick(row, index)}
                                 style={isHighlighted ? { backgroundColor: '#d1e2f1' } : {}}
                             >
-                                {row.cells.map(cell => (
-                                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                ))}
+                                {row.cells.map(cell => {
+                                    if (cell.column.id === 'action') {
+                                        return (
+                                            <td {...cell.getCellProps()}>
+                                                {addIconSrc && (
+                                                    <img
+                                                        className="add-operation-icon"
+                                                        src={addIconSrc}
+                                                        alt="Add operation"
+                                                        onClick={() => onAddOperation(row.original)}
+                                                    />
+                                                )}
+                                                {deleteIconSrc && (
+                                                    <img
+                                                        className="less-operation-icon"
+                                                        src={deleteIconSrc}
+                                                        alt="Delete operation"
+                                                        onClick={() => onRemoveOperation(row.original.id)}
+                                                    />
+                                                )}
+                                            </td>
+                                        );
+                                    } else {
+                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                                    }
+                                })}
                             </tr>
                         );
                     })}

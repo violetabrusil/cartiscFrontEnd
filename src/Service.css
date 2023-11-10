@@ -290,15 +290,7 @@ td {
     height: 25px;
 }
 
-.add-operation-icon {
-    width: 20px;
-    height: 20px;
-}
 
-.less-operation-icon {
-    width: 20px;
-    height: 20px;
-}
 
 .operation-table {
     font-size: 12px;
@@ -320,12 +312,10 @@ td {
 
 .selected-operations-scroll-container {
     max-height: 253px;
-    overflow-y: auto;
 }
 
 .list-operations-scroll-container {
     max-height: 295px;
-    overflow-y: auto;
 }
 
 .operation-selected-table {

@@ -16,6 +16,8 @@ import OperationRightSection from "../operations/OperationRightSection";
 import apiClient from "../../services/apiClient";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import DataTable from "../../dataTable/DataTable";
+import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
@@ -56,12 +58,15 @@ const Services = () => {
     const [searchOperationTerm, setSearchOperationTerm] = useState('');
     const isMounted = useRef(false);
     const source = axios.CancelToken.source();
-    const [activeTabOperation, setActiveTabOperation] = useState('código');
+    const [activeTabOperation, setActiveTabOperation] = useState('título');
     const [operation, setOperation] = useState([]);
     const [selectedOperations, setSelectedOperations] = useState([]);
 
     {/* Decidir cuál arreglo de operaciones usar basado en el modo */ }
     const operationsToShow = mode === 'edit' ? selectedService.operations : selectedOperations;
+
+    const responsivePageSizeOperationsSelected = usePageSizeForTabletLandscape(6, 3);
+    const responsivePageSizeOperations = usePageSizeForTabletLandscape(6, 3);
 
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
@@ -70,7 +75,7 @@ const Services = () => {
             setCurrentSection(null);  // Muestra la sección de botones
         } else {
             const lastSectionForTab = lastActiveSection[tabName];
-            
+
             if (lastSectionForTab) {
                 setCurrentSection(lastSectionForTab);
             } else {
@@ -79,7 +84,6 @@ const Services = () => {
         }
 
     };
-
 
     const handleSearchServiceChange = (term, filter) => {
         setSearchTerm(term);
@@ -185,35 +189,43 @@ const Services = () => {
 
     const handleSearchOperationsWithDebounce = useCallback(
         debounce(async () => {
+            // Define los tipos de búsqueda
             const searchTypeOperationCode = "operation_code";
             const searchTypeTitle = "title";
             let endpoint = '';
-            if (activeTabOperation === 'código') {
-                endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchOperationTerm}`;
+    
+            // Si hay un término de búsqueda, decide el endpoint basado en la pestaña activa
+            if (searchOperationTerm) {
+                if (activeTabOperation === 'código') {
+                    endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchOperationTerm}`;
+                } else {
+                    endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchOperationTerm}`;
+                }
             } else {
-                endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchOperationTerm}`
+                // Si no hay término de búsqueda, carga todas las operaciones
+                endpoint = `/operations/all`;
             }
-
+    
             try {
                 const response = await apiClient.get(endpoint, {
                     cancelToken: source.token
                 });
-
+    
                 // Solo actualiza el estado si el componente sigue montado
                 if (isMounted.current) {
                     setOperation(response.data);
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                   
+                    // Maneja la cancelación aquí si es necesario
                 } else {
-                    
+                    // Maneja otros errores aquí si es necesario
                 }
             }
         }, 500),
-        [activeTab, searchOperationTerm]
+        [activeTabOperation, searchOperationTerm] // Actualiza esta dependencia
     );
-
+    
     const handleAddOperationModal = (operationToAdd) => {
         // Decide a qué conjunto de operaciones agregar dependiendo del modo
         const operationsToModify = mode === 'edit' ? selectedService.operations : selectedOperations;
@@ -265,6 +277,54 @@ const Services = () => {
             }
         ],
         []
+    );
+
+    const columnsForSelectedOperations = React.useMemo(
+        () => [
+            { Header: "Código", accessor: "operation_code" },
+            { Header: "Título", accessor: "title" },
+            {
+                Header: "",
+                accessor: "action",
+                Cell: ({ row }) => (
+                    <img
+                        className="less-operation-icon"
+                        src={deleteIcon}
+                        alt="Delete operation"
+                        onClick={() => handleRemoveOperation(row.original.id)}
+                    />
+                )
+            }
+        ],
+        [deleteIcon, handleRemoveOperation]
+    );
+
+    const columnsForOperations = React.useMemo(
+        () => [
+            { Header: "Código", accessor: "operation_code" },
+            { Header: "Título", accessor: "title" },
+            {
+                Header: "Costo",
+                accessor: "cost",
+                Cell: ({ value }) =>
+                    <div>
+                        $ {parseFloat(value).toFixed(2)}
+                    </div>
+            },
+            {
+                Header: "",
+                accessor: "action",
+                Cell: ({ row }) => (
+                    <img
+                        className="add-operation-icon"
+                        src={addIcon}
+                        alt="Add operation"
+                        onClick={() => handleAddOperationModal(row.original.id)}
+                    />
+                )
+            }
+        ],
+        [addIcon, handleAddOperationModal]
     );
 
     const {
@@ -519,19 +579,17 @@ const Services = () => {
     useEffect(() => {
         // Al montar el componente
         isMounted.current = true;
-
-        if (searchOperationTerm) {
-            handleSearchOperationsWithDebounce();
-        } else {
-            setOperation([]);
-        }
-
-        //Cleanup al desmontar el componente o al cambiar el término de búsqueda
+    
+        // Inicia la búsqueda o carga todas las operaciones según el término de búsqueda
+        handleSearchOperationsWithDebounce();
+    
+        // Cleanup al desmontar el componente o al cambiar el término de búsqueda o la pestaña activa
         return () => {
             isMounted.current = false;  // Indica que el componente ha sido desmontado
-            source.cancel('Search term changed or component unmounted'); // Cancela la solicitud
+            source.cancel('Search term changed or component unmounted'); // Cancela la solicitud pendiente
         };
-    }, [searchOperationTerm, handleSearchOperationsWithDebounce]);
+    }, [searchOperationTerm, activeTabOperation, handleSearchOperationsWithDebounce]); // Asegúrate de incluir activeTabOperation aquí
+    
 
     React.useEffect(() => {
         if (currentSection === 'addService' && mode === 'add') {
@@ -790,7 +848,7 @@ const Services = () => {
                     <Modal
                         isOpen={isFilterModalOpen}
                         onClose={closeFilterModal}
-                        options={['Código', 'Título']}
+                        options={['Título', 'Código']}
                         defaultOption="Título"
                         onOptionChange={handleOptionChange}
                         onSelect={handleSelectClick}
@@ -806,14 +864,14 @@ const Services = () => {
                                 <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
                             </button>
                             <div className="tabs">
-                                <button className={`button-tab ${activeTabOperation === 'código' ? 'active' : ''}`}
-                                    onClick={() => handleTabChange('código')}>
-                                    Código
-                                    <div className="line"></div>
-                                </button>
                                 <button className={`button-tab ${activeTabOperation === 'título' ? 'active' : ''}`}
                                     onClick={() => handleTabChange('título')}>
                                     Título
+                                    <div className="line"></div>
+                                </button>
+                                <button className={`button-tab ${activeTabOperation === 'código' ? 'active' : ''}`}
+                                    onClick={() => handleTabChange('código')}>
+                                    Código
                                     <div className="line"></div>
                                 </button>
                             </div>
@@ -837,67 +895,29 @@ const Services = () => {
                             {operationsToShow.length > 0 && (
                                 <div className="selected-operations-scroll-container">
                                     <h5>Operaciones seleccionadas</h5>
-                                    <table className="operation-table selected">
-                                        <thead>
-                                            <tr>
-                                                <th>Código</th>
-                                                <th>Título</th>
-                                                <th style={{ textAlign: "center" }}>Acción</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {operationsToShow.map(selectOperation => (
-                                                <tr key={selectOperation.id}>
-                                                    <td>{selectOperation.operation_code}</td>
-                                                    <td>{selectOperation.title}</td>
-                                                    <td style={{ textAlign: "center" }}>
-                                                        <img
-                                                            className="less-operation-icon"
-                                                            src={deleteIcon}
-                                                            alt="Remove operation"
-                                                            onClick={() => handleRemoveOperation(selectOperation.id)}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                    <DataTable
+                                        data={operationsToShow}
+                                        columns={columnsForSelectedOperations}
+                                        deleteIconSrc={deleteIcon}
+                                        onRemoveOperation={handleRemoveOperation}
+                                        initialPageSize={responsivePageSizeOperationsSelected}
+                                    />
                                 </div>
                             )}
 
                             {operation.length > 0 && (
                                 <div className="list-operations-scroll-container">
                                     <h5>Lista de operaciones</h5>
-                                    <table className="operation-table list">
-                                        <thead>
-                                            <tr>
-                                                <th>Código</th>
-                                                <th>Título</th>
-                                                <th>Costo</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {operation.map(listOperation => (
-                                                <tr key={listOperation.id} >
-                                                    <td>{listOperation.operation_code}</td>
-                                                    <td>{listOperation.title}</td>
-                                                    <td>$ {parseFloat(listOperation.cost).toFixed(2)}</td>
-                                                    <td>
-                                                        <img
-                                                            className="add-operation-icon"
-                                                            src={addIcon}
-                                                            alt="Add operation"
-                                                            onClick={() => handleAddOperationModal(listOperation)}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                    <DataTable
+                                        data={operation}
+                                        columns={columnsForOperations}
+                                        addIconSrc={addIcon}
+                                        onAddOperation={handleAddOperationModal}
+                                        initialPageSize={responsivePageSizeOperations}
+                                    />
+
+
                                 </div>
-
-
                             )}
 
                         </div>
