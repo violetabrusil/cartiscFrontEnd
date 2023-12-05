@@ -23,6 +23,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
         try {
             const response = await apiClient.post('/operations/create', { title, cost });
+            console.log("datos a guardar sin error",title, cost )
             if (response.data) {
                 onOperationChange(response.data, "ADD");
             }
@@ -40,7 +41,10 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
             // Une todos los mensajes en uno solo
             const mensajeFinal = mensajesError.join(" / ");
 
-            toast.error(mensajeFinal || "Hubo un error desconocido", {
+            console.log("datos a guardar",title, cost )
+            console.log("error", error)
+
+            toast.error(mensajeFinal || "Hubo un error al guardar la operación", {
                 position: toast.POSITION.TOP_RIGHT
             });
         }

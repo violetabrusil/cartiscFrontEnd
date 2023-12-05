@@ -314,7 +314,7 @@ const InformationWorkOrder = () => {
                 });
 
                 toast.success("El cambio de estado de la orden de trabajo es válido");
-
+               
                 if (newStatus === 'completed') {
                     getWorkOrderDetailById();
                     navigate('/paymentReceipt', {
@@ -424,7 +424,7 @@ const InformationWorkOrder = () => {
                 setSymptoms(prev => [...prev, text]);
                 event.target.innerText = '';
             }
-        }
+        } 
     };
 
     const handleUpdateSymptom = (index, newText) => {
@@ -1157,6 +1157,7 @@ const InformationWorkOrder = () => {
                         setShowAssignModal(false);
                     }}
                     workOrderId={workOrderId}
+                    getWorkOrderDetail={getWorkOrderDetailById}
                 />
 
             )}

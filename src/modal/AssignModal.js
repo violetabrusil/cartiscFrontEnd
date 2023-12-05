@@ -9,7 +9,7 @@ import apiClient from "../services/apiClient";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const userIcon = process.env.PUBLIC_URL + "/images/user.png";
 
-export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
+export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOrderDetail }) {
 
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -127,7 +127,7 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
                     created_by: lastHistory.created_by,
                     notes: lastHistory.notes
                 });
-            }, 3000);  // Espera 3 segundos antes de cerrar el modal (anteriormente era 5, pero en tu código dice 3000ms que son 3 segundos)
+            }, 3000);  // Espera 3 segundos antes de cerrar el modal 
         }
     };
 
@@ -137,11 +137,14 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId }) {
         try {
             const response = await apiClient.put(url);
             if (response.status === 200) {
+                
                 toast.success('Asignación exitosa.', {
                     position: toast.POSITION.TOP_RIGHT,
                     containerId: "modal-toast-container"
                 });
+                await getWorkOrderDetail(workOrderId);
                 return response.data; // Si la asignación fue exitosa, retorna los datos
+                
             } else {
                 toast.error('Hubo un error al asignar el usuario a la orden de trabajo.', {
                     position: toast.POSITION.TOP_RIGHT,

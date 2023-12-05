@@ -147,7 +147,7 @@ const Location = () => {
             if (error.code === 'ECONNABORTED') {
                 console.error('La solicitud ha superado el tiempo límite.');
             } else {
-                console.error('Otro error ocurrió:', error.message);
+                console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
             }
         }
         setLoading(false);

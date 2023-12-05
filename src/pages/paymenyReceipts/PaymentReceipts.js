@@ -300,13 +300,14 @@ const PaymentReceipts = () => {
 
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
+            console.log("datos de comprobante", response.data)
 
         } catch (error) {
             setLoading(false);
             if (error.code === 'ECONNABORTED') {
                 console.error('La solicitud ha superado el tiempo límite.');
             } else {
-                console.error('Otro error ocurrió:', error.message);
+                console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
             }
         }
     };
@@ -402,6 +403,7 @@ const PaymentReceipts = () => {
             setWorkOrderModalOpen(false);
 
         } catch (error) {
+            console.log("error", error)
             toast.error('Error al procesar la orden de trabajo', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -437,6 +439,7 @@ const PaymentReceipts = () => {
             });
 
             handleClosePaymentModal();
+            fetchData();
 
             toast.success('Pago procesado con éxito.', {
                 position: toast.POSITION.TOP_RIGHT
