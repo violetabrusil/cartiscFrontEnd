@@ -197,9 +197,6 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                     position: toast.POSITION.TOP_RIGHT,
                 });
             } else {
-                toast.error('Otro error ocurrió.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                });
             }
         }
         setLoading(false);

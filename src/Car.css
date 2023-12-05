@@ -480,7 +480,12 @@
         margin-left: 14%;
     }
 
+}
 
-   
+@media (min-width: 1440px) {
+
+    .label-plate-vehicle {
+        margin-left: 4%;
+    }
 
 }

@@ -222,4 +222,21 @@
     .input-plate-container-work-order .ecuador-icon {
         left: calc(50% - 29px);
     }
-  }
+  
+}
+
+@media (min-width: 1440px) {
+
+    .first-result-work-orders {
+        margin-left: 0px;
+    }
+
+    .second-result-work-order{
+        margin-left: -40px;
+    }
+
+    .third-result-work-order {
+        margin-left: -175px;
+    }
+
+}

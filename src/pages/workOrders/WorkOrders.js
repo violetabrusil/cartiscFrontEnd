@@ -94,6 +94,7 @@ const WorkOrders = () => {
     };
 
     useEffect(() => {
+        console.log("buscar", searchTerm,selectedOption)
         const fetchData = async () => {
             let endpoint = '/work-orders/all';
             if (searchTerm) {

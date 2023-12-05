@@ -97,7 +97,7 @@ const PaymentReceipts = () => {
             {
                 Header: "Código orden de trabajo",
                 accessor: "work_order.work_order_code",
-                Cell: ({ value }) => <span className="bold-text">{value}</span>,
+                Cell: ({ value }) => <span className="bold-text custom-column-width">{value}</span>,
                 headerClassName: 'bold-text'
             },
             {
@@ -119,7 +119,7 @@ const PaymentReceipts = () => {
                     else if (value === 'Cobrado') statusClass = 'status-cobrado';
 
                     return (
-                        <div className={`status-box ${statusClass}`}>
+                        <div className={`status-box ${statusClass} no-wrap-column`}>
                             {value}
                         </div>
                     );
@@ -130,7 +130,7 @@ const PaymentReceipts = () => {
             {
                 Header: "Placa",
                 accessor: "plate",
-                Cell: ({ value }) => formatPlate(value)
+                Cell: ({ value }) => <div className="no-wrap-column">{formatPlate(value)}</div>
             },
             {
                 Header: "Forma de pago",
@@ -167,7 +167,7 @@ const PaymentReceipts = () => {
                     const [wholePart, decimalPart] = formattedValue.split(".");
 
                     return (
-                        <div style={{ display: 'inline-block', color: '#316EA8', fontWeight: '600' }}>
+                        <div style={{ display: 'inline-block', color: '#316EA8', fontWeight: '600' }} className="no-wrap-column-total">
                             <span className="whole-part">$ {wholePart}.</span>
                             <span className="decimal-part">{decimalPart}</span>
                         </div>
@@ -369,7 +369,7 @@ const PaymentReceipts = () => {
             setSendingEmail(false);
             console.error('Error al enviar el email', error);
         } finally {
-           
+
         }
     };
 
@@ -386,6 +386,8 @@ const PaymentReceipts = () => {
                 total: total,
             };
 
+            console.log("datos a enviasr", payload)
+
             // Llamada a la API
             const response = await apiClient.post('/sales-receipts/create', payload);
 
@@ -400,7 +402,10 @@ const PaymentReceipts = () => {
             setWorkOrderModalOpen(false);
 
         } catch (error) {
-            console.error('Error al procesar la orden de trabajo', error);
+            toast.error('Error al procesar la orden de trabajo', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            console.error('', error);
         }
     };
 

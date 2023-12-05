@@ -260,7 +260,10 @@ const Users = () => {
             height: '40px',
             minHeight: '40px',
             border: '1px solid rgb(0 0 0 / 34%)',
-            textAlign: 'left'
+            textAlign: 'left',
+            '@media (min-width: 1440px)': {
+                width: '250px',
+              },
         }),
         placeholder: (provided, state) => ({
             ...provided,

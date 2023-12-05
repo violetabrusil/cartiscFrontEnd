@@ -68,3 +68,25 @@
 .Toastify__toast-container.Toastify__toast-container--top-right {
     top: 75px;
 }
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+
+    .input-location-container {
+        bottom: 5px;
+        margin-left: 30px;
+        gap: 60px;
+    }
+
+    .label-input-location-container {
+        gap: 30px;
+    }
+
+    .label-input-location-container input {
+        width: 60%;
+    }
+
+    .location-button {
+        margin-left: 30px;
+    }
+
+}

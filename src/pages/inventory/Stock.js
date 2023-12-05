@@ -5,6 +5,7 @@ import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
+import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
@@ -19,6 +20,7 @@ const Stock = () => {
     const [stockToUpdate, setStockToUpdate] = useState(null);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [loading, setLoading] = useState(false);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 6); 
 
     //Función que permite obtener todos los productos
     //cuando inicia la pantalla y las busca por
@@ -167,6 +169,7 @@ const Stock = () => {
                         onRowClick={handleRowClick}
                         highlightRows={true}
                         selectedRowIndex={selectedRowIndex}
+                        initialPageSize={responsivePageSize}
                     />
                 )
                 }

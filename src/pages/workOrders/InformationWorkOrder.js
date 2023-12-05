@@ -797,7 +797,7 @@ const InformationWorkOrder = () => {
                                                 <label className="label-start-date">{workOrderDetail.date_finish}</label>
                                             </div>
 
-                                            <div style={{ marginLeft: '36px' }} className="vehicle-fields">
+                                            <div className="vehicle-fields delivery-for">
                                                 <label className="label-vehicle">Entregada por:</label>
                                                 <label>{workOrderDetail.delivered_by}</label>
                                             </div>

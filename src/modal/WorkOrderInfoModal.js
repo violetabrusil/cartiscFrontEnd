@@ -1,5 +1,6 @@
 import "../Modal.css";
 import { useEffect } from 'react';
+import { ToastContainer} from 'react-toastify';
 
 export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, discount, setDiscount, total, setTotal, vat, setVat }) => {
 
@@ -20,6 +21,7 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, discount,
 
     return (
         <div className="filter-modal-overlay">
+            <ToastContainer />
             <div className="filter-modal">
                 <h3 style={{ textAlign: 'center', marginTop: '3px' }}>Resumen de pago</h3>
                 <div className="container-label">

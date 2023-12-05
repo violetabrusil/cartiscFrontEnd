@@ -76,7 +76,7 @@ const LoginExpress = () => {
 
             <ToastContainer />
 
-            <div className="content-container">
+            <div className="content-container content-container-login-express">
                 <img src={logo} alt="Logo" className="logo" />
             </div>
 

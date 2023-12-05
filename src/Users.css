@@ -361,3 +361,25 @@
         width: 40vh;
     }
 }
+
+@media (max-width: 1439px) {
+    /* Agrega aquí tus estilos específicos para pantallas más pequeñas */
+}
+
+/* Estilos para pantallas de 1440 x 900 y mayores (computadoras de escritorio) */
+@media (min-width: 1440px) {
+    /* Agrega aquí tus estilos específicos para pantallas de 1440 x 900 y mayores */
+}
+
+@media (max-width: 1439px) {
+    .react-select-container {
+      width: 100px; /* Ajusta el ancho según tus necesidades */
+    }
+  }
+  
+  /* Estilos para pantallas de 1440 x 900 y mayores (computadoras de escritorio) */
+  @media (min-width: 1440px) {
+    .react-select-container {
+      width: 100px; /* Ajusta el ancho según tus necesidades para pantallas más grandes */
+    }
+  }

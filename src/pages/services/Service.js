@@ -526,9 +526,6 @@ const Services = () => {
                         position: toast.POSITION.TOP_RIGHT
                     });
                 } else {
-                    toast.error('Otro error ocurrió', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
                 }
             }
         }

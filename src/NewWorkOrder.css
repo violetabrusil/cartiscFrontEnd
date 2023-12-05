@@ -697,4 +697,13 @@
 }
 
 
+@media (min-width: 1440px) {
+
+    .container-fields-new-work-order-vehicle {
+        margin-top: 25px;
+    }
+
+}
+
+
 

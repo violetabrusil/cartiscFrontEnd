@@ -6,6 +6,7 @@ import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
+import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
@@ -22,6 +23,7 @@ const Location = () => {
     const [columnUpdate, setColumnUpdate] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 6); 
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -172,7 +174,8 @@ const Location = () => {
                         columns={columns}
                         onRowClick={handleRowProductClick}
                         highlightRows={true}
-                        selectedRowIndex={selectedRowIndex} />
+                        selectedRowIndex={selectedRowIndex}
+                        initialPageSize={responsivePageSize} />
                 )
                 }
 
