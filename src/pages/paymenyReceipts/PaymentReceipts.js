@@ -428,29 +428,39 @@ const PaymentReceipts = () => {
     };
 
     const handleChargeReceipt = async () => {
-        try {
-            const id = selectedReceipt.id;
 
-            const response = await apiClient.put(`/sales-receipts/charge/${id}`, null, {
-                params: {
-                    payment_type: paymentType,
-                    paid: amountToPay
-                }
-            });
+        if (paymentType === 'pending') {
 
-            handleClosePaymentModal();
-            fetchData();
-
-            toast.success('Pago procesado con éxito.', {
+            toast.error('Seleccione una forma de pago para continuar.', {
                 position: toast.POSITION.TOP_RIGHT
             });
 
-        } catch (error) {
+        } else {
+            try {
+                const id = selectedReceipt.id;
 
-            toast.error('Error al procesar el pago.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+                const response = await apiClient.put(`/sales-receipts/charge/${id}`, null, {
+                    params: {
+                        payment_type: paymentType,
+                        paid: amountToPay
+                    }
+                });
 
+                handleClosePaymentModal();
+                fetchData();
+
+                toast.success('Pago procesado con éxito.', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+
+            } catch (error) {
+                console.log("Error en paga comprobante", error)
+
+                toast.error('Error al procesar el pago.', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+
+            }
         }
 
     };
@@ -550,6 +560,7 @@ const PaymentReceipts = () => {
 
             {paymentModal && (
                 <div className="filter-modal-overlay">
+                    <ToastContainer />
                     <div className="modal-content">
                         <div className="title-modal-history">
                             <h4>Nuevo Pago</h4>
@@ -595,26 +606,25 @@ const PaymentReceipts = () => {
                             </div>
 
                             <div>
-                                <label>Valor a pagar:
+                                <label>
+                                    Valor a pagar:
                                     <input
-                                        type="number"
-                                        step="0.01"
+                                        type="text" 
                                         className="paid-input"
                                         value={amountToPay}
                                         onChange={(e) => {
-                                            const value = e.target.value;
-                                            if (/^\d*\.?\d{0,2}$/.test(value) || value === "") {
-                                                setAmountToPay(value);
+                                            const value = e.target.value.trim();
+                                            const sanitizedValue = value.replace(/,/g, '.'); // Reemplazar comas por puntos
+                                            if (/^\d*\.?\d{0,2}$/.test(sanitizedValue) || sanitizedValue === "") {
+                                                setAmountToPay(sanitizedValue);
                                                 if (payAll) {
-                                                    setPayAll(false); // Desactivar el checkbox si el usuario cambia el valor manualmente.
+                                                    setPayAll(false);
                                                 }
                                             }
                                         }}
-
                                     />
                                 </label>
                             </div>
-
 
                             <div>
                                 <input
@@ -624,15 +634,15 @@ const PaymentReceipts = () => {
                                     onChange={(e) => {
                                         setPayAll(e.target.checked);
                                         if (e.target.checked && selectedReceipt) {
-                                            setAmountToPay(selectedReceipt.total - selectedReceipt.paid);
+                                            setAmountToPay((parseFloat(selectedReceipt.total - selectedReceipt.paid).toFixed(2)));
                                         } else {
-                                            setAmountToPay(0); // O cualquier valor predeterminado.
+                                            setAmountToPay('0.00'); // O cualquier valor predeterminado con dos decimales.
                                         }
                                     }}
-
                                 />
                                 <label style={{ marginLeft: '10px' }}> Pagar todo</label>
                             </div>
+
 
 
                         </div>

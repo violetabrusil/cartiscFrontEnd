@@ -94,24 +94,68 @@ const WorkOrders = () => {
     };
 
     useEffect(() => {
-        console.log("buscar", searchTerm,selectedOption)
+        console.log("buscar", searchTerm, selectedOption);
+    
         const fetchData = async () => {
             let endpoint = '/work-orders/all';
+            const searchByVehiclePlate = "vehicle_plate";
+            const searchByWorkOrderCode = "work_order_code";
+            const searchByNameClient = "client_name";
+            const searchAssigned = "assigned";
+            const searchDelivered_by = "delivered_by";
+            const searchCreated_by = "created_by";
+    
+            let requestConfig = {};  // Configuración adicional para las solicitudes POST
+    
             if (searchTerm) {
+                // Si hay un término de búsqueda, cambia a la búsqueda POST
+                endpoint = '/work-orders/search';
+                let searchField = '';
                 switch (selectedOption) {
                     case 'Placa':
-                        //endpoint = `/vehicles/search/${searchTypePlate}/${searchTerm}`;
+                        searchField = searchByVehiclePlate;
+                        break;
+                    case 'Código Orden de Trabajo':
+                        searchField = searchByWorkOrderCode;
                         break;
                     case 'Nombre Titular':
-                        //endpoint = `/vehicles/search/${searchTypeClientName}/${searchTerm}`;
+                        searchField = searchByNameClient;
+                        break;
+                    case 'Asignada a':
+                        searchField = searchAssigned;
+                        break;
+                    case 'Entregada por':
+                        searchField = searchDelivered_by;
+                        break;
+                    case 'Creada por':
+                        searchField = searchCreated_by;
                         break;
                     default:
                         break;
                 }
+    
+                // Configuración para la solicitud POST
+                const payload = {
+                    [searchField]: searchTerm,
+                };
+                console.log("payload a enviar", payload)
+    
+                requestConfig = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: payload,
+                };
             }
+            
+            console.log("datos a enviar", requestConfig)
             try {
-                const response = await apiClient.get(endpoint);
-
+                const response = await apiClient(endpoint, requestConfig);
+                console.log("endpoint", apiClient(requestConfig))
+                console.log("respuesta", response.data)
+                
+    
                 // Transformamos la fecha y el status de cada work order
                 const transformedWorkOrders = response.data.map(workOrder => {
                     const newDateStart = formatDate(workOrder.date_start);
@@ -124,10 +168,10 @@ const WorkOrders = () => {
                         vehicle_plate: formattedPlate
                     };
                 });
-
+    
                 setWorkOrders(transformedWorkOrders);
                 setLoading(false);
-
+    
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
                     console.error('La solicitud ha superado el tiempo límite.');
@@ -136,10 +180,9 @@ const WorkOrders = () => {
                 }
             }
         }
-
+    
         fetchData();
     }, [searchTerm, selectedOption]);
-
 
     return (
 
@@ -163,7 +206,7 @@ const WorkOrders = () => {
                     {/*Lista de órdenes de trabajo */}
 
                     {loading ? (
-                        <div className="loader-container" style={{ marginLeft: '-93px'}}>
+                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
                             <PuffLoader color="#316EA8" loading={loading} size={60} />
                         </div>
                     ) : (
@@ -229,7 +272,7 @@ const WorkOrders = () => {
                 <Modal
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
-                    options={['Placa', 'Nombre Titular']}
+                    options={['Placa', 'Código Orden de Trabajo', 'Nombre Titular', 'Asignada a', 'Entregada por', 'Creada por']}
                     defaultOption="Placa"
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}

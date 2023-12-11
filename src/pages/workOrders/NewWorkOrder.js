@@ -68,6 +68,11 @@ const NewWorkOrder = () => {
     const [placeholder, setPlaceholder] = useState("Describa los síntomas");
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
 
+    const [toastShown, setToastShown] = useState(false);
+    const showToast = (message, type) => {
+        toast[type](message, { position: toast.POSITION.TOP_RIGHT });
+      };
+
     const handleSearchClientChange = (term, filter) => {
         setSearchTerm(term);
         setSelectedOption(filter);
@@ -93,12 +98,9 @@ const NewWorkOrder = () => {
         closeFilterModal();
     };
 
-    const handleClientSelect = (client) => {
+    const handleClientSelect = async (client) => {
         setSelectedClient(client);
-        if (client && client.id) {
-            getVehicleOfClient(client.id);
-        }
-    };
+      };
 
     const handleDeselectClient = () => {
         setSelectedClient();
@@ -249,61 +251,26 @@ const NewWorkOrder = () => {
         }
     };
 
-    const getClient = async () => {
-
-        let endpoint;
-
-        //Si hay un filtro de búsqueda
-        if (searchTerm) {
-            switch (selectedOption) {
-                case 'Cédula':
-                    endpoint = `/clients/search-by-cedula/${searchTerm}`;
-                    break;
-                case 'Nombre':
-                    endpoint = `/clients/search-by-name/${searchTerm}`;
-                    break;
-                default:
-                    break;
-            }
-        }
-        try {
-            const response = await apiClient.get(endpoint);
-            setClients(response.data);
-
-        } catch (error) {
-            toast.error('Error al obtener los datos de los clientes', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
-        }
-    };
-
     const getVehicleOfClient = async (clientId) => {
         try {
-            const response = await apiClient.get(`/vehicles/active/${clientId}`);
-            if (response.data && response.data.length > 0) {
-                const formattedVehicles = response.data.map(vehicle => {
-                    if (vehicle.plate) {
-                        vehicle.plate = formatPlate(vehicle.plate);
-                    }
-                    vehicle.iconSrc = iconsVehicles[vehicle.category]
-                    return vehicle;
-                });
-                setVehicles(formattedVehicles);
-            } else {
-                toast.warn('No se encontraron vehículos', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
-            }
-
-        } catch (error) {
-            toast.error('"Error al obtener los vehículos del cliente', {
-                position: toast.POSITION.TOP_RIGHT
+          const response = await apiClient.get(`/vehicles/active/${clientId}`);
+          if (response.data && response.data.length > 0) {
+            const formattedVehicles = response.data.map((vehicle) => {
+              if (vehicle.plate) {
+                vehicle.plate = formatPlate(vehicle.plate);
+              }
+              vehicle.iconSrc = iconsVehicles[vehicle.category];
+              return vehicle;
             });
+            setVehicles(formattedVehicles);
+            setToastShown(false);
+          } else {
+            setToastShown(true);
+          }
+        } catch (error) {
+          showToast('Error al obtener los vehículos del cliente', 'error');
         }
-
-    };
+      };
 
     const handleWorkOrderCreation = () => {
         if (!actualKm) {
@@ -401,25 +368,40 @@ const NewWorkOrder = () => {
 
     const onBack = () => {
         navigate("/workOrders");
+        resetForm();
     };
 
     useEffect(() => {
 
-        if (searchTerm) {
-            // Limpia el timeout anterior si el usuario sigue escribiendo
-            if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+        const getClient = async () => {
 
-            // Establece un timeout para esperar que el usuario termine de escribir
-            debounceTimeout.current = setTimeout(() => {
-                getClient(); // Tu función para obtener los clientes
-            }, 500); // 500ms de espera
-        } else {
-            setClients([]); // Limpia los clientes si el searchTerm está vacío
+            let endpoint = '/clients/all'; 
+    
+            //Si hay un filtro de búsqueda
+            if (searchTerm) {
+                switch (selectedOption) {
+                    case 'Cédula':
+                        endpoint = `/clients/search-by-cedula/${searchTerm}`;
+                        break;
+                    case 'Nombre':
+                        endpoint = `/clients/search-by-name/${searchTerm}`;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            try {
+                const response = await apiClient.get(endpoint);
+                setClients(response.data);
+    
+            } catch (error) {
+                toast.error('Error al obtener los datos de los clientes', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+    
+            }
         }
-
-        return () => {
-            if (debounceTimeout.current) clearTimeout(debounceTimeout.current); // Limpia el timeout al desmontar el componente
-        };
+        getClient();
 
     }, [searchTerm, selectedOption])
 
@@ -456,6 +438,12 @@ const NewWorkOrder = () => {
             getVehicleOfClient(selectedClient.id);
         }
     }, [selectedClient]);
+
+    useEffect(() => {
+        if (toastShown) {
+          showToast('No se encontraron vehículos', 'warn');
+        }
+      }, [toastShown]);
 
     useEffect(() => {
         if (selectedVehicle && selectedVehicle.km) {
@@ -533,7 +521,7 @@ const NewWorkOrder = () => {
                                     </div>
 
                                     {/*Lista de clientes*/}
-                                    {searchTerm && clients.length > 0 && (
+                                    {clients.length > 0 && (
                                         <div>
                                             {clients.map(clientData => (
                                                 <div className="result-client-container" key={clientData.client.id} onClick={() => handleClientSelect(clientData.client)}>

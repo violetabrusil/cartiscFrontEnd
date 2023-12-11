@@ -168,7 +168,7 @@ export function SearchProductsModal({ onClose,
                     const sku = row.original.sku;
                     const currentPrice = productPrices[sku] !== undefined ? productPrices[sku] : value;
                     const handleBlur = (e) => {
-                        handleCostChange(sku, parseFloat(e.target.value));
+                        handleCostChange(sku, parseFloat(e.target.value.trim()));
                     };
 
                     return (
@@ -243,6 +243,7 @@ export function SearchProductsModal({ onClose,
     );
 
     const handleCostChange = (productCode, newCost) => {
+        console.log("costo del producto", newCost)
         if (isNaN(newCost)) {
             console.error(`Invalid price for product code: ${productCode}`);
             return;
@@ -280,7 +281,7 @@ export function SearchProductsModal({ onClose,
         return new Promise((resolve) => {
             const updatedProducts = selectedProducts.map((product) => {
                 const sku = product.sku;
-                const price = productPrices[sku] || product.price;
+                const price = productPrices[sku] || 0;
                 const quantity = productQuantities[sku] || 1;
 
                 return {
@@ -337,12 +338,14 @@ export function SearchProductsModal({ onClose,
                     price: parseFloat(parseFloat(product.price).toFixed(2))
                 })),
             };
+            console.log("datos a enviar prodcuto actualizar", payload)
             await apiClient.put(`work-orders/update-products/${workOrderId}`, payload)
             toast.success('Productos actualizados', {
                 position: toast.POSITION.TOP_RIGHT
             });
 
         } catch (error) {
+            console.log("error al actualizar productos", error)
             toast.error('Error al actualizar los productos', {
                 position: toast.POSITION.TOP_RIGHT
             });

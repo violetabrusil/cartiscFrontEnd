@@ -15,7 +15,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
     const [isAlertOperationSuspend, setIsAlertOperationSuspend] = useState(false);
 
     const handleInputChange = (e) => {
-        setCostOperation(e.target.value);
+        setCostOperation(e.target.value.trim());
     };
 
     const handleAddNewOperation = async (event) => {

@@ -453,7 +453,7 @@ export function ProductForm({
                                         step="0.01"
                                         min="0"
                                         value={price}
-                                        onChange={e => setPrice(e.target.value)}
+                                        onChange={e => setPrice(e.target.value.trim())}
                                         disabled={!isEditable} />
 
                                     <img

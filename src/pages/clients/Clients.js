@@ -480,7 +480,7 @@ const Clients = () => {
                 if (error.code === 'ECONNABORTED') {
                     console.error('La solicitud ha superado el tiempo límite.');
                 } else {
-                    console.error('Otro error ocurrió:', error.message);
+                    console.error('Error al cargar la información vuelva a intentarlo.', error.message);
                 }
 
             }
