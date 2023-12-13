@@ -98,92 +98,93 @@ const WorkOrders = () => {
     
         const fetchData = async () => {
             let endpoint = '/work-orders/all';
-            const searchByVehiclePlate = "vehicle_plate";
-            const searchByWorkOrderCode = "work_order_code";
-            const searchByNameClient = "client_name";
-            const searchAssigned = "assigned";
-            const searchDelivered_by = "delivered_by";
-            const searchCreated_by = "created_by";
-    
-            let requestConfig = {};  // Configuración adicional para las solicitudes POST
     
             if (searchTerm) {
                 // Si hay un término de búsqueda, cambia a la búsqueda POST
                 endpoint = '/work-orders/search';
-                let searchField = '';
-                switch (selectedOption) {
-                    case 'Placa':
-                        searchField = searchByVehiclePlate;
-                        break;
-                    case 'Código Orden de Trabajo':
-                        searchField = searchByWorkOrderCode;
-                        break;
-                    case 'Nombre Titular':
-                        searchField = searchByNameClient;
-                        break;
-                    case 'Asignada a':
-                        searchField = searchAssigned;
-                        break;
-                    case 'Entregada por':
-                        searchField = searchDelivered_by;
-                        break;
-                    case 'Creada por':
-                        searchField = searchCreated_by;
-                        break;
-                    default:
-                        break;
+    
+                // Mapea el selectedOption al campo de búsqueda correspondiente
+                const searchFieldMapping = {
+                    'Placa': 'vehicle_plate',
+                    'Código Orden de Trabajo': 'work_order_code',
+                    'Nombre Titular': 'client_name',
+                    'Asignada a': 'assigned',
+                    'Entregada por': 'delivered_by',
+                    'Creada por': 'created_by',
+                };
+    
+                const searchField = searchFieldMapping[selectedOption];
+    
+                if (!searchField) {
+                    console.error('Campo de búsqueda no válido:', selectedOption);
+                    return;
                 }
     
                 // Configuración para la solicitud POST
                 const payload = {
                     [searchField]: searchTerm,
                 };
-                console.log("payload a enviar", payload)
     
-                requestConfig = {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: payload,
-                };
-            }
-            
-            console.log("datos a enviar", requestConfig)
-            try {
-                const response = await apiClient(endpoint, requestConfig);
-                console.log("endpoint", apiClient(requestConfig))
-                console.log("respuesta", response.data)
-                
+                try {
+                    const response = await apiClient.post(endpoint, payload);
     
-                // Transformamos la fecha y el status de cada work order
-                const transformedWorkOrders = response.data.map(workOrder => {
-                    const newDateStart = formatDate(workOrder.date_start);
-                    const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
-                    const formattedPlate = formatPlate(workOrder.vehicle_plate);
-                    return {
-                        ...workOrder,
-                        date_start: newDateStart,
-                        work_order_status: translatedStatus,
-                        vehicle_plate: formattedPlate
-                    };
-                });
+                    // Transformamos la fecha y el status de cada work order
+                    const transformedWorkOrders = response.data.map(workOrder => {
+                        const newDateStart = formatDate(workOrder.date_start);
+                        const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
+                        const formattedPlate = formatPlate(workOrder.vehicle_plate);
+                        return {
+                            ...workOrder,
+                            date_start: newDateStart,
+                            work_order_status: translatedStatus,
+                            vehicle_plate: formattedPlate
+                        };
+                    });
     
-                setWorkOrders(transformedWorkOrders);
-                setLoading(false);
+                    setWorkOrders(transformedWorkOrders);
+                    setLoading(false);
     
-            } catch (error) {
-                if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                } catch (error) {
+                    if (error.code === 'ECONNABORTED') {
+                        console.error('La solicitud ha superado el tiempo límite.');
+                    } else {
+                        console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                    }
+                }
+            } else {
+                try {
+                    const response = await apiClient.get(endpoint);
+    
+                    // Transformamos la fecha y el status de cada work order
+                    const transformedWorkOrders = response.data.map(workOrder => {
+                        const newDateStart = formatDate(workOrder.date_start);
+                        const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
+                        const formattedPlate = formatPlate(workOrder.vehicle_plate);
+                        return {
+                            ...workOrder,
+                            date_start: newDateStart,
+                            work_order_status: translatedStatus,
+                            vehicle_plate: formattedPlate
+                        };
+                    });
+    
+                    setWorkOrders(transformedWorkOrders);
+                    setLoading(false);
+    
+                } catch (error) {
+                    if (error.code === 'ECONNABORTED') {
+                        console.error('La solicitud ha superado el tiempo límite.');
+                    } else {
+                        console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                    }
                 }
             }
-        }
+        };
     
         fetchData();
     }, [searchTerm, selectedOption]);
-
+    
+    
     return (
 
         <div>

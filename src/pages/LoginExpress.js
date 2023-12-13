@@ -1,6 +1,6 @@
 import '../App.css';
 import '../Form.css';
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from '../contexts/AuthContext';
@@ -17,12 +17,14 @@ const userIcon = process.env.PUBLIC_URL + "/images/user.png";
 const LoginExpress = () => {
 
     const [pin, setPin] = useState('');
+    const [physicalPin, setPhysicalPin] = useState('');
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleNumberClick = (number) => {
         if (pin.length < 6) {
-            setPin(prevPin => prevPin + number)
+            setPin(prevPin => prevPin + number);
+            setPhysicalPin(prevPhysicalPin => prevPhysicalPin + number);
         }
     };
 
@@ -67,6 +69,21 @@ const LoginExpress = () => {
     const handleLoginOtherAccount = () => {
         navigate("/login");
     };
+
+    useEffect(() => {
+        const handleKeyPress = (event) => {
+            if (event.keyCode === 13) {
+                handleSubmit(event);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+
+    }, [pin]);
 
     return (
 
@@ -128,7 +145,7 @@ const LoginExpress = () => {
                                     className="password-login-express "
                                     type="password"
                                     value={pin}
-                                    readOnly
+                                    onChange={(e) => setPin(e.target.value)} 
                                 />
 
 

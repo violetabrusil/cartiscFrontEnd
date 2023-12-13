@@ -1,5 +1,6 @@
 .new-work-order-general-container {
     position: absolute;
+    height: 90vh;
     top: 97px;
     bottom: 0;
     left: 60px;
@@ -48,8 +49,9 @@
     width: 40%;
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
-    max-height: 500px;  /* Puedes ajustar este valor según lo necesites */
-    overflow-y: auto; 
+    max-height: 500px;
+    /* Puedes ajustar este valor según lo necesites */
+    overflow-y: auto;
 }
 
 .right-div-container {
@@ -154,7 +156,7 @@
     grid-template-columns: 1fr;
     grid-gap: 1px;
     border-radius: 5px;
-    margin-left: 26px;
+    margin-left: 37px;
     margin-bottom: 10px;
 }
 
@@ -181,6 +183,9 @@
     font-style: normal;
     font-weight: 300;
     line-height: normal;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .container-car-number-client {
@@ -288,7 +293,7 @@
 }
 
 .carousel.selected {
-    background-color: #d1e2f1;  
+    background-color: #d1e2f1;
 }
 
 .carousel .react-multiple-carousel__arrow--left:before {
@@ -444,7 +449,8 @@
 }
 
 .editable-container:focus {
-    outline: 2px solid #316EA8; /* Cambia esto al color que prefieras */
+    outline: 2px solid #316EA8;
+    /* Cambia esto al color que prefieras */
 }
 
 .list-sypmtoms-container {
@@ -460,7 +466,7 @@
 }
 
 .list-sypmtoms-container li:focus {
-    outline: 2px solid #316EA8; 
+    outline: 2px solid #316EA8;
 }
 
 .textarea-class {
@@ -477,7 +483,7 @@
     /* Este es un color gris claro */
 }
 
-.input-search-client .search-box  {
+.input-search-client .search-box {
     display: flex;
     align-items: center;
     max-width: 90%;
@@ -493,8 +499,8 @@
 
 .vehicle-count-container-work-order {
     display: flex;
-    align-items: center; /* Si deseas que los ítems estén centrados verticalmente */
-    gap: 16px; /* Espaciado entre ítems, puedes ajustar este valor a tu preferencia */
+    align-items: center;
+    /* Si deseas que los ítems estén centrados verticalmente */
 }
 
 .container-car-number-work-order {
@@ -502,8 +508,8 @@
     grid-template-columns: 1fr 15fr;
     grid-gap: 2px;
     margin-top: 1px;
-    width: 15%;
-} 
+    width: 12%;
+}
 
 .car-number-work-order {
     color: rgba(0, 0, 0, 0.41);
@@ -528,7 +534,7 @@
     height: 23px;
 }
 
-.van-container-work-order{
+.van-container-work-order {
     margin-bottom: -3px;
 }
 
@@ -648,6 +654,7 @@
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+
     .input-field-right {
         width: 80%;
     }
@@ -659,16 +666,16 @@
     .checkbox-group {
         margin-left: 20px;
     }
-    
+
     .checkbox-group label,
     .checkbox-group div {
         margin-right: 10px;
     }
-    
+
     .checkbox-group input[type="checkbox"] {
         margin-inline-end: 39px;
     }
-    
+
     .checkbox-group input[type="number"] {
         margin-inline-end: 0px;
         margin-left: 50px;
@@ -678,7 +685,7 @@
     .label-title {
         margin-right: 30px;
     }
-    
+
     .label-input {
         margin-right: 10px;
     }
@@ -693,16 +700,30 @@
         margin-left: 5px;
     }
 
+    .label-name-client {
+        width: 300px;
+    }
+
+    .container-car-number-work-order {
+        width: 15%;
+    }
+
+    .result-client-container {
+        margin-left: 27px;
+    }
+
+    .new-work-order-general-container {
+        height: 85vh;
+    }
+
+
 }
 
 
-@media (min-width: 1440px) {
+@media(max-width: 1440px) and (max-height: 900px) {
 
     .container-fields-new-work-order-vehicle {
         margin-top: 25px;
     }
 
 }
-
-
-

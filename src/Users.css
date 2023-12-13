@@ -338,6 +338,8 @@
 
     .container-button-user-action {
         margin-left: 65px;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 
     .span-button-user {
@@ -360,16 +362,26 @@
     .container-user-information {
         width: 40vh;
     }
+
+    .general-user-left {
+        margin-top: 10px
+    }
+
+    .container-button-edit-user {
+        margin-top: 10px;
+    }
+
+    .container-profile-picture-user {
+        margin-bottom: 10px;
+    }
+
+    .container-status-user {
+        margin-top: -19px;
+        margin-bottom: 10px;
+    }
+
 }
 
-@media (max-width: 1439px) {
-    /* Agrega aquí tus estilos específicos para pantallas más pequeñas */
-}
-
-/* Estilos para pantallas de 1440 x 900 y mayores (computadoras de escritorio) */
-@media (min-width: 1440px) {
-    /* Agrega aquí tus estilos específicos para pantallas de 1440 x 900 y mayores */
-}
 
 @media (max-width: 1439px) {
     .react-select-container {
@@ -378,7 +390,7 @@
   }
   
   /* Estilos para pantallas de 1440 x 900 y mayores (computadoras de escritorio) */
-  @media (min-width: 1440px) {
+  @media (max-width: 1440px) and (max-height: 900px){
     .react-select-container {
       width: 100px; /* Ajusta el ancho según tus necesidades para pantallas más grandes */
     }

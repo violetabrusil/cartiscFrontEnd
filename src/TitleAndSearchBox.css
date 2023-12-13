@@ -17,8 +17,8 @@
 }
 
 .filter-icon {
-    width: 24px;
-    height: 24px;
+    width: 35px;
+    height: 25px;
     margin-right: 8px;
 }
 
@@ -66,12 +66,12 @@
     border-radius: 6px;
     border: 2px solid rgba(134, 134, 134, 0.31);
     background: rgba(128, 128, 128, 0.26);
-    margin-left: 26px;
+    margin-left: 37px;
     margin-top: -7px;
 }
 
 .button-filter-special{
-    width: 131px;
+    width: 151px;
     height: 40px;
     border: none;
     margin-top: -10px;
@@ -80,8 +80,8 @@
 }
 
 .filter-icon-special {
-    width: 15px;
-    height: 15px;
+    width: 35px;
+    height: 25px;
     margin-right: 8px;
     margin-bottom: 3px;
 }
@@ -126,5 +126,11 @@
     .search-box {
         width: 100%;
         max-width: 300px;
+    }
+}
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) { 
+    .search-box-special {
+        margin-left: 25px;
     }
 }

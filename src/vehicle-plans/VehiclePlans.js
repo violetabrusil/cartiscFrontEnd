@@ -30,6 +30,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
             updatePoints([...points, pointWithSide]);
         }
     };
+    
 
     const handleDragEnd = (index) => (event) => {
         const newPoints = [...points];
@@ -60,8 +61,8 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
 
     return (
         <div className="container-vehicle-plan">
-            <div style={{margin: '20px'}}>
-                <Stage width={imageWidth} height={imageHeight} onClick={handleStageClick}>
+            <div style={{ margin: '20px' }}>
+                <Stage width={imageWidth} height={imageHeight} onClick={handleStageClick} onTouchStart={handleStageClick}>
                     <Layer>
                         <Image image={image}
                             width={imageWidth}
@@ -71,6 +72,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
                         {points.map((point, index) => (
                             <Circle key={index} x={point.x} y={point.y} radius={10} fill="#ffea00"
                                 draggable={isEditable}
+                                onClick={() => handleDragEnd(index)()}
                                 onDragEnd={handleDragEnd(index)} />
                         ))}
                     </Layer>

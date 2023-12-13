@@ -9,7 +9,7 @@
 
 .comments-section {
     display: block;
-    min-height: 13%;
+    min-height: 6%;
     align-items: stretch;
 }
 
@@ -25,7 +25,7 @@
 
 .div-products {
     display: block;
-    min-height: 40%;
+    min-height: 17%;
     align-items: stretch;
 }
 
@@ -38,8 +38,7 @@
 
 .div-services {
     display: block;
-    min-height: 40%;
-    height: 44%;
+    min-height: 18%;
     align-items: stretch;
 }
 
@@ -254,8 +253,9 @@
         margin-left: 59px;
     }
     
+    
 }
-@media (min-width: 1440px) {
+@media (max-width: 1440px) and (max-height: 900px){
 
     .container-created {
         margin-left: -11px;

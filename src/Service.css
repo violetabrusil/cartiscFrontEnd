@@ -379,7 +379,7 @@ td {
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
     .container-services  {
-        height: 130vh;
+        height: 88vh;
         grid-template-columns: 1.5fr 2fr;
     }
     

@@ -71,7 +71,7 @@ const NewWorkOrder = () => {
     const [toastShown, setToastShown] = useState(false);
     const showToast = (message, type) => {
         toast[type](message, { position: toast.POSITION.TOP_RIGHT });
-      };
+    };
 
     const handleSearchClientChange = (term, filter) => {
         setSearchTerm(term);
@@ -100,7 +100,7 @@ const NewWorkOrder = () => {
 
     const handleClientSelect = async (client) => {
         setSelectedClient(client);
-      };
+    };
 
     const handleDeselectClient = () => {
         setSelectedClient();
@@ -253,24 +253,24 @@ const NewWorkOrder = () => {
 
     const getVehicleOfClient = async (clientId) => {
         try {
-          const response = await apiClient.get(`/vehicles/active/${clientId}`);
-          if (response.data && response.data.length > 0) {
-            const formattedVehicles = response.data.map((vehicle) => {
-              if (vehicle.plate) {
-                vehicle.plate = formatPlate(vehicle.plate);
-              }
-              vehicle.iconSrc = iconsVehicles[vehicle.category];
-              return vehicle;
-            });
-            setVehicles(formattedVehicles);
-            setToastShown(false);
-          } else {
-            setToastShown(true);
-          }
+            const response = await apiClient.get(`/vehicles/active/${clientId}`);
+            if (response.data && response.data.length > 0) {
+                const formattedVehicles = response.data.map((vehicle) => {
+                    if (vehicle.plate) {
+                        vehicle.plate = formatPlate(vehicle.plate);
+                    }
+                    vehicle.iconSrc = iconsVehicles[vehicle.category];
+                    return vehicle;
+                });
+                setVehicles(formattedVehicles);
+                setToastShown(false);
+            } else {
+                setToastShown(true);
+            }
         } catch (error) {
-          showToast('Error al obtener los vehículos del cliente', 'error');
+            showToast('Error al obtener los vehículos del cliente', 'error');
         }
-      };
+    };
 
     const handleWorkOrderCreation = () => {
         if (!actualKm) {
@@ -282,7 +282,8 @@ const NewWorkOrder = () => {
 
     const handleNoUpdate = () => {
         const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
-        setActualKm(kmVehicleSelected.km); // Debes tener una función o método para obtener el kilometraje actual del vehículo
+        setActualKm(kmVehicleSelected.km); // kilometraje actual del vehículo
+        console.log("km sin mofificar", kmVehicleSelected.km)
         setIsKmModalOpen(false);
         createNewWorkOrder(); // Luego de actualizar el kilometraje, llama a la función para crear la orden de trabajo
     };
@@ -301,6 +302,8 @@ const NewWorkOrder = () => {
         setObservations("");
         setPointsOfInterest([]);
     };
+
+    const isNumber = (value) => !isNaN(Number(value));
 
     const createNewWorkOrder = async () => {
         const vehicleStatus = {};
@@ -327,6 +330,17 @@ const NewWorkOrder = () => {
         vehicleStatus.presented_symptoms = symptoms.join(', ');
         vehicleStatus.general_observations = observations;
 
+        const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
+
+        if (!isNumber(actualKm)) {
+            toast.warn('El KM ingresado no tiene un formato numérico válido. Intente nuevamente.', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            return;
+        }
+
+        const actualKmValue = actualKm !== undefined && !isNaN(Number(actualKm)) ? Number(actualKm) : null;
+
         const payload = {
             vehicle_id: selectedVehicleId ? selectedVehicleId : selectedVehicle?.id,
             comments: comments,
@@ -334,8 +348,10 @@ const NewWorkOrder = () => {
             date_start: dateStart,
             created_by: createdBy,
             vehicle_status: vehicleStatus,
-            km: Number(actualKm),
+            km: actualKmValue !== 0 ? actualKmValue : kmVehicleSelected.km,
         };
+
+        console.log("datos a enviar", payload)
 
         try {
 
@@ -375,8 +391,8 @@ const NewWorkOrder = () => {
 
         const getClient = async () => {
 
-            let endpoint = '/clients/all'; 
-    
+            let endpoint = '/clients/all';
+
             //Si hay un filtro de búsqueda
             if (searchTerm) {
                 switch (selectedOption) {
@@ -393,12 +409,12 @@ const NewWorkOrder = () => {
             try {
                 const response = await apiClient.get(endpoint);
                 setClients(response.data);
-    
+
             } catch (error) {
                 toast.error('Error al obtener los datos de los clientes', {
                     position: toast.POSITION.TOP_RIGHT
                 });
-    
+
             }
         }
         getClient();
@@ -441,9 +457,9 @@ const NewWorkOrder = () => {
 
     useEffect(() => {
         if (toastShown) {
-          showToast('No se encontraron vehículos', 'warn');
+            showToast('No se encontraron vehículos', 'warn');
         }
-      }, [toastShown]);
+    }, [toastShown]);
 
     useEffect(() => {
         if (selectedVehicle && selectedVehicle.km) {
@@ -531,45 +547,58 @@ const NewWorkOrder = () => {
                                                             <label className="label-name-client">{clientData.client.name}</label>
 
                                                             <div className="vehicle-count-container-work-order">
-                                                                {/* Si el vehicles_count es vacío */}
-                                                                <div className="container-car-number-work-order">
-                                                                    <label className="car-number-work-order">{(clientData.vehicles_count && clientData.vehicles_count.car) || 0}</label>
-                                                                    <img src={autoIcon} alt="Car client" className="icon-car-work-order" />
-                                                                </div>
-
-                                                                {/* Si vehicles_count no es vacío, muestra los otros íconos */}
-                                                                {clientData.vehicles_count && (
-                                                                    <>
-                                                                        {clientData.vehicles_count.van && (
-                                                                            <div className="container-car-number-work-order">
-                                                                                <label className="car-number-work-order"> {clientData.vehicles_count.van}
-                                                                                </label>
-                                                                                <div className="van-container-work-order">
-                                                                                    <img src={camionetaIcon} alt="Van client" className="icon-van-work-order"></img>
+                                                                {
+                                                                    (!clientData.vehicles_count ||
+                                                                        Object.values(clientData.vehicles_count).every(val => val === 0)
+                                                                    ) ? (
+                                                                        <div>
+                                                                            Sin vehículos
+                                                                        </div>
+                                                                    ) : (
+                                                                        <>
+                                                                            {clientData.vehicles_count.car > 0 && (
+                                                                                <div className="container-car-number-work-order">
+                                                                                    <label className="car-number-work-order">{clientData.vehicles_count.car}</label>
+                                                                                    <img src={autoIcon} alt="Car client" className="icon-car" />
                                                                                 </div>
 
-                                                                            </div>
-                                                                        )}
+                                                                            )}
 
-                                                                        {clientData.vehicles_count.bus && (
-                                                                            <div className="container-car-number-work-order">
-                                                                                <label className="car-number-work-order"> {clientData.vehicles_count.bus}
-                                                                                </label>
-                                                                                <img src={busetaIcon} alt="Bus client" className="icon-bus-work-order"></img>
-                                                                            </div>
+                                                                            {clientData.vehicles_count.van > 0 && (
+                                                                                <div className="container-car-number-work-order">
+                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.van}
+                                                                                    </label>
+                                                                                    <div className="van-container-work-order">
+                                                                                        <img src={camionetaIcon} alt="Van client" className="icon-van-work-order"></img>
+                                                                                    </div>
 
-                                                                        )}
+                                                                                </div>
+                                                                            )}
 
-                                                                        {clientData.vehicles_count.truck && (
-                                                                            <div className="container-car-number-work-order">
-                                                                                <label className="car-number-work-order"> {clientData.vehicles_count.truck}
-                                                                                </label>
-                                                                                <img src={camionIcon} alt="Truck client" className="icon-car-work-order"></img>
-                                                                            </div>
 
-                                                                        )}
-                                                                    </>
-                                                                )}
+                                                                            {clientData.vehicles_count.bus && (
+                                                                                <div className="container-car-number-work-order">
+                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.bus}
+                                                                                    </label>
+                                                                                    <img src={busetaIcon} alt="Bus client" className="icon-bus-work-order"></img>
+                                                                                </div>
+
+                                                                            )}
+
+                                                                            {clientData.vehicles_count.truck && (
+                                                                                <div className="container-car-number-work-order">
+                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.truck}
+                                                                                    </label>
+                                                                                    <img src={camionIcon} alt="Truck client" className="icon-car-work-order"></img>
+                                                                                </div>
+
+                                                                            )}
+
+                                                                        </>
+                                                                    )
+                                                                }
+
+
 
                                                             </div>
 

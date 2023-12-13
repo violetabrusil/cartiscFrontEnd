@@ -80,6 +80,10 @@ const InformationWorkOrder = () => {
     const integerPart = rawIntegerPart || '0';
     const decimalPart = rawDecimalPart || '00';
 
+    const [percentages, setPercentages] = useState({
+        group3: [null, null, null, 0, null],
+    });
+
     const navigate = useNavigate();
 
     const keyMapping = {
@@ -245,6 +249,19 @@ const InformationWorkOrder = () => {
         }),
     };
 
+     //Función para manejar los cambios en los porcentajes
+     const handlePorcentageChange = (group, index, event) => {
+        setPercentages((prev) => ({
+            ...prev,
+            [group]: [
+                ...prev[group].slice(0, index),
+                event.target.value,
+                ...prev[group].slice(index + 1),
+            ],
+        }));
+    };
+
+
     const handleSelectChange = (option) => {
         const currentStatus = workOrderStatus.value;
         const nextStatus = option.value;
@@ -314,7 +331,7 @@ const InformationWorkOrder = () => {
                 });
 
                 toast.success("El cambio de estado de la orden de trabajo es válido");
-               
+
                 if (newStatus === 'completed') {
                     getWorkOrderDetailById();
                     navigate('/paymentReceipt', {
@@ -370,6 +387,7 @@ const InformationWorkOrder = () => {
             }
 
             setWorkOrderDetail(response.data);
+            console.log("datoa de la orden de trabajo", response.data)
             const selectionFromApi = transformVehicleStatusToSelections(response.data.vehicle_status);
             setSelections(selectionFromApi);
             setFuelLevel(response.data.vehicle_status.fuel_level);
@@ -424,7 +442,7 @@ const InformationWorkOrder = () => {
                 setSymptoms(prev => [...prev, text]);
                 event.target.innerText = '';
             }
-        } 
+        }
     };
 
     const handleUpdateSymptom = (index, newText) => {
@@ -519,12 +537,25 @@ const InformationWorkOrder = () => {
         setSelections(newSelections);
     };
 
-    const editWorkOrder = async () => {  // Suponiendo que pasas el id de la orden que quieres editar
+    const editWorkOrder = async () => {
         const vehicleStatus = {};
-
+    
         vehicleStatus.id = idVehicleStatus;
         vehicleStatus.work_order_id = Number(workOrderId);
-
+    
+        // Verificar si se ha ingresado el fuel_level
+        const fuelLevelEntered = Object.keys(optionsCheckBox).some(group => {
+            return optionsCheckBox[group].some(option => keyMapping[option] === 'Gas');
+        });
+    
+        if (!fuelLevelEntered) {
+            // Mostrar un toast de advertencia y salir de la función
+            toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            return;
+        }
+    
         Object.keys(optionsCheckBox).forEach(group => {
             optionsCheckBox[group].forEach((option, index) => {
                 const key = keyMapping[option];
@@ -532,12 +563,12 @@ const InformationWorkOrder = () => {
                     if (key !== 'fuel_level') {
                         vehicleStatus[key] = selections[group][index];
                     } else {
-                        vehicleStatus[key] = fuelLevel
+                        vehicleStatus[key] = parseInt(percentages[group][index], 10) || 0;
                     }
                 }
             });
         });
-
+    
         vehicleStatus.points_of_interest = pointsOfInterest.map(point => {
             return {
                 id: point.id,
@@ -549,16 +580,15 @@ const InformationWorkOrder = () => {
         });
         vehicleStatus.presented_symptoms = symptoms.join(', ');
         vehicleStatus.general_observations = observations;
-
+    
         const payload = {
             comments: comments,
             vehicle_status: vehicleStatus,
         };
-
+    
         try {
-
             const response = await apiClient.put(`/work-orders/update/${workOrderId}`, payload);
-
+    
             if (response.status === 200) {  // Suponiendo que tu API devuelve 200 para una edición exitosa
                 toast.success('Orden de trabajo editada exitósamente', {
                     position: toast.POSITION.TOP_RIGHT
@@ -568,14 +598,20 @@ const InformationWorkOrder = () => {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
-
+    
         } catch (error) {
             console.error("Error al editar la orden de trabajo", error);
-            toast.error('Error inesperado al editar la orden de trabajo.', {
+    
+            // Obtener el mensaje de error
+            const errorMessage = error.message || 'Error inesperado al editar la orden de trabajo.';
+    
+            // Mostrar el mensaje de error en el toast
+            toast.error(errorMessage, {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
     };
+    
 
     const openAssignModal = () => {
         setShowAssignModal(true);
@@ -894,11 +930,16 @@ const InformationWorkOrder = () => {
                                                             return (
                                                                 <div key={index}>
                                                                     <img src={fuelIcon} alt="Fuel Icon" className="fuel-icon" />
-                                                                    <input className="input-full-level"
-                                                                        value={fuelLevel}
-                                                                        onChange={handleGasChange}
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        max="100"
+                                                                        value={percentages[group][index] || ''}
+                                                                        onChange={(event) => handlePorcentageChange(group, index, event)}
                                                                         disabled={!isEditState}
                                                                     />
+
+
                                                                     {' %'}
                                                                 </div>
                                                             );

@@ -14,6 +14,7 @@ import { userStatusMaping } from "../../constants/userStatusConstants";
 import { useDebounce } from "../../useDebounce";
 import { CustomPlaceholderWithLabel } from "../../customPlaceholder/CustomPlaceholderWithLabel";
 import { CustomSingleValueWithLabel } from "../../customSingleValue/CustomSingleValueWithLabel";
+import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 
 const addUserIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -53,6 +54,7 @@ const Users = () => {
     const debouncedPin = useDebounce(pin, 500);
     const [displayImage, setDisplayImage] = useState(null);
     const { user, setUser } = useContext(AuthContext);
+    const responsivePageSizeUsers = usePageSizeForTabletLandscape(12, 6);
 
     const statusColors = {
         "Activo": "#49A05C",
@@ -252,19 +254,33 @@ const Users = () => {
         menuPortal: base => ({ ...base, width: '15.8%', zIndex: 9999 }),
 
     };
-
     const selectStyles = {
-        control: (provided, state) => ({
-            ...provided,
-            width: isTabletLandscape ? '190px' : '287px',
-            height: '40px',
-            minHeight: '40px',
-            border: '1px solid rgb(0 0 0 / 34%)',
-            textAlign: 'left',
-            '@media (min-width: 1440px)': {
-                width: '250px',
-              },
-        }),
+        control: (provided, state) => {
+            const baseStyles = {
+                ...provided,
+                height: '40px',
+                minHeight: '40px',
+                border: '1px solid rgb(0 0 0 / 34%)',
+                textAlign: 'left',
+            };
+    
+            // Agrega estilos específicos para tablet landscape
+            if (isTabletLandscape) {
+                return {
+                    ...baseStyles,
+                    width: '220px',
+                };
+            }
+    
+            // Agrega estilos específicos para desktop con max-width y max-height
+            return {
+                ...baseStyles,
+                width: '287px',
+                '@media (max-width: 1440px) and (max-height: 900px)': {
+                    width: '250px',
+                },
+            };
+        },
         placeholder: (provided, state) => ({
             ...provided,
             color: 'rgb(0 0 0 / 34%)',
@@ -273,9 +289,10 @@ const Users = () => {
         option: (provided, state) => ({
             ...provided,
             className: 'custom-option-select',
-            textAlign: 'left'
+            textAlign: 'left',
         }),
     };
+    
 
     const handleShowMoreInfomation = (event, user) => {
         if (event && event.stopPropagation) {
@@ -308,7 +325,7 @@ const Users = () => {
         setUsername('');
         setPassword('');
         setPin('');
-    };
+        };
 
     const handleEditUser = () => {
         setActionType('edit');
@@ -536,6 +553,7 @@ const Users = () => {
             setIsOpenModal(false);
             fetchData();
         } catch (error) {
+            console.log("Error al crear usuario", error)
             toast.error('Error al crear el usuario', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -632,6 +650,7 @@ const Users = () => {
                                 data={allUsers}
                                 columns={columns}
                                 highlightRows={false}
+                                initialPageSize={responsivePageSizeUsers}
                             />
                         </>
                     )}

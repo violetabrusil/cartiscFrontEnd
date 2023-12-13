@@ -479,7 +479,7 @@ const Services = () => {
             }
 
         } catch (error) {
-            toast.error('Error al eliminar el servicio. Por favor, inténtalo de nuevo..', {
+            toast.error('Antes de eliminar el servicio debe eliminar las operaciones asociadas al servicio', {
                 position: toast.POSITION.TOP_RIGHT
             });
         }

@@ -454,7 +454,7 @@
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
     .containerCars {
-        height: 130vh;
+        height: 88vh;
         grid-template-columns: 1.5fr 2fr;
     }
     
@@ -482,7 +482,7 @@
 
 }
 
-@media (min-width: 1440px) {
+@media (max-width: 1440px) and (max-height: 900px) {
 
     .label-plate-vehicle {
         margin-left: 4%;

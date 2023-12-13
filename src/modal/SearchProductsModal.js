@@ -255,13 +255,23 @@ export function SearchProductsModal({ onClose,
     };
 
     const addProduct = (productToAdd) => {
-        onProductsSelected(prevProducts => {
-            if (prevProducts.some(p => p.sku === productToAdd.sku)) {
+        // Verificar si el stock es diferente de cero
+        if (productToAdd.stock === 0) {
+            // Mostrar un toast de advertencia y salir de la función
+            toast.warn('No se puede agregar el producto porque no cuenta con stock.', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            return;
+        }
+    
+        onProductsSelected((prevProducts) => {
+            if (prevProducts.some((p) => p.sku === productToAdd.sku)) {
                 return prevProducts; // retornar el mismo array si el producto ya está presente
             }
             return [...prevProducts, productToAdd];
         });
     };
+    
 
     const removeProduct = (productToRemove) => {
         onProductsSelected(prevProducts => prevProducts.filter(p => p.sku !== productToRemove.sku));
@@ -338,14 +348,12 @@ export function SearchProductsModal({ onClose,
                     price: parseFloat(parseFloat(product.price).toFixed(2))
                 })),
             };
-            console.log("datos a enviar prodcuto actualizar", payload)
             await apiClient.put(`work-orders/update-products/${workOrderId}`, payload)
             toast.success('Productos actualizados', {
                 position: toast.POSITION.TOP_RIGHT
             });
 
         } catch (error) {
-            console.log("error al actualizar productos", error)
             toast.error('Error al actualizar los productos', {
                 position: toast.POSITION.TOP_RIGHT
             });
