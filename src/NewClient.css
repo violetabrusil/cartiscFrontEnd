@@ -142,17 +142,6 @@
     align-items: center;
 }
 
-.input-container label {
-    position: absolute;
-    top: 23%;
-    left: 10%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease-out, font-size 0.3s ease-out;
-    pointer-events: none;
-    color: black;
-    font-size: 20px;
-    font-weight: 700;
-}
 
 .label-new-plate-vehicle {
     position: absolute;
@@ -315,10 +304,11 @@
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
-    
+
     .containerNewClient {
         height: 88vh;
         grid-template-columns: 1.5fr 2fr;
+        overflow-y: auto;
     }
 
     .input-form-new-client {
@@ -326,7 +316,7 @@
     }
 
     .input-plate {
-        width: 48%;
+        width: 98%;
     }
 
     .label-flag {
@@ -339,7 +329,7 @@
     }
 
     .input-container label {
-        left: 7%;
+        left: 3%;
     }
 
     .label-new-plate-vehicle {
@@ -354,16 +344,20 @@
         height: 550px;
     }
 
+    
+
+   
+
 }
 
-@media (max-width: 1440px) and (max-height: 900px){
+@media (max-width: 1440px) and (max-height: 900px) and (orientation: landscape)  {
 
     .input-plate {
-        width: 30%;
+        width: 38%;
     }
 
     .input-container .flag-icon {
-        left: calc(51% - 360px);
+        left: calc(10% - -10px);
     }
 
     .label-flag {
@@ -373,6 +367,8 @@
     .label-new-plate-vehicle {
         margin-left: 3%;
     }
+
+    
 
 
 }

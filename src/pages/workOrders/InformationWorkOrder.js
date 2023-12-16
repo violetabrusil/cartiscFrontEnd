@@ -73,12 +73,15 @@ const InformationWorkOrder = () => {
     const [workOrderServices, setWorkOrderServices] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [modalConfig, setModalConfig] = useState({});
-    const [nextStatus, setNextStatus] = useState(null); // Mantener el siguiente estado para la confirmación
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
+    const [oldTotalValue, setOldTotalValue] = useState(0);
     const [rawIntegerPart, rawDecimalPart] = totalValue ? totalValue.split('.') : [];
     const integerPart = rawIntegerPart || '0';
     const decimalPart = rawDecimalPart || '00';
+    const [existProductsSaved, setExistProductsSaved] = useState(false);
+    const [existServiceSaved, setExistServiceSaved] = useState(false);
+    const [existOperationSaved, setExistOperationSaved] = useState(false);
 
     const [percentages, setPercentages] = useState({
         group3: [null, null, null, 0, null],
@@ -138,6 +141,15 @@ const InformationWorkOrder = () => {
     };
 
     const handleCloseModalProducts = () => {
+        if (existProductsSaved) {
+            setSelectedProducts(workOrderItems)
+        } else {
+            setSelectedProducts([]); 
+        }
+        setIsModalOpenProducts(false);
+    };
+
+    const handleSaveAndCloseProducts = () => {
         setIsModalOpenProducts(false);
     };
 
@@ -147,6 +159,18 @@ const InformationWorkOrder = () => {
     };
 
     const handleCloseModalServices = () => {
+        if (existServiceSaved || existOperationSaved) {
+            setSelectedOperations(workOrderOperations);
+            setServicesWithOperations(workOrderServices)
+        } else {
+            setSelectedOperations([]);
+            setServicesWithOperations([]);
+            setSelectedServicesList([])
+        }
+        setIsModalOpenServices(false);
+    };
+
+    const handleSaveAndCloseModalServices = () => {
         setIsModalOpenServices(false);
     };
 
@@ -633,6 +657,11 @@ const InformationWorkOrder = () => {
         return workOrderStatus.value === 'in_development';
     };
 
+    const handleProductsSelected = (updatedProducts) => {
+        // Actualiza el estado o realiza acciones adicionales según sea necesario
+        setSelectedProducts(updatedProducts);
+    };
+
     useEffect(() => {
         getWorkOrderDetailById();
     }, []);
@@ -651,20 +680,22 @@ const InformationWorkOrder = () => {
 
     useEffect(() => {
         if (workOrderItems && workOrderItems.length > 0) {
+            setExistProductsSaved(true)
             setSelectedProducts(workOrderItems);
         }
     }, [workOrderItems]);
 
     useEffect(() => {
         if (workOrderOperations && workOrderOperations.length > 0) {
+            setExistServiceSaved(true);
             setSelectedOperations(workOrderOperations);
         }
     }, [workOrderOperations]);
 
     useEffect(() => {
         if (workOrderServices && workOrderServices.length > 0) {
+            setExistOperationSaved(true);
             setSelectedServicesList(workOrderServices);
-
         }
     }, [workOrderServices]);
 
@@ -678,22 +709,28 @@ const InformationWorkOrder = () => {
     }, [servicesWithOperations]);
 
     useEffect(() => {
-        const calculateTotal = (arr, field) => {
-            return arr.reduce((acc, item) => {
-                const value = parseFloat(item[field]);
-                return acc + (isNaN(value) ? 0 : value);
-            }, 0);
+        if ((!isModalOpenProducts && isModalOpenServices) || (isModalOpenProducts && !isModalOpenServices) || (!isModalOpenProducts && !isModalOpenServices) || (isModalOpenProducts && isModalOpenServices)) {
+            const calculateTotal = (arr, field) => {
+                return arr.reduce((acc, item) => {
+                    const value = parseFloat(item[field]);
+                    return acc + (isNaN(value) ? 0 : value);
+                }, 0);
+            }
+    
+            const totalProductsValue = calculateTotal(selectedProducts, 'price');
+            const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
+            const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
+    
+            const total = totalProductsValue + totalOperationsValue + totalServicesValue;
+    
+            setTotalValue(total.toFixed(2));
+            setOldTotalValue(totalValue);
+            console.log("valor old", oldTotalValue)
+        } else {
+            setTotalValue(oldTotalValue);
         }
-
-        const totalProductsValue = calculateTotal(selectedProducts, 'price');
-        const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
-        const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
-
-        const total = totalProductsValue + totalOperationsValue + totalServicesValue;
-
-        setTotalValue(total.toFixed(2));
-
-    }, [selectedProducts, selectedOperations, servicesWithOperations]);
+       
+    }, [selectedProducts, selectedOperations, servicesWithOperations, isModalOpenProducts, oldTotalValue, totalValue]);
 
     return (
         <div>
@@ -1137,7 +1174,8 @@ const InformationWorkOrder = () => {
             {isModalOpenProducts && (
                 <SearchProductsModal
                     onClose={handleCloseModalProducts}
-                    onProductsSelected={setSelectedProducts}
+                    onCloseAndSave={handleSaveAndCloseProducts}
+                    onProductsSelected={handleProductsSelected}
                     selectedProducts={selectedProducts}
                     onProductsUpdated={handleProductsUpdated}
                     initialProductPrices={productPrices}
@@ -1151,6 +1189,7 @@ const InformationWorkOrder = () => {
             {isModalOpenServices && (
                 <SearchServicesOperationsModal
                     onClose={handleCloseModalServices}
+                    onCloseAndSave={handleSaveAndCloseModalServices}
                     onOperationsSelected={setSelectedOperations}
                     selectedOperations={selectedOperations}
                     onOperationUpdated={handleOperationsUpdated}

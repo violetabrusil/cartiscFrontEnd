@@ -157,7 +157,7 @@
     font-size: 41px;
     margin-top: -20px;
     font-weight: 600;
-    color: #1C4A74 ;
+    color: #1C4A74;
 }
 
 .container-data-client-information {
@@ -208,13 +208,13 @@
     .vehicle-fields {
         gap: 25px;
     }
-    
+
     .label-vehicle {
         margin-left: 20px;
     }
 
     .label-work-order {
-       margin-left: 24px;
+        margin-left: 24px;
         width: 140px;
     }
 
@@ -252,14 +252,19 @@
     .input-full-level {
         margin-left: 59px;
     }
-    
-    
+
+    .div-container-select {
+        margin-right: 170px;
+    }
+
+
 }
-@media (max-width: 1440px) and (max-height: 900px){
+
+@media (max-width: 1440px) and (max-height: 900px) {
 
     .container-created {
         margin-left: -11px;
-    
+
     }
 
     .delivery-for {

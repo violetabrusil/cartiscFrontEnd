@@ -6,6 +6,7 @@ import SearchBar from "../searchBar/SearchBar";
 import DataTable from "../dataTable/DataTable";
 import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
+import { EmptyTable } from "../dataTable/EmptyTable";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -13,6 +14,7 @@ const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 
 const SearchServicesOperationsModal = ({
     onClose,
+    onCloseAndSave,
     onOperationsSelected,
     selectedOperations = [],
     onOperationUpdated,
@@ -42,6 +44,11 @@ const SearchServicesOperationsModal = ({
     const responsivePageSizeServices = usePageSizeForTabletLandscape(6, 2);
     const responsivePageSizeOperationsSelect = usePageSizeForTabletLandscape(5, 2);
     const responsivePageSizeOperations = usePageSizeForTabletLandscape(6, 3);
+
+    const [manualOperation, setManualOperation] = useState({
+        title: '',
+        cost: 0,
+    });
 
     //Configuración para el carousel
     const responsive = {
@@ -126,12 +133,19 @@ const SearchServicesOperationsModal = ({
         []
     );
 
+    const columnsOperations = [
+        { Header: "Código", accessor: "sku", id: "sku", className: "column-code" },
+        { Header: "Título", accessor: "title", id: "title", className: "column-title-operation" },
+        { Header: "Costo", accessor: "cost", id: "cost", className: "column-cost" },
+        { Header: "", accessor: "action", id: "action", className: "column-action" },
+    ];
+
     const columnsOperationSelected = React.useMemo(
         () => [
-            { Header: "Código", accessor: "operation_code" },
-            { Header: "Título", accessor: "title" },
+            { Header: "", accessor: "operation_code" },
+            { Header: "", accessor: "title" },
             {
-                Header: "Costo",
+                Header: "",
                 accessor: "cost",
                 Cell: ({ value, row }) => {
                     const operation_code = row.original.operation_code;
@@ -458,7 +472,7 @@ const SearchServicesOperationsModal = ({
         onServiceOperationsUpdated(allServiceOperations);
         onServicesListUpdate(selectedServicesList);
 
-        onClose();
+        onCloseAndSave();
     };
 
     const handleApiResponse = (response, type) => {
@@ -545,6 +559,31 @@ const SearchServicesOperationsModal = ({
         } catch (error) {
             toast.error('"Error al obtener los datos de las operaciones', {
                 position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    };
+
+    const handleManualOperationChange = (field, value) => {
+        setManualOperation((prevOperation) => ({
+            ...prevOperation,
+            [field]: value,
+        }));
+    };
+
+    const addManualOperation = () => {
+        //Título y costo tenga valores válidos
+        if (manualOperation.title.trim() !== '' && !isNaN(manualOperation.cost)) {
+            const updateOperations = [...selectedOperations, manualOperation];
+            onOperationUpdated(updateOperations);
+            //Reinicia la fila del ingreso manual
+            setManualOperation({
+                title: '',
+                cost: 0,
+            });
+        } else {
+            //Muestra un mensaje de advertencia si no ingresa valores válidos
+            toast.warn('Ingrese valores válidos', {
+                position: toast.POSITION.TOP_RIGHT,
             });
         }
     };
@@ -664,9 +703,21 @@ const SearchServicesOperationsModal = ({
 
                 {activeTab === 'operations' &&
                     <div>
+
+                        <h4 style={{ marginLeft: '10px', marginBottom: '0px' }}>Operaciones seleccionadas</h4>
+
+                        <EmptyTable
+                            columns={columnsOperations}
+                        />
+
+                        <ManualOperationRow
+                            manualOperation={manualOperation}
+                            onManualOperationChange={handleManualOperationChange}
+                            onAddManualOperation={addManualOperation}
+                        />
                         {selectedOperations.length > 0 && (
                             <div className="products-modal-content">
-                                <h4 style={{ marginLeft: '10px', marginBottom: '0px' }}>Operaciones seleccionadas</h4>
+
                                 <DataTable
                                     data={selectedOperations}
                                     columns={columnsOperationSelected}
@@ -694,6 +745,33 @@ const SearchServicesOperationsModal = ({
         </div>
     );
 
+};
+
+// Componente para la fila de ingreso manual
+const ManualOperationRow = ({ manualOperation, onManualOperationChange, onAddManualOperation }) => {
+
+    return (
+        <div className="manual-operation-row">
+            {/* Campos para ingresar manualmente */}
+
+            <input
+                type="text"
+                value={manualOperation.title}
+                onChange={(e) => onManualOperationChange('title', e.target.value)}
+                className="manual-operation-row-title"
+            />
+            <input
+                type="number"
+                value={manualOperation.cost}
+                onChange={(e) => onManualOperationChange('cost', parseFloat(e.target.value))}
+                className="manual-operation-row-cost"
+            />
+            {/* Botón de acción */}
+            <button className="button-add-product-modal manual-operation-row-button" onClick={onAddManualOperation} >
+                <img src={addIcon} alt="Add Product Icon" className="add-product-modal-icon " />
+            </button>
+        </div>
+    );
 };
 
 export default SearchServicesOperationsModal;

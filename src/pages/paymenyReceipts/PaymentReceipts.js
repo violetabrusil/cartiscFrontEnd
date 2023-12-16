@@ -15,6 +15,7 @@ import { invoiceTypeMaping } from "../../constants/invoiceTypeConstants";
 import { paymentTypeMaping } from "../../constants/paymentTypeConstants";
 import { paymentStatusMaping } from "../../constants/paymentReceiptsStatusConstants";
 import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
+import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
@@ -41,6 +42,7 @@ const PaymentReceipts = () => {
     const [paymentType, setPaymentType] = useState(null);
     const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
+    const responsivePageSize = usePageSizeForTabletLandscape(10, 6);
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },
@@ -523,6 +525,7 @@ const PaymentReceipts = () => {
                                 highlightRows={true}
                                 selectedRowId={lastAddedReceiptId}
                                 customFontSize={true}
+                                initialPageSize={responsivePageSize} 
                             />
 
                         )}

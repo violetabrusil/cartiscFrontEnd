@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: space-between;
     margin-left: 38px;
-    margin-top: 13px;
+    margin-top: 48px;
     max-width: 50%;
     gap: 30px;
     max-width: 100%;
@@ -115,3 +115,4 @@
 @media screen and (max-width: 800px) {
     /* Ajustes adicionales para pantallas <= 800px */
 }
+

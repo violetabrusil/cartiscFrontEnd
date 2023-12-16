@@ -6,6 +6,7 @@ import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { ProductForm } from "./ProductForm";
+import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 
 const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -18,6 +19,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     const [searchTerm, setSearchTerm] = useState("");
     const [refreshCount, setRefreshCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const responsivePageSize = usePageSizeForTabletLandscape(10, 5);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -227,7 +229,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                         </div>
 
                     ) : (
-                        <DataTable data={allProducts} columns={columns} highlightRows={false} />
+                        <DataTable data={allProducts} columns={columns} highlightRows={false} initialPageSize={responsivePageSize}  />
                     )
                     }
 

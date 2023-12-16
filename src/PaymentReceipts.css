@@ -187,7 +187,7 @@
     border: none;
     margin-top: 3px;
     background: none;
-    margin-left: -86px;
+    margin-left: -62px;
 }
 
 .icon-eye-workorder-payment {
@@ -231,12 +231,14 @@
     white-space: normal;  
     overflow: visible;    
     text-overflow: unset; 
+    width: 100px;
 }
 
 .no-wrap-column-total {
     white-space: normal;  
     overflow: visible;    
     text-overflow: unset; 
+    width: 130px;
 }
 
 @media screen and (max-width: 768px) {

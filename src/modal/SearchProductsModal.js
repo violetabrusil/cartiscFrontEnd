@@ -7,6 +7,7 @@ import DataTable from "../dataTable/DataTable";
 import SearchBar from "../searchBar/SearchBar";
 import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
+import { EmptyTable } from "../dataTable/EmptyTable";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -14,6 +15,7 @@ const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
 export function SearchProductsModal({ onClose,
+    onCloseAndSave,
     onProductsSelected,
     selectedProducts = [],
     onProductsUpdated,
@@ -30,8 +32,14 @@ export function SearchProductsModal({ onClose,
     const [productPrices, setProductPrices] = useState(initialProductPrices || {});
     const [productQuantities, setProductQuantities] = useState(initialProductQuantities || {});
     const [isEditing, setIsEditing] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(5, 3); 
-    const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 4); 
+    const responsivePageSize = usePageSizeForTabletLandscape(5, 2);
+    const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 4);
+
+    const [manualProduct, setManualProduct] = useState({
+        title: '',
+        price: 0,
+        quantity: 1,
+    });
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -64,7 +72,7 @@ export function SearchProductsModal({ onClose,
 
     // Función para manejar cambios en la cantidad
     const handleQuantityChange = useCallback((sku, newQuantity) => {
-        
+
         const product = allProducts.find(p => p.sku === sku) || selectedProducts.find(p => p.sku === sku);
 
         if (!product) return;
@@ -93,7 +101,7 @@ export function SearchProductsModal({ onClose,
                 ...prevQuantities,
                 [sku]: newQuantity
             };
-            
+
             return newQuantities;
         });
     }, [allProducts]); // allProducts es la dependencia
@@ -157,12 +165,19 @@ export function SearchProductsModal({ onClose,
         []
     );
 
+    const columnsProducts = [
+        { Header: "Número de serie", accessor: "sku", id: "sku", className: "column-sku" },
+        { Header: "Título", accessor: "title", id: "title", className: "column-title" },
+        { Header: "Precio", accessor: "price", id: "price", className: "column-price" },
+        { Header: "Cantidad", accessor: "quantity", id: "quantity", className: "column-quantity"  },
+        { Header: "", accessor: "action", id: "action", className: "column-action" },
+    ];
+
     const columnSelectProducts = React.useMemo(
         () => [
-            { Header: "Número de serie", accessor: "sku" },
-            { Header: "Título", accessor: "title" },
+            { accessor: "sku" },
+            { accessor: "title" },
             {
-                Header: "Precio",
                 accessor: "price",
                 Cell: ({ value, row }) => {
                     const sku = row.original.sku;
@@ -172,7 +187,7 @@ export function SearchProductsModal({ onClose,
                     };
 
                     return (
-                        <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '80px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '83px', marginRight: '-15px' }}>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
                                 type="text"
@@ -185,7 +200,6 @@ export function SearchProductsModal({ onClose,
                 }
             },
             {
-                Header: "Cantidad",
                 accessor: "quantity",
                 Cell: ({ value, row }) => {
                     const [localQuantity, setLocalQuantity] = useState('1');
@@ -219,7 +233,7 @@ export function SearchProductsModal({ onClose,
                             value={localQuantity}
                             onChange={handleLocalChange}
                             onBlur={handleGlobalChange}
-                            style={{ width: '30px', fontWeight: '600', textAlign: 'center' }}
+                            style={{ width: '30px', fontWeight: '600', textAlign: 'center', marginLeft: '-9px' }}
                             max={row.original.stock}
                             min="1"
                         />
@@ -227,7 +241,6 @@ export function SearchProductsModal({ onClose,
                 }
             },
             {
-                Header: "",
                 Cell: ({ row }) => {
                     const product = row.original;
                     return (
@@ -263,7 +276,7 @@ export function SearchProductsModal({ onClose,
             });
             return;
         }
-    
+
         onProductsSelected((prevProducts) => {
             if (prevProducts.some((p) => p.sku === productToAdd.sku)) {
                 return prevProducts; // retornar el mismo array si el producto ya está presente
@@ -271,10 +284,10 @@ export function SearchProductsModal({ onClose,
             return [...prevProducts, productToAdd];
         });
     };
-    
+
 
     const removeProduct = (productToRemove) => {
-        onProductsSelected(prevProducts => prevProducts.filter(p => p.sku !== productToRemove.sku));
+        onProductsSelected((prevProducts) => prevProducts.filter((p) => p.sku !== productToRemove.sku));
     };
 
     const calculatedProducts = selectedProducts.map(product => {
@@ -332,9 +345,14 @@ export function SearchProductsModal({ onClose,
 
     const handleSave = async () => {
         const updatedProducts = await handleConfirmChanges(); // Espera a que handleConfirmChanges se complete
+        // Agrega el producto manual si hay uno
+        if (manualProduct.title.trim() !== '') {
+            updatedProducts.push(manualProduct);
+        }
+
         saveProducts(updatedProducts); // Luego, guarda los productos
         setTimeout(() => {
-            onClose()
+            onCloseAndSave();
         }, 3000);
     };
 
@@ -365,7 +383,7 @@ export function SearchProductsModal({ onClose,
         const updatedProducts = await handleConfirmChanges(); // Espera a que handleConfirmChanges se complete
         updateProducts(updatedProducts); // Luego, guarda los productos
         setTimeout(() => {
-            onClose()
+            onCloseAndSave()
         }, 3000);
     };
 
@@ -378,7 +396,6 @@ export function SearchProductsModal({ onClose,
             handleSave();
         }
     }
-
 
     const fetchData = async () => {
 
@@ -422,6 +439,32 @@ export function SearchProductsModal({ onClose,
             setAllProducts(data);
         } catch (error) {
             toast.error('Error al obtener los datos de los productos.', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
+        }
+    };
+
+    const handleManualProductChange = (field, value) => {
+        setManualProduct((prevProduct) => ({
+            ...prevProduct,
+            [field]: value,
+        }));
+    };
+
+    const addManualProduct = () => {
+        //Título, precio y cantidad tengan valores válidos
+        if (manualProduct.title.trim() !== '' && !isNaN(manualProduct.price) && manualProduct.quantity > 0) {
+            const updatedProducts = [...selectedProducts, manualProduct];
+            onProductsSelected(updatedProducts);
+            // Reinicia la fila de ingreso manual
+            setManualProduct({
+                title: '',
+                price: 0,
+                quantity: 1,
+            });
+        } else {
+            // Muestra un mensaje de advertencia si no ingresa valores válidos
+            toast.warn('Ingrese valores válidos.', {
                 position: toast.POSITION.TOP_RIGHT,
             });
         }
@@ -477,10 +520,22 @@ export function SearchProductsModal({ onClose,
                 </div>
 
                 <div>
+                    <h4 style={{ marginLeft: '10px', marginBottom: '0px' }}>Productos seleccionados</h4>
+
+                    <EmptyTable
+                        columns={columnsProducts}
+                    />
+
+                    <ManualProductRow
+                        manualProduct={manualProduct}
+                        onManualProductChange={handleManualProductChange}
+                        onAddManualProduct={addManualProduct}
+                    />
+
 
                     {selectedProducts.length > 0 && (
                         <div className="products-modal-content">
-                            <h4 style={{ marginLeft: '10px', marginBottom: '0px' }}>Productos seleccionados</h4>
+
                             <DataTable
                                 data={calculatedProducts}
                                 columns={columnSelectProducts}
@@ -488,6 +543,8 @@ export function SearchProductsModal({ onClose,
                                 initialPageSize={responsivePageSize} />
                         </div>
                     )}
+
+
                     <div style={{ marginTop: '20px' }}>
                         <SearchBar onFilter={handleFilter} customSelectStyles={customSelectModalStyles} customClasses="div-search-modal" />
                     </div>
@@ -512,5 +569,52 @@ export function SearchProductsModal({ onClose,
 
     )
 };
+
+// Componente para la fila de ingreso manual
+const ManualProductRow = ({ manualProduct, onManualProductChange, onAddManualProduct }) => {
+
+    const handleQuantityChange = (e) => {
+        const newQuantity = e.target.value === "" ? "" : parseInt(e.target.value, 10) || 0;
+        const newPrice = parseFloat(manualProduct.price) || 0;
+        const totalPrice = newQuantity * newPrice;
+        onManualProductChange('quantity', newQuantity, totalPrice);
+    };
+
+    const handlePriceChange = (e) => {
+        const newPrice = e.target.value === "" ? "" : parseFloat(e.target.value) || 0;
+        const newQuantity = parseInt(manualProduct.quantity, 10) || 0;
+        const totalPrice = newQuantity * newPrice;
+        onManualProductChange('price', newPrice, totalPrice);
+    };
+
+    return (
+        <div className="manual-product-row">
+            {/* Campos para ingresar manualmente */}
+            <input
+                type="text"
+                value={manualProduct.title}
+                onChange={(e) => onManualProductChange('title', e.target.value)}
+                className="manual-product-row-title"
+            />
+            <input
+                type="number"
+                value={manualProduct.price === 0 ? "" : manualProduct.price}
+                onChange={handlePriceChange}
+                className="manual-product-row-price"
+            />
+            <input
+                type="number"
+                value={manualProduct.quantity === 0 ? "" : manualProduct.quantity}
+                onChange={handleQuantityChange}
+                className="manual-product-row-quantity"
+            />
+            {/* Botón de acción */}
+            <button className="button-add-product-modal" onClick={onAddManualProduct}>
+                <img src={addIcon} alt="Add Product Icon" className="add-product-modal-icon " />
+            </button>
+        </div>
+    );
+};
+
 
 export default SearchProductsModal;
