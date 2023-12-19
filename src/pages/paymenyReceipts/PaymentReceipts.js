@@ -290,7 +290,13 @@ const PaymentReceipts = () => {
             const transformedPaymentReceipts = response.data.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
-                const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
+                var translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
+
+                console.log("valores", payment.paid, payment.total)
+                
+                if(payment.paid === payment.total) {
+                    translatedPaymentStatus = "Cobrado"
+                } 
 
                 return {
                     ...payment,
