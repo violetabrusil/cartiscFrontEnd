@@ -709,7 +709,7 @@ const InformationWorkOrder = () => {
     }, [servicesWithOperations]);
 
     useEffect(() => {
-        if ((!isModalOpenProducts && isModalOpenServices) || (isModalOpenProducts && !isModalOpenServices) || (!isModalOpenProducts && !isModalOpenServices) || (isModalOpenProducts && isModalOpenServices)) {
+        if (!isModalOpenProducts && !isModalOpenServices) {
             const calculateTotal = (arr, field) => {
                 return arr.reduce((acc, item) => {
                     const value = parseFloat(item[field]);

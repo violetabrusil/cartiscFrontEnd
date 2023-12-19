@@ -142,11 +142,10 @@ const SearchServicesOperationsModal = ({
 
     const columnsOperationSelected = React.useMemo(
         () => [
-            { Header: "", accessor: "operation_code" },
-            { Header: "", accessor: "title" },
+            { accessor: "operation_code", width: 50 },
+            { accessor: "title", width: 120 },
             {
-                Header: "",
-                accessor: "cost",
+                accessor: "cost", width: 120,
                 Cell: ({ value, row }) => {
                     const operation_code = row.original.operation_code;
                     const currentCost = operationCost[operation_code] !== undefined ? operationCost[operation_code] : value;
@@ -170,7 +169,7 @@ const SearchServicesOperationsModal = ({
 
             },
             {
-                Header: "",
+                width: 20,
                 Cell: ({ row }) => {
                     const operation = row.original;
                     return (
@@ -455,16 +454,21 @@ const SearchServicesOperationsModal = ({
             if (workOrderOperations.length === 0 && workOrderServices.length === 0) {
                 const addResponse = await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, combinedPayload);
                 handleApiResponse(addResponse, 'Operaciones añadidas');
+
+                console.log("operaciones guardadas", addResponse.data)
             } else {
                 const updateResponse = await apiClient.put(`work-orders/update-services-operations/${workOrderId}`, combinedPayload);
                 handleApiResponse(updateResponse, 'Operaciones actualizadas');
+                console.log("operaciones actualizadas", updateResponse.data)
             }
 
         } catch (error) {
+            console.log("error", error)
             toast.error(`Error al guardar las operaciones`, {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
+
 
         onOperationCostUpdated(operationCost);
         onOperationUpdated(selectedOperations);
@@ -757,15 +761,19 @@ const ManualOperationRow = ({ manualOperation, onManualOperationChange, onAddMan
             <input
                 type="text"
                 value={manualOperation.title}
-                onChange={(e) => onManualOperationChange('title', e.target.value)}
+                onChange={(e) => onManualOperationChange('title', e.target.value.toUpperCase())}
                 className="manual-operation-row-title"
             />
-            <input
-                type="number"
-                value={manualOperation.cost}
-                onChange={(e) => onManualOperationChange('cost', parseFloat(e.target.value))}
-                className="manual-operation-row-cost"
-            />
+            <div className="dollar-sign-input-operation">
+                <span className="dollar-sign-price">$</span>
+                <input
+                    type="number"
+                    value={manualOperation.cost}
+                    onChange={(e) => onManualOperationChange('cost', parseFloat(e.target.value))}
+                    className="manual-operation-row-cost"
+                />
+            </div>
+
             {/* Botón de acción */}
             <button className="button-add-product-modal manual-operation-row-button" onClick={onAddManualOperation} >
                 <img src={addIcon} alt="Add Product Icon" className="add-product-modal-icon " />

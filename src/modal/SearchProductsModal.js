@@ -32,7 +32,7 @@ export function SearchProductsModal({ onClose,
     const [productPrices, setProductPrices] = useState(initialProductPrices || {});
     const [productQuantities, setProductQuantities] = useState(initialProductQuantities || {});
     const [isEditing, setIsEditing] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(5, 2);
+    const responsivePageSize = usePageSizeForTabletLandscape(5, 3);
     const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 4);
 
     const [manualProduct, setManualProduct] = useState({
@@ -169,16 +169,16 @@ export function SearchProductsModal({ onClose,
         { Header: "Número de serie", accessor: "sku", id: "sku", className: "column-sku" },
         { Header: "Título", accessor: "title", id: "title", className: "column-title" },
         { Header: "Precio", accessor: "price", id: "price", className: "column-price" },
-        { Header: "Cantidad", accessor: "quantity", id: "quantity", className: "column-quantity"  },
+        { Header: "Cantidad", accessor: "quantity", id: "quantity", className: "column-quantity" },
         { Header: "", accessor: "action", id: "action", className: "column-action" },
     ];
 
     const columnSelectProducts = React.useMemo(
         () => [
-            { accessor: "sku" },
-            { accessor: "title" },
+            { accessor: "sku", width: 120 },
+            { accessor: "title", width: 120 },
             {
-                accessor: "price",
+                accessor: "price", width: 20,
                 Cell: ({ value, row }) => {
                     const sku = row.original.sku;
                     const currentPrice = productPrices[sku] !== undefined ? productPrices[sku] : value;
@@ -187,20 +187,20 @@ export function SearchProductsModal({ onClose,
                     };
 
                     return (
-                        <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '83px', marginRight: '-15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '45px'}}>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
                                 type="text"
                                 defaultValue={parseFloat(currentPrice).toFixed(2)}
                                 onBlur={handleBlur}
-                                style={{ width: '60px', fontWeight: '600' }}
+                                style={{ width: '70px', fontWeight: '600', textAlign: 'center' }}
                             />
                         </div>
                     );
                 }
             },
             {
-                accessor: "quantity",
+                accessor: "quantity", width: 20,
                 Cell: ({ value, row }) => {
                     const [localQuantity, setLocalQuantity] = useState('1');
                     const sku = row.original.sku;
@@ -241,6 +241,7 @@ export function SearchProductsModal({ onClose,
                 }
             },
             {
+                width: 10,
                 Cell: ({ row }) => {
                     const product = row.original;
                     return (
@@ -593,15 +594,18 @@ const ManualProductRow = ({ manualProduct, onManualProductChange, onAddManualPro
             <input
                 type="text"
                 value={manualProduct.title}
-                onChange={(e) => onManualProductChange('title', e.target.value)}
+                onChange={(e) => onManualProductChange('title', e.target.value.toUpperCase())}
                 className="manual-product-row-title"
             />
-            <input
-                type="number"
-                value={manualProduct.price === 0 ? "" : manualProduct.price}
-                onChange={handlePriceChange}
-                className="manual-product-row-price"
-            />
+            <div className="dollar-sign-input">
+                <span className="dollar-sign-price">$</span>
+                <input
+                    type="number"
+                    value={manualProduct.price === 0 ? "" : manualProduct.price}
+                    onChange={handlePriceChange}
+                    className="manual-product-row-price"
+                />
+            </div>
             <input
                 type="number"
                 value={manualProduct.quantity === 0 ? "" : manualProduct.quantity}
@@ -609,7 +613,7 @@ const ManualProductRow = ({ manualProduct, onManualProductChange, onAddManualPro
                 className="manual-product-row-quantity"
             />
             {/* Botón de acción */}
-            <button className="button-add-product-modal" onClick={onAddManualProduct}>
+            <button className="button-add-product-modal manual-product-row-button " onClick={onAddManualProduct}>
                 <img src={addIcon} alt="Add Product Icon" className="add-product-modal-icon " />
             </button>
         </div>

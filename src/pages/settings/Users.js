@@ -700,7 +700,7 @@ const Users = () => {
                                     </>
 
                                 ) : (
-                                    <>
+                                    <div className="scrol-user">
                                         <div className="label-name-user-container">
                                             <label className="label-name-user">Nombre de usuario</label>
                                             <div className="input-form-new-user">
@@ -754,7 +754,7 @@ const Users = () => {
                                             />
 
                                         </div>
-                                    </>
+                                    </div>
                                 )}
                             </div>
 
