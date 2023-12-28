@@ -430,7 +430,7 @@ const SearchServicesOperationsModal = ({
         // Construyendo el payload para operaciones
         const operationsPayload = selectedOperations.map(operation => ({
             work_order_id: parseInt(workOrderId, 10),
-            operation_code: operation.operation_code,
+            operation_code: operation.operation_code.startsWith(".OPM-") ? "" : operation.operation_code,
             title: operation.title,
             cost: operation.cost,
             work_order_service_id: null
@@ -577,7 +577,7 @@ const SearchServicesOperationsModal = ({
     const addManualOperation = () => {
         //Título y costo tenga valores válidos
         if (manualOperation.title.trim() !== '' && !isNaN(manualOperation.cost)) {
-            const updateOperations = [...selectedOperations, manualOperation];
+            const updateOperations = [...selectedOperations, {...manualOperation, operation_code:`.OPM-${Date.now()}` }];
             onOperationUpdated(updateOperations);
             //Reinicia la fila del ingreso manual
             setManualOperation({

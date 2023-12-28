@@ -325,12 +325,12 @@ export function SearchProductsModal({ onClose,
         try {
             const payload = {
                 work_order_items: updatedProducts.map(product => ({
-                    sku: product.sku,
+                    sku: product.sku.startsWith(".MA-") ? "" : product.sku,
                     title: product.title,
                     quantity: parseInt(product.quantity, 10),
                     price: parseFloat(parseFloat(product.price).toFixed(2))
                 })),
-            };
+            };            
             await apiClient.post(`work-orders/add-products/${workOrderId}`, payload)
             toast.success('Productos agregados', {
                 position: toast.POSITION.TOP_RIGHT
@@ -361,7 +361,7 @@ export function SearchProductsModal({ onClose,
         try {
             const payload = {
                 work_order_items: updatedProducts.map(product => ({
-                    sku: product.sku,
+                    sku: product.sku.startsWith(".MA-") ? "" : product.sku,
                     title: product.title,
                     quantity: parseInt(product.quantity, 10),
                     price: parseFloat(parseFloat(product.price).toFixed(2))
@@ -455,7 +455,7 @@ export function SearchProductsModal({ onClose,
     const addManualProduct = () => {
         //Título, precio y cantidad tengan valores válidos
         if (manualProduct.title.trim() !== '' && !isNaN(manualProduct.price) && manualProduct.quantity > 0) {
-            const updatedProducts = [...selectedProducts, manualProduct];
+            const updatedProducts = [...selectedProducts, { ...manualProduct, sku: `.MA-${Date.now()}` }];
             onProductsSelected(updatedProducts);
             // Reinicia la fila de ingreso manual
             setManualProduct({
