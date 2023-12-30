@@ -23,7 +23,7 @@ const Location = () => {
     const [columnUpdate, setColumnUpdate] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 5); 
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 5);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -36,46 +36,75 @@ const Location = () => {
         setSelectedProductRow(row.original.row);
         setSelectedProductColumn(row.original.column);
         setSelectedRowIndex(index);
+        // Restablecer los valores de edición
+        setRowUpdate(null);
+        setColumnUpdate(null);
     };
 
     const handleEditOrSave = async (event) => {
         event.preventDefault();
+    
         if (isEditing) {
             const formData = new FormData();
-            formData.append('row', rowUpdate);
-            formData.append('column', columnUpdate);
+    
+            // Añadir a formData solo si hay cambios
+            if (rowUpdate !== null) {
+                formData.append('row', rowUpdate);
+            } else {
+                formData.append('row', selectedProductRow); // Mantener el valor actual
+            }
+    
+            if (columnUpdate !== null) {
+                formData.append('column', columnUpdate);
+            } else {
+                formData.append('column', selectedProductColumn); // Mantener el valor actual
+            }
+    
+            console.log("datos a enviar", rowUpdate, columnUpdate);
+    
             try {
-
                 const response = await apiClient.put(`/products/update-location/${selectedProductId}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
-                })
+                });
+    
                 if (response.status === 200) {
                     toast.success('Ubicación actualizada', {
                         position: toast.POSITION.TOP_RIGHT
                     });
-                    setSelectedProductRow(rowUpdate);
-                    setSelectedProductColumn(columnUpdate);
+    
+                    // Actualizar solo los valores editados
+                    if (rowUpdate !== null) {
+                        setSelectedProductRow(rowUpdate);
+                    }
+    
+                    if (columnUpdate !== null) {
+                        setSelectedProductColumn(columnUpdate);
+                    }
+    
                     fetchData();
-
                 } else {
                     toast.error('Ha ocurrido un error al actualizar la ubicación del producto', {
                         position: toast.POSITION.TOP_RIGHT
                     });
                 }
-
+    
             } catch (error) {
                 console.log("error ubicacion", error)
-                toast.error('Error actualizar la ubicación del producto Por favor, inténtalo de nuevo..', {
+                toast.error('Error al actualizar la ubicación del producto. Por favor, inténtalo de nuevo..', {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
-
+    
+            // Restablecer los valores de edición
+            setRowUpdate(null);
+            setColumnUpdate(null);
         }
+    
         setIsEditing(!isEditing);
     };
-
+    
     const columns = React.useMemo(
         () => [
             {
