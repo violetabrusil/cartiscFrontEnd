@@ -34,7 +34,7 @@
     background: #FFF;
     border: 1px solid #D4D4D4;
     display: grid;
-    grid-template-columns: minmax(100px, 1fr) 2fr minmax(10px, 0fr);
+    grid-template-columns: minmax(100px, 1fr) 2fr minmax(92px, 0fr);
     gap: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
@@ -482,10 +482,32 @@
 
 }
 
-@media (max-width: 1440px) and (max-height: 900px) and (orientation: landscape)  {
+@media (max-width: 1440px) and (max-height: 900px) {
 
     .label-plate-vehicle {
         margin-left: 7%;
     }
+
+    .input-plate-vehicle {
+        max-width: 39%;
+        font-size: 16px;
+    }
+    
+    .input-plate-container .ecuador-icon {
+        left: calc(50% - 87px);
+    }
+
+    .input-plate-container label {
+        left: 21%;
+    }
+
+    .button-eye-car {
+        width: 37px;
+    }
+
+    .result-car {
+        grid-template-columns: minmax(100px, 1fr) 2fr minmax(24px, 0fr);
+    }
+
 
 }

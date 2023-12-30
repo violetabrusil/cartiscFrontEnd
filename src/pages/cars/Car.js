@@ -582,6 +582,7 @@ const Cars = () => {
             }
 
         } catch (error) {
+            console.log("error guardar vehiculo", error)
             toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });

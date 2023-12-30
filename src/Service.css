@@ -207,8 +207,6 @@ td {
 
 .result-operations {
     display: flex;
-    justify-content: space-between;
-    /* Distribuye los elementos de manera uniforme a lo largo del contenedor */
     align-items: center;
     /* Centra los elementos verticalmente */
     max-width: 98%;
@@ -405,5 +403,23 @@ td {
         margin-left: 14%;
     }
 
+   
+
+
+}
+
+@media (max-width: 1440px) and (max-height: 900px) {
+    .operation-code-section {
+        width: 33%;
+    }
+    
+    .operation-name-section {
+        width: 56%;
+    }
+    
+    .operation-eye-section {
+        width: 10%;
+        margin-left: -32px;
+    }
 
 }
