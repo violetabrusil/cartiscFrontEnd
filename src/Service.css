@@ -403,8 +403,18 @@ td {
         margin-left: 14%;
     }
 
-   
-
+    .operation-code-section {
+        width: 33%;
+    }
+    
+    .operation-name-section {
+        width: 57%;
+    }
+    
+    .operation-eye-section {
+        width: 10%;
+        margin-left: -32px;
+    }
 
 }
 

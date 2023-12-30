@@ -23,7 +23,7 @@ const Location = () => {
     const [columnUpdate, setColumnUpdate] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 6); 
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 5); 
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -66,6 +66,7 @@ const Location = () => {
                 }
 
             } catch (error) {
+                console.log("error ubicacion", error)
                 toast.error('Error actualizar la ubicación del producto Por favor, inténtalo de nuevo..', {
                     position: toast.POSITION.TOP_RIGHT
                 });

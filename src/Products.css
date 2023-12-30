@@ -94,6 +94,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 0px;
+    overflow-y: auto;
 }
 
 .left-side {
@@ -328,6 +329,10 @@
 
     .container-button-save-product {
         margin-left: 150px;
+    }
+
+    .product-container-image {
+        height: 95%;
     }
 
 }

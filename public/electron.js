@@ -8,8 +8,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
-    minWidth: 1024,
-    minHeight: 768,
+    minWidth: 1400,
+    minHeight: 900,
     title: "Cartics",
     resizable: false,
     icon: path.join(__dirname, 'icons/mac/cartics-logo-only.icns'),

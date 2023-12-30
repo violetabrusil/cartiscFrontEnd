@@ -19,7 +19,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     const [searchTerm, setSearchTerm] = useState("");
     const [refreshCount, setRefreshCount] = useState(0);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(10, 5);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 5);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);

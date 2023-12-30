@@ -42,7 +42,7 @@ const PaymentReceipts = () => {
     const [paymentType, setPaymentType] = useState(null);
     const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(10, 6);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 6);
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },

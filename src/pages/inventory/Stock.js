@@ -20,7 +20,7 @@ const Stock = () => {
     const [stockToUpdate, setStockToUpdate] = useState(null);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 6); 
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 5); 
 
     //Función que permite obtener todos los productos
     //cuando inicia la pantalla y las busca por
