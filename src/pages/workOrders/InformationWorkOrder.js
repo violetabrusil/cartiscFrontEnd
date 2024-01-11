@@ -491,25 +491,41 @@ const InformationWorkOrder = () => {
             { Header: "Número de serie", accessor: "sku" },
             { Header: "Título", accessor: "title" },
             {
-                Header: "Precio",
+                Header: "Precio (P.U.)",
                 accessor: "price",
-                Cell: ({ value }) =>
+                Cell: ({ value }) => (
                     <div style={{ fontSize: "16px" }}>
                         $ {parseFloat(value).toFixed(2)}
                     </div>
+                )
             },
             {
                 Header: "Cantidad",
                 accessor: "quantity",
-                Cell: ({ value }) =>
+                Cell: ({ value }) => (
                     <div style={{ fontSize: "16px" }}>
                         {value}
                     </div>
-
+                )
+            },
+            {
+                Header: "Total",
+                accessor: "total",  // Usaremos esta clave para calcular el total en el accessor
+                Cell: ({ row }) => {
+                    const price = row.original.price || 0;
+                    const quantity = row.original.quantity || 1;
+                    const total = parseFloat(price) * parseInt(quantity, 10);
+    
+                    return (
+                        <div style={{ fontSize: "16px" }} className='total-products'>
+                            $ {total.toFixed(2)}
+                        </div>
+                    );
+                }
             }
         ],
         []
-    );
+    );    
 
     const columnsOperations = React.useMemo(
         () => [
@@ -715,9 +731,19 @@ const InformationWorkOrder = () => {
                     const value = parseFloat(item[field]);
                     return acc + (isNaN(value) ? 0 : value);
                 }, 0);
+            };
+
+            const calculateTotalProduct = (arr) => {
+                return arr.reduce((acc, item) => {
+                    const price = parseFloat(item['price']);
+                    const quantity = parseFloat(item['quantity']);
+                    const total = price * quantity;
+                    return acc + (isNaN(total) ? 0 : total);
+                }, 0);
             }
+
     
-            const totalProductsValue = calculateTotal(selectedProducts, 'price');
+            const totalProductsValue = calculateTotalProduct(selectedProducts);
             const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
             const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
     
@@ -725,13 +751,13 @@ const InformationWorkOrder = () => {
     
             setTotalValue(total.toFixed(2));
             setOldTotalValue(totalValue);
-            console.log("valor old", oldTotalValue)
+            console.log("valor old", oldTotalValue);
+            console.log("valor operaciones", totalOperationsValue)
         } else {
             setTotalValue(oldTotalValue);
         }
-       
     }, [selectedProducts, selectedOperations, servicesWithOperations, isModalOpenProducts, oldTotalValue, totalValue]);
-
+    
     return (
         <div>
             {!showAssignModal && <ToastContainer />}

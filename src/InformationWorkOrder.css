@@ -199,6 +199,12 @@
     margin-left: 36px;
 }
 
+.total-products {
+    color: #1C4A74;
+    font-weight: bold;
+    font-size: 15px;
+}
+
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
     .container-data-client-information {
         margin-left: 20px;

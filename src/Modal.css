@@ -462,7 +462,7 @@
 }
 
 .manual-product-row-title {
-    margin-left: 260px;
+    margin-left: 210px;
 }
 
 .manual-product-row-price {
@@ -472,12 +472,19 @@
 
 .manual-product-row-quantity {
     width: 4%;
-    margin-left: -33px;
+    margin-left: -50px;
     text-align: center;
 }
 
+.manual-product-row-subtotal {
+    margin-left: 48px;
+    color: #1C4A74;
+    font-weight: bold;
+    font-size: 15px;
+}
+
 .manual-product-row-button {
-    margin-left: 13px;
+    margin-left: 20px;
 }
 
 
@@ -486,6 +493,7 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    height: 10px;;
 }
 
 .manual-operation-row {
@@ -512,13 +520,13 @@
 }
 
 .column-sku {
-    width: 30%;
+    width: 29%;
     background-color: white;
     font-size: 12px;
 }
 
 .column-title {
-    width: 15%;
+    width: 19%;
     background-color: white;
     font-size: 12px;
 }
@@ -530,13 +538,19 @@
 }
 
 .column-quantity {
-    width: 12%;
+    width: 4%;
+    background-color: white;
+    font-size: 12px;
+}
+
+.column-total {
+    width: 19%;
     background-color: white;
     font-size: 12px;
 }
 
 .column-action {
-    width: 5%;
+    width: 10%;
     background-color: white;
     font-size: 12px;
 }
@@ -566,7 +580,7 @@
 .dollar-sign-input {
     display: flex;
     align-items: center;
-    margin-left: 61px;
+    margin-left: 31px;
 }
 
 .dollar-sign-input-operation {
@@ -579,6 +593,11 @@
     margin-right: 5px;
 }
 
+.column-total-products {
+    color: #1C4A74;
+    font-weight: bold;
+    font-size: 15px;
+}
 /* Media queries para tamaños de pantalla */
 
 @media screen and (max-width: 768px) {
