@@ -19,7 +19,7 @@
     align-items: center;
 }
 
-.new-work-order-title-container h2 {
+.new-work-order-title-container-h2  {
     flex: 1;
     text-align: left;
 }
@@ -651,6 +651,41 @@
 .container-div-rigth {
     flex: 1;
     margin-right: 4px;
+}
+
+input[type="checkbox"] {
+    margin-left: 10px;
+    margin-inline-end: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.container-checkbox-modal {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.container-km-actual {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 10px;  
+    gap: 10px;
+}
+
+.input-km-actual {
+    width: 40%;
+    height: 13px;
+    border: 1px solid rgb(0 0 0 / 34%);
+    background: #fff;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.full {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {

@@ -144,7 +144,7 @@ const InformationWorkOrder = () => {
         if (existProductsSaved) {
             setSelectedProducts(workOrderItems)
         } else {
-            setSelectedProducts([]); 
+            setSelectedProducts([]);
         }
         setIsModalOpenProducts(false);
     };
@@ -273,8 +273,8 @@ const InformationWorkOrder = () => {
         }),
     };
 
-     //Función para manejar los cambios en los porcentajes
-     const handlePorcentageChange = (group, index, event) => {
+    //Función para manejar los cambios en los porcentajes
+    const handlePorcentageChange = (group, index, event) => {
         setPercentages((prev) => ({
             ...prev,
             [group]: [
@@ -515,7 +515,7 @@ const InformationWorkOrder = () => {
                     const price = row.original.price || 0;
                     const quantity = row.original.quantity || 1;
                     const total = parseFloat(price) * parseInt(quantity, 10);
-    
+
                     return (
                         <div style={{ fontSize: "16px" }} className='total-products'>
                             $ {total.toFixed(2)}
@@ -525,7 +525,7 @@ const InformationWorkOrder = () => {
             }
         ],
         []
-    );    
+    );
 
     const columnsOperations = React.useMemo(
         () => [
@@ -579,15 +579,15 @@ const InformationWorkOrder = () => {
 
     const editWorkOrder = async () => {
         const vehicleStatus = {};
-    
+
         vehicleStatus.id = idVehicleStatus;
         vehicleStatus.work_order_id = Number(workOrderId);
-    
+
         // Verificar si se ha ingresado el fuel_level
         const fuelLevelEntered = Object.keys(optionsCheckBox).some(group => {
             return optionsCheckBox[group].some(option => keyMapping[option] === 'Gas');
         });
-    
+
         if (!fuelLevelEntered) {
             // Mostrar un toast de advertencia y salir de la función
             toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo', {
@@ -595,7 +595,7 @@ const InformationWorkOrder = () => {
             });
             return;
         }
-    
+
         Object.keys(optionsCheckBox).forEach(group => {
             optionsCheckBox[group].forEach((option, index) => {
                 const key = keyMapping[option];
@@ -608,7 +608,7 @@ const InformationWorkOrder = () => {
                 }
             });
         });
-    
+
         vehicleStatus.points_of_interest = pointsOfInterest.map(point => {
             return {
                 id: point.id,
@@ -620,15 +620,15 @@ const InformationWorkOrder = () => {
         });
         vehicleStatus.presented_symptoms = symptoms.join(', ');
         vehicleStatus.general_observations = observations;
-    
+
         const payload = {
             comments: comments,
             vehicle_status: vehicleStatus,
         };
-    
+
         try {
             const response = await apiClient.put(`/work-orders/update/${workOrderId}`, payload);
-    
+
             if (response.status === 200) {  // Suponiendo que tu API devuelve 200 para una edición exitosa
                 toast.success('Orden de trabajo editada exitósamente', {
                     position: toast.POSITION.TOP_RIGHT
@@ -638,20 +638,19 @@ const InformationWorkOrder = () => {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
-    
+
         } catch (error) {
             console.error("Error al editar la orden de trabajo", error);
-    
+
             // Obtener el mensaje de error
             const errorMessage = error.message || 'Error inesperado al editar la orden de trabajo.';
-    
+
             // Mostrar el mensaje de error en el toast
             toast.error(errorMessage, {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
     };
-    
 
     const openAssignModal = () => {
         setShowAssignModal(true);
@@ -678,6 +677,16 @@ const InformationWorkOrder = () => {
         setSelectedProducts(updatedProducts);
     };
 
+    const handleEditButtonClick = () => {
+        // Cambiar el estado de la orden de trabajo a 'in_development'
+        changeOrderStatus('in_development');
+        
+        // Actualizar el valor del dropdown
+        setWorkOrderStatus({ value: 'in_development', label: 'En desarrollo' });
+    
+        // Puedes realizar otras acciones necesarias aquí
+    };
+    
     useEffect(() => {
         getWorkOrderDetailById();
     }, []);
@@ -742,13 +751,13 @@ const InformationWorkOrder = () => {
                 }, 0);
             }
 
-    
+
             const totalProductsValue = calculateTotalProduct(selectedProducts);
             const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
             const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
-    
+
             const total = totalProductsValue + totalOperationsValue + totalServicesValue;
-    
+
             setTotalValue(total.toFixed(2));
             setOldTotalValue(totalValue);
             console.log("valor old", oldTotalValue);
@@ -757,7 +766,7 @@ const InformationWorkOrder = () => {
             setTotalValue(oldTotalValue);
         }
     }, [selectedProducts, selectedOperations, servicesWithOperations, isModalOpenProducts, oldTotalValue, totalValue]);
-    
+
     return (
         <div>
             {!showAssignModal && <ToastContainer />}
@@ -781,7 +790,17 @@ const InformationWorkOrder = () => {
                                 <button onClick={onBack} className="button-arrow-client">
                                     <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
                                 </button>
-                                <h2>Detalle Orden de Trabajo {workOrderDetail.work_order_code}</h2>
+
+                                <div className='new-work-order-title-container-h2'>
+                                    <h2 style={{display: 'contents'}}>Detalle Orden de Trabajo {workOrderDetail.work_order_code}</h2>
+
+                                    {workOrderDetail.work_order_status === 'completed' && (
+                                        <button onClick={handleEditButtonClick} className="custom-button-edit-work-order">
+                                            <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
+                                        </button>
+                                    )}
+                                </div>
+
                                 <img src={clockIcon} alt="Clock Icon" className="clock-icon" onClick={openHistoryModal} />
                                 <div className="div-container-select">
                                     <Select

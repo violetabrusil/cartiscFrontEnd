@@ -28,6 +28,7 @@ const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png"
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
 const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
+const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
 const NewWorkOrder = () => {
 
@@ -57,11 +58,12 @@ const NewWorkOrder = () => {
     const [dateStart, setDateStart] = useState(new Date());
     const [workOrderStatus, setWorkOrderStatus] = useState(WorkOrderStatusOptions[0]);
     const [createdBy, setCreatedBy] = useState(user?.username || "");
+    const [isChecked, setIsChecked] = useState(false);
+    const [showConfirmationToast, setShowConfirmationToast] = useState(false);
     const [actualKm, setActualKm] = useState("");
     const [comments, setComments] = useState("");
     const [observations, setObservations] = useState('');
     const navigate = useNavigate();
-
     const [symptoms, setSymptoms] = useState([]);
     const symptomsEndRef = useRef(null);
     const symptomsContainerRef = useRef(null);
@@ -273,24 +275,37 @@ const NewWorkOrder = () => {
     };
 
     const handleWorkOrderCreation = () => {
-        if (!actualKm) {
-            setIsKmModalOpen(true);
-        } else {
-            createNewWorkOrder();
+        setIsKmModalOpen(true);
+    };
+
+    const closeWorkOrderCreation = () => {
+        setIsKmModalOpen(false);
+    };
+
+    const handleAccept = () => {
+        // Validar si el checkbox no está marcado y el input está vacío, mostrar el mensaje de advertencia
+        if (!isChecked && !actualKm.trim()) {
+            toast.warn("Es necesario ingresar el nuevo kilometraje.", {
+                position: toast.POSITION.TOP_RIGHT
+            });
+
+            // No cerrar el modal en este caso
+            return;
         }
-    };
 
-    const handleNoUpdate = () => {
-        const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
-        setActualKm(kmVehicleSelected.km); // kilometraje actual del vehículo
-        console.log("km sin mofificar", kmVehicleSelected.km)
-        setIsKmModalOpen(false);
-        createNewWorkOrder(); // Luego de actualizar el kilometraje, llama a la función para crear la orden de trabajo
-    };
+        // Validar si el checkbox está marcado y el valor del kilómetro no tiene un formato numérico válido
+        if (isChecked && !isNumber(actualKm)) {
+            toast.warn('El KM ingresado no tiene un formato numérico válido. Intente nuevamente.', {
+                position: toast.POSITION.TOP_RIGHT
+            });
 
-    const handleYesUpdate = () => {
-        setIsKmModalOpen(false);
-        // Aquí simplemente cierras el modal. El usuario deberá ingresar el kilometraje manualmente en el formulario
+            // No cerrar el modal en este caso
+            return;
+        }
+
+        // Ahora, solo si isChecked es true y actualKm no está vacío o si el formato es válido, llamamos a la función
+        createNewWorkOrder();
+        setIsKmModalOpen(false); // Cerrar el modal después de llamar a la función si todo está bien
     };
 
     const resetForm = () => {
@@ -467,6 +482,15 @@ const NewWorkOrder = () => {
         }
     }, [selectedVehicle]);
 
+    useEffect(() => {
+        if (isChecked) {
+            const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
+            setActualKm(kmVehicleSelected ? kmVehicleSelected.km : '');
+        } else {
+            // Si el checkbox no está marcado, restablecer a un valor vacío
+            setActualKm('');
+        }
+    }, [isChecked, selectedVehicleId, vehicles]);
 
     return (
 
@@ -850,25 +874,57 @@ const NewWorkOrder = () => {
             {isKmModalOpen && (
                 <div className="filter-modal-overlay">
                     <div className="filter-modal">
-                        <h3 style={{ textAlign: "center" }}>Se recomienda actualizar el kilometraje al generar una nueva orden de trabajo</h3>
-                        <div className="button-options">
-                            <div className="half">
-                                <button className="optionNo-button" onClick={handleNoUpdate}>
-                                    No actualizar
+                        <div style={{ display: 'flex' }}>
+                            <h3 style={{ textAlign: "center" }}>Es necesario actualizar el kilometraje del vehículo</h3>
+                            <div style={{ flex: "1", marginTop: '18px' }}>
+                                <button className="button-close" onClick={closeWorkOrderCreation}  >
+                                    <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
                                 </button>
                             </div>
-                            <div className="half">
-                                <button className="optionYes-button" onClick={handleYesUpdate}>
-                                    Si actualizar
-                                </button>
 
-                            </div>
+                        </div>
+
+                        <div >
+                            <label className="container-checkbox-modal">
+                                <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => setIsChecked(!isChecked)}
+                                />
+                                Mantener kilometraje
+                            </label>
+                        </div>
+                        <div className="container-km-actual">
+                            <label style={{ fontWeight: '500', marginTop: '6px' }}>Kilometraje actual:</label>
+                            {isChecked ? (
+                                // Renderizar el valor del kilómetro si el checkbox está marcado
+                                <input
+                                    className="input-km-actual"
+                                    type="text"
+                                    value={actualKm}
+                                    disabled={true}
+                                />
+
+                            ) : (
+                                // Renderizar el input del kilómetro si el checkbox no está marcado
+                                <input
+                                    className="input-km-actual"
+                                    type="text"
+                                    value={actualKm}
+                                    onChange={(e) => setActualKm(e.target.value)}
+                                />
+                            )}
+                        </div>
+
+                        <div className="full">
+                            <button className="optionYes-button" onClick={handleAccept}>
+                                Aceptar
+                            </button>
                         </div>
 
                     </div>
                 </div>
             )}
-
 
         </div>
     );
