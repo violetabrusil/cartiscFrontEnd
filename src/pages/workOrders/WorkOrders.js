@@ -261,7 +261,7 @@ const WorkOrders = () => {
                                         {workOrderData.work_order_status === 'Completada' && !workOrderData.is_billed && (
                                             <div className="fourth-result-work-order">
                                                 <div className="div-image-receipt">
-                                                    <img src={receiptIcon} alt="Receipt Icon" className="payment-receipt-icon" style={{ width: '25px', height: '25px' }} />
+                                                    <img src={receiptIcon} alt="Receipt Icon" className="payment-receipt-icon" style={{ width: '20px', height: '20px' }} />
                                                 </div>
                                             </div>
 

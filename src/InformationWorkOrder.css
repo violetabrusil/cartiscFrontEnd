@@ -340,8 +340,8 @@
     }
 
     .label-asigned {
-        margin-left: 1px;
-        margin-right: -10px;
+        margin-left: -10px;
+        margin-right: 0px;
     }
 
     .label-total {
@@ -359,6 +359,18 @@
 
     .div-container-select {
         margin-right: 170px;
+    }
+
+    .label-billed {
+        margin-left: -10px;
+    }
+
+    .label-vehicle-created {
+        margin-left: 17px;
+    }
+
+    .label-vehicle-delivery {
+        margin-left: 17px;
     }
 
 

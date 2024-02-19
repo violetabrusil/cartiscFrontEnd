@@ -46,7 +46,7 @@ function Footer() {
         {/* Aquí va el contenido de tu página */}
       </div>
       <div style={legendStyle}>
-        Creaciones Tecnológicas Sierra. Version 1.3.63
+        Creaciones Tecnológicas Sierra. Version 1.3.71
       </div>
 
       <footer style={styleFooter}></footer>

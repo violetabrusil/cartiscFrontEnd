@@ -135,7 +135,7 @@ const InformationWorkOrder = () => {
         'in_development': ['assigned', 'stand_by', 'cancelled', 'completed'],
         'stand_by': ['assigned'],
         'completed': ['in_development'],
-        'cancelled': []
+        'cancelled': ['in_development']
     };
 
     const toggleComponentes = (sectionId) => {

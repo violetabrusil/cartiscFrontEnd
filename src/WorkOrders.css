@@ -227,7 +227,7 @@
     }
 
     .result-work-order {
-        grid-template-columns: 180px 140px 350px 150px;
+        grid-template-columns: 190px 140px 250px 150px;
     }
 
     .input-plate-vehicle-work-order {
@@ -273,7 +273,11 @@
     }
     
     .fourth-result-work-order {
-        margin-left: -173px;
+        margin-left: -181px;
+    }
+
+    .div-image-receipt {
+        width: 23px;
     }
 
 }
