@@ -15,6 +15,7 @@ import { CustomButtonContainer, CustomButton } from "../../customButton/CustomBu
 import { workOrderStatus } from "../../constants/workOrderConstants";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
+const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const WorkOrders = () => {
 
@@ -77,7 +78,7 @@ const WorkOrders = () => {
     const statusColors = {
         "Por iniciar": "#316EA8",
         "Asignada": "#0C1F31",
-        "En ejecución": "#4caf50",
+        "En desarrollo": "#4caf50",
         "En espera": "#fbc02d",
         "Cancelada": "#e74c3c",
         "Completada": "#2e7d32",
@@ -95,14 +96,14 @@ const WorkOrders = () => {
 
     useEffect(() => {
         console.log("buscar", searchTerm, selectedOption);
-    
+
         const fetchData = async () => {
             let endpoint = '/work-orders/all';
-    
+
             if (searchTerm) {
                 // Si hay un término de búsqueda, cambia a la búsqueda POST
                 endpoint = '/work-orders/search';
-    
+
                 // Mapea el selectedOption al campo de búsqueda correspondiente
                 const searchFieldMapping = {
                     'Placa': 'vehicle_plate',
@@ -112,22 +113,22 @@ const WorkOrders = () => {
                     'Entregada por': 'delivered_by',
                     'Creada por': 'created_by',
                 };
-    
+
                 const searchField = searchFieldMapping[selectedOption];
-    
+
                 if (!searchField) {
                     console.error('Campo de búsqueda no válido:', selectedOption);
                     return;
                 }
-    
+
                 // Configuración para la solicitud POST
                 const payload = {
                     [searchField]: searchTerm,
                 };
-    
+
                 try {
                     const response = await apiClient.post(endpoint, payload);
-    
+
                     // Transformamos la fecha y el status de cada work order
                     const transformedWorkOrders = response.data.map(workOrder => {
                         const newDateStart = formatDate(workOrder.date_start);
@@ -137,24 +138,27 @@ const WorkOrders = () => {
                             ...workOrder,
                             date_start: newDateStart,
                             work_order_status: translatedStatus,
-                            vehicle_plate: formattedPlate
+                            vehicle_plate: formattedPlate,
+                            is_billed: workOrder.is_billed,
                         };
                     });
-    
+
                     setWorkOrders(transformedWorkOrders);
                     setLoading(false);
-    
+
                 } catch (error) {
+
                     if (error.code === 'ECONNABORTED') {
                         console.error('La solicitud ha superado el tiempo límite.');
                     } else {
                         console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
                     }
+                    console.log("error obtener ordenes de trabajo", error)
                 }
             } else {
                 try {
                     const response = await apiClient.get(endpoint);
-    
+
                     // Transformamos la fecha y el status de cada work order
                     const transformedWorkOrders = response.data.map(workOrder => {
                         const newDateStart = formatDate(workOrder.date_start);
@@ -164,13 +168,15 @@ const WorkOrders = () => {
                             ...workOrder,
                             date_start: newDateStart,
                             work_order_status: translatedStatus,
-                            vehicle_plate: formattedPlate
+                            vehicle_plate: formattedPlate,
+                            is_billed: workOrder.is_billed,
                         };
                     });
-    
+
                     setWorkOrders(transformedWorkOrders);
+                    console.log("datos de la orden de trabajo", response.data)
                     setLoading(false);
-    
+
                 } catch (error) {
                     if (error.code === 'ECONNABORTED') {
                         console.error('La solicitud ha superado el tiempo límite.');
@@ -180,11 +186,11 @@ const WorkOrders = () => {
                 }
             }
         };
-    
+
         fetchData();
     }, [searchTerm, selectedOption]);
-    
-    
+
+
     return (
 
         <div>
@@ -251,6 +257,15 @@ const WorkOrders = () => {
                                             </div>
 
                                         </div>
+
+                                        {workOrderData.work_order_status === 'Completada' && !workOrderData.is_billed && (
+                                            <div className="fourth-result-work-order">
+                                                <div className="div-image-receipt">
+                                                    <img src={receiptIcon} alt="Receipt Icon" className="payment-receipt-icon" style={{ width: '25px', height: '25px' }} />
+                                                </div>
+                                            </div>
+
+                                        )}
 
                                     </div>
                                 ))}

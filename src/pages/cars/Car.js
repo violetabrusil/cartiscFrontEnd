@@ -207,7 +207,11 @@ const Cars = () => {
             Cell: ({ value }) => {
                 return value === 'NaN/NaN/NaN' ? '-' : value;
             }
-        },        
+        },    
+        {
+            Header: 'Kilometraje',
+            accessor: 'km',
+        },    
         {
             Header: 'Total',
             accessor: 'total',
@@ -287,6 +291,7 @@ const Cars = () => {
             });
 
             setWorkOrders(transformedWorkOrders);
+            console.log("datos del historial",response.data)
 
 
         } catch (error) {

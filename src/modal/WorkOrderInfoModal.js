@@ -1,8 +1,12 @@
 import "../Modal.css";
+import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect } from 'react';
-import { ToastContainer} from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import DatePicker from 'react-datepicker';
 
-export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, discount, setDiscount, total, setTotal, vat, setVat }) => {
+const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
+
+export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, discount, setDiscount, total, setTotal, vat, setVat, selectedDate, setSelectedDate }) => {
 
     useEffect(() => {
         const subtotal = parseFloat(workOrderData.subtotal);
@@ -23,13 +27,28 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, discount,
         <div className="filter-modal-overlay">
             <ToastContainer />
             <div className="filter-modal">
-                <h3 style={{ textAlign: 'center', marginTop: '3px' }}>Resumen de pago</h3>
+                <div style={{ display: 'flex' }}>
+                    <h3 style={{ flex: '13', textAlign: 'center' }}>Resumen de pago</h3>
+                    <div style={{ flex: "1", marginTop: '13px' }}>
+                        <button className="button-close" onClick={onClose}  >
+                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                        </button>
+                    </div>
+                </div>
+
                 <div className="container-label">
                     <label>Código de la orden de trabajo:
                         <span>{workOrderData.workOrderCode}</span>
                     </label>
                     <label>Nombre de cliente:
                         <span>{workOrderData.clientName}</span>
+                    </label>
+                    <label>Fecha:
+                        <DatePicker
+                            className="selectedDate-input"
+                            selected={selectedDate}
+                            onChange={date => setSelectedDate(date)} // Actualiza el estado cuando se selecciona una fecha
+                        />
                     </label>
                     <label>Placa del vehículo:
                         <span>{workOrderData.plate}</span>

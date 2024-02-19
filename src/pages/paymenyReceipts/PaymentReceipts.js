@@ -33,6 +33,7 @@ const PaymentReceipts = () => {
     const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
     const [vat, setVat] = useState(0);
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [lastAddedReceiptId, setLastAddedReceiptId] = useState(null);
     const [paymentModal, setPaymentModal] = useState(false);
     const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -139,7 +140,11 @@ const PaymentReceipts = () => {
                 accessor: "payment_type",
                 Cell: ({ value }) => paymentTypeMaping[value] || value
             },
-            { Header: "Fecha", accessor: "created_at" },
+            {
+                Header: "Fecha",
+                accessor: "date",
+                Cell: ({ value }) => <span>{formatDate(value)}</span>,
+            },
             {
                 Header: "Subtotal",
                 accessor: "subtotal",
@@ -293,10 +298,10 @@ const PaymentReceipts = () => {
                 var translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
 
                 console.log("valores", payment.paid, payment.total)
-                
-                if(payment.paid === payment.total) {
+
+                if (payment.paid === payment.total) {
                     translatedPaymentStatus = "Cobrado"
-                } 
+                }
 
                 return {
                     ...payment,
@@ -383,6 +388,10 @@ const PaymentReceipts = () => {
     };
 
     const handleWorkOrderConfirm = async () => {
+        
+        const selectedDateAdjusted = new Date(selectedDate);
+        selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
+
         try {
             // Construir el payload
             const payload = {
@@ -391,6 +400,7 @@ const PaymentReceipts = () => {
                 invoice_type: 'sales_note',
                 subtotal: parseFloat(workOrderData.subtotal).toFixed(2),
                 discount: discount / 100,
+                date: selectedDateAdjusted.toISOString(),
                 vat: 0,
                 total: total,
             };
@@ -473,6 +483,10 @@ const PaymentReceipts = () => {
 
     };
 
+    const closeModal = () => {
+        setWorkOrderModalOpen(false);
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -480,6 +494,7 @@ const PaymentReceipts = () => {
     useEffect(() => {
         if (location.state?.fromWorkOrder) {
             setWorkOrderData(location.state.workOrderData);
+            console.log("data payment", workOrderData)
             setWorkOrderModalOpen(true);
             navigate('/paymentReceipt', { replace: true }); // Esto reemplaza la entrada actual en el historial.
         }
@@ -531,7 +546,7 @@ const PaymentReceipts = () => {
                                 highlightRows={true}
                                 selectedRowId={lastAddedReceiptId}
                                 customFontSize={true}
-                                initialPageSize={responsivePageSize} 
+                                initialPageSize={responsivePageSize}
                             />
 
                         )}
@@ -554,6 +569,7 @@ const PaymentReceipts = () => {
             {isWorkOrderModalOpen && (
                 <WorkOrderInfoModal
                     isOpen={isWorkOrderModalOpen}
+                    onClose={closeModal}
                     workOrderData={workOrderData}
                     onConfirm={handleWorkOrderConfirm}
                     discount={discount}
@@ -562,6 +578,8 @@ const PaymentReceipts = () => {
                     setTotal={setTotal}
                     vat={vat}
                     setVat={setVat}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
 
                 />
 
@@ -618,19 +636,20 @@ const PaymentReceipts = () => {
                                 <label>
                                     Valor a pagar:
                                     <input
-                                        type="text" 
+                                        type="text"
                                         className="paid-input"
                                         value={amountToPay}
                                         onChange={(e) => {
                                             const value = e.target.value.trim();
                                             const sanitizedValue = value.replace(/,/g, '.'); // Reemplazar comas por puntos
-                                            if (/^\d*\.?\d{0,2}$/.test(sanitizedValue) || sanitizedValue === "") {
+                                            if (/^[-]?\d*\.?\d{0,2}$/.test(sanitizedValue) || sanitizedValue === "") {
                                                 setAmountToPay(sanitizedValue);
                                                 if (payAll) {
                                                     setPayAll(false);
                                                 }
                                             }
                                         }}
+
                                     />
                                 </label>
                             </div>

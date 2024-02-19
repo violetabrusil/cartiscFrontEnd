@@ -598,6 +598,12 @@
     font-weight: bold;
     font-size: 15px;
 }
+
+.selectedDate-input {
+    margin-left: 10px;
+    border-radius: 6px;
+    border: 1px solid;
+}
 /* Media queries para tamaños de pantalla */
 
 @media screen and (max-width: 768px) {

@@ -275,7 +275,13 @@ const NewWorkOrder = () => {
     };
 
     const handleWorkOrderCreation = () => {
-        setIsKmModalOpen(true);
+        if (actualKm.trim() !== '') {
+            // Si el campo de kilometraje actual no está vacío, llamar directamente a la función de crear la orden de trabajo
+            createNewWorkOrder();
+        } else {
+            // Si el campo de kilometraje actual está vacío, abrir el modal
+            setIsKmModalOpen(true);
+        }
     };
 
     const closeWorkOrderCreation = () => {
@@ -390,7 +396,7 @@ const NewWorkOrder = () => {
 
         } catch (error) {
             console.error("Error al crear la orden de trabajo", error);
-            toast.error('Error inesperado al crear la orden de trabajo.', {
+            toast.error('Error al crear la orden de trabajo.', {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
@@ -467,6 +473,7 @@ const NewWorkOrder = () => {
     useEffect(() => {
         if (selectedClient && selectedClient.id) {
             getVehicleOfClient(selectedClient.id);
+            console.log("datos cliente", selectedClient)
         }
     }, [selectedClient]);
 
@@ -479,6 +486,7 @@ const NewWorkOrder = () => {
     useEffect(() => {
         if (selectedVehicle && selectedVehicle.km) {
             setActualKm(selectedVehicle.km);
+            console.log("valor del km", selectedVehicle)
         }
     }, [selectedVehicle]);
 
@@ -508,7 +516,7 @@ const NewWorkOrder = () => {
                     <button onClick={onBack} className="button-arrow-client">
                         <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
                     </button>
-                    <h2>Nueva Orden de Trabajo</h2>
+                    <h2 style={{flex: 'auto'}}>Nueva Orden de Trabajo</h2>
                     <button className="confirm-button" onClick={handleWorkOrderCreation}>
                         <span className="text-confirm-button ">Confirmar</span>
                     </button>
@@ -891,7 +899,7 @@ const NewWorkOrder = () => {
                                     checked={isChecked}
                                     onChange={() => setIsChecked(!isChecked)}
                                 />
-                                Mantener kilometraje
+                                Mantener valor anterior
                             </label>
                         </div>
                         <div className="container-km-actual">

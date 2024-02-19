@@ -108,6 +108,7 @@ const NewClient = () => {
             setSelectedClient(response.data);
     
         } catch (error) {
+            console.log("error registro cliente", error)
 
             if (error.response && error.response.status === 400 && error.response.data.errors) {
                 // Muestra los errores en toasts

@@ -358,10 +358,13 @@ export function SearchProductsModal({ onClose,
             updatedProducts.push(manualProduct);
         }
 
-        saveProducts(updatedProducts); // Luego, guarda los productos
-        setTimeout(() => {
-            onCloseAndSave();
-        }, 3000);
+        try {
+            await saveProducts(updatedProducts); // Guarda los productos
+            onCloseAndSave(); // Cierra el modal y actualiza los datos de inmediato
+        } catch (error) {
+            console.error("Error al guardar los productos:", error);
+            // En caso de error, podrías mostrar un mensaje de error aquí
+        }
     };
 
     const updateProducts = async (updatedProducts) => {
@@ -392,10 +395,13 @@ export function SearchProductsModal({ onClose,
 
     const handleUpdate = async () => {
         const updatedProducts = await handleConfirmChanges(); // Espera a que handleConfirmChanges se complete
-        updateProducts(updatedProducts); // Luego, guarda los productos
-        setTimeout(() => {
-            onCloseAndSave()
-        }, 3000);
+        try {
+            await updateProducts(updatedProducts); // Luego, guarda los productos
+            onCloseAndSave(); // Cierra el modal y actualiza los datos de inmediato
+        } catch (error) {
+            console.error("Error al guardar los productos:", error);
+            // En caso de error, podrías mostrar un mensaje de error aquí
+        }
     };
 
     const handleSaveUpdateProducts = () => {

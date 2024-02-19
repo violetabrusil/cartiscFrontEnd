@@ -54,10 +54,23 @@
     overflow-y: auto;
 }
 
+.left-div-detail {
+    width: 30%;
+    border-radius: 13px;
+    border: 1px solid rgba(0, 0, 0, 0.50);
+    max-height: 500px;
+    /* Puedes ajustar este valor según lo necesites */
+}
+
 .right-div-container {
-    width: 60%;
+    width: 68%;
     display: flex;
     flex-direction: column;
+    gap: 8px;
+}
+
+.right-div-container-top {
+    display: flex;
     gap: 8px;
 }
 
@@ -558,6 +571,10 @@
     flex: 2;
 }
 
+.label-input-detail {
+    flex: 2;
+}
+
 .button-arrow-client {
     background: none;
     border: none;
@@ -759,6 +776,10 @@ input[type="checkbox"] {
 
     .container-fields-new-work-order-vehicle {
         margin-top: 25px;
+    }
+
+    .label-name-client {
+        width: 345px;
     }
 
 }

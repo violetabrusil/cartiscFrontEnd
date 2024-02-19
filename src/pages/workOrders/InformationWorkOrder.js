@@ -20,6 +20,7 @@ import DataTable from '../../dataTable/DataTable';
 import SearchServicesOperationsModal from '../../modal/SearchServicesOperationsModal';
 import { AssignModal } from '../../modal/AssignModal';
 import { ConfirmationModal } from '../../modal/ConfirmationModal';
+import { WorkOrderInfoModal } from '../../modal/WorkOrderInfoModal';
 
 const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
@@ -28,6 +29,7 @@ const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const clockIcon = process.env.PUBLIC_URL + "/images/icons/clockIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
+const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const InformationWorkOrder = () => {
 
@@ -82,6 +84,18 @@ const InformationWorkOrder = () => {
     const [existProductsSaved, setExistProductsSaved] = useState(false);
     const [existServiceSaved, setExistServiceSaved] = useState(false);
     const [existOperationSaved, setExistOperationSaved] = useState(false);
+    const [editingKm, setEditingKm] = useState(false);
+    const [newKm, setNewKm] = useState("");
+    const [isWorkOrderModalOpen, setWorkOrderModalOpen] = useState(false);
+    const [lastAddedReceiptId, setLastAddedReceiptId] = useState(null);
+    const [workOrderData, setWorkOrderData] = useState(null);
+    const [discount, setDiscount] = useState(0);
+    const [total, setTotal] = useState(0);
+    const [vat, setVat] = useState(0);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [fetchingData, setFetchingData] = useState(true);
+    const [isEditingWorkOrder, setIsEditingWorkOrder] = useState(false);
+    const [showButton, setShowButton] = useState(true);
 
     const [percentages, setPercentages] = useState({
         group3: [null, null, null, 0, null],
@@ -120,7 +134,7 @@ const InformationWorkOrder = () => {
         'assigned': ['assigned', 'in_development', 'stand_by', 'cancelled'],
         'in_development': ['assigned', 'stand_by', 'cancelled', 'completed'],
         'stand_by': ['assigned'],
-        'completed': [],
+        'completed': ['in_development'],
         'cancelled': []
     };
 
@@ -194,15 +208,6 @@ const InformationWorkOrder = () => {
         setSelections(newSelections);
     };
 
-    const handleGasChange = (e) => {
-        let value = parseInt(e.target.value, 10) || 0;
-
-        // Limita el valor entre 1 y 100
-        value = Math.max(1, Math.min(value, 100));
-
-        setFuelLevel(value)
-    };
-
     const transformVehicleStatusToSelections = (vehicleStatus) => {
         return {
             group1: [
@@ -259,32 +264,43 @@ const InformationWorkOrder = () => {
     const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
 
     const customStylesStatusWorkOrder = {
-        control: (provided, state) => ({
+        control: (provided, state) => {
+            
+          let borderColor = '1px solid rgb(0 0 0 / 34%)'; // Color de borde predeterminado
+          if (state.selectProps.value.value === 'to_start') {
+            borderColor = '2px solid #316EA8'; 
+          } if (state.selectProps.value.value === 'assigned') {
+            borderColor = '2px solid #0C1F31'; 
+          } if (state.selectProps.value.value === 'in_development') {
+            borderColor = '2px solid #4caf50'; 
+          } if (state.selectProps.value.value === 'stand_by') {
+            borderColor = '2px solid #fbc02d'; 
+          } if (state.selectProps.value.value === 'cancelled') {
+            borderColor = '2px solid #e74c3c'; 
+          } if (state.selectProps.value.value === 'completed') {
+            borderColor = '2px solid #2e7d32'; 
+          } 
+          return {
             ...provided,
             width: isTabletLandscape ? '280%' : '200%',
             height: '49px',
             minHeight: '49px',
-            border: '1px solid rgb(0 0 0 / 34%)',
-
-        }),
+            border: borderColor, // Aplicar el color de borde determinado
+          };
+        },
         menu: (provided, state) => ({
-            ...provided,
-            width: isTabletLandscape ? '190px' : '250px',
+          ...provided,
+          width: isTabletLandscape ? '190px' : '185px',
         }),
-    };
+      };
+      
 
     //Función para manejar los cambios en los porcentajes
-    const handlePorcentageChange = (group, index, event) => {
-        setPercentages((prev) => ({
-            ...prev,
-            [group]: [
-                ...prev[group].slice(0, index),
-                event.target.value,
-                ...prev[group].slice(index + 1),
-            ],
-        }));
+    const handlePorcentageChange = (event) => {
+     
+        // Actualiza el estado de fuelLevel con el nuevo valor
+        setFuelLevel(event.target.value);
     };
-
 
     const handleSelectChange = (option) => {
         const currentStatus = workOrderStatus.value;
@@ -294,24 +310,12 @@ const InformationWorkOrder = () => {
 
             if (nextStatus === 'assigned') {
                 setShowAssignModal(true);
-            } else if (nextStatus === 'in_development') {
-                setModalConfig({
-                    title: "Confirmación",
-                    message: "Una vez empezado el desarrollo de una orden de trabajo su comentario y estado de entrega del vehículo no se pueden editar. ¿Desea continuar?",
-                    onConfirm: () => {
-                        changeOrderStatus('in_development');
-                        setShowModal(false);
-                    },
-                    onCancel: () => {
-                        setShowModal(false);
-                    }
-                });
-                setShowModal(true);
+                setEditingKm(true);
             } else if (nextStatus === 'cancelled' || nextStatus === 'completed') {
-                const action = nextStatus === 'cancelled' ? "cancelada" : "completada";
+                const action = nextStatus === 'cancelled' ? "cancelar" : "completar";
                 setModalConfig({
                     title: "Confirmación",
-                    message: `Una vez ${action} una orden de trabajo el cambio es permanente. ¿Desea continuar?`,
+                    message: `Desea ${action} la orden de trabajo.?`,
                     showNotes: nextStatus === 'completed', // Esta línea determina si se muestra el campo de notas.
                     onConfirm: (notes) => {  // Recibe las notas como un argumento.
                         changeOrderStatus(nextStatus, notes);  // Llama a `changeOrderStatus` con las notas.
@@ -355,6 +359,7 @@ const InformationWorkOrder = () => {
                 });
 
                 toast.success("El cambio de estado de la orden de trabajo es válido");
+                getWorkOrderDetailById();
 
                 if (newStatus === 'completed') {
                     getWorkOrderDetailById();
@@ -410,8 +415,11 @@ const InformationWorkOrder = () => {
                 setWorkOrderStatus(matchingStatus);
             }
 
+            console.log("datos de la orden de trabaho", response.data)
+
             setWorkOrderDetail(response.data);
-            console.log("datoa de la orden de trabajo", response.data)
+            setNewKm(response.data.km)
+            console.log("datos del km", newKm)
             const selectionFromApi = transformVehicleStatusToSelections(response.data.vehicle_status);
             setSelections(selectionFromApi);
             setFuelLevel(response.data.vehicle_status.fuel_level);
@@ -559,14 +567,6 @@ const InformationWorkOrder = () => {
         setSelectedServicesList(updatedList); // Asumiendo que selectedServicesList es un estado en el padre.
     };
 
-    const handleTextareaEdit = () => {
-        setTextareaEditable(prevEditable => !prevEditable);
-    };
-
-    const handleStateEdit = () => {
-        setIsEditState(prevEditState => !prevEditState);
-    };
-
     const selectAllCheckboxes = () => {
         let newSelections = { ...selections };
 
@@ -577,17 +577,30 @@ const InformationWorkOrder = () => {
         setSelections(newSelections);
     };
 
-    const editWorkOrder = async () => {
+    const toggleEditState = () => {
+        setTextareaEditable(prevEditable => !prevEditable);
+        setIsEditState(prevEditState => !prevEditState);
+        setIsEditingWorkOrder(prevEditing => !prevEditing);
+    };
+
+    const handleButtonClick = () => {
+        setShowButton(!showButton);
+        if (isEditingWorkOrder) {
+            saveEditWorkOrder();
+        } else {
+            toggleEditState();
+        }
+    };
+
+    const saveEditWorkOrder = async () => {
         const vehicleStatus = {};
 
         vehicleStatus.id = idVehicleStatus;
         vehicleStatus.work_order_id = Number(workOrderId);
 
         // Verificar si se ha ingresado el fuel_level
-        const fuelLevelEntered = Object.keys(optionsCheckBox).some(group => {
-            return optionsCheckBox[group].some(option => keyMapping[option] === 'Gas');
-        });
-
+        const fuelLevelEntered = fuelLevel > 0
+    
         if (!fuelLevelEntered) {
             // Mostrar un toast de advertencia y salir de la función
             toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo', {
@@ -603,7 +616,8 @@ const InformationWorkOrder = () => {
                     if (key !== 'fuel_level') {
                         vehicleStatus[key] = selections[group][index];
                     } else {
-                        vehicleStatus[key] = parseInt(percentages[group][index], 10) || 0;
+                        console.log("else fuel level", fuelLevel)
+                        vehicleStatus[key] = parseInt(fuelLevel, 10);
                     }
                 }
             });
@@ -624,7 +638,9 @@ const InformationWorkOrder = () => {
         const payload = {
             comments: comments,
             vehicle_status: vehicleStatus,
+            km: parseInt(newKm, 10) || 0,
         };
+
 
         try {
             const response = await apiClient.put(`/work-orders/update/${workOrderId}`, payload);
@@ -633,18 +649,22 @@ const InformationWorkOrder = () => {
                 toast.success('Orden de trabajo editada exitósamente', {
                     position: toast.POSITION.TOP_RIGHT
                 });
+                setIsEditingWorkOrder(false);
+                setTextareaEditable(false);
+                setIsEditState(false);
+
             } else {
+           
                 toast.error('Ha ocurrido un error al editar la orden de trabajo', {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
 
         } catch (error) {
-            console.error("Error al editar la orden de trabajo", error);
 
             // Obtener el mensaje de error
-            const errorMessage = error.message || 'Error inesperado al editar la orden de trabajo.';
-
+            const errorMessage = error.message || 'Error al editar la orden de trabajo.';
+            console.log("error", error)
             // Mostrar el mensaje de error en el toast
             toast.error(errorMessage, {
                 position: toast.POSITION.TOP_RIGHT
@@ -677,16 +697,62 @@ const InformationWorkOrder = () => {
         setSelectedProducts(updatedProducts);
     };
 
-    const handleEditButtonClick = () => {
-        // Cambiar el estado de la orden de trabajo a 'in_development'
-        changeOrderStatus('in_development');
-        
-        // Actualizar el valor del dropdown
-        setWorkOrderStatus({ value: 'in_development', label: 'En desarrollo' });
-    
-        // Puedes realizar otras acciones necesarias aquí
+    const handleKmInputChange = (e) => {
+        setNewKm(e.target.value);
     };
-    
+
+    const handleOpenModalPayment = async () => {
+        setWorkOrderModalOpen(true);
+        setFetchingData(true);
+        console.log("entro al modal", fetchingData)
+    };
+
+    const closeModalPayment = () => {
+        setWorkOrderModalOpen(false);
+    };
+
+    const handleWorkOrderConfirm = async () => {
+
+        const selectedDateAdjusted = new Date(selectedDate);
+        selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
+
+        try {
+            // Construir el payload
+            const payload = {
+                client_id: workOrderDetail.client.id,
+                work_order_id: parseInt(workOrderDetail.id, 10),
+                invoice_type: 'sales_note',
+                subtotal: totalValue,
+                discount: discount / 100,
+                vat: 0,
+                total: total,
+                date: selectedDateAdjusted.toISOString()
+            };
+
+            console.log("datos a enviasr", payload)
+
+            // Llamada a la API
+            const response = await apiClient.post('/sales-receipts/create', payload);
+
+            if (response.status === 201) {
+                toast.success('Operación exitosa', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                setLastAddedReceiptId(response.data.id);
+                navigate('/paymentReceipt');
+            }
+
+            setWorkOrderModalOpen(false);
+
+        } catch (error) {
+            console.log("error", error)
+            toast.error('Error al procesar la orden de trabajo', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            console.error('', error);
+        }
+    };
+
     useEffect(() => {
         getWorkOrderDetailById();
     }, []);
@@ -760,12 +826,35 @@ const InformationWorkOrder = () => {
 
             setTotalValue(total.toFixed(2));
             setOldTotalValue(totalValue);
-            console.log("valor old", oldTotalValue);
-            console.log("valor operaciones", totalOperationsValue)
         } else {
             setTotalValue(oldTotalValue);
         }
     }, [selectedProducts, selectedOperations, servicesWithOperations, isModalOpenProducts, oldTotalValue, totalValue]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getWorkOrderDetailById();
+                console.log("datos  orden de trabajo", workOrderDetail)
+                const newWorkOrderData = {
+                    id: workOrderId,
+                    workOrderCode: workOrderDetail.work_order_code,
+                    clientName: workOrderDetail.client.name,
+                    plate: formatPlate(workOrderDetail.vehicle.plate),
+                    subtotal: totalValue,
+                    clientId: workOrderDetail.client.id
+                };
+                setWorkOrderData(newWorkOrderData);
+                setFetchingData(false); // Se ha completado la obtención de datos
+            } catch (error) {
+
+            }
+        };
+
+        if (workOrderDetail !== null && fetchingData) {
+            fetchData();
+        }
+    }, [workOrderDetail, fetchingData]);
 
     return (
         <div>
@@ -792,141 +881,186 @@ const InformationWorkOrder = () => {
                                 </button>
 
                                 <div className='new-work-order-title-container-h2'>
-                                    <h2 style={{display: 'contents'}}>Detalle Orden de Trabajo {workOrderDetail.work_order_code}</h2>
-
-                                    {workOrderDetail.work_order_status === 'completed' && (
-                                        <button onClick={handleEditButtonClick} className="custom-button-edit-work-order">
-                                            <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
-                                        </button>
-                                    )}
+                                    <h2 style={{ display: 'contents' }}>Detalle Orden de Trabajo {workOrderDetail.work_order_code}</h2>
                                 </div>
 
                                 <img src={clockIcon} alt="Clock Icon" className="clock-icon" onClick={openHistoryModal} />
-                                <div className="div-container-select">
-                                    <Select
-                                        isSearchable={false}
-                                        styles={customStylesStatusWorkOrder}
-                                        value={workOrderStatus}
-                                        onChange={handleSelectChange}
-                                        options={WorkOrderStatusOptions}
-                                        classNamePrefix="react-select"
-                                    />
+                                <div className={`div-container-select ${['to_start', 'assigned'].includes(workOrderDetail.work_order_status) ? '' : 'div-container-hidden'}`}>
+                             
+                                        <Select
+                                            isSearchable={false}
+                                            styles={customStylesStatusWorkOrder}
+                                            value={workOrderStatus}
+                                            onChange={handleSelectChange}
+                                            options={WorkOrderStatusOptions}
+                                            classNamePrefix="react-select"
+                                        />
+
                                 </div>
-                                <button className="confirm-button" onClick={editWorkOrder} >
-                                    <span className="text-confirm-button ">Confirmar</span>
-                                </button>
+                                {['to_start', 'assigned'].includes(workOrderDetail.work_order_status) && (
+                                    <button className="confirm-button" onClick={handleButtonClick}>
+                                        <span className="text-confirm-button">
+                                            {isEditingWorkOrder ? 'Confirmar' : 'Editar'}
+                                        </span>
+                                    </button>
+                                )}
+
                             </div>
 
                             <div className="client-search-container">
-                                <div className="left-div">
+                                <div className="left-div-detail">
                                     <div className="container-data-client-information">
 
                                         <h2>Cliente</h2>
 
                                         <div className="label-container">
                                             <label className="label-title">Nombre:</label>
-                                            <label className="label-input">{workOrderDetail.client.name}</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.name}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Cédula:</label>
-                                            <label className="label-input">{workOrderDetail.client.cedula}</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.cedula}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Dirección:</label>
-                                            <label className="label-input">{workOrderDetail.client.address}</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.address}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Teléfono:</label>
-                                            <label className="label-input">{workOrderDetail.client.phone}</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.phone}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Correo:</label>
-                                            <label className="label-input">{workOrderDetail.client.email}</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.email}</label>
                                         </div>
 
                                     </div>
                                 </div>
 
                                 <div className="right-div-container">
-                                    <div className="container-right-div-information-vehicle">
-                                        <div className='div-information-vehicle'>
+                                    <div className='right-div-container-top'>
+                                        <div className="container-right-div-information-vehicle-detail">
+                                            <div className='div-information-vehicle'>
 
-                                            <div style={{ marginTop: '-32px' }}>
-                                                <h2>Vehículo</h2>
+                                                <div style={{ marginTop: '-32px', display: 'flex' }}>
+                                                    <h2>Vehículo</h2>
+                                                    <div className="input-plate-container-work-order-detail">
+                                                        <input
+                                                            className="input-plate-vehicle-work-order-detail"
+                                                            type="text"
+                                                            value={workOrderDetail.vehicle.plate}
+                                                            readOnly />
+                                                    </div>
+                                                </div>
+
+                                                <div className="div-information-vehicle-fields">
+                                                    <div className="vehicle-fields">
+                                                        <label className="label-vehicle">Categoría:</label>
+                                                        <label>{workOrderDetail.vehicle.category}</label>
+                                                    </div>
+                                                    <div className="vehicle-fields">
+                                                        <label className="label-vehicle">Marca:</label>
+                                                        <label style={{ marginLeft: '40px' }}>{workOrderDetail.vehicle.brand}</label>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ marginTop: '20px' }} className="div-information-vehicle-fields">
+                                                    <div className="vehicle-fields">
+                                                        <label className="label-vehicle">Modelo:</label>
+                                                        <label style={{ marginLeft: '15px' }}>{workOrderDetail.vehicle.model}</label>
+                                                    </div>
+                                                    <div className="vehicle-fields">
+                                                        <label className="label-vehicle">Año:</label>
+                                                        <label style={{ marginLeft: '56px' }}>{workOrderDetail.vehicle.year}</label>
+                                                    </div>
+                                                </div>
+
+
                                             </div>
-
-                                            <div className="div-information-vehicle-fields">
-                                                <div className="vehicle-fields">
-                                                    <label className="label-vehicle">Placa:</label>
-                                                    <label>{workOrderDetail.vehicle.plate}</label>
-                                                </div>
-                                                <div className="vehicle-fields">
-                                                    <label className="label-vehicle">Categoría:</label>
-                                                    <label>{workOrderDetail.vehicle.category}</label>
-                                                </div>
-                                                <div className="vehicle-fields">
-                                                    <label className="label-vehicle">Marca:</label>
-                                                    <label style={{ marginLeft: '40px' }}>{workOrderDetail.vehicle.brand}</label>
-                                                </div>
-
-                                            </div>
-
-                                            <div style={{ marginTop: '20px' }} className="div-information-vehicle-fields">
-                                                <div className="vehicle-fields">
-                                                    <label className="label-vehicle">Modelo:</label>
-                                                    <label style={{ marginLeft: '-15px' }}>{workOrderDetail.vehicle.model}</label>
-                                                </div>
-                                                <div className="vehicle-fields">
-                                                    <label className="label-vehicle">Año:</label>
-                                                    <label style={{ marginLeft: '44px' }}>{workOrderDetail.vehicle.year}</label>
-                                                </div>
-                                                <div className="vehicle-fields">
-                                                    <label className="label-vehicle">Kilometraje:</label>
-                                                    <label>{workOrderDetail.vehicle.km}</label>
-                                                </div>
-                                            </div>
-
-
                                         </div>
 
+                                        <div className="container-right-div-information-vehicle-km">
+                                            <div className="vehicle-km-fields">
+                                                <label className="label-vehicle-km">KM:</label>
+                                                <div className='vehicle-km-container'>
+                                                    {isEditingWorkOrder && (
+                                                        <input
+                                                            className="input-new-km"
+                                                            type="text"
+                                                            value={newKm}
+                                                            onChange={handleKmInputChange}
+                                                        />
+                                                    )}
+                                                    {!isEditingWorkOrder && (
+                                                        <label>{newKm}</label>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="vehicle-total-fields">
+                                                <label className="label-total">Total:</label>
+                                                <div className="total-value-container">
+                                                    <label className="total-value">
+                                                        ${integerPart}.<span style={{ fontSize: '28px' }}>{decimalPart}</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
 
                                     <div className="container-right-div-information-vehicle">
                                         <div className="container-fields-new-work-order-vehicle">
-                                            <div className="vehicle-fields">
+                                            <div className="work-order-detail-fields">
                                                 <label className="label-work-order">Fecha de inicio:</label>
                                                 <label className="label-start-date">{workOrderDetail.date_start}</label>
                                             </div>
 
-                                            <div className="container-created">
-                                                <label className="label-vehicle">Creada por:</label>
+                                            <div className="work-order-detail-fields">
+                                                <label className="label-vehicle-created">Creada por:</label>
                                                 <label className="label-created">{workOrderDetail.created_by}</label>
                                             </div>
 
-                                            <div className="vehicle-fields">
+                                            <div className="work-order-detail-fields">
                                                 <label className="label-asigned">Asignada a:</label>
                                                 <label>{workOrderDetail.assigned}</label>
                                             </div>
 
                                         </div>
                                         <div className="container-fields-new-work-order-vehicle-second">
-                                            <div className="vehicle-fields">
+                                            <div className="work-order-detail-fields">
                                                 <label className="label-work-order">Fecha de fin:</label>
                                                 <label className="label-start-date">{workOrderDetail.date_finish}</label>
                                             </div>
 
-                                            <div className="vehicle-fields delivery-for">
-                                                <label className="label-vehicle">Entregada por:</label>
+                                            <div className="work-order-detail-fields">
+                                                <label className="label-vehicle-delivery">Entregada por:</label>
                                                 <label>{workOrderDetail.delivered_by}</label>
                                             </div>
 
-                                            <div className="vehicle-fields">
-                                                <label className="label-total">Total:</label>
-                                                <label className="total-value">
-                                                    ${integerPart}.<span style={{ fontSize: '28px' }}>{decimalPart}</span>
-                                                </label>
-                                            </div>
+                                            <div className="work-order-detail-fields">
+                                                <label className="label-billed">Comprobante:</label>
+                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                    <label style={{ marginLeft: '-12px' }}>{workOrderDetail.is_billed ? 'Generado' : 'No Generado'}</label>
+                                                    {!workOrderDetail.is_billed && workOrderDetail.work_order_status === 'completed' && (
+                                                        <button
+                                                            className="button-payment-receipt"
+                                                            style={{
+                                                                height: '40px',
+                                                                marginTop: '-3px',
+                                                                marginRight: '13px'
+                                                            }}
+                                                            onClick={handleOpenModalPayment}
+                                                        >
+                                                            <img src={receiptIcon} alt="Receipt Icon" className="payment-receipt-icon" style={{ width: '25px', height: '25px' }} />
+                                                        </button>
 
+                                                    )}
+
+
+                                                </div>
+
+                                            </div>
 
                                         </div>
                                     </div>
@@ -938,10 +1072,7 @@ const InformationWorkOrder = () => {
                                     <div style={{ display: 'flex' }}>
                                         <h3>Comentarios</h3>
                                         {
-                                            shouldShowButton() &&
-                                            <button onClick={handleTextareaEdit} className="custom-button-edit-work-order">
-                                                <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
-                                            </button>
+                                            shouldShowButton()
                                         }
 
                                     </div>
@@ -971,10 +1102,7 @@ const InformationWorkOrder = () => {
                                     <div style={{ display: 'flex' }}>
                                         <h3>Estado de Entrega</h3>
                                         {
-                                            shouldShowButton() &&
-                                            <button onClick={handleStateEdit} className="custom-button-edit-work-order">
-                                                <img src={editIcon} className="custom-button-edit-work-order-icon" alt="Edit Icon" />
-                                            </button>
+                                            shouldShowButton()
                                         }
 
                                     </div>
@@ -1016,8 +1144,8 @@ const InformationWorkOrder = () => {
                                                                         type="number"
                                                                         min="0"
                                                                         max="100"
-                                                                        value={percentages[group][index] || ''}
-                                                                        onChange={(event) => handlePorcentageChange(group, index, event)}
+                                                                        value={fuelLevel || ''}
+                                                                        onChange={(event) => handlePorcentageChange(event)}
                                                                         disabled={!isEditState}
                                                                     />
 
@@ -1283,6 +1411,24 @@ const InformationWorkOrder = () => {
                     }}
                     workOrderId={workOrderId}
                     getWorkOrderDetail={getWorkOrderDetailById}
+                />
+
+            )}
+
+            {isWorkOrderModalOpen && (
+                <WorkOrderInfoModal
+                    isOpen={isWorkOrderModalOpen}
+                    onClose={closeModalPayment}
+                    workOrderData={workOrderData}
+                    onConfirm={handleWorkOrderConfirm}
+                    discount={discount}
+                    setDiscount={setDiscount}
+                    total={total}
+                    setTotal={setTotal}
+                    vat={vat}
+                    setVat={setVat}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
                 />
 
             )}

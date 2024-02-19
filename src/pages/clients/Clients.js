@@ -473,9 +473,12 @@ const Clients = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
-                setClients(response.data);
-                setLoading(false);
-
+                if (response.data && response.data.length > 0) {
+                    setClients(response.data);
+                    setLoading(false);
+                } else {
+                    setLoading(false);
+                }
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
                     console.error('La solicitud ha superado el tiempo límite.');
@@ -486,7 +489,7 @@ const Clients = () => {
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption, refreshClients, clientSuspended,]);
+    }, [searchTerm, selectedOption, refreshClients, clientSuspended]);
 
     //Obtención de la información del cliente para editarlo
     useEffect(() => {
@@ -705,7 +708,7 @@ const Clients = () => {
                                 onDisable={openAlertModalClientSuspend}
                                 showEditIcon={true}
                                 onEdit={() => setIsEditMode(true)}
-                                
+
                             />
 
                             <div className="container-data-client-form">
