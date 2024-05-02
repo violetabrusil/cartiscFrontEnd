@@ -18,6 +18,7 @@ import VehiclePlans from "../../vehicle-plans/VehiclePlans";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import apiClient from "../../services/apiClient";
 import ClientContext from "../../contexts/ClientContext";
+import { AddNewClientModal } from "../../modal/AddClientModal";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
@@ -69,8 +70,10 @@ const NewWorkOrder = () => {
     const symptomsContainerRef = useRef(null);
     const [placeholder, setPlaceholder] = useState("Describa los síntomas");
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
+    const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
 
     const [toastShown, setToastShown] = useState(false);
+
     const showToast = (message, type) => {
         toast[type](message, { position: toast.POSITION.TOP_RIGHT });
     };
@@ -88,6 +91,14 @@ const NewWorkOrder = () => {
 
     const closeFilterModal = () => {
         setIsFilterModalOpen(false);
+    };
+
+    const openAddClientModal = () => {
+        setIsAddClientModalOpen(true);
+    };
+
+    const closeAddClientModal = () => {
+        setIsAddClientModalOpen(false);
     };
 
     const handleOptionChange = (option) => {
@@ -408,36 +419,37 @@ const NewWorkOrder = () => {
         resetForm();
     };
 
-    useEffect(() => {
+    const getClient = async () => {
 
-        const getClient = async () => {
+        let endpoint = '/clients/all';
 
-            let endpoint = '/clients/all';
-
-            //Si hay un filtro de búsqueda
-            if (searchTerm) {
-                switch (selectedOption) {
-                    case 'Cédula':
-                        endpoint = `/clients/search-by-cedula/${searchTerm}`;
-                        break;
-                    case 'Nombre':
-                        endpoint = `/clients/search-by-name/${searchTerm}`;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            try {
-                const response = await apiClient.get(endpoint);
-                setClients(response.data);
-
-            } catch (error) {
-                toast.error('Error al obtener los datos de los clientes', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
+        //Si hay un filtro de búsqueda
+        if (searchTerm) {
+            switch (selectedOption) {
+                case 'Cédula':
+                    endpoint = `/clients/search-by-cedula/${searchTerm}`;
+                    break;
+                case 'Nombre':
+                    endpoint = `/clients/search-by-name/${searchTerm}`;
+                    break;
+                default:
+                    break;
             }
         }
+        try {
+            const response = await apiClient.get(endpoint);
+            setClients(response.data);
+
+        } catch (error) {
+            toast.error('Error al obtener los datos de los clientes', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+
+        }
+    };
+
+    useEffect(() => {
+
         getClient();
 
     }, [searchTerm, selectedOption])
@@ -516,7 +528,7 @@ const NewWorkOrder = () => {
                     <button onClick={onBack} className="button-arrow-client">
                         <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
                     </button>
-                    <h2 style={{flex: 'auto'}}>Nueva Orden de Trabajo</h2>
+                    <h2 style={{ flex: 'auto' }}>Nueva Orden de Trabajo</h2>
                     <button className="confirm-button" onClick={handleWorkOrderCreation}>
                         <span className="text-confirm-button ">Confirmar</span>
                     </button>
@@ -558,15 +570,20 @@ const NewWorkOrder = () => {
                         ) :
                             (
                                 <>
-                                    {/*Título del contenedor y cuadro de búsqueda */}
-                                    <div style={{ marginTop: "10px" }}>
-                                        <TitleAndSearchBox
-                                            selectedOption={selectedOption}
-                                            onSearchChange={handleSearchClientWithDebounce}
-                                            onButtonClick={openFilterModal}
-                                            isSpecial={true}
-                                        />
+                                    <div>
+                                        {/*Título del contenedor y cuadro de búsqueda */}
+                                        <div style={{ marginTop: "10px" }}>
+                                            <TitleAndSearchBox
+                                                selectedOption={selectedOption}
+                                                onSearchChange={handleSearchClientWithDebounce}
+                                                onButtonClick={openFilterModal}
+                                                isSpecial={true}
+                                                showAddButton={true}
+                                                onAddClient={openAddClientModal}
+                                            />
+                                        </div>
                                     </div>
+
 
                                     {/*Lista de clientes*/}
                                     {clients.length > 0 && (
@@ -654,6 +671,9 @@ const NewWorkOrder = () => {
                     <div className="right-div-container">
 
                         <div className="right-div">
+                            <div>
+                                <button className="add-new-vehicle ">Agregar Vehículo</button>
+                            </div>
                             {/* Contenido del segundo div derecho */}
                             <Carousel responsive={responsive} className="carousel-vehicles">
                                 {vehicles.map((vehicle, index) => (
@@ -876,6 +896,18 @@ const NewWorkOrder = () => {
                     onSelect={handleSelectClick}
                 />
             )}
+
+            {/*Modal para agregar nuevo cliente*/}
+
+            {isAddClientModalOpen && (
+                <AddNewClientModal
+                    isOpen={isAddClientModalOpen}
+                    onClose={closeAddClientModal}
+                    OnUpdate={getClient()}
+                />
+            )}
+
+
 
             {/*Modal para actualizar kilometraje*/}
 
