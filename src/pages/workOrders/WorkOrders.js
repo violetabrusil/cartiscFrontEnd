@@ -47,17 +47,15 @@ const WorkOrders = () => {
     };
 
     const handleSelectClick = (option) => {
-        // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
     function formatDate(isoDate) {
         const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
-        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
+        const day = String(date.getUTCDate()).padStart(2, '0');  
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+        const year = date.getUTCFullYear();  
 
         return `${day}/${month}/${year}`;
     };
@@ -98,7 +96,6 @@ const WorkOrders = () => {
     };
 
     useEffect(() => {
-        console.log("buscar", searchTerm, selectedOption);
 
         const fetchData = async () => {
             let endpoint = '/work-orders/all';

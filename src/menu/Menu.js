@@ -24,6 +24,8 @@ const inventoryIconGray = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-
 const inventoryIconBlue = process.env.PUBLIC_URL + "/images/icons/inventoryIcon-blue.png";
 const paymentIconGray = process.env.PUBLIC_URL + "/images/icons/paymentIcon-gray.png";
 const paymentIconBlue = process.env.PUBLIC_URL + "/images/icons/paymentIcon-blue.png";
+const proformaIconBlue = process.env.PUBLIC_URL + "/images/icons/proformaIcon-blue.png";
+const proformaIconGray = process.env.PUBLIC_URL + "/images/icons/proformaIcon-gray.png";
 
 const Menu = ({ resetFunction, onInventoryClick }) => {
 
@@ -43,7 +45,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
         setManualToggle(true);
         setIsOpen(false);
     };
-    
+
 
     const menuOptions = useMemo(() => {
 
@@ -56,6 +58,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
             { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Inventario", labelStyle: { marginTop: "10px" }, },
             { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo", labelStyle: { marginTop: "12px" } },
             { path: "/paymentReceipt", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Comprobantes de pago", labelStyle: { marginTop: "12px" } },
+            { path: '/proformas', icon: proformaIconGray, iconSelected: proformaIconBlue, label: "Proformas", labelStyle: { marginTop: "10px" } }
         ];
 
         if (user && user.translated_user_type === "Administrador") {
