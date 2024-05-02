@@ -8,19 +8,20 @@ import { ToastContainer } from "react-toastify";
 import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
 import apiClient from "../../services/apiClient";
+import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxSpecial";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import { workOrderStatus } from "../../constants/workOrderConstants";
+import { useWorkOrderContext } from "../../contexts/searchContext/WorkOrderContext";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const WorkOrders = () => {
 
-    const [selectedOption, setSelectedOption] = useState('Placa');
-    const [searchTerm, setSearchTerm] = useState('');
+    const { selectedOption, setSelectedOption, searchTerm, setSearchTerm } = useWorkOrderContext();
+
     const [workOrders, setWorkOrders] = useState([]);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -91,7 +92,9 @@ const WorkOrders = () => {
     };
 
     const handleShowInformationWorkOrderClick = (workOrderId) => {
-        navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
+        navigate(`/workOrders/detailWorkOrder/${workOrderId}`, {
+            state: { currentPage: 'workOrders' }
+        });
     };
 
     useEffect(() => {
@@ -190,6 +193,9 @@ const WorkOrders = () => {
         fetchData();
     }, [searchTerm, selectedOption]);
 
+    useEffect(() => {
+        console.log("Valor de selectedOption al regresar:", selectedOption);
+    }, [selectedOption]);
 
     return (
 
@@ -203,11 +209,12 @@ const WorkOrders = () => {
                 <div className="left-section-work-order">
 
                     {/*Título del contenedor y cuadro de búsqueda */}
-                    <TitleAndSearchBox
+                    <TitleAndSearchBoxSpecial
                         selectedOption={selectedOption}
                         title="Órdenes de Trabajo"
                         onSearchChange={handleSearchWorkOrdersWithDebounce}
                         onButtonClick={openFilterModal}
+                        shouldSaveSearch={true}
                     />
 
                     {/*Lista de órdenes de trabajo */}
@@ -289,7 +296,7 @@ const WorkOrders = () => {
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
                     options={['Placa', 'Código Orden de Trabajo', 'Nombre Titular', 'Asignada a', 'Entregada por', 'Creada por']}
-                    defaultOption="Placa"
+                    defaultOption={selectedOption}
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}
                 />

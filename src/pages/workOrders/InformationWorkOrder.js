@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import Select from 'react-select';
 import PuffLoader from "react-spinners/PuffLoader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import VehiclePlans from "../../vehicle-plans/VehiclePlans";
@@ -102,6 +102,7 @@ const InformationWorkOrder = () => {
     });
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const keyMapping = {
         "Antena": "antenna",
@@ -265,39 +266,39 @@ const InformationWorkOrder = () => {
 
     const customStylesStatusWorkOrder = {
         control: (provided, state) => {
-            
-          let borderColor = '1px solid rgb(0 0 0 / 34%)'; // Color de borde predeterminado
-          if (state.selectProps.value.value === 'to_start') {
-            borderColor = '2px solid #316EA8'; 
-          } if (state.selectProps.value.value === 'assigned') {
-            borderColor = '2px solid #0C1F31'; 
-          } if (state.selectProps.value.value === 'in_development') {
-            borderColor = '2px solid #4caf50'; 
-          } if (state.selectProps.value.value === 'stand_by') {
-            borderColor = '2px solid #fbc02d'; 
-          } if (state.selectProps.value.value === 'cancelled') {
-            borderColor = '2px solid #e74c3c'; 
-          } if (state.selectProps.value.value === 'completed') {
-            borderColor = '2px solid #2e7d32'; 
-          } 
-          return {
-            ...provided,
-            width: isTabletLandscape ? '280%' : '200%',
-            height: '49px',
-            minHeight: '49px',
-            border: borderColor, // Aplicar el color de borde determinado
-          };
+
+            let borderColor = '1px solid rgb(0 0 0 / 34%)'; // Color de borde predeterminado
+            if (state.selectProps.value.value === 'to_start') {
+                borderColor = '2px solid #316EA8';
+            } if (state.selectProps.value.value === 'assigned') {
+                borderColor = '2px solid #0C1F31';
+            } if (state.selectProps.value.value === 'in_development') {
+                borderColor = '2px solid #4caf50';
+            } if (state.selectProps.value.value === 'stand_by') {
+                borderColor = '2px solid #fbc02d';
+            } if (state.selectProps.value.value === 'cancelled') {
+                borderColor = '2px solid #e74c3c';
+            } if (state.selectProps.value.value === 'completed') {
+                borderColor = '2px solid #2e7d32';
+            }
+            return {
+                ...provided,
+                width: isTabletLandscape ? '280%' : '200%',
+                height: '49px',
+                minHeight: '49px',
+                border: borderColor, // Aplicar el color de borde determinado
+            };
         },
         menu: (provided, state) => ({
-          ...provided,
-          width: isTabletLandscape ? '190px' : '185px',
+            ...provided,
+            width: isTabletLandscape ? '190px' : '185px',
         }),
-      };
-      
+    };
+
 
     //Función para manejar los cambios en los porcentajes
     const handlePorcentageChange = (event) => {
-     
+
         // Actualiza el estado de fuelLevel con el nuevo valor
         setFuelLevel(event.target.value);
     };
@@ -600,7 +601,7 @@ const InformationWorkOrder = () => {
 
         // Verificar si se ha ingresado el fuel_level
         const fuelLevelEntered = fuelLevel > 0
-    
+
         if (!fuelLevelEntered) {
             // Mostrar un toast de advertencia y salir de la función
             toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo', {
@@ -654,7 +655,7 @@ const InformationWorkOrder = () => {
                 setIsEditState(false);
 
             } else {
-           
+
                 toast.error('Ha ocurrido un error al editar la orden de trabajo', {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -681,7 +682,12 @@ const InformationWorkOrder = () => {
     };
 
     const onBack = () => {
-        navigate("/workOrders");
+        const currentPage = location.state?.currentPage;
+        if (currentPage === 'paymentReceipt') {
+            navigate('/paymentReceipt');
+        } else {
+            navigate('/workOrders');
+        }
     };
 
     const shouldShowButton = () => {
@@ -886,15 +892,15 @@ const InformationWorkOrder = () => {
 
                                 <img src={clockIcon} alt="Clock Icon" className="clock-icon" onClick={openHistoryModal} />
                                 <div className={`div-container-select ${['to_start', 'assigned'].includes(workOrderDetail.work_order_status) ? '' : 'div-container-hidden'}`}>
-                             
-                                        <Select
-                                            isSearchable={false}
-                                            styles={customStylesStatusWorkOrder}
-                                            value={workOrderStatus}
-                                            onChange={handleSelectChange}
-                                            options={WorkOrderStatusOptions}
-                                            classNamePrefix="react-select"
-                                        />
+
+                                    <Select
+                                        isSearchable={false}
+                                        styles={customStylesStatusWorkOrder}
+                                        value={workOrderStatus}
+                                        onChange={handleSelectChange}
+                                        options={WorkOrderStatusOptions}
+                                        classNamePrefix="react-select"
+                                    />
 
                                 </div>
                                 {['to_start', 'assigned'].includes(workOrderDetail.work_order_status) && (

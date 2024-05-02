@@ -8,6 +8,7 @@ import SearchBar from "../searchBar/SearchBar";
 import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
 import { EmptyTable } from "../dataTable/EmptyTable";
+import { values } from "lodash";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -34,6 +35,9 @@ export function SearchProductsModal({ onClose,
     const [isEditing, setIsEditing] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(5, 3);
     const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 4);
+    const [editableTitleProduct, setEditableTitleProduct] = useState('');
+    const [editedProducts, setEditedProducts] = useState({});
+
 
     const [manualProduct, setManualProduct] = useState({
         title: '',
@@ -42,7 +46,6 @@ export function SearchProductsModal({ onClose,
     });
 
     const handleFilter = useCallback((option, term) => {
-        setSelectedOption(option);
         setSearchTerm(term);
     }, []);
 
@@ -161,10 +164,43 @@ export function SearchProductsModal({ onClose,
         { Header: "", accessor: "action", id: "action", className: "column-action" },
     ];
 
+    const handleTitleEdit = (e) => {
+        const sku = e.target.dataset.sku; // Obtener el SKU del atributo de datos
+        const newValue = e.target.value;
+        setEditableTitleProduct(newValue);
+        console.log("cambio", newValue)
+    
+        // Marcar el producto como editado
+        setEditedProducts((prevEditedProducts) => ({
+            ...prevEditedProducts,
+            [sku]: newValue,
+        }));
+    }
+
     const columnSelectProducts = React.useMemo(
         () => [
             { accessor: "sku", width: '23%' },
-            { accessor: "title", width: '24%' },
+            {
+                accessor: "title",
+                width: '24%',
+                Cell: ({ value, row }) => {
+                    const currentTitle = row.original.title;
+                 
+                    return (
+                        <div>
+                            <input
+                                type="text"
+                                defaultValue={currentTitle}
+                                onBlur={(e) => {
+                                    handleTitleEdit(e); // Llamar a handleTitleEdit solo en onBlur
+                                }}
+                                data-sku={row.original.sku}
+                            />
+                        </div>
+
+                    );
+                },
+            },
             {
                 accessor: "price",
                 width: '28%',
@@ -222,7 +258,7 @@ export function SearchProductsModal({ onClose,
                             value={localQuantity}
                             onChange={handleLocalChange}
                             onBlur={handleGlobalChange}
-                            style={{ width: '40px', fontWeight: '600', textAlign: 'center'}}
+                            style={{ width: '40px', fontWeight: '600', textAlign: 'center' }}
                             max={row.original.stock}
                             min="1"
                         />
@@ -260,7 +296,6 @@ export function SearchProductsModal({ onClose,
         ],
         [productQuantities, productPrices]
     );
-
 
     const handleCostChange = (productCode, newCost) => {
         console.log("costo del producto", newCost)
@@ -311,15 +346,19 @@ export function SearchProductsModal({ onClose,
         return new Promise((resolve) => {
             const updatedProducts = selectedProducts.map((product) => {
                 const sku = product.sku;
+                const editedTitle = editedProducts[sku];
+                const title = editedTitle !== undefined ? editedTitle : product.title;
                 const price = productPrices[sku] || 0;
                 const quantity = productQuantities[sku] || 1;
 
                 return {
                     ...product,
+                    title: title,
                     price: price,
                     quantity: quantity,
                 };
             });
+            setEditedProducts({});
             onProductsUpdated(updatedProducts);
             onProductPricesUpdated(productPrices);
             onProductQuantitiesUpdated(productQuantities);

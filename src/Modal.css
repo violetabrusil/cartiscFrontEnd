@@ -69,6 +69,16 @@
     align-self: center;
 }
 
+.clean-button {
+    background: none;
+    color: #1C4A74;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    margin-left: 20px;
+}
+
 .modal-button:hover {
     background-color: #245681;
 }

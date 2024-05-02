@@ -16,6 +16,7 @@ import { paymentTypeMaping } from "../../constants/paymentTypeConstants";
 import { paymentStatusMaping } from "../../constants/paymentReceiptsStatusConstants";
 import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import { usePaymentReceipt } from "../../contexts/searchContext/PaymentReceiptContext";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
@@ -44,6 +45,7 @@ const PaymentReceipts = () => {
     const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(8, 6);
+    const { filterData, setFilterData } = usePaymentReceipt();
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },
@@ -71,7 +73,9 @@ const PaymentReceipts = () => {
     };
 
     const navigateToDetail = (workOrderId) => {
-        navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
+        navigate(`/workOrders/detailWorkOrder/${workOrderId}`, {
+            state: { currentPage: 'paymentReceipt' }
+        });
     };
 
     const selectTypePaymentStyles = {
@@ -269,7 +273,11 @@ const PaymentReceipts = () => {
             })
 
             setPaymentReceipts(transformedPaymentReceipts);
+            setFilterData(transformedPaymentReceipts)
+            console.log("data filtrada", filterData)
             setModalOpen(false)
+            console.log("data que se filtra la primera vez", transformedPaymentReceipts)
+
 
         } catch (error) {
             toast.error('Ha ocurrido un error', {
@@ -310,7 +318,6 @@ const PaymentReceipts = () => {
                     sales_receipt_status: translatedPaymentStatus
                 };
             });
-
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
             console.log("datos de comprobante", response.data)
@@ -388,7 +395,7 @@ const PaymentReceipts = () => {
     };
 
     const handleWorkOrderConfirm = async () => {
-        
+
         const selectedDateAdjusted = new Date(selectedDate);
         selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
 
@@ -500,6 +507,17 @@ const PaymentReceipts = () => {
         }
     }, []);
 
+    useEffect(() => {
+        // Recuperar datos filtrados al cargar el componente o al regresar a la página
+        setPaymentReceipts(filterData); // Ajusta esto según cómo manejes tus datos en el contexto
+    }, [filterData]); // Ejecuta este efecto cuando filterData cambie en el contexto
+
+    useEffect(() => {
+        console.log("Lista filtrada actualizada:", filterData);
+    }, [filterData]);
+
+
+
     return (
 
         <div>
@@ -541,7 +559,7 @@ const PaymentReceipts = () => {
 
                         {paymentReceipts.length > 0 && (
                             <DataTable
-                                data={paymentReceipts}
+                                data={filterData.length > 0 ? filterData : paymentReceipts}
                                 columns={columns}
                                 highlightRows={true}
                                 selectedRowId={lastAddedReceiptId}

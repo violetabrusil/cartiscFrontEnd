@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiLogin = axios.create({
-    baseURL: 'http://192.168.0.124:1313/cartics',
+    //baseURL: 'http://192.168.100.164:1313/cartics',
     //baseURL: 'http://192.168.100.147:1313/cartics',
     headers: {
         'Content-Type': 'application/json',
