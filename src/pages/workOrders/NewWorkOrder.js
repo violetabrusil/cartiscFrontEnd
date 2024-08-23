@@ -19,6 +19,7 @@ import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import apiClient from "../../services/apiClient";
 import ClientContext from "../../contexts/ClientContext";
 import { AddNewClientModal } from "../../modal/AddClientModal";
+import { AddNewVehicleModal } from "../../modal/AddVehicleModal";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
@@ -30,6 +31,8 @@ const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
 const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
+const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
+
 
 const NewWorkOrder = () => {
 
@@ -71,8 +74,10 @@ const NewWorkOrder = () => {
     const [placeholder, setPlaceholder] = useState("Describa los síntomas");
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
     const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
-
+    const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
     const [toastShown, setToastShown] = useState(false);
+    const [shouldUpdateClients, setShouldUpdateClients] = useState(false);
+    const [shouldUpdateVehicles, setShouldUpdateVehicles] = useState(false);
 
     const showToast = (message, type) => {
         toast[type](message, { position: toast.POSITION.TOP_RIGHT });
@@ -99,6 +104,16 @@ const NewWorkOrder = () => {
 
     const closeAddClientModal = () => {
         setIsAddClientModalOpen(false);
+        setShouldUpdateClients(true);
+    };
+
+    const openAddVehicleModal = () => {
+        setIsAddVehicleModalOpen(true);
+    };
+
+    const closeAddVehicleModal = () => {
+        setIsAddVehicleModalOpen(false);
+        setShouldUpdateVehicles(true);
     };
 
     const handleOptionChange = (option) => {
@@ -113,6 +128,7 @@ const NewWorkOrder = () => {
 
     const handleClientSelect = async (client) => {
         setSelectedClient(client);
+        await getVehicleOfClient(client.id);
     };
 
     const handleDeselectClient = () => {
@@ -188,11 +204,11 @@ const NewWorkOrder = () => {
         },
         desktop: {
             breakpoint: { max: 3000, min: 1024 },
-            items: 3,
+            items: 4,
         },
         tablet: {
             breakpoint: { max: 1024, min: 464 },
-            items: 2,
+            items: 3,
         },
         mobile: {
             breakpoint: { max: 464, min: 0 },
@@ -265,6 +281,7 @@ const NewWorkOrder = () => {
     };
 
     const getVehicleOfClient = async (clientId) => {
+       
         try {
             const response = await apiClient.get(`/vehicles/active/${clientId}`);
             if (response.data && response.data.length > 0) {
@@ -278,6 +295,7 @@ const NewWorkOrder = () => {
                 setVehicles(formattedVehicles);
                 setToastShown(false);
             } else {
+                setVehicles([]);
                 setToastShown(true);
             }
         } catch (error) {
@@ -449,10 +467,22 @@ const NewWorkOrder = () => {
     };
 
     useEffect(() => {
-
         getClient();
-
     }, [searchTerm, selectedOption])
+
+    useEffect(() => {
+        if (shouldUpdateClients) {
+            getClient();
+            setShouldUpdateClients(false);
+        }
+    }, [shouldUpdateClients]);
+    
+    useEffect(() => {
+        if (shouldUpdateVehicles && selectedClient) {
+            getVehicleOfClient(selectedClient.id);
+            setShouldUpdateVehicles(false);
+        }
+    }, [shouldUpdateVehicles, selectedClient]);
 
     const selectAllCheckboxes = () => {
         let newSelections = { ...selections };
@@ -483,22 +513,9 @@ const NewWorkOrder = () => {
     }, [symptoms]);
 
     useEffect(() => {
-        if (selectedClient && selectedClient.id) {
-            getVehicleOfClient(selectedClient.id);
-            console.log("datos cliente", selectedClient)
-        }
-    }, [selectedClient]);
-
-    useEffect(() => {
-        if (toastShown) {
-            showToast('No se encontraron vehículos', 'warn');
-        }
-    }, [toastShown]);
-
-    useEffect(() => {
         if (selectedVehicle && selectedVehicle.km) {
             setActualKm(selectedVehicle.km);
-            console.log("valor del km", selectedVehicle)
+            //console.log("valor del km", selectedVehicle)
         }
     }, [selectedVehicle]);
 
@@ -671,35 +688,48 @@ const NewWorkOrder = () => {
                     <div className="right-div-container">
 
                         <div className="right-div">
-                            <div>
-                                <button className="add-new-vehicle ">Agregar Vehículo</button>
-                            </div>
                             {/* Contenido del segundo div derecho */}
-                            <Carousel responsive={responsive} className="carousel-vehicles">
-                                {vehicles.map((vehicle, index) => (
-                                    <div
-                                        key={index}
-                                        className={`carousel ${vehicle.id === selectedVehicleId || (selectedVehicle && vehicle.id === selectedVehicle.id) ? 'selected' : ''}`}
-                                        onClick={() => setSelectedVehicleId(vehicle.id)}
-                                    >
-                                        <img
-                                            src={iconsVehicles[vehicle.category]}
-                                            alt={`Vehicle ${index + 1}`}
-                                            className="vehicle-carousel"
-                                        />
-                                        <div className="input-plate-container-new-work-order">
-                                            <input
-                                                className="input-plate-vehicle-new-work-order"
-                                                type="text"
-                                                value={vehicle.plate}
-                                                readOnly
-                                            />
-                                            <img src={flagIcon} alt="Flag" className="ecuador-icon" />
-                                            <label>ECUADOR</label>
-                                        </div>
+                            {selectedClient && (
+                                <>
+                                    <div className="add-vehicle-container" onClick={openAddVehicleModal}>
+                                        <img src={addIcon} alt="Add Vehicle" className="add-vehicle-icon" />
+                                        <button className="add-new-vehicle-carousel" >Agregar Vehículo</button>
                                     </div>
-                                ))}
-                            </Carousel>
+
+                                    <div className="container-carousel">
+                                        <Carousel responsive={responsive}>
+
+                                            {vehicles.map((vehicle, index) => (
+                                                <div
+                                                    key={index}
+                                                    className={`carousel ${vehicle.id === selectedVehicleId || (selectedVehicle && vehicle.id === selectedVehicle.id) ? 'selected' : ''}`}
+                                                    onClick={() => setSelectedVehicleId(vehicle.id)}
+                                                >
+                                                    <img
+                                                        src={iconsVehicles[vehicle.category]}
+                                                        alt={`Vehicle ${index + 1}`}
+                                                        className="vehicle-carousel"
+                                                    />
+                                                    <div className="input-plate-container-new-work-order">
+                                                        <input
+                                                            className="input-plate-vehicle-new-work-order"
+                                                            type="text"
+                                                            value={vehicle.plate}
+                                                            readOnly
+                                                        />
+                                                        <img src={flagIcon} alt="Flag" className="ecuador-icon" />
+                                                        <label>ECUADOR</label>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </Carousel>
+                                    </div>
+
+
+                                </>
+
+                            )}
+
                         </div>
 
                         <div className="right-div">
@@ -903,11 +933,20 @@ const NewWorkOrder = () => {
                 <AddNewClientModal
                     isOpen={isAddClientModalOpen}
                     onClose={closeAddClientModal}
-                    OnUpdate={getClient()}
+                    OnUpdate={() => setShouldUpdateClients(true)}
                 />
             )}
 
+            {/*Modal para agregar un nuevo vehículo*/}
 
+            {isAddVehicleModalOpen && (
+                <AddNewVehicleModal
+                    isOpen={isAddVehicleModalOpen}
+                    onClose={closeAddVehicleModal}
+                    selectedClientId={selectedClient ? selectedClient.id : null}
+                    OnUpdate={() => setShouldUpdateVehicles(true)}
+                />
+            )}
 
             {/*Modal para actualizar kilometraje*/}
 
@@ -965,6 +1004,9 @@ const NewWorkOrder = () => {
                     </div>
                 </div>
             )}
+
+
+
 
         </div>
     );

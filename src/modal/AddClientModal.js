@@ -1,6 +1,5 @@
 import "../Modal.css";
 import "../NewClient.css";
-import 'react-datepicker/dist/react-datepicker.css';
 
 import React, { useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
@@ -33,7 +32,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                 position: toast.POSITION.TOP_RIGHT
             });
 
-            OnUpdate()
+            OnUpdate();
 
 
         } catch (error) {
