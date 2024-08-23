@@ -34,6 +34,7 @@ import { WorkOrderProvider } from './contexts/searchContext/WorkOrderContext';
 import { PaymentReceiptProvider } from './contexts/searchContext/PaymentReceiptContext';
 import Proforma from './pages/proforma/Proforma';
 import { ProformaProvider } from './contexts/searchContext/ProformaContext';
+import NewProforma from './pages/proforma/NewProforma';
 
 function App() {
 
@@ -76,6 +77,7 @@ function App() {
                   <Route path="/workOrders/detailWorkOrder/:workOrderId" element={<InformationWorkOrder />} />
                   <Route path="/paymentReceipt" element={<PaymentReceipts />} />
                   <Route path="/proformas" element={<Proforma />} />
+                  <Route path='/proforma/newProforma' element={<NewProforma />}/>
                 </Routes>
               </div>
             </ProformaProvider>

@@ -51,14 +51,11 @@ const NewWorkOrder = () => {
     const [selectedOption, setSelectedOption] = useState('Nombre');
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    const debounceTimeout = useRef(null);
     const [clients, setClients] = useState([]);
     const { selectedClient, setSelectedClient } = useContext(ClientContext);
     const { selectedVehicle } = useContext(ClientContext);
-
     const [selectedVehicleId, setSelectedVehicleId] = useState(null);
     const [isKmModalOpen, setIsKmModalOpen] = useState(false);
-
     const [dateStart, setDateStart] = useState(new Date());
     const [workOrderStatus, setWorkOrderStatus] = useState(WorkOrderStatusOptions[0]);
     const [createdBy, setCreatedBy] = useState(user?.username || "");
