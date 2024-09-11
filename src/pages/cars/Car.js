@@ -22,7 +22,7 @@ import { workOrderStatus } from "../../constants/workOrderConstants";
 import SearchModalWorkOrder from "../../modal/SearchModalWorkOrder";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 import { CustomSingleValue } from "../../customSingleValue/CustomSingleValue";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -102,6 +102,8 @@ const Cars = () => {
     const optionsMaintance = ['Cambio de aceite', 'Cambio de motor'];
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isWorkOrderModalOpen, setIsWorkOrderModalOpen] = useState(false);
+
+    const { vehicleId } = useParams();
 
     const navigate = useNavigate();
 
@@ -207,11 +209,11 @@ const Cars = () => {
             Cell: ({ value }) => {
                 return value === 'NaN/NaN/NaN' ? '-' : value;
             }
-        },    
+        },
         {
             Header: 'Kilometraje',
             accessor: 'km',
-        },    
+        },
         {
             Header: 'Total',
             accessor: 'total',
@@ -291,7 +293,7 @@ const Cars = () => {
             });
 
             setWorkOrders(transformedWorkOrders);
-            console.log("datos del historial",response.data)
+            console.log("datos del historial", response.data)
 
 
         } catch (error) {
@@ -303,17 +305,32 @@ const Cars = () => {
     };
 
     const handleCarHistory = (vehicleId, event) => {
-        event.stopPropagation();
+        // Si se proporciona un evento, detiene la propagación
+        if (event) {
+            event.stopPropagation();
+        }
+
         // Guarda el ID del vehículo en el estado para usarlo después
-        setSelectedVehicleId(vehicleId);
-        const vehiclePlate = vehicles.find(vehicle => vehicle.id === vehicleId);
-        setSelectedPlateVehicle(vehiclePlate.plate);
-        setShowCarHistory(true);
-        setShowCarInformation(false);
-        setShowMaintenance(false);
-        setShowAddVehicle(false);
-        setShowButtonAddVehicle(false);
-        getVehicleHistoryData(vehicleId);
+        // setSelectedVehicleId(vehicleId);
+        const numericVehicleId = Number(vehicleId);
+        // Encuentra el vehículo en el array de vehículos
+        const vehiclePlate = vehicles.find(vehicle => vehicle.id === numericVehicleId);
+
+        // Asegúrate de que el vehículo fue encontrado antes de continuar
+        if (vehiclePlate) {
+            setSelectedPlateVehicle(vehiclePlate.plate);
+            setShowCarHistory(true);
+            setShowCarInformation(false);
+            setShowMaintenance(false);
+            setShowAddVehicle(false);
+            setShowButtonAddVehicle(false);
+            getVehicleHistoryData(numericVehicleId);
+            navigate(`/cars/carHistory/${numericVehicleId}`); 
+        } else {
+            // Maneja el caso en que el vehículo no se encuentra
+            console.error(`No se encontró el vehículo con ID: ${numericVehicleId}`);
+            // Aquí puedes decidir qué hacer si no se encuentra el vehículo
+        }
     };
 
     const handleOpenModalWorkOrder = () => {
@@ -325,7 +342,7 @@ const Cars = () => {
     };
 
     const handleSearhWorkOrder = async (searchData) => {
-    
+
         const plate = selectedPlateVehicle.replace(/-/g, "");
         // Transformar las claves del objeto searchData
         const transformedSearchData = {
@@ -340,9 +357,9 @@ const Cars = () => {
         };
 
         try {
-           
+
             const response = await apiClient.post('/work-orders/search', transformedSearchData);
-          
+
             const transformedWorkOrders = response.data.map(workOrder => {
                 const newDateStart = formatDate(workOrder.date_start);
                 const newDateFinish = formatDate(workOrder.date_finish);
@@ -539,9 +556,9 @@ const Cars = () => {
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    
+
                 } else {
-                    
+
                 }
             }
         }, 500),
@@ -633,10 +650,11 @@ const Cars = () => {
         setShowAddVehicle(false);
         setShowCarHistory(false);
         setShowCarInformation(false);
+        navigate('/cars');
     };
 
-    const handleShowInformationWorkOrderClick = (workOrderId) => {
-        navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
+    const handleShowInformationWorkOrderClick = (workOrderId, currentPage) => {
+        navigate(`/workOrders/detailWorkOrder/${workOrderId}`, { state: { from: currentPage } });
     };
 
     //Para realizar la búsqueda del cliente en el modal
@@ -694,6 +712,7 @@ const Cars = () => {
 
                     setVehicles(formattedVehicles);
                     setLoading(false);
+                    console.log("datos vehiculo", response.data)
                 } else {
                     setLoading(false);
                 }
@@ -721,6 +740,16 @@ const Cars = () => {
             setMotor(selectedVehicle.motor);
         }
     }, [selectedVehicle, iconsVehicles]);
+
+    useEffect(() => {
+        // Convierte vehicleId a un número
+        const numericVehicleId = Number(vehicleId);
+    
+        if (numericVehicleId && vehicles.length > 0) {
+            // Llama a handleCarHistory con el ID numérico
+            handleCarHistory(numericVehicleId);
+        }
+    }, [vehicleId, vehicles]); // Dependencias del useEffect
 
     return (
         <div>
@@ -770,7 +799,8 @@ const Cars = () => {
                                         <div className="third-result-car">
                                             <button className="button-eye-car">
                                                 <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car"
-                                                    onClick={(event) => handleCarInformation(vehicleData, event)} />
+                                                    onClick={(event) => {event.stopPropagation();
+                                                    handleCarInformation(vehicleData, event)}} />
                                             </button>
                                         </div>
 

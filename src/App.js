@@ -68,6 +68,7 @@ function App() {
                   <Route path="/clients" element={<Clients />} />
                   <Route path="/clients/newClient" element={<NewClient />} />
                   <Route path="/cars" element={<Cars />} />
+                  <Route path="/cars/carHistory/:vehicleId" element={<Cars />} />
                   <Route path="/services" element={<Services />} />
                   <Route path="/services/operations" element={<Operation />} />
                   <Route path="/suppliers" element={<Suppliers />} />

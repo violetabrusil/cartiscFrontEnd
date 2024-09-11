@@ -103,6 +103,7 @@ const InformationWorkOrder = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const fromPage = location.state?.from;
 
     const keyMapping = {
         "Antena": "antenna",
@@ -682,11 +683,10 @@ const InformationWorkOrder = () => {
     };
 
     const onBack = () => {
-        const currentPage = location.state?.currentPage;
-        if (currentPage === 'paymentReceipt') {
-            navigate('/paymentReceipt');
+        if (fromPage) {
+            navigate(fromPage);
         } else {
-            navigate('/workOrders');
+            navigate(-1);
         }
     };
 
