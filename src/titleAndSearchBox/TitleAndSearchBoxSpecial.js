@@ -24,18 +24,18 @@ const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, select
     const handleInputChange = (e) => {
         const { value } = e.target;
         setSearchInput(value);
-
-        if (value.length >= 5) {
+    
+        if (value.length === 0) {
+            onSearchChange(""); // Muestra toda la lista
+            setSearchTerm(""); // Restablece el término de búsqueda
+            // No cambies selectedOption aquí
+        } else if (value.length >= 5) {
             onSearchChange(value, selectedOption);
-
-            // Guardar el término de búsqueda solo si shouldSaveSearch es verdadero
-            if (shouldSaveSearch) {
-                setSearchInput(value); 
-                setSearchTerm(value);
-            }
+            setSearchTerm(value);
         }
     };
-
+    
+    
     return (
         <div>
             <div className="container-title">

@@ -248,21 +248,40 @@ const PaymentReceipts = () => {
     };
 
     const handleConfirm = async (data) => {
-
         try {
-            const response = await apiClient.post('/sales-receipts/search', data);
-
+            // Verifica si todos los campos de búsqueda están vacíos
+            const isEmptySearch = !data.work_order_code &&
+                                  !data.vehicle_plate &&
+                                  !data.client_name &&
+                                  !data.client_cedula &&
+                                  !data.sales_receipt_status &&
+                                  !data.payment_type &&
+                                  !data.invoice_type &&
+                                  !data.date_start_of_search &&
+                                  !data.date_finish_of_search;
+    
+            let response;
+    
+            // Si los campos están vacíos, realiza una solicitud para obtener toda la lista
+            if (isEmptySearch) {
+                response = await apiClient.get('/sales-receipts/all'); // Ajusta esta URL según tu API
+            } else {
+                response = await apiClient.post('/sales-receipts/search', data);
+            }
+    
             // Si response.data es null o undefined, cierra el modal y retorna.
             if (!response.data) {
                 setModalOpen(false);
                 return;
             }
-
+    
+            // Procesa la respuesta
             const transformedPaymentReceipts = response.data.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
                 const translatedPaymentType = paymentTypeMaping[payment.payment_type] || payment.payment_type;
                 const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
+    
                 return {
                     ...payment,
                     created_at: newDateStart,
@@ -270,21 +289,20 @@ const PaymentReceipts = () => {
                     payment_type: translatedPaymentType,
                     sales_receipt_status: translatedPaymentStatus
                 };
-            })
-
+            });
+    
+            // Actualiza los estados con los datos filtrados o la lista completa
             setPaymentReceipts(transformedPaymentReceipts);
-            setFilterData(transformedPaymentReceipts)
-            console.log("data filtrada", filterData)
-            setModalOpen(false)
-            console.log("data que se filtra la primera vez", transformedPaymentReceipts)
-
-
+            setFilterData(transformedPaymentReceipts);
+            setModalOpen(false);
+    
         } catch (error) {
             toast.error('Ha ocurrido un error', {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
     };
+    
 
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
