@@ -248,6 +248,7 @@ const PaymentReceipts = () => {
     };
 
     const handleConfirm = async (data) => {
+        setLoading(true);
         try {
             // Verifica si todos los campos de búsqueda están vacíos
             const isEmptySearch = !data.work_order_code &&
@@ -268,7 +269,7 @@ const PaymentReceipts = () => {
             } else {
                 response = await apiClient.post('/sales-receipts/search', data);
             }
-    
+           
             // Si response.data es null o undefined, cierra el modal y retorna.
             if (!response.data) {
                 setModalOpen(false);
@@ -294,6 +295,7 @@ const PaymentReceipts = () => {
             // Actualiza los estados con los datos filtrados o la lista completa
             setPaymentReceipts(transformedPaymentReceipts);
             setFilterData(transformedPaymentReceipts);
+            setLoading(false);
             setModalOpen(false);
     
         } catch (error) {
