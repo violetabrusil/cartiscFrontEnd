@@ -416,6 +416,8 @@ const PaymentReceipts = () => {
 
     const handleWorkOrderConfirm = async () => {
 
+        setLoading(true);
+
         const selectedDateAdjusted = new Date(selectedDate);
         selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
 
@@ -442,10 +444,12 @@ const PaymentReceipts = () => {
                     position: toast.POSITION.TOP_RIGHT
                 });
                 setLastAddedReceiptId(response.data.id);
-                fetchData();
+                await fetchData();
+               
             }
-
+            setLoading(false);
             setWorkOrderModalOpen(false);
+            
 
         } catch (error) {
             console.log("error", error)
@@ -474,6 +478,8 @@ const PaymentReceipts = () => {
 
     const handleChargeReceipt = async () => {
 
+        setLoading(true);
+
         if (paymentType === 'pending') {
 
             toast.error('Seleccione una forma de pago para continuar.', {
@@ -492,11 +498,12 @@ const PaymentReceipts = () => {
                 });
 
                 handleClosePaymentModal();
-                fetchData();
-
+                await fetchData();
+                setLoading(false);
                 toast.success('Pago procesado con éxito.', {
                     position: toast.POSITION.TOP_RIGHT
                 });
+               
 
             } catch (error) {
                 console.log("Error en paga comprobante", error)
