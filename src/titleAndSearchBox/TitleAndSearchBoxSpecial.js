@@ -8,6 +8,7 @@ const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch }) => {
     const { searchTerm, setSearchTerm } = useWorkOrderContext();
     const [searchInput, setSearchInput] = useState(searchTerm || "");
+    const [debounceTimeout, setDebounceTimeout] = useState(null);
 
     const searchBoxClass = isSpecial ? "search-box-special" : "search-box";
     const buttonClass = isSpecial ? "button-filter-special" : "button-filter";
@@ -22,20 +23,32 @@ const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, select
     }, [searchTerm, shouldSaveSearch]);
 
     const handleInputChange = (e) => {
-        const { value } = e.target;
-        setSearchInput(value);
-    
-        if (value.length === 0) {
-            onSearchChange(""); // Muestra toda la lista
-            setSearchTerm(""); // Restablece el término de búsqueda
-            // No cambies selectedOption aquí
-        } else if (value.length >= 5) {
-            onSearchChange(value, selectedOption);
-            setSearchTerm(value);
+        const value = e.target.value;
+        setSearchInput(value); // Actualiza el estado local del input
+
+        // Limpiar el timeout anterior si existe
+        if (debounceTimeout) {
+            clearTimeout(debounceTimeout);
         }
+
+        // Configurar un nuevo timeout para el debounce
+        const timeout = setTimeout(() => {
+            if (value.length === 0) {
+                onSearchChange(""); // Muestra toda la lista
+                setSearchTerm(""); // Restablece el término de búsqueda
+            } else if (value.length >= 5) {
+                onSearchChange(value, selectedOption); // Actualiza la búsqueda
+                setSearchTerm(value); // Actualiza el término de búsqueda global
+            }
+        }, 300); // Tiempo de espera de 300 ms (ajustable según la necesidad)
+
+        setDebounceTimeout(timeout);
     };
-    
-    
+
+    useEffect(() => {
+        setSearchInput(searchTerm);
+    }, [searchTerm]);
+
     return (
         <div>
             <div className="container-title">

@@ -79,13 +79,13 @@
 .button-download-payment-receipt {
     border: none;
     background: none;
-    margin-right: -11px;
 }
 
 .download-payment-receipt-icon {
     background: none;
     width: 49px;
     height: 45px;
+    margin-bottom: -4px;
 }
 
 .button-email {
@@ -104,9 +104,7 @@
 .button-payment-receipt {
     border: none;
     background-image: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);
-    margin-right: -10px;
     border-radius: 10px;
-    margin-top: -3%;
 }
 
 .payment-receipt-icon {
@@ -238,6 +236,16 @@
     overflow: visible;    
     text-overflow: unset; 
     width: 130px;
+}
+
+.total-work-orders {
+    text-align: left;
+    margin-left: auto;
+    margin-right: 50px;
+    font-size: 50px;
+    margin-top: 10px;
+    font-weight: 100;
+    color: rgb(49, 110, 168)
 }
 
 @media screen and (max-width: 768px) {

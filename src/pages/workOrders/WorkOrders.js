@@ -20,7 +20,7 @@ const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const WorkOrders = () => {
 
-    const { selectedOption = 'Placa', setSelectedOption, searchTerm, setSearchTerm } = useWorkOrderContext();
+    const { selectedOption = 'Nombre de Titular', setSelectedOption, searchTerm, setSearchTerm } = useWorkOrderContext();
     console.log("Selected Option:", selectedOption);
     const [workOrders, setWorkOrders] = useState([]);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -292,7 +292,7 @@ const WorkOrders = () => {
                 <Modal
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
-                    options={['Placa', 'Código Orden de Trabajo', 'Nombre Titular', 'Asignada a', 'Entregada por', 'Creada por']}
+                    options={['Nombre Titular','Placa', 'Código Orden de Trabajo', 'Asignada a', 'Entregada por', 'Creada por']}
                     defaultOption={selectedOption}
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}

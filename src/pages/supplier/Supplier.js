@@ -18,7 +18,7 @@ const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const Suppliers = () => {
 
     const [suppliers, setSuppliers] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState("");
     const [selectedOption, setSelectedOption] = useState('Nombre');
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [mode, setMode] = useState('add');
@@ -215,7 +215,7 @@ const Suppliers = () => {
             const searchPerName = "name";
             //Si hay un filtro de búsqueda
 
-            if (searchTerm) {
+            if (searchTerm && searchTerm.length > 0) {
                 switch (selectedOption) {
                     case 'Código':
                         endpoint = `/suppliers/search?search_type=${searchPerSupplierCode}&criteria=${searchTerm}`;
@@ -229,6 +229,7 @@ const Suppliers = () => {
             }
             try {
                 const response = await apiClient.get(endpoint);
+                console.log("valor de busqueda", searchTerm)
                 setSuppliers(response.data);
                 setLoading(false);
 

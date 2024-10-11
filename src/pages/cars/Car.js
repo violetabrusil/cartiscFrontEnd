@@ -23,6 +23,8 @@ import SearchModalWorkOrder from "../../modal/SearchModalWorkOrder";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 import { CustomSingleValue } from "../../customSingleValue/CustomSingleValue";
 import { useNavigate, useParams } from "react-router-dom";
+import { useCarContext } from "../../contexts/searchContext/CarContext";
+import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxSpecial";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -42,8 +44,7 @@ const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 const Cars = () => {
 
     //Variable para el filtro y la búsqueda de vehículos y clientes
-    const [selectedOption, setSelectedOption] = useState('Placa');
-    const [searchTerm, setSearchTerm] = useState('');
+    const { selectedOption = "Nombre de Titular", setSelectedOption, searchTerm, setSearchTerm } = useCarContext();
     const [activeTab, setActiveTab] = useState('cédula');
     const [searchClienTerm, setSearchClientTerm] = useState('');
     const [clients, setClients] = useState([]);
@@ -728,6 +729,11 @@ const Cars = () => {
         fetchData();
     }, [searchTerm, selectedOption, refreshVehicles, vehicleSuspended, iconsVehicles]);
 
+    useEffect(() => {
+        console.log("Valor de selectedOption al regresar:", selectedOption, searchTerm);
+    }, [selectedOption, searchTerm]);
+
+
     //Obtención de la información del vehículo para editarlo
     useEffect(() => {
         if (selectedVehicle) {
@@ -759,11 +765,12 @@ const Cars = () => {
             <div className="containerCars">
                 <div className="left-section-cars">
                     {/*Título del contenedor y cuadro de búsqueda */}
-                    <TitleAndSearchBox
+                    <TitleAndSearchBoxSpecial
                         selectedOption={selectedOption}
                         title="Vehículos"
                         onSearchChange={handleSearchVehiclesWithDebounce}
                         onButtonClick={openFilterModal}
+                        shouldSaveSearch={true}
                     />
 
                     {loading ? (
@@ -1205,8 +1212,8 @@ const Cars = () => {
                     <Modal
                         isOpen={isFilterModalOpen}
                         onClose={closeFilterModal}
-                        options={['Placa', 'Nombre Titular']}
-                        defaultOption="Placa"
+                        options={['Nombre Titular', 'Placa']}
+                        defaultOption={selectedOption}
                         onOptionChange={handleOptionChange}
                         onSelect={handleSelectClick}
                     />

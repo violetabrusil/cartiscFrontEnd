@@ -17,6 +17,7 @@ import { paymentStatusMaping } from "../../constants/paymentReceiptsStatusConsta
 import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import { usePaymentReceipt } from "../../contexts/searchContext/PaymentReceiptContext";
+import DataTablePagination from "../../dataTable/DataTablePagination";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
@@ -46,6 +47,11 @@ const PaymentReceipts = () => {
     const [sendingEmail, setSendingEmail] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(8, 6);
     const { filterData, setFilterData } = usePaymentReceipt();
+    const [currentCursor, setCurrentCursor] = useState(1);
+    const [pageSize, setPageSize] = useState(8);
+    const [hasNextPage, setHasNextPage] = useState(true);
+    const [hasPreviousPage, setHasPreviousPage] = useState(false);
+    const [totalPages, setTotalPages] = useState(0);
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },
@@ -124,7 +130,6 @@ const PaymentReceipts = () => {
                     let statusClass = '';
                     if (value === 'Por cobrar') statusClass = 'status-por-cobrar';
                     else if (value === 'Cobrado') statusClass = 'status-cobrado';
-
                     return (
                         <div className={`status-box ${statusClass} no-wrap-column`}>
                             {value}
@@ -190,38 +195,18 @@ const PaymentReceipts = () => {
                 Header: "",
                 Cell: ({ row }) => {
                     const payment = row.original;
-                    if (payment.total !== payment.paid) {
-                        return (
+                    return (
+                        <>
                             <button className="button-payment-receipt" onClick={() => handleOpenPaymentModal(payment)}>
                                 <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
                             </button>
-                        );
-                    } else {
-                        return null; // No renderizar nada si el total es igual al pagado.
-                    }
-                },
-                id: 'payment-receipt-button'
-            },
-            {
-                Header: "",
-                Cell: ({ row }) => {
-                    const payment = row.original;
-                    return (
-                        <button className="button-download-payment-receipt" onClick={() => downloadPDF(payment.id)}>
-                            <img src={pdfIcon} alt="Download Payment Receipt Icon" className="download-payment-receipt-icon" />
-                        </button>
-                    );
-                },
-                id: 'download-payment-receipt-button'
-            },
-            {
-                Header: "",
-                Cell: ({ row }) => {
-                    const payment = row.original;
-                    return (
-                        <button className="button-email" onClick={() => sendEmail(payment.id)}>
-                            <img src={emailIcon} alt="Email Icon" className="email-icon" />
-                        </button>
+                            <button className="button-download-payment-receipt" onClick={() => downloadPDF(payment.id)}>
+                                <img src={pdfIcon} alt="Download Payment Receipt Icon" className="download-payment-receipt-icon" />
+                            </button>
+                            <button className="button-email" onClick={() => sendEmail(payment.id)}>
+                                <img src={emailIcon} alt="Email Icon" className="email-icon" />
+                            </button>
+                        </>
                     );
                 },
                 id: 'email-button'
@@ -252,37 +237,37 @@ const PaymentReceipts = () => {
         try {
             // Verifica si todos los campos de búsqueda están vacíos
             const isEmptySearch = !data.work_order_code &&
-                                  !data.vehicle_plate &&
-                                  !data.client_name &&
-                                  !data.client_cedula &&
-                                  !data.sales_receipt_status &&
-                                  !data.payment_type &&
-                                  !data.invoice_type &&
-                                  !data.date_start_of_search &&
-                                  !data.date_finish_of_search;
-    
+                !data.vehicle_plate &&
+                !data.client_name &&
+                !data.client_cedula &&
+                !data.sales_receipt_status &&
+                !data.payment_type &&
+                !data.invoice_type &&
+                !data.date_start_of_search &&
+                !data.date_finish_of_search;
+
             let response;
-    
+
             // Si los campos están vacíos, realiza una solicitud para obtener toda la lista
             if (isEmptySearch) {
                 response = await apiClient.get('/sales-receipts/all'); // Ajusta esta URL según tu API
             } else {
                 response = await apiClient.post('/sales-receipts/search', data);
             }
-           
+
             // Si response.data es null o undefined, cierra el modal y retorna.
             if (!response.data) {
                 setModalOpen(false);
                 return;
             }
-    
+
             // Procesa la respuesta
             const transformedPaymentReceipts = response.data.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
                 const translatedPaymentType = paymentTypeMaping[payment.payment_type] || payment.payment_type;
                 const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
-    
+
                 return {
                     ...payment,
                     created_at: newDateStart,
@@ -291,57 +276,64 @@ const PaymentReceipts = () => {
                     sales_receipt_status: translatedPaymentStatus
                 };
             });
-    
+
             // Actualiza los estados con los datos filtrados o la lista completa
             setPaymentReceipts(transformedPaymentReceipts);
             setFilterData(transformedPaymentReceipts);
             setLoading(false);
             setModalOpen(false);
-    
+
         } catch (error) {
             toast.error('Ha ocurrido un error', {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
     };
-    
+
 
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
-    const fetchData = async () => {
+    const fetchData = async (cursor = 1, pageSize = 8) => {
+        setLoading(true);
         try {
-            const response = await apiClient.get('/sales-receipts/all');
+            const response = await apiClient.get(`/sales-receipts/all/${cursor}/${pageSize}`);
 
             if (!response.data || response.data.length === 0) {
                 setLoading(false);
-                // Puedes también establecer algún estado aquí para mostrar un mensaje al usuario
-                // setNoData(true);
+                setHasNextPage(false);
                 return;
             }
 
-            const transformedPaymentReceipts = response.data.map(payment => {
+            console.log("datos de comprobante", response.data);
+
+            const { current_page, next_cursor, total_pages, values } = response.data;
+
+            const transformedPaymentReceipts = values.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
                 const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
-                var translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
-
-                console.log("valores", payment.paid, payment.total)
+                let translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
 
                 if (payment.paid === payment.total) {
-                    translatedPaymentStatus = "Cobrado"
+                    translatedPaymentStatus = "Cobrado";
                 }
 
                 return {
                     ...payment,
                     created_at: newDateStart,
                     invoice_type: translatedInvoiceType,
-                    sales_receipt_status: translatedPaymentStatus
+                    sales_receipt_status: translatedPaymentStatus,
                 };
             });
+
+            // Imprime los datos transformados
+            console.log("Datos transformados:", transformedPaymentReceipts);
+
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
-            console.log("datos de comprobante", response.data)
-
+            setHasNextPage(!!next_cursor);
+            setHasPreviousPage(current_page > 1);
+            setTotalPages(total_pages);
         } catch (error) {
             setLoading(false);
             if (error.code === 'ECONNABORTED') {
@@ -349,6 +341,18 @@ const PaymentReceipts = () => {
             } else {
                 console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
             }
+        }
+    };
+
+    const goToNextPage = () => {
+        if (hasNextPage) {
+            setCurrentCursor(prevCursor => prevCursor + pageSize);
+        }
+    };
+
+    const goToPreviousPage = () => {
+        if (hasPreviousPage) {
+            setCurrentCursor(prevCursor => Math.max(1, prevCursor - pageSize));
         }
     };
 
@@ -445,11 +449,11 @@ const PaymentReceipts = () => {
                 });
                 setLastAddedReceiptId(response.data.id);
                 await fetchData();
-               
+
             }
             setLoading(false);
             setWorkOrderModalOpen(false);
-            
+
 
         } catch (error) {
             console.log("error", error)
@@ -503,7 +507,7 @@ const PaymentReceipts = () => {
                 toast.success('Pago procesado con éxito.', {
                     position: toast.POSITION.TOP_RIGHT
                 });
-               
+
 
             } catch (error) {
                 console.log("Error en paga comprobante", error)
@@ -522,8 +526,10 @@ const PaymentReceipts = () => {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchData(currentCursor, pageSize);
+        console.log("cursor", currentCursor)
+        console.log("pageSize", pageSize)
+    }, [currentCursor, pageSize]);
 
     useEffect(() => {
         if (location.state?.fromWorkOrder) {
@@ -564,6 +570,12 @@ const PaymentReceipts = () => {
                         <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
                         <span className="button-payment-text-filter">Filtro</span>
                     </button>
+
+                    <div className="total-work-orders">
+                        <span>
+                            18
+                        </span>
+                    </div>
                 </div>
 
                 {loading ? (
@@ -585,13 +597,21 @@ const PaymentReceipts = () => {
                         )}
 
                         {paymentReceipts.length > 0 && (
-                            <DataTable
+                            <DataTablePagination
                                 data={filterData.length > 0 ? filterData : paymentReceipts}
                                 columns={columns}
                                 highlightRows={true}
                                 selectedRowId={lastAddedReceiptId}
                                 customFontSize={true}
-                                initialPageSize={responsivePageSize}
+                                goToNextPage={goToNextPage}
+                                goToPreviousPage={goToPreviousPage}
+                                hasNextPage={hasNextPage}
+                                hasPreviousPage={hasPreviousPage}
+                                currentPage={Math.ceil(currentCursor / pageSize)}
+                                totalPages={totalPages}
+                                setPageSize={setPageSize}
+                                setCurrentCursor={setCurrentCursor}
+                                pageSize={pageSize}
                             />
 
                         )}
