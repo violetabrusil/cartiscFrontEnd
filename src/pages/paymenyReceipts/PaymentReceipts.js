@@ -47,8 +47,9 @@ const PaymentReceipts = () => {
     const [sendingEmail, setSendingEmail] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(8, 6);
     const { filterData, setFilterData } = usePaymentReceipt();
-    const [currentCursor, setCurrentCursor] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(8);
+    const [totalValues, setTotalValues] = useState(0);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
@@ -294,10 +295,10 @@ const PaymentReceipts = () => {
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
-    const fetchData = async (cursor = 1, pageSize = 8) => {
+    const fetchData = async (page = 1, pageSize = 8) => {
         setLoading(true);
         try {
-            const response = await apiClient.get(`/sales-receipts/all/${cursor}/${pageSize}`);
+            const response = await apiClient.get(`/sales-receipts/list/${page}/${pageSize}`);
 
             if (!response.data || response.data.length === 0) {
                 setLoading(false);
@@ -307,7 +308,7 @@ const PaymentReceipts = () => {
 
             console.log("datos de comprobante", response.data);
 
-            const { current_page, next_cursor, total_pages, values } = response.data;
+            const { current_page, total_pages, values, total_values } = response.data;
 
             const transformedPaymentReceipts = values.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
@@ -328,12 +329,10 @@ const PaymentReceipts = () => {
 
             // Imprime los datos transformados
             console.log("Datos transformados:", transformedPaymentReceipts);
-
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
-            setHasNextPage(!!next_cursor);
-            setHasPreviousPage(current_page > 1);
             setTotalPages(total_pages);
+            setTotalValues(total_values);
         } catch (error) {
             setLoading(false);
             if (error.code === 'ECONNABORTED') {
@@ -345,14 +344,14 @@ const PaymentReceipts = () => {
     };
 
     const goToNextPage = () => {
-        if (hasNextPage) {
-            setCurrentCursor(prevCursor => prevCursor + pageSize);
+        if (currentPage < totalPages) {
+            setCurrentPage(prevPage => prevPage + 1);
         }
     };
 
     const goToPreviousPage = () => {
-        if (hasPreviousPage) {
-            setCurrentCursor(prevCursor => Math.max(1, prevCursor - pageSize));
+        if (currentPage > 1) {
+            setCurrentPage(prevPage => prevPage - 1);
         }
     };
 
@@ -526,10 +525,10 @@ const PaymentReceipts = () => {
     };
 
     useEffect(() => {
-        fetchData(currentCursor, pageSize);
-        console.log("cursor", currentCursor)
+        fetchData(currentPage, pageSize);
+        console.log("cursor", currentPage)
         console.log("pageSize", pageSize)
-    }, [currentCursor, pageSize]);
+    }, [currentPage, pageSize]);
 
     useEffect(() => {
         if (location.state?.fromWorkOrder) {
@@ -573,7 +572,7 @@ const PaymentReceipts = () => {
 
                     <div className="total-work-orders">
                         <span>
-                            18
+                            {totalValues}
                         </span>
                     </div>
                 </div>
@@ -595,25 +594,19 @@ const PaymentReceipts = () => {
                                 <PuffLoader color="#316EA8" loading={true} size={60} />
                             </div>
                         )}
-
                         {paymentReceipts.length > 0 && (
                             <DataTablePagination
-                                data={filterData.length > 0 ? filterData : paymentReceipts}
-                                columns={columns}
-                                highlightRows={true}
-                                selectedRowId={lastAddedReceiptId}
-                                customFontSize={true}
+                                data={paymentReceipts}
+                                columns={columns} // Define tus columnas
                                 goToNextPage={goToNextPage}
                                 goToPreviousPage={goToPreviousPage}
-                                hasNextPage={hasNextPage}
-                                hasPreviousPage={hasPreviousPage}
-                                currentPage={Math.ceil(currentCursor / pageSize)}
+                                hasNextPage={currentPage < totalPages}
+                                hasPreviousPage={currentPage > 1}
+                                currentPage={currentPage}
                                 totalPages={totalPages}
-                                setPageSize={setPageSize}
-                                setCurrentCursor={setCurrentCursor}
                                 pageSize={pageSize}
+                                setCurrentPage={setCurrentPage} // Pasa setCurrentPage como prop
                             />
-
                         )}
 
 

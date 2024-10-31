@@ -224,7 +224,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
 
                     <SearchBar onFilter={handleFilter} />
                     {loading ? (
-                        <div className="spinner-container-products ">
+                        <div className="spinner-container-products">
                             <PuffLoader color="#316EA8" loading={loading} size={60} />
                         </div>
 

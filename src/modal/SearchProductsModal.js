@@ -9,6 +9,7 @@ import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
 import { EmptyTable } from "../dataTable/EmptyTable";
 import { values } from "lodash";
+import { PuffLoader } from "react-spinners";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -37,7 +38,7 @@ export function SearchProductsModal({ onClose,
     const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 4);
     const [editableTitleProduct, setEditableTitleProduct] = useState('');
     const [editedProducts, setEditedProducts] = useState({});
-
+    const [loading, setLoading] = useState(false);
 
     const [manualProduct, setManualProduct] = useState({
         title: '',
@@ -46,6 +47,7 @@ export function SearchProductsModal({ onClose,
     });
 
     const handleFilter = useCallback((option, term) => {
+        setSelectedOption(option);
         setSearchTerm(term);
     }, []);
 
@@ -169,7 +171,7 @@ export function SearchProductsModal({ onClose,
         const newValue = e.target.value;
         setEditableTitleProduct(newValue);
         console.log("cambio", newValue)
-    
+
         // Marcar el producto como editado
         setEditedProducts((prevEditedProducts) => ({
             ...prevEditedProducts,
@@ -185,7 +187,7 @@ export function SearchProductsModal({ onClose,
                 width: '24%',
                 Cell: ({ value, row }) => {
                     const currentTitle = row.original.title;
-                 
+
                     return (
                         <div>
                             <input
@@ -454,7 +456,7 @@ export function SearchProductsModal({ onClose,
     }
 
     const fetchData = async () => {
-
+        setLoading(true);
         //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
@@ -488,16 +490,17 @@ export function SearchProductsModal({ onClose,
         }
         try {
             const response = await apiClient.get(endpoint);
-            const data = response.data.map(product => ({
-                ...product,
-                price: parseFloat(product.price),
-            }));
-            setAllProducts(data);
+            /* const data = response.data.map(product => ({
+                 ...product,
+                 price: parseFloat(product.price),
+             }));*/
+            setAllProducts(response.data);
         } catch (error) {
             toast.error('Error al obtener los datos de los productos.', {
                 position: toast.POSITION.TOP_RIGHT,
             });
         }
+        setLoading(false);
     };
 
     const handleManualProductChange = (field, value) => {
@@ -601,20 +604,30 @@ export function SearchProductsModal({ onClose,
                     )}
 
 
+
                     <div style={{ marginTop: '20px' }}>
                         <SearchBar onFilter={handleFilter} customSelectStyles={customSelectModalStyles} customClasses="div-search-modal" />
+                        {loading ? (
+                            <div className="spinner-container-products">
+                                <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            </div>
+                        ) : (
+                            <div>
+                                {allProducts.length > 0 && (
+                                    <div className="products-modal-content">
+                                        <h4 style={{ marginLeft: '10px', marginBottom: '10px' }}>Lista de productos</h4>
+                                        <DataTable
+                                            data={allProducts}
+                                            columns={columns}
+                                            highlightRows={false}
+                                            initialPageSize={responsivePageSizeProducts} />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
-                    {allProducts.length > 0 && (
-                        <div className="products-modal-content">
-                            <h4 style={{ marginLeft: '10px', marginBottom: '10px' }}>Lista de productos</h4>
-                            <DataTable
-                                data={allProducts}
-                                columns={columns}
-                                highlightRows={false}
-                                initialPageSize={responsivePageSizeProducts} />
-                        </div>
-                    )}
+
 
                 </div>
 

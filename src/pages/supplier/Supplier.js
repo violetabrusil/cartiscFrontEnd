@@ -212,7 +212,7 @@ const Suppliers = () => {
             //Endpoint por defecto
             let endpoint = '/suppliers/all';
             const searchPerSupplierCode = "supplier_code";
-            const searchPerName = "name";
+            const searchPerName = "supplier_name";
             //Si hay un filtro de búsqueda
 
             if (searchTerm && searchTerm.length > 0) {

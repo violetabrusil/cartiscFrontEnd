@@ -1,23 +1,18 @@
-import "../DataTablePagination.css";
 import React from 'react';
 import { useTable } from 'react-table';
+import "../DataTablePagination.css";
 
 const DataTablePagination = ({
     data,
     columns,
-    onRowClick = () => { },
-    highlightRows,
-    selectedRowIndex,
-    selectedRowId,
-    customFontSize = false,
     goToNextPage,
     goToPreviousPage,
     hasNextPage,
     hasPreviousPage,
     currentPage,
     totalPages,
-    setCurrentCursor,
     pageSize,
+    setCurrentPage, // Recibe setCurrentPage como prop
 }) => {
     const {
         getTableProps,
@@ -25,20 +20,14 @@ const DataTablePagination = ({
         headerGroups,
         rows,
         prepareRow,
-    } = useTable(
-        {
-            columns,
-            data,
-        }
-    );
-
-    const goToPage = (pageNumber) => {
-        setCurrentCursor((pageNumber - 1) * pageSize + 1);
-    };
+    } = useTable({
+        columns,
+        data,
+    });
 
     return (
         <div className="container-table-pagination">
-            <table {...getTableProps()} className={`data-table ${customFontSize ? 'custom-font-size' : ''}`}>
+            <table {...getTableProps()} className="data-table">
                 <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -53,21 +42,8 @@ const DataTablePagination = ({
                 <tbody {...getTableBodyProps()}>
                     {rows.map((row, index) => {
                         prepareRow(row);
-
-                        let isHighlighted = false;
-
-                        if (selectedRowId !== undefined) {
-                            isHighlighted = row.original.id === selectedRowId;
-                        } else if (selectedRowIndex !== undefined) {
-                            isHighlighted = index === selectedRowIndex;
-                        }
-
                         return (
-                            <tr
-                                {...row.getRowProps()}
-                                onClick={() => onRowClick(row, index)}
-                                style={isHighlighted ? { backgroundColor: '#d1e2f1' } : {}}
-                            >
+                            <tr {...row.getRowProps()}>
                                 {row.cells.map(cell => (
                                     <td key={cell.column.id}>{cell.render('Cell')}</td>
                                 ))}
@@ -84,7 +60,7 @@ const DataTablePagination = ({
                     {Array.from({ length: totalPages }, (_, index) => (
                         <button
                             key={index}
-                            onClick={() => goToPage(index + 1)}
+                            onClick={() => setCurrentPage(index + 1)} // Usa setCurrentPage para cambiar la página
                             className={currentPage === index + 1 ? 'active' : ''}
                         >
                             {index + 1}
