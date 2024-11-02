@@ -12,7 +12,8 @@ const DataTablePagination = ({
     currentPage,
     totalPages,
     pageSize,
-    setCurrentPage, // Recibe setCurrentPage como prop
+    setCurrentPage,
+    isFilter, // Recibe setCurrentPage como prop
 }) => {
     const {
         getTableProps,
@@ -25,12 +26,47 @@ const DataTablePagination = ({
         data,
     });
 
+    const renderPageNumbers = () => {
+        const pageNumbers = [];
+        const maxPagesToShow = 10;
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (i <= maxPagesToShow || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                pageNumbers.push(i);
+            }
+        }
+
+        // Agregar puntos suspensivos si es necesario
+        const finalNumbers = [];
+        pageNumbers.forEach((number, index) => {
+            if (index > 0 && number - pageNumbers[index - 1] > 1) {
+                finalNumbers.push('...'); // Puntos suspensivos
+            }
+            finalNumbers.push(number);
+        });
+
+        return finalNumbers.map((number, index) => {
+            if (number === '...') {
+                return <span key={index} className="ellipsis">{number}</span>;
+            }
+            return (
+                <button
+                    key={number}
+                    onClick={() => setCurrentPage(number)}
+                    className={currentPage === number ? 'active' : ''}
+                >
+                    {number}
+                </button>
+            );
+        });
+    };
+
     return (
         <div className="container-table-pagination">
             <table {...getTableProps()} className="data-table">
                 <thead>
                     {headerGroups.map(headerGroup => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
+                        <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                             {headerGroup.headers.map(column => (
                                 <th key={column.id}>
                                     {column.render('Header')}
@@ -40,10 +76,10 @@ const DataTablePagination = ({
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {rows.map((row, index) => {
+                    {rows.map((row) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()}>
+                            <tr {...row.getRowProps()} key={row.id}>
                                 {row.cells.map(cell => (
                                     <td key={cell.column.id}>{cell.render('Cell')}</td>
                                 ))}
@@ -52,25 +88,21 @@ const DataTablePagination = ({
                     })}
                 </tbody>
             </table>
-            <div className="container-table-pagination-buttons">
-                <button onClick={goToPreviousPage} disabled={!hasPreviousPage}>
-                    &lt; Anterior
-                </button>
-                <div className="page-numbers">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentPage(index + 1)} // Usa setCurrentPage para cambiar la página
-                            className={currentPage === index + 1 ? 'active' : ''}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
+            {!isFilter && (
+                <div className="container-table-pagination-buttons">
+                    <button onClick={goToPreviousPage} disabled={!hasPreviousPage}>
+                        &lt; Anterior
+                    </button>
+                    <div className="page-numbers">
+                        {renderPageNumbers()}
+                    </div>
+                    <button onClick={goToNextPage} disabled={!hasNextPage}>
+                        Siguiente &gt;
+                    </button>
                 </div>
-                <button onClick={goToNextPage} disabled={!hasNextPage}>
-                    Siguiente &gt;
-                </button>
-            </div>
+            )
+            }
+
         </div>
     );
 };

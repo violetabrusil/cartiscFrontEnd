@@ -47,8 +47,9 @@ const PaymentReceipts = () => {
     const [sendingEmail, setSendingEmail] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(8, 6);
     const { filterData, setFilterData } = usePaymentReceipt();
+    const [isFilter, setIsFilter] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(8);
+    const [pageSize, setPageSize] = useState(7);
     const [totalValues, setTotalValues] = useState(0);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
@@ -111,8 +112,7 @@ const PaymentReceipts = () => {
             {
                 Header: "Código orden de trabajo",
                 accessor: "work_order.work_order_code",
-                Cell: ({ value }) => <span className="bold-text custom-column-width">{value}</span>,
-                headerClassName: 'bold-text'
+                Cell: ({ value }) => <span>{value}</span>,
             },
             {
                 Header: "",
@@ -198,9 +198,11 @@ const PaymentReceipts = () => {
                     const payment = row.original;
                     return (
                         <>
-                            <button className="button-payment-receipt" onClick={() => handleOpenPaymentModal(payment)}>
-                                <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
-                            </button>
+                            {payment.sales_receipt_status !== "Cobrado" && (
+                                <button className="button-payment-receipt" onClick={() => handleOpenPaymentModal(payment)}>
+                                    <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
+                                </button>
+                            )}
                             <button className="button-download-payment-receipt" onClick={() => downloadPDF(payment.id)}>
                                 <img src={pdfIcon} alt="Download Payment Receipt Icon" className="download-payment-receipt-icon" />
                             </button>
@@ -279,6 +281,7 @@ const PaymentReceipts = () => {
             });
 
             // Actualiza los estados con los datos filtrados o la lista completa
+            setIsFilter(true);
             setPaymentReceipts(transformedPaymentReceipts);
             setFilterData(transformedPaymentReceipts);
             setLoading(false);
@@ -295,7 +298,7 @@ const PaymentReceipts = () => {
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
-    const fetchData = async (page = 1, pageSize = 8) => {
+    const fetchData = async (page = 1, pageSize = 7) => {
         setLoading(true);
         try {
             const response = await apiClient.get(`/sales-receipts/list/${page}/${pageSize}`);
@@ -329,6 +332,7 @@ const PaymentReceipts = () => {
 
             // Imprime los datos transformados
             console.log("Datos transformados:", transformedPaymentReceipts);
+            setIsFilter(false);
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
             setTotalPages(total_pages);
@@ -605,7 +609,8 @@ const PaymentReceipts = () => {
                                 currentPage={currentPage}
                                 totalPages={totalPages}
                                 pageSize={pageSize}
-                                setCurrentPage={setCurrentPage} // Pasa setCurrentPage como prop
+                                setCurrentPage={setCurrentPage}
+                                isFilter={isFilter}
                             />
                         )}
 

@@ -1,6 +1,9 @@
 .container-table-pagination {
-    margin: 20px;
+    margin: 1px;
+    margin-top: 13px;
     overflow-x: auto; /* Permite desplazamiento horizontal si es necesario */
+    max-width: 100%;
+    font-size: 12px;
 }
 
 .data-table {
@@ -16,15 +19,23 @@
     text-align: center; /* Alineación del texto */
 }
 
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) {
+    min-width: 77px;
+    font-weight: 700;
+}
+
 
 .data-table th:nth-child(5),
 .data-table td:nth-child(5) {
     width: 25%;
+    min-width: 88px
 }
 
 .data-table th:nth-child(13),
 .data-table td:nth-child(13) {
     width: 50%;
+    min-width: 152px
 }
 
 
