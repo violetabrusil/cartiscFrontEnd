@@ -32,7 +32,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: isTabletLandscape ? '40%' : '97%',
+            width: isTabletLandscape ? '90%' : '97%',
             height: '50px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado

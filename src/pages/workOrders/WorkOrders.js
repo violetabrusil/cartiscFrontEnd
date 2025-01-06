@@ -20,7 +20,7 @@ const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const WorkOrders = () => {
 
-    const { selectedOption = 'Nombre de Titular', setSelectedOption, searchTerm, setSearchTerm } = useWorkOrderContext();
+    const { selectedOption = 'Nombre Titular', setSelectedOption, searchTerm, setSearchTerm } = useWorkOrderContext();
     console.log("Selected Option:", selectedOption);
     const [workOrders, setWorkOrders] = useState([]);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);

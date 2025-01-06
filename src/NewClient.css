@@ -430,9 +430,9 @@
         height: 550px;
     }
 
-
-
-
+    .container-add-car-modal {
+        height: 480px;
+    }
 
 }
 
@@ -447,7 +447,11 @@
     }
 
     .label-flag {
-        margin-left: 30px;
+        margin-left: -24%;
+        margin-bottom: 11%;
+        color: black;
+        font-size: 20px;
+        font-weight: 700;
     }
 
     .label-new-plate-vehicle {

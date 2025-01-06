@@ -44,7 +44,7 @@ const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 const Cars = () => {
 
     //Variable para el filtro y la búsqueda de vehículos y clientes
-    const { selectedOption = "Nombre de Titular", setSelectedOption, searchTerm, setSearchTerm } = useCarContext();
+    const { selectedOption = "Nombre Titular", setSelectedOption, searchTerm, setSearchTerm } = useCarContext();
     const [activeTab, setActiveTab] = useState('cédula');
     const [searchClienTerm, setSearchClientTerm] = useState('');
     const [clients, setClients] = useState([]);
@@ -688,6 +688,7 @@ const Cars = () => {
             const searchTypePlate = "plate";
             const searchTypeClientName = "client_name";
             //Si hay un filtro de búsqueda
+        
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Placa':
@@ -699,7 +700,7 @@ const Cars = () => {
                     default:
                         break;
                 }
-            }
+            } 
             try {
                 const response = await apiClient.get(endpoint);
                 if (response.data && response.data.length > 0) {

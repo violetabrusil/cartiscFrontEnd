@@ -45,11 +45,11 @@ const PaymentReceipts = () => {
     const [paymentType, setPaymentType] = useState(null);
     const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 6);
+    const responsivePageSize = usePageSizeForTabletLandscape(7, 5);
     const { filterData, setFilterData } = usePaymentReceipt();
     const [isFilter, setIsFilter] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(7);
+    //const [pageSize, setPageSize] = useState(7);
     const [totalValues, setTotalValues] = useState(0);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
@@ -298,7 +298,7 @@ const PaymentReceipts = () => {
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
-    const fetchData = async (page = 1, pageSize = 7) => {
+    const fetchData = async (page = 1, pageSize = responsivePageSize) => {
         setLoading(true);
         try {
             const response = await apiClient.get(`/sales-receipts/list/${page}/${pageSize}`);
@@ -529,10 +529,10 @@ const PaymentReceipts = () => {
     };
 
     useEffect(() => {
-        fetchData(currentPage, pageSize);
+        fetchData(currentPage, responsivePageSize);
         console.log("cursor", currentPage)
-        console.log("pageSize", pageSize)
-    }, [currentPage, pageSize]);
+        console.log("pageSize", responsivePageSize)
+    }, [currentPage, responsivePageSize]);
 
     useEffect(() => {
         if (location.state?.fromWorkOrder) {
@@ -608,7 +608,7 @@ const PaymentReceipts = () => {
                                 hasPreviousPage={currentPage > 1}
                                 currentPage={currentPage}
                                 totalPages={totalPages}
-                                pageSize={pageSize}
+                                pageSize={responsivePageSize}
                                 setCurrentPage={setCurrentPage}
                                 isFilter={isFilter}
                             />

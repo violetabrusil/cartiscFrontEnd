@@ -813,6 +813,11 @@ input[type="checkbox"] {
         height: 85vh;
     }
 
+    .carousel {
+        width: 85%;
+        height: 91px;
+    }
+
 
 }
 
