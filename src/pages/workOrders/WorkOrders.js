@@ -128,7 +128,7 @@ const WorkOrders = () => {
 
                 try {
                     const response = await apiClient.post(endpoint, payload);
-
+                   
                     // Transformamos la fecha y el status de cada work order
                     const transformedWorkOrders = response.data.map(workOrder => {
                         const newDateStart = formatDate(workOrder.date_start);

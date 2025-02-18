@@ -36,7 +36,7 @@ const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, select
             if (value.length === 0) {
                 onSearchChange(""); // Muestra toda la lista
                 setSearchTerm(""); // Restablece el término de búsqueda
-            } else if (value.length >= 5) {
+            } else if (value.length >= 3) {
                 onSearchChange(value, selectedOption); // Actualiza la búsqueda
                 setSearchTerm(value); // Actualiza el término de búsqueda global
             }

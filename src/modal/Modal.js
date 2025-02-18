@@ -11,6 +11,7 @@ const Modal = ({ options, onSelect, defaultOption  }) => {
 
     const handleButtonClick = () => {
         onSelect(selectedOption)
+
     };
 
     return (

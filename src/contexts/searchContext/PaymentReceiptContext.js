@@ -14,6 +14,8 @@ export const PaymentReceiptProvider = ({ children }) => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [filterData, setFilterData] = useState([]);
+    const [totalPagesFilter, setTotalPagesFilter] = useState(0);
+    const [totalValuesFilter, setTotalValuesFilter] = useState(0);
 
     const saveFormValues = (values) => {
         setOrderCode(values.orderCode);
@@ -50,7 +52,12 @@ export const PaymentReceiptProvider = ({ children }) => {
                 setEndDate,
                 filterData,
                 setFilterData,
-                saveFormValues
+                totalPagesFilter,
+                setTotalPagesFilter,
+                totalValuesFilter,
+                setTotalValuesFilter,
+                saveFormValues,
+
             }}>
             {children}
         </PaymentReceiptContext.Provider>
