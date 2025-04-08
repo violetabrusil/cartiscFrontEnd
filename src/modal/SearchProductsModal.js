@@ -325,7 +325,7 @@ export function SearchProductsModal({ onClose,
             if (prevProducts.some((p) => p.sku === productToAdd.sku)) {
                 return prevProducts; // retornar el mismo array si el producto ya está presente
             }
-            return [...prevProducts, productToAdd];
+            return [productToAdd, ...prevProducts];
         });
     };
 
@@ -456,52 +456,43 @@ export function SearchProductsModal({ onClose,
     }
 
     const fetchData = async () => {
-        setLoading(true);
-        //Endpoint por defecto
+
         let endpoint = '/products/all';
-        const searchPerSku = "sku";
-        const searchPerSupplier = "supplier_name";
-        const searchPerTitle = "title";
-        const searchPerCategory = "category";
-        const searchPerBrand = "brand";
-
+    
         if (searchTerm) {
-            switch (selectedOption.value) {
-
-                case 'sku':
-                    endpoint = `/products/search?search_type=${searchPerSku}&criteria=${searchTerm}`;
-
-                    break;
-                case 'supplier_name':
-                    endpoint = `/products/search?search_type=${searchPerSupplier}&criteria=${searchTerm}`;
-                    break;
-                case 'title':
-                    endpoint = `/products/search?search_type=${searchPerTitle}&criteria=${searchTerm}`;
-                    break;
-                case 'category':
-                    endpoint = `/products/search?search_type=${searchPerCategory}&criteria=${searchTerm}`;
-                    break;
-                case 'brand':
-                    endpoint = `/products/search?search_type=${searchPerBrand}&criteria=${searchTerm}`;
-                    break;
-                default:
-                    break;
+            // Si la búsqueda tiene menos de 3 caracteres, no ejecutar la petición
+            if (searchTerm.length < 3) {
+                return; // No hacemos la petición si el usuario aún no ha escrito 3 caracteres
+            }
+    
+            const searchTypes = {
+                sku: "sku",
+                supplier_name: "supplier_name",
+                title: "title",
+                category: "category",
+                brand: "brand",
+            };
+    
+            if (selectedOption.value in searchTypes) {
+                console.log("valor selectedoptio", selectedOption.value)
+                endpoint = `/products/search?search_type=${searchTypes[selectedOption.value]}&criteria=${searchTerm}`;
+                console.log("endopoint", endpoint)
             }
         }
+    
         try {
             const response = await apiClient.get(endpoint);
-            /* const data = response.data.map(product => ({
-                 ...product,
-                 price: parseFloat(product.price),
-             }));*/
             setAllProducts(response.data);
+            console.log("datos", response.data)
         } catch (error) {
-            toast.error('Error al obtener los datos de los productos.', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+    
+                toast.error('Error al obtener los datos de los productos.', {
+                    position: toast.POSITION.TOP_RIGHT,
+                });
+            
         }
-        setLoading(false);
     };
+    
 
     const handleManualProductChange = (field, value) => {
         setManualProduct((prevProduct) => ({
@@ -513,7 +504,8 @@ export function SearchProductsModal({ onClose,
     const addManualProduct = () => {
         //Título, precio y cantidad tengan valores válidos
         if (manualProduct.title.trim() !== '' && !isNaN(manualProduct.price) && manualProduct.quantity > 0) {
-            const updatedProducts = [...selectedProducts, { ...manualProduct, sku: `.MA-${Date.now()}` }];
+            const updatedProducts = [{ ...manualProduct, sku: `.MA-${Date.now()}` }, ...selectedProducts ];
+            
             onProductsSelected(updatedProducts);
             // Reinicia la fila de ingreso manual
             setManualProduct({
@@ -530,7 +522,9 @@ export function SearchProductsModal({ onClose,
     };
 
     useEffect(() => {
-        fetchData();
+        if (!searchTerm || searchTerm.length >= 3) {
+            fetchData();
+        }
     }, [selectedOption, searchTerm]);
 
     useEffect(() => {

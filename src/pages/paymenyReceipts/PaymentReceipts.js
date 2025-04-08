@@ -54,6 +54,8 @@ const PaymentReceipts = () => {
     const [hasNextPage, setHasNextPage] = useState(true);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
+    const [totalPagesFilter, setTotalPagesFilter] = useState(null);
+    const [totalValuesFilter, setTotalValuesFilter] = useState(null);
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },
@@ -304,7 +306,7 @@ const PaymentReceipts = () => {
     const fetchData = async (page = 1, pageSize = responsivePageSize) => {
         setLoading(true);
         try {
-            const response = await apiClient.get(`/sales-receipts/list/${page}/${pageSize}`);
+            const response = await apiClient.get(`/sales-receipts/all/${page}/${pageSize}`);
 
             if (!response.data || response.data.length === 0) {
                 setLoading(false);
@@ -350,7 +352,7 @@ const PaymentReceipts = () => {
     };
 
     const goToNextPage = () => {
-        if (currentPage < effectiveTotalPages) {
+        if (currentPage ) {
             setCurrentPage(prevPage => prevPage + 1);
         }
     };
@@ -558,7 +560,7 @@ const PaymentReceipts = () => {
                     setPaymentReceipts(filterData);
                     setTotalPages(totalPagesFilter);
                 } else {
-                    await fetchData(currentPage, pageSize);
+                    await fetchData(currentPage);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -568,7 +570,7 @@ const PaymentReceipts = () => {
         };
 
         loadData();
-    }, [filterData, currentPage, pageSize]);
+    }, [filterData, currentPage]);
 
     const effectiveTotalPages = filterData.length > 0 ? totalPagesFilter : totalPages;
     const effectiveTotalValues = filterData.length > 0 ? totalValuesFilter : totalValues;

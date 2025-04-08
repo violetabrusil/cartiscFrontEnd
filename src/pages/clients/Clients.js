@@ -363,7 +363,7 @@ const Clients = () => {
             // Une todos los mensajes en uno solo
             const mensajeFinal = mensajesError.join(" / ");
 
-            toast.error(mensajeFinal || "Hubo un error desconocido", {
+            toast.error(mensajeFinal || "Hubo un error", {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
@@ -479,13 +479,10 @@ const Clients = () => {
                 } else {
                     setLoading(false);
                 }
-            } catch (error) {
-                if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Error al cargar la información vuelva a intentarlo.', error.message);
-                }
-
+            }  catch (error) {
+                console.error("Error en fetchData:", error.message);
+            } finally {
+                setLoading(false);
             }
         }
         fetchData();

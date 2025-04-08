@@ -318,7 +318,7 @@ const SearchServicesOperationsModal = ({
                 });
                 return prevOperations;
             }
-            return [...prevOperations, { ...operationToAdd }];
+            return [{ ...operationToAdd }, ...prevOperations,];
         });
     };
 
@@ -362,11 +362,12 @@ const SearchServicesOperationsModal = ({
 
                 // Si no hay problemas, procedemos a agregar el servicio
                 setSelectedServicesList(prevServices => [
-                    ...prevServices,
+                   
                     {
                         ...response.data,
                         operations: response.data.operations.map(op => ({ ...op, serviceId: service.id, serviceTitle: service.service_title }))
-                    }
+                    },
+                    ...prevServices
                 ]);
                 const newOperations = response.data.operations.map(op => ({
                     ...op,
@@ -513,28 +514,36 @@ const SearchServicesOperationsModal = ({
 
         //Endpoint por defecto
         let endpoint = '/services/all';
+        
         const searchTypeServiceCode = "service_code";
         const searchTypeTitle = "title";
 
         if (searchTerm) {
-            switch (selectedOption.value) {
-                case 'service_code':
-                    endpoint = `/services/search?search_type=${searchTypeServiceCode}&criteria=${searchTerm}`;
-                    break;
-                case 'title':
-                    endpoint = `/services/search?search_type=${searchTypeTitle}&criteria=${searchTerm}`;
-                    break;
-                default:
-                    break;
+
+            if (searchTerm.length < 3) {
+                return;
             }
+
+            const searchTypes = {
+                service_code: "service_code",
+                title: "title"
+            };
+
+            if (selectedOption.value in searchTypes) {
+                endpoint =  `/services/search?search_type=${searchTypes[selectedOption.value]}&criteria=${searchTerm}`;
+            }
+          
         }
         try {
             const response = await apiClient.get(endpoint);
             setServices(response.data);
         } catch (error) {
-            toast.error('Error al obtener los datos de los servicios', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            if (searchTerm && searchTerm.length >= 3) {
+                toast.error('Error al obtener los datos de los servicios.', {
+                    position: toast.POSITION.TOP_RIGHT,
+                });
+            }
+    
         }
     };
 
@@ -542,28 +551,32 @@ const SearchServicesOperationsModal = ({
 
         //Endpoint por defecto
         let endpoint = '/operations/all';
-        const searchTypeOperationCode = "operation_code";
-        const searchTypeTitle = "title";
-        //Si hay un filtro de búsqueda
+
         if (searchTerm) {
-            switch (selectedOption.value) {
-                case 'operation_code':
-                    endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchTerm}`;
-                    break;
-                case 'title':
-                    endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchTerm}`;
-                    break;
-                default:
-                    break;
+
+            if (searchTerm.length < 3) {
+                return;
             }
+
+            const searchTypesOp = {
+                peration_code: "peration_code",
+                title: "title",
+            };
+
+            if (selectedOption.value in searchTypesOp) {
+                endpoint = `/operations/search?search_type=${searchTypesOp[selectedOption.value]}&criteria=${searchTerm}`;
+            }
+         
         }
         try {
             const response = await apiClient.get(endpoint);
             setOperations(response.data);
         } catch (error) {
-            toast.error('"Error al obtener los datos de las operaciones', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            if (searchTerm && searchTerm.length >= 3) {
+                toast.error('Error al obtener los datos de las operaciones.', {
+                    position: toast.POSITION.TOP_RIGHT,
+                });
+            }
         }
     };
 
@@ -577,7 +590,7 @@ const SearchServicesOperationsModal = ({
     const addManualOperation = () => {
         //Título y costo tenga valores válidos
         if (manualOperation.title.trim() !== '' && !isNaN(manualOperation.cost)) {
-            const updateOperations = [...selectedOperations, {...manualOperation, operation_code:`.OPM-${Date.now()}` }];
+            const updateOperations = [{...manualOperation, operation_code:`.OPM-${Date.now()}` }, ...selectedOperations];
             onOperationUpdated(updateOperations);
             //Reinicia la fila del ingreso manual
             setManualOperation({
@@ -593,7 +606,9 @@ const SearchServicesOperationsModal = ({
     };
 
     useEffect(() => {
-        getOperations();
+        if (!searchTerm || searchTerm.length >= 3) {
+            getOperations();
+        }
     }, [searchTerm, selectedOption]);
 
     useEffect(() => {
@@ -609,7 +624,9 @@ const SearchServicesOperationsModal = ({
     }, [selectedOperations]);
 
     useEffect(() => {
-        getServices();
+        if (!searchTerm || searchTerm.length >= 3) {
+            getServices();
+        }
     }, [searchTerm, selectedOption]);
 
     useEffect(() => {

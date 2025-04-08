@@ -16,13 +16,13 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
     const navigate = useNavigate();
 
     let imageToDisplay;
-    if (showPhoto) {
-        if (user && user.profile_picture) {
-            imageToDisplay = <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />;
-        } else {
-            imageToDisplay = <img src={userIcon} alt="Default User Icon" className="profile-image" />;
-        }
-    }    
+    if (showPhoto && user) {
+        imageToDisplay = user.profile_picture ? (
+            <img src={`data:image/jpeg;base64,${user.profile_picture}`} alt="Profile" className="profile-image" />
+        ) : (
+            <img src={userIcon} alt="Default User Icon" className="profile-image" />
+        );
+    }  
 
     const saveUserForExpressLogin = (user) => {
         const expressLoginData = {
@@ -94,8 +94,8 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
                 {showCarticsLogo && <img src={carticsLogo} alt="Cartics Logo" className="cartics-logo" />}
                 {imageToDisplay}
                 <div className="profile-text">
-                    {showUser && <label className="profile-name">{user.username}</label>}
-                    {showRol && <label className="profile-role">{user.translated_user_type}</label>}
+                    {showUser && user && <label className="profile-name">{user.username}</label>}
+                    {showRol && user && <label className="profile-role">{user.translated_user_type}</label>}
                 </div>
                 {showLogoutButton &&
                     <div style={{ marginLeft: "auto" }}>

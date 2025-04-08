@@ -30,6 +30,7 @@ const Login = () => {
         try {
             const response = await apiLogin.post('/login', { username, password });
             const token = response.data.token;
+            console.log("user", response.data)
             localStorage.setItem('token', token);
             
             const translatedUserType = userTypeMaping[response.data.user.user_type] || response.data.user.user_type;

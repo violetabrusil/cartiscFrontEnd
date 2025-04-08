@@ -544,8 +544,25 @@ const InformationWorkOrder = () => {
             {
                 Header: "Costo",
                 accessor: "cost",
+                id: "cost_original",
                 Cell: ({ value }) =>
                     <div>
+                        $ {parseFloat(value).toFixed(2)}
+                    </div>
+            },
+            {
+                Header: "Cantidad", accessor: "qu",
+                Cell: ({ }) =>
+                    <div>
+                       1
+                    </div>
+            },
+            {
+                Header: "Total",
+                accessor: "cost",
+                id: "cost_total",
+                Cell: ({ value }) =>
+                    <div style={{ fontSize: "16px" }} className='total-products'>
                         $ {parseFloat(value).toFixed(2)}
                     </div>
             },
@@ -1277,7 +1294,7 @@ const InformationWorkOrder = () => {
                                                                 data={selectedProducts}
                                                                 columns={columnsProducts}
                                                                 highlightRows={false}
-                                                                initialPageSize={4}
+                                                                initialPageSize={10}
                                                             />
                                                         )}
                                                     </div>
@@ -1324,7 +1341,7 @@ const InformationWorkOrder = () => {
                                                                 data={allOperations}
                                                                 columns={columnsOperations}
                                                                 highlightRows={false}
-                                                                initialPageSize={4}
+                                                                initialPageSize={10}
                                                             />
                                                         )}
                                                     </div>

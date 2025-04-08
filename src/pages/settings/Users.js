@@ -222,7 +222,10 @@ const Users = () => {
         } catch (error) {
             toast.error('Error al obtener los datos de los usuarios', {
                 position: toast.POSITION.TOP_RIGHT
+               
             });
+            console.log("estoy aqui ")
+            console.log("usuario",user)
         }
     };
 

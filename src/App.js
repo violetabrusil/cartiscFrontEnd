@@ -8,7 +8,8 @@ import './Menu.css';
 import './Modal.css';
 import './NewClient.css';
 
-import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
+import InactivityTimer from './inactivity/InactivityTimer';
 import PuffLoader from "react-spinners/PuffLoader";
 import Login from "./pages/Login";
 import LoginExpress from './pages/LoginExpress';
@@ -37,6 +38,7 @@ import { ProformaProvider } from './contexts/searchContext/ProformaContext';
 import NewProforma from './pages/proforma/NewProforma';
 import { CarProvider } from './contexts/searchContext/CarContext';
 
+
 function App() {
 
   const { isLoading } = useContext(AuthContext);
@@ -53,44 +55,44 @@ function App() {
 
   return (
 
-    <Router>
-      <ClientProvider>
-        <CarProvider initialSelectedOptionCar={carInitialOption}>
-          <WorkOrderProvider initialSelectedOptionWorkOrder={workOrdersInitialOption} >
-            <PaymentReceiptProvider>
-              <ProformaProvider initialSelectedOptionProforma={workOrdersInitialOption}>
-                <div>
-                  <Routes>
-                    <Route path="/" element={<Login />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/changePassword" element={<ChangePassword />} />
-                    <Route path="/changePIN" element={<ChangePIN />} />
-                    <Route path="/loginExpress" element={<LoginExpress />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/clients" element={<Clients />} />
-                    <Route path="/clients/newClient" element={<NewClient />} />
-                    <Route path="/cars" element={<Cars />} />
-                    <Route path="/cars/carHistory/:vehicleId" element={<Cars />} />
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/services/operations" element={<Operation />} />
-                    <Route path="/suppliers" element={<Suppliers />} />
-                    <Route path="/inventory" element={<Inventory />} />
-                    <Route path="/workOrders" element={<WorkOrders />} />
-                    <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
-                    <Route path="/workOrders/detailWorkOrder/:workOrderId" element={<InformationWorkOrder />} />
-                    <Route path="/paymentReceipt" element={<PaymentReceipts />} />
-                    <Route path="/proformas" element={<Proforma />} />
-                    <Route path='/proforma/newProforma' element={<NewProforma />} />
-                  </Routes>
-                </div>
-              </ProformaProvider>
-            </PaymentReceiptProvider>
-          </WorkOrderProvider>
-        </CarProvider>
-      </ClientProvider>
+    <ClientProvider>
+      <CarProvider initialSelectedOptionCar={carInitialOption}>
+        <WorkOrderProvider initialSelectedOptionWorkOrder={workOrdersInitialOption} >
+          <PaymentReceiptProvider>
+            <ProformaProvider initialSelectedOptionProforma={proformaInitialOption}>
+              <div>
+                <InactivityTimer />
+                <Routes>
+                  <Route path="/" element={<Navigate to="/login" replace />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/changePassword" element={<ChangePassword />} />
+                  <Route path="/changePIN" element={<ChangePIN />} />
+                  <Route path="/loginExpress" element={<LoginExpress />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/clients" element={<Clients />} />
+                  <Route path="/clients/newClient" element={<NewClient />} />
+                  <Route path="/cars" element={<Cars />} />
+                  <Route path="/cars/carHistory/:vehicleId" element={<Cars />} />
+                  <Route path="/services" element={<Services />} />
+                  <Route path="/services/operations" element={<Operation />} />
+                  <Route path="/suppliers" element={<Suppliers />} />
+                  <Route path="/inventory" element={<Inventory />} />
+                  <Route path="/workOrders" element={<WorkOrders />} />
+                  <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
+                  <Route path="/workOrders/detailWorkOrder/:workOrderId" element={<InformationWorkOrder />} />
+                  <Route path="/paymentReceipt" element={<PaymentReceipts />} />
+                  <Route path="/proformas" element={<Proforma />} />
+                  <Route path='/proforma/newProforma' element={<NewProforma />} />
+                </Routes>
+              </div>
+            </ProformaProvider>
+          </PaymentReceiptProvider>
+        </WorkOrderProvider>
+      </CarProvider>
+    </ClientProvider>
 
-    </Router>
+
 
 
 
