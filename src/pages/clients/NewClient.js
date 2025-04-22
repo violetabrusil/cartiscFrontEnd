@@ -11,6 +11,7 @@ import apiClient from "../../services/apiClient";
 import ModalNewClient from "../../modal/ModalNewClient";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 import ClientContext from "../../contexts/ClientContext";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
 const checkedIcon = process.env.PUBLIC_URL + "/images/icons/checkedIcon.png";
@@ -29,6 +30,9 @@ const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const NewClient = () => {
+
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     //Variables para el formulario de AddClient
     const [cedula, setCedula] = useState("");
@@ -210,7 +214,7 @@ const NewClient = () => {
             className: 'custom-select-control',
             width: isTabletLandscape ? '96%' : '98%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
+            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
             padding: '8px',
             marginBottom: '20px',
@@ -218,7 +222,7 @@ const NewClient = () => {
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         option: (provided, state) => ({
             ...provided,

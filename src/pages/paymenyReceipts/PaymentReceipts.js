@@ -18,6 +18,7 @@ import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import { usePaymentReceipt } from "../../contexts/searchContext/PaymentReceiptContext";
 import DataTablePagination from "../../dataTable/DataTablePagination";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
@@ -27,6 +28,9 @@ const paymentIcon = process.env.PUBLIC_URL + "/images/icons/payment-icon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
 const PaymentReceipts = () => {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const [paymentReceipts, setPaymentReceipts] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
@@ -96,11 +100,11 @@ const PaymentReceipts = () => {
             minHeight: '45px',
             marginTop: '10px',
             marginBottom: '10px',
-            border: '1px solid rgb(0 0 0 / 34%)'
+            border: `1px solid ${blackAlpha34}`
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: 'rgb(0 0 0 / 34%)',
+            color: blackAlpha34,
             fontWeight: '600',
         }),
         menu: (provided, state) => ({
@@ -186,7 +190,7 @@ const PaymentReceipts = () => {
                     const [wholePart, decimalPart] = formattedValue.split(".");
 
                     return (
-                        <div style={{ display: 'inline-block', color: '#316EA8', fontWeight: '600' }} className="no-wrap-column-total">
+                        <div style={{ display: 'inline-block', color: tertiaryColor, fontWeight: '600' }} className="no-wrap-column-total">
                             <span className="whole-part">$ {wholePart}.</span>
                             <span className="decimal-part">{decimalPart}</span>
                         </div>
@@ -217,7 +221,7 @@ const PaymentReceipts = () => {
                 id: 'email-button'
             }
         ],
-        []
+        [tertiaryColor]
     );
 
     function formatDate(isoDate) {
@@ -604,19 +608,19 @@ const PaymentReceipts = () => {
 
                 {loading ? (
                     <div className="loader-container">
-                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                     </div>
                 ) : (
                     <div className="data-table-container">
                         {downloadingPdf && (
                             <div className="absolute-loader-container">
-                                <PuffLoader color="#316EA8" loading={true} size={60} />
+                                <PuffLoader color={tertiaryColor} loading={true} size={60} />
                             </div>
                         )}
 
                         {sendingEmail && (
                             <div className="absolute-loader-container">
-                                <PuffLoader color="#316EA8" loading={true} size={60} />
+                                <PuffLoader color={tertiaryColor} loading={true} size={60} />
                             </div>
                         )}
                         {paymentReceipts.length > 0 && (

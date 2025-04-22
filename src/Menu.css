@@ -5,7 +5,7 @@
   z-index: 1;
   top: 80px;
   left: 0;
-  background-color: #E7ECEF;
+  background-color: var(--gray-light);
   transition: width 0.5s;
   overflow: hidden;
   display: flex;
@@ -17,7 +17,7 @@
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 16px;
-  color: #6E757D;
+  color: var(--gray-dark);
   display: block;
   transition: 0.3s;
   position: relative;
@@ -58,7 +58,7 @@
 }
 
 .menu-lateral a.active {
-  color: #316EA8;
+  color: var(--tertiary-color);
   font-weight: bold;
 }
 
@@ -71,7 +71,7 @@
   height: 60%;
   width: 9px;
   left: 0;
-  background-color: #316EA8;
+  background-color: var(--tertiary-color);
 }
 
 .menu-lateral .icono-menu {

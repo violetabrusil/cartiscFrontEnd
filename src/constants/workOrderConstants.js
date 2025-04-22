@@ -5,5 +5,6 @@ export const workOrderStatus = {
     stand_by: "En pausa",
     cancelled: "Cancelada",
     completed: "Completada",
-    dropped: "Eliminada"
+    dropped: "Eliminada",
+    pending: "Pendiente",
 };

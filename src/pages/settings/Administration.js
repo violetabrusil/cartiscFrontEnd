@@ -8,6 +8,7 @@ import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { userStatusMaping } from "../../constants/userStatusConstants";
 import { vehicleCategory } from "../../constants/vehicleCategoryConstants";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const Administration = () => {
 
@@ -16,20 +17,26 @@ const Administration = () => {
     const [columns, setColumns] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const redColor = useCSSVar('--red-intense');
+    const blackColor = useCSSVar('--pure-black');
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
+
     const administrationSelectStyles = {
         control: (base, state) => ({
             ...base,
             width: '265px',
             height: '40px',
             minHeight: '40px',
-            border: '1px solid rgb(0 0 0 / 34%)',
+            border: `1px solid${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
             boxSizing: 'border-box'
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999',
+            color: grayMediumDark,
         }),
         option: (provided, state) => ({
             ...provided,
@@ -57,7 +64,7 @@ const Administration = () => {
                 accessor: "client_status",
                 Cell: ({ value }) => {
                     return (
-                        <span style={{ color: value === "Suspendido" ? "red" : "black", fontWeight: '700' }}>
+                        <span style={{ color: value === "Suspendido" ? redColor : blackColor, fontWeight: '700' }}>
                             {value}
                         </span>
                     )
@@ -104,7 +111,7 @@ const Administration = () => {
                 accessor: 'vehicle_status',
                 Cell: ({ value }) => {
                     return (
-                        <span style={{ color: value === "Suspendido" ? "red" : "black", fontWeight: '700' }}>
+                        <span style={{ color: value === "Suspendido" ? redColor : blackColor, fontWeight: '700' }}>
                             {value}
                         </span>
                     )
@@ -160,7 +167,7 @@ const Administration = () => {
                 accessor: 'operation_status',
                 Cell: ({ value }) => {
                     return (
-                        <span style={{ color: value === "Suspendido" ? "red" : "black", fontWeight: '700' }}>
+                        <span style={{ color: value === "Suspendido" ? redColor : blackColor, fontWeight: '700' }}>
                             {value}
                         </span>
                     )
@@ -205,7 +212,7 @@ const Administration = () => {
                 accessor: 'supplier_status',
                 Cell: ({ value }) => {
                     return (
-                        <span style={{ color: value === "Suspendido" ? "red" : "black", fontWeight: '700' }}>
+                        <span style={{ color: value === "Suspendido" ? redColor : blackColor, fontWeight: '700' }}>
                             {value}
                         </span>
                     )
@@ -415,7 +422,7 @@ const Administration = () => {
                 <div style={{ marginTop: '-60px' }}>
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
                         <>

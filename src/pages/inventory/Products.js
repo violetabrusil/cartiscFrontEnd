@@ -7,12 +7,16 @@ import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { ProductForm } from "./ProductForm";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
 const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }) => {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const blackAlpha20 = useCSSVar('--black-alpha-20');
 
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
@@ -43,7 +47,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '10%',
-                                border: '1px solid rgba(0, 0, 0, 0.2)',
+                                border: `1px solid ${blackAlpha20}`,
                                 padding: '4px'
                             }}
                         />
@@ -116,7 +120,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                 id: 'edit-product-button'
             },
         ],
-        []
+        [blackAlpha20]
     );
 
     const handleShowAddProducts = (event) => {
@@ -225,7 +229,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                     <SearchBar onFilter={handleFilter} />
                     {loading ? (
                         <div className="spinner-container-products">
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
 
                     ) : (

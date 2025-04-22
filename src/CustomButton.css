@@ -9,14 +9,14 @@
 .custom-button{
     width: 216px;
     height: 64px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
     font-size: 17px;
 }
 
 .span-custom-button {
-    color: white;
+    color: var(--white);
     font-weight: bold;
     font-size: 17px;
 }

@@ -4,7 +4,6 @@ import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from '../contexts/AuthContext';
-import { userTypeMaping } from '../constants/userRoleConstants';
 import apiLogin from '../services/api';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
@@ -39,12 +38,6 @@ const LoginExpress = () => {
             const token = response.data.token;
             localStorage.setItem('token', token);
 
-            const translatedUserType = userTypeMaping[response.data.user.user_type] || response.data.user.user_type;
-            const modifiedUser = {
-                ...response.data.user,
-                translated_user_type: translatedUserType,
-            };
-
             if (response.data.user) {
                 // Guarda todos los datos del usuario en localStorage
                 localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -53,7 +46,7 @@ const LoginExpress = () => {
 
             document.cookie = `jwt=${token}; path=/; samesite=none`;
 
-            if (modifiedUser.translated_user_type === "Administrador") {
+            if (user.user_type === "admin") {
                 navigate("/settings");
             } else {
                 navigate("/home");

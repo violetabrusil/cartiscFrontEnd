@@ -13,7 +13,7 @@
 }
 
 .left-section {
-    background-color: #f0f0f0;
+    background-color: var(--gray-neutral-light);
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -23,7 +23,7 @@
 }
 
 .right-section {
-    background-color: #d0d0d0;
+    background-color: var(--gray-medium);
     padding: 20px;
     overflow-y: auto;
     height: 100%;
@@ -59,8 +59,8 @@
 .result-client {
     max-width: 98%;
     height: 70px;
-    background: #FFF;
-    border: 1px solid #D4D4D4;
+    background: var(--white);
+    border: 1px solid var(--gray-medium-light);
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-gap: 1px;
@@ -93,7 +93,7 @@
     width: 300px;
     max-width: 100%;
     height: 24px;
-    color: #000;
+    color: var(--pure-black);
     font-size: 16px;
     font-style: normal;
     font-weight: 300;
@@ -104,7 +104,7 @@
 }
 
 .car-number {
-    color: rgba(0, 0, 0, 0.41);
+    color: var(--black-alpha-41);
     font-size: 17px;
     font-style: normal;
     line-height: normal;
@@ -181,7 +181,7 @@
     align-items: center;
     text-align: center;
     border-radius: 10px;
-    border: 2px solid rgba(0, 0, 0, 0.50);
+    border: 2px solid var(--black-transparent);
     width: 200px;
     height: 200px;
     margin-right: 20px;
@@ -251,8 +251,8 @@
 .button-edit-data-client {
     width: 167px;
     height: 40px;
-    background-color: #1c4a74;
-    color: white;
+    background-color: var(--second-color);
+    color: var(--white);
     font-weight: bold;
     border: none;
     border-radius: 6px;

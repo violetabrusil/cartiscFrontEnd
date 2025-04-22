@@ -21,6 +21,7 @@ import SearchServicesOperationsModal from '../../modal/SearchServicesOperationsM
 import { AssignModal } from '../../modal/AssignModal';
 import { ConfirmationModal } from '../../modal/ConfirmationModal';
 import { WorkOrderInfoModal } from '../../modal/WorkOrderInfoModal';
+import useCSSVar from '../../hooks/UseCSSVar';
 
 const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
@@ -32,6 +33,9 @@ const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png"
 const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const InformationWorkOrder = () => {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const [visibleSections, setVisibleSections] = useState({
         products: true,
@@ -96,6 +100,8 @@ const InformationWorkOrder = () => {
     const [fetchingData, setFetchingData] = useState(true);
     const [isEditingWorkOrder, setIsEditingWorkOrder] = useState(false);
     const [showButton, setShowButton] = useState(true);
+    const [totalValueProducts, setTotalValueProducts] = useState(0);
+    const [totalValueServicesOperations, setTotalValueServicesOperations] = useState(0);
 
     const [percentages, setPercentages] = useState({
         group3: [null, null, null, 0, null],
@@ -265,22 +271,32 @@ const InformationWorkOrder = () => {
 
     const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
 
+    const toStart = useCSSVar('--tertiary-color');
+    const assigned = useCSSVar('--primary-color'); 
+    const inDevelopment = useCSSVar('--green-muted');
+    const standBy = useCSSVar('--yellow-warm');
+    const cancelled = useCSSVar('--red-intense');
+    const completed = useCSSVar('--green-dark');
+
     const customStylesStatusWorkOrder = {
+
         control: (provided, state) => {
 
-            let borderColor = '1px solid rgb(0 0 0 / 34%)'; // Color de borde predeterminado
-            if (state.selectProps.value.value === 'to_start') {
-                borderColor = '2px solid #316EA8';
-            } if (state.selectProps.value.value === 'assigned') {
-                borderColor = '2px solid #0C1F31';
-            } if (state.selectProps.value.value === 'in_development') {
-                borderColor = '2px solid #4caf50';
-            } if (state.selectProps.value.value === 'stand_by') {
-                borderColor = '2px solid #fbc02d';
-            } if (state.selectProps.value.value === 'cancelled') {
-                borderColor = '2px solid #e74c3c';
-            } if (state.selectProps.value.value === 'completed') {
-                borderColor = '2px solid #2e7d32';
+            let borderColor = `1px solid ${blackAlpha34}`; // Color de borde predeterminado
+
+            const status = state.selectProps.value?.value;
+
+            const statusColors = {
+                to_start: toStart,
+                assigned: assigned,
+                in_development: inDevelopment,
+                stand_by: standBy,
+                cancelled: cancelled,
+                completed: completed,
+            };
+             
+            if (statusColors[status]) {
+                borderColor = `2px solid ${statusColors[status]}`
             }
             return {
                 ...provided,
@@ -546,15 +562,15 @@ const InformationWorkOrder = () => {
                 accessor: "cost",
                 id: "cost_original",
                 Cell: ({ value }) =>
-                    <div>
+                    <div style={{ fontSize: "16px" }}>
                         $ {parseFloat(value).toFixed(2)}
                     </div>
             },
             {
                 Header: "Cantidad", accessor: "qu",
                 Cell: ({ }) =>
-                    <div>
-                       1
+                    <div style={{ fontSize: "16px" }}>
+                        1
                     </div>
             },
             {
@@ -849,6 +865,8 @@ const InformationWorkOrder = () => {
 
             setTotalValue(total.toFixed(2));
             setOldTotalValue(totalValue);
+            setTotalValueProducts(totalProductsValue);
+            setTotalValueServicesOperations(totalOperationsValue + totalServicesValue);
         } else {
             setTotalValue(oldTotalValue);
         }
@@ -890,7 +908,7 @@ const InformationWorkOrder = () => {
 
                 {loading ? (
                     <div className="loader-container">
-                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                     </div>
 
                 ) : (
@@ -1279,12 +1297,16 @@ const InformationWorkOrder = () => {
 
                                                 {
                                                     shouldShowButtonDeveloped() &&
-                                                    <img
-                                                        className="icon-container"
-                                                        src={addIcon}
-                                                        alt="Open Modal"
-                                                        onClick={handleOpenModalProducts}
-                                                    />
+                                                    <div className='container-total-values'>
+                                                        <span className='total-value-items'>$ {totalValueProducts.toFixed(2)}</span>
+                                                        <img
+                                                            className="icon-container"
+                                                            src={addIcon}
+                                                            alt="Open Modal"
+                                                            onClick={handleOpenModalProducts}
+                                                        />
+                                                    </div>
+
                                                 }
 
                                                 {!isModalOpenProducts ? (
@@ -1326,12 +1348,16 @@ const InformationWorkOrder = () => {
                                             <div className="container-div-services">
 
                                                 {shouldShowButtonDeveloped() &&
-                                                    <img
-                                                        className="icon-container"
-                                                        src={addIcon}
-                                                        alt="Open Modal"
-                                                        onClick={handleOpenModalServices}
-                                                    />
+                                                    <div className='container-total-values'>
+                                                        <span className='total-value-items'>$ {totalValueServicesOperations.toFixed(2)}</span>
+                                                        <img
+                                                            className="icon-container"
+                                                            src={addIcon}
+                                                            alt="Open Modal"
+                                                            onClick={handleOpenModalServices}
+                                                        />
+                                                    </div>
+
                                                 }
 
                                                 {!isModalOpenServices ? (

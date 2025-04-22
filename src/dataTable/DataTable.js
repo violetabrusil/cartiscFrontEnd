@@ -1,6 +1,7 @@
 import "../DataTable.css"
 import React from 'react';
 import { useTable, usePagination } from 'react-table';
+import useCSSVar from "../hooks/UseCSSVar";
 
 
 const DataTable = ({
@@ -38,6 +39,8 @@ const DataTable = ({
         usePagination
     );
 
+    const blueCloud = useCSSVar('--blue-cloud');
+
     return (
         <div className="container-table">
             <table {...getTableProps()} className={`products-table ${customFontSize ? 'custom-font-size' : ''}`}>
@@ -69,7 +72,7 @@ const DataTable = ({
                             <tr
                                 {...row.getRowProps()}
                                 onClick={() => onRowClick(row, index)}
-                                style={isHighlighted ? { backgroundColor: '#d1e2f1' } : {}}
+                                style={isHighlighted ? { backgroundColor: blueCloud } : {}}
                             >
                                 {row.cells.map(cell => {
                                     if (cell.column.id === 'action') {

@@ -1,7 +1,7 @@
 import React from "react";
 import "../alertWindow/AlertWindow.css";
 
-const image = process.env.PUBLIC_URL + "images/chispita.png"
+const image = process.env.PUBLIC_URL + "/images/chispita.png";
 
 const AlertWindow = ({ title, message, onConfirm, fullScreen = false }) => {
 

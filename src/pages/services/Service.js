@@ -18,6 +18,7 @@ import { CustomButtonContainer, CustomButton } from "../../customButton/CustomBu
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import DataTable from "../../dataTable/DataTable";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
@@ -26,6 +27,8 @@ const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 
 const Services = () => {
+    
+    const tertiaryColor = useCSSVar('--tertiary-color');
 
     //Variables para controlar el tab de servicios y operaciones
     const [activeTab, setActiveTab] = useState('servicios');
@@ -632,7 +635,7 @@ const Services = () => {
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
                         <>
@@ -666,7 +669,7 @@ const Services = () => {
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
                         <>
@@ -793,7 +796,7 @@ const Services = () => {
                             <div className="container-buttons">
                                 <button
                                     className="button-add-operation"
-                                    style={{ marginRight: "10px", backgroundColor: isEditing ? '#1C4A74' : '#6E757D' }}
+                                    style={{ marginRight: "10px", backgroundColor: isEditing ? 'var(--second-color)' : 'var(--gray-dark)' }}
                                     onClick={handleOpenModalSearchOperation}
                                     disabled={!isEditing}  >
                                     <span className="text-button">
@@ -802,7 +805,7 @@ const Services = () => {
                                 </button>
                                 <button
                                     className="button-add-operation"
-                                    style={{ marginLeft: "10px", backgroundColor: isEditing ? '#1C4A74' : '#6E757D' }}
+                                    style={{ marginLeft: "10px", backgroundColor: isEditing ? 'var(--second-color)' : 'var(--gray-dark)' }}
                                     onClick={handleSaveOrUpdateService}>
                                     <span className="text-button">Aceptar</span>
                                 </button>

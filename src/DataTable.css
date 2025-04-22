@@ -6,19 +6,19 @@
 }
 
 .products-table tbody tr:nth-child(odd) {
-    background-color: #f2f2f2;
+    background-color: var(--gray-ultra-light);
 }
 
 .products-table td {
     text-align: center;
     padding: 3px;
-    border-top: 1px solid black;
+    border-top: 1px solid var(--pure-black)k;
 }
 
 .products-table th {
     text-align: left;
     padding: 10px;
-    background-color: white;
+    background-color: var(--white);
 }
 
 .products-table thead th {
@@ -32,7 +32,7 @@
 }
 
 .container-table {
-    background-color: white;
+    background-color: var(--white);
     width: 94%;
     margin: auto;
     padding-top: 10px;

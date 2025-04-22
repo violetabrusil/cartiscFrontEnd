@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import apiClient from "../../services/apiClient";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { CustomSingleValueProduct } from "../../customSingleValue/CustomSingleValueProduct";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const letterIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
 const categoryIcon = process.env.PUBLIC_URL + "/images/icons/category.png";
@@ -63,6 +64,8 @@ export function ProductForm({
     const [column, setColumn] = useState(productData.column);
     const [compatibility, setCompatibility] = useState(productData.compatibility_notes);
 
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
+
     const options = [
         { value: 'search_by_code', label: 'Buscar por Código' },
         { value: 'search_by_name', label: 'Buscar por Nombre' },
@@ -78,7 +81,7 @@ export function ProductForm({
             width: isTabletLandscape ? '80%' : '74%',
             height: '50px', // Estilo personalizado para la altura
             minHeight: '50px',
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
+            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
             padding: '4px',
         }),

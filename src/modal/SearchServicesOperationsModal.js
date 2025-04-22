@@ -7,6 +7,7 @@ import DataTable from "../dataTable/DataTable";
 import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
 import { EmptyTable } from "../dataTable/EmptyTable";
+import useCSSVar from "../hooks/UseCSSVar";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -44,6 +45,9 @@ const SearchServicesOperationsModal = ({
     const responsivePageSizeServices = usePageSizeForTabletLandscape(6, 2);
     const responsivePageSizeOperationsSelect = usePageSizeForTabletLandscape(5, 2);
     const responsivePageSizeOperations = usePageSizeForTabletLandscape(6, 3);
+
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const [manualOperation, setManualOperation] = useState({
         title: '',
@@ -250,7 +254,7 @@ const SearchServicesOperationsModal = ({
             width: '400px',  // Aquí estableces el ancho
             height: '40px',  // Y aquí la altura
             minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
-            border: '1px solid rgb(0 0 0 / 34%)',
+            border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
             boxSizing: 'border-box',
@@ -259,7 +263,7 @@ const SearchServicesOperationsModal = ({
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         menu: (provided, state) => ({
             ...provided,
@@ -274,7 +278,7 @@ const SearchServicesOperationsModal = ({
             width: '400px',  // Aquí estableces el ancho
             height: '40px',  // Y aquí la altura
             minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
-            border: '1px solid rgb(0 0 0 / 34%)',
+            border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
             boxSizing: 'border-box',
@@ -283,7 +287,7 @@ const SearchServicesOperationsModal = ({
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         menu: (provided, state) => ({
             ...provided,

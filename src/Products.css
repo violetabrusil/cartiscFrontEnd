@@ -28,13 +28,13 @@
 }
 
 .custom-select-control-product {
-    border: 1px solid #ccc;
+    border: 1px solid var(--light-silver-gray);
     border-radius: 4px;
     width: 285%
 }
 
 .custom-select-control-product--focused {
-    box-shadow: 0 0 0 2px #aaa;
+    box-shadow: 0 0 0 2px var(--gray-muted);
 }
 
 .button-edit-product {
@@ -106,7 +106,7 @@
 }
 
 .left-side label {
-    color: #000;
+    color: var(--pure-black);
     font-size: 16px;
     font-weight: 600;
 }
@@ -128,8 +128,8 @@
 .input-image {
     width: 73%;
     height: 30px;
-    border: 1px solid rgb(0 0 0 / 34%);
-    background: #fff;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
     border-radius: 4px;
     padding: 8px;
     margin-bottom: 20px;
@@ -139,8 +139,8 @@
 .input-title-product {
     width: 64%;
     height: 30px;
-    border: 1px solid rgb(0 0 0 / 34%);
-    background: #fff;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
     border-radius: 4px;
     padding: 8px;
     padding-left: 50px;
@@ -158,7 +158,7 @@
 .input-group-supplier label {
     flex: 1;
     ;
-    color: #000;
+    color: var(--pure-black);
     font-size: 16px;
     font-weight: 600;
 
@@ -167,8 +167,8 @@
 .button-save-product {
     width: 167px;
     height: 40px;
-    background-color: #1c4a74;
-    color: white;
+    background-color: var(--second-color);
+    color: var(--white);
     font-weight: bold;
     border: none;
     border-radius: 6px;
@@ -176,12 +176,12 @@
 }
 
 .button-disabled {
-    background-color: #6E757D;
+    background-color: var(--gray-dark);
     cursor: not-allowed;
 }
 
 .button-active {
-    background-color: #1c4a74;
+    background-color: var(--second-color);
     cursor: pointer;
 }
 
@@ -195,13 +195,13 @@
 }
 
 .custom-select-control-supplier {
-    border: 1px solid #ccc;
+    border: 1px solid var(--light-silver-gray);
     border-radius: 4px;
     flex: 3;
 }
 
 .custom-select-control-supplier--focused {
-    box-shadow: 0 0 0 2px #aaa;
+    box-shadow: 0 0 0 2px var(--gray-muted);
 }
 
 .custom-select-option-supplier {
@@ -210,11 +210,11 @@
 }
 
 .custom-select-option-supplier--selected {
-    background-color: #ddd;
+    background-color: var(--gray-light-medium);
 }
 
 .custom-select-option-supplier--hover {
-    background-color: #f5f5f5;
+    background-color: var(--gray-very-light);
 }
 
 .spinner-container-products {
@@ -230,7 +230,7 @@
 }
 
 .label-form-product {
-    color: #000;
+    color: var(--pure-black);
     font-size: 16px;
     font-weight: 600;
     margin-right: 140px;
@@ -292,8 +292,8 @@
     border-radius: 50%; /* Forma de círculo */
     width: 36px;
     height: 36px;
-    border: 0.5px solid #6E757D;
-    background-color: #6E757D;
+    border: 0.5px solid var(--gray-dark);
+    background-color: var(--gray-dark);
     display: flex;
     justify-content: center;
     align-items: center;

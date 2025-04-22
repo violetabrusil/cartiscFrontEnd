@@ -12,11 +12,13 @@ import apiClient from "../../services/apiClient";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
 const Suppliers = () => {
 
+    const tertiaryColor = useCSSVar('--tertiary-color');
     const [suppliers, setSuppliers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedOption, setSelectedOption] = useState('Nombre');
@@ -262,7 +264,7 @@ const Suppliers = () => {
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
                         <>

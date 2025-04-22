@@ -7,10 +7,16 @@ import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
 const Location = () => {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const blueMediumSoft = useCSSVar('--blue-medium-soft');
+    const blueDesaturedDark = useCSSVar('--blue-desatured-dark');
+    const blackAlpha20 = useCSSVar('--black-alpha-20');
 
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
@@ -120,7 +126,7 @@ const Location = () => {
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '10%',
-                                border: '1px solid rgba(0, 0, 0, 0.2)',
+                                border: `1px solid ${blackAlpha20}`,
                                 padding: '4px'
                             }}
                         />
@@ -195,7 +201,7 @@ const Location = () => {
                 <SearchBar onFilter={handleFilter} />
                 {loading ? (
                     <div className="spinner-container-products ">
-                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                     </div>
 
                 ) : (
@@ -216,7 +222,7 @@ const Location = () => {
                     <label>Columna</label>
                     <input
                         type="text"
-                        style={{ color: "#5a98cb" }}
+                        style={{ color: blueMediumSoft }}
                         value={(isEditing ? columnUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? columnUpdate : selectedProductColumn)}
                         readOnly={!isEditing}
                         onChange={e => setColumnUpdate(e.target.value)}
@@ -228,7 +234,7 @@ const Location = () => {
                     <label>Fila</label>
                     <input
                         type="text"
-                        style={{ color: "#255177" }}
+                        style={{ color: blueDesaturedDark }}
                         value={(isEditing ? rowUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? rowUpdate : selectedProductRow)}
                         readOnly={!isEditing}
                         onChange={e => setRowUpdate(e.target.value)}

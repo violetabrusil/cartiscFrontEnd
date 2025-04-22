@@ -2,23 +2,16 @@ import "../Modal.css";
 
 import React from 'react';
 import { workOrderStatus } from "../constants/workOrderConstants";
+import { useStatusColors } from "../utils/useStatusColors";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const clockIcon = process.env.PUBLIC_URL + "/images/icons/clockIcon.png";
 
 export function ModalHistoryWorkOrder({ isOpen, onClose, orderHistory, workOrderCode }) {
 
-    const sortedOrderHistory = orderHistory.sort((a, b) => new Date(b.date_changed) - new Date(a.date_changed));
+    const statusColors = useStatusColors();
 
-    const statusColors = {
-        "Por iniciar": "#316EA8",
-        "Asignada": "#0C1F31",
-        "En ejecución": "#4caf50",
-        "En espera": "#fbc02d",
-        "Cancelada": "#e74c3c",
-        "Completada": "#2e7d32",
-        "Eliminada": "#6E757D"
-    };
+    const sortedOrderHistory = orderHistory.sort((a, b) => new Date(b.date_changed) - new Date(a.date_changed));
 
     return (
 
@@ -36,24 +29,32 @@ export function ModalHistoryWorkOrder({ isOpen, onClose, orderHistory, workOrder
                 </div>
 
                 <div className="div-container-history">
-                    {sortedOrderHistory.map((entry, index) => (
-                        <div
-                            className={`entry ${entry.isCompleted ? "entry-completed" : "entry-pending"} entry-color`}
-                            key={index}
-                            style={{ "--entry-color": statusColors[workOrderStatus[entry.work_order_status] || entry.work_order_status] }}
-                        >
+
+                    {sortedOrderHistory.map((entry, index) => {
+
+                        const status = workOrderStatus[entry.work_order_status] || entry.work_order_status;
+                        const color = statusColors[status]
+
+                        return (
                             <div
-                                style={{
-                                    marginTop: '8px',
-                                    fontWeight: '600',
-                                    color: statusColors[workOrderStatus[entry.work_order_status] || entry.work_order_status]
-                                }}>
-                                {workOrderStatus[entry.work_order_status] || entry.work_order_status}
+                                className={`entry ${entry.isCompleted ? "entry-completed" : "entry-pending"} entry-color`}
+                                key={index}
+                                style={{ "--entry-color": color }}
+                            >
+                                <div
+                                    style={{
+                                        marginTop: '8px',
+                                        fontWeight: '600',
+                                        color: color
+                                    }}>
+                                    {status}
+                                </div>
+                                <div>{new Date(entry.date_changed).toLocaleDateString()} {new Date(entry.date_changed).toLocaleTimeString()} - {entry.created_by}</div>
+                                <div>{entry.notes}</div>
                             </div>
-                            <div>{new Date(entry.date_changed).toLocaleDateString()} {new Date(entry.date_changed).toLocaleTimeString()} - {entry.created_by}</div>
-                            <div>{entry.notes}</div>
-                        </div>
-                    ))}
+                        );
+
+                    })}
                 </div>
 
             </div>

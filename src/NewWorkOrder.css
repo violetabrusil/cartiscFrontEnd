@@ -27,13 +27,13 @@
 .confirm-button {
     width: 180px;
     height: 50px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
 }
 
 .text-confirm-button {
-    color: white;
+    color: var(--white);
     font-weight: bold;
     font-size: 17px;
 }
@@ -48,7 +48,7 @@
 .left-div {
     width: 40%;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     max-height: 500px;
     /* Puedes ajustar este valor según lo necesites */
     overflow-y: auto;
@@ -57,13 +57,13 @@
 .left-div-detail {
     width: 30%;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     max-height: 500px;
     /* Puedes ajustar este valor según lo necesites */
 }
 
 .right-div-container {
-    width: 68%;
+    width: 70%;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -76,7 +76,7 @@
 
 .right-div {
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     position: relative;
 }
 
@@ -95,8 +95,8 @@
 
 .input-field-right {
     height: 15px;
-    border: 1px solid rgb(0 0 0 / 34%);
-    background: #fff;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
     border-radius: 4px;
     padding: 8px;
 }
@@ -104,8 +104,8 @@
 .input-field-km {
     width: 89%;
     height: 15px;
-    border: 1px solid rgb(0 0 0 / 34%);
-    background: #fff;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
     border-radius: 4px;
     padding: 9px;
     font-size: 20px;
@@ -144,8 +144,8 @@
     margin-bottom: 25px;
     padding: 5px;
     border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
+    border: 2px solid var(--gray-soft-134);
+    background: var(--gray-soft-128);
     margin-left: 22px;
     margin-top: 40px;
 }
@@ -165,8 +165,8 @@
 .result-client-container {
     max-width: 88%;
     height: 70px;
-    background: #FFF;
-    border: 1px solid #D4D4D4;
+    background: var(--white);
+    border: 1px solid var(--gray-medium-light);
     display: grid;
     grid-template-columns: 1fr;
     grid-gap: 1px;
@@ -193,7 +193,7 @@
     width: 400px;
     max-width: 100%;
     height: 24px;
-    color: #000;
+    color: var(--pure-black);
     font-size: 19px;
     font-style: normal;
     font-weight: 300;
@@ -211,7 +211,7 @@
 }
 
 .label-car-number-client {
-    color: rgba(0, 0, 0, 0.41);
+    color: var(--black-alpha-41);
     font-size: 17px;
     font-style: normal;
     line-height: normal;
@@ -256,13 +256,13 @@
     /* Ajusta el padding según tu diseño */
     width: 200px;
     /* Ajusta el ancho según tu diseño */
-    background-color: white;
+    background-color: var(--white);
     border-radius: 6px;
     height: 35px;
 }
 
 .date-picker-text {
-    color: black;
+    color: var(--pure-black);
     /* Cambia el color del texto según tu preferencia */
 }
 
@@ -272,12 +272,12 @@
 }
 
 .custom-select-control-work-order {
-    border: 1px solid #ccc;
+    border: 1px solid var(--light-silver-gray);
     border-radius: 4px;
 }
 
 .custom-select-control-work-order--focused {
-    box-shadow: 0 0 0 2px #aaa;
+    box-shadow: 0 0 0 2px var(--gray-muted);
 }
 
 .custom-select-option-work-order {
@@ -285,11 +285,11 @@
 }
 
 .custom-select-option-work-order--selected {
-    background-color: #ddd;
+    background-color: var(--gray-light-medium);
 }
 
 .custom-select-option-work-order--hover {
-    background-color: #f5f5f5;
+    background-color: var(--gray-very-light);
 }
 
 .carousel {
@@ -299,7 +299,7 @@
     width: 75%;
     height: 91px;
     border-radius: 10px;
-    border: 2px solid rgba(0, 0, 0, 0.20);
+    border: 2px solid var(--black-alpha-20);
     padding: 10px;
     box-sizing: border-box;
     margin: 15px;
@@ -308,7 +308,7 @@
 }
 
 .carousel.selected {
-    background-color: #d1e2f1;
+    background-color: var(--blue-cloud);
 }
 
 .carousel .react-multiple-carousel__arrow--left:before {
@@ -389,7 +389,7 @@
     align-items: flex-start;
     width: 100%;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
 }
 
 .checkbox-group {
@@ -447,7 +447,7 @@
     height: 33vh;
     /* Esto hace que los divs ocupen la totalidad de la altura de la pantalla */
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     /* Esto es opcional, solo para visualizar los divs */
 }
 
@@ -459,12 +459,12 @@
 }
 
 .editable-container.placeholder {
-    color: #a9a9a9;
+    color: var(--gray-shadow);
     /* Este es un color gris claro */
 }
 
 .editable-container:focus {
-    outline: 2px solid #316EA8;
+    outline: 2px solid var(--tertiary-color);
     /* Cambia esto al color que prefieras */
 }
 
@@ -481,7 +481,7 @@
 }
 
 .list-sypmtoms-container li:focus {
-    outline: 2px solid #316EA8;
+    outline: 2px solid var(--tertiary-color);
 }
 
 .textarea-class {
@@ -494,7 +494,7 @@
 }
 
 .textarea-class::placeholder {
-    color: #a9a9a9;
+    color: var(--gray-shadow);
     /* Este es un color gris claro */
 }
 
@@ -506,8 +506,8 @@
     margin-bottom: 25px;
     padding: 5px;
     border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
+    border: 2px solid var(--gray-soft-134);
+    background: var(--gray-soft-128);
     margin-left: 15px;
     margin-top: 7px;
 }
@@ -527,7 +527,7 @@
 }
 
 .car-number-work-order {
-    color: rgba(0, 0, 0, 0.41);
+    color: var(--black-alpha-41);
     font-size: 17px;
     font-style: normal;
     line-height: normal;
@@ -601,7 +601,7 @@
     left: 42%;
     transform: translateY(-50%);
     pointer-events: none;
-    color: black;
+    color: var(--pure-black);
     font-weight: 450;
     font-size: 9px;
 }
@@ -618,8 +618,8 @@
 .input-plate-vehicle-new-work-order {
     max-width: 40%;
     height: 6px;
-    border: 2px solid #000;
-    background: #fff;
+    border: 2px solid var(--pure-black);
+    background: var(--white);
     border-radius: 10px;
     padding: 8px;
     margin-bottom: 10px;
@@ -652,7 +652,7 @@
 .textarea-work-order {
     width: 88%;
     border-radius: 5px;
-    border: 1px solid rgb(0 0 0 / 34%);
+    border: 1px solid var(--black-alpha-34);
     height: 50px;
     padding-left: 8px;
     padding-top: 6px;
@@ -695,8 +695,8 @@ input[type="checkbox"] {
 .input-km-actual {
     width: 40%;
     height: 13px;
-    border: 1px solid rgb(0 0 0 / 34%);
-    background: #fff;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
     border-radius: 4px;
     padding: 8px;
 }
@@ -722,10 +722,10 @@ input[type="checkbox"] {
     top: 15px;
     left: 13px;
     z-index: 1000;
-    background-color: white;
+    background-color: var(--white);
     padding: 10px;
     border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px var(--light-transparent-black);
     cursor: pointer;
 }
 
@@ -734,7 +734,7 @@ input[type="checkbox"] {
     border: none;
     font-size: 17px;
     font-weight: 700;
-    color: #1C4A74;
+    color: var(--second-color);
     margin-top: 1px;
     text-align: center;
     cursor: pointer;

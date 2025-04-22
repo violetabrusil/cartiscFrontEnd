@@ -59,11 +59,11 @@
 }
 
 .custom-select-option-user--selected {
-    background-color: #ddd;
+    background-color: var(--gray-light-medium);
 }
 
 .custom-select-option-user--hover {
-    background-color: #f5f5f5;
+    background-color: var(--gray-very-light);
 }
 
 .custom-option-select {
@@ -71,17 +71,17 @@
 }
 
 .custom-option-select--selected {
-    background-color: #ddd;
+    background-color: var(--gray-light-medium);
 }
 
 .custom-option-select--hover {
-    background-color: #f5f5f5;
+    background-color: var(--gray-very-light);
 }
 
 .container-user-information {
     border-radius: 10px;
-    border: 1px solid #D4D4D4;
-    background: #F8F8F8;
+    border: 1px solid var(--gray-medium-light);
+    background: var(--gray-extra-light);
     width: 20vw;
     max-width: 330px;
     height: auto;
@@ -127,8 +127,8 @@
     object-fit: cover;
     width: 36px;
     height: 36px;
-    border: 0.5px solid #316EA8;
-    background-color: #316EA8;
+    border: 0.5px solid var(--tertiary-color);
+    background-color: var(--tertiary-color);
     text-align: center;
     margin-top: -46px;
     margin-left: 89px;
@@ -152,7 +152,7 @@
 }
 
 .label-unique-code {
-    color: #000;
+    color: var(--pure-black);
     text-align: center;
     font-size: 27px;
     font-style: normal;
@@ -160,7 +160,7 @@
 }
 
 .label-user-name {
-    color: #000;
+    color: var(--pure-black);
     text-align: center;
     font-size: 28px;
     font-style: normal;
@@ -168,7 +168,7 @@
 }
 
 .label-rol-user {
-    color: #00358B;
+    color: var(--blue-deep-dark);
     font-size: 20px;
     font-style: normal;
     font-weight: 100;
@@ -180,7 +180,7 @@
 }
 
 .label-status-user {
-    color: #3E3E3E;
+    color: var(--gray-obsidian);
     font-size: 29px;
     font-style: normal;
     font-weight: 300;
@@ -206,12 +206,12 @@
     width: 250px;
     height: 50px;
     border-radius: 6px;
-    border: 2px solid #000;
-    background: #0C1F31;
+    border: 2px solid var(--pure-black);
+    background: var(--primary-color);
 }
 
 .span-button-user {
-    color: #FFF;
+    color: var(--white);
     text-align: center;
     font-size: 18px;
     font-style: normal;
@@ -219,7 +219,7 @@
 }
 
 .label-name-user {
-    color: #000;
+    color: var(--pure-black);
     font-size: 15px;
     font-style: normal;
     font-weight: 700;
@@ -236,8 +236,8 @@
 .input-name-user {
     width: 81%;
     height: 34px;
-    border: 1px solid rgb(0 0 0 / 34%);
-    background: #fff;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
     border-radius: 4px;
     padding-left: 48px;
 }
@@ -265,8 +265,8 @@
 .container-modal-fields input {
     width: 160px;
     height: 33px;
-    border: 1px solid rgb(0 0 0 / 34%);
-    background: #fff;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
     border-radius: 4px;
     padding-left: 40px;
 }

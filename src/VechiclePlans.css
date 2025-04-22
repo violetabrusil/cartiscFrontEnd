@@ -4,5 +4,5 @@
     align-items: center;
     margin-bottom: 20px;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50)
+    border: 1px solid var(--black-transparent)
 }

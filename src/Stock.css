@@ -35,7 +35,7 @@
 }
 
 .label-input-container input {
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     border-radius: 8px;
     height: 40px;
     width: auto;
@@ -47,14 +47,14 @@
 .stock-button {
     width: 160px;
     height: 50px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
     font-size: 17px;
 }
 
 .span-stock-button {
-    color: white;
+    color: var(--white);
     font-weight: bold;
     font-size: 19px;
 }

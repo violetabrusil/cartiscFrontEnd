@@ -34,7 +34,7 @@
     position: relative;
     font-size: 20px;
     font-weight: bold;
-    color: #6E757D;
+    color: var(--gray-dark);
 }
 
 /* Estilo para el tab seleccionado */
@@ -42,7 +42,7 @@
     border: none;
     font-size: 20px;
     font-weight: bold;
-    color: #316EA8;
+    color: var(--tertiary-color);
 }
 
 /* Esto creará la línea azul en el tab seleccionado. Se posicionará absolutamente para que tenga el ancho completo del tab. */
@@ -53,7 +53,7 @@
     right: 0;
     bottom: -10px;
     height: 4px;
-    background: #316EA8;
+    background: var(--tertiary-color);
     width: calc(100% - 20px); /* Ajustamos el ancho para excluir el margen */
     left: 10px; /* Centramos el pseudo-elemento */
 }

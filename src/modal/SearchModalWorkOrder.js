@@ -3,6 +3,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import React, { useState } from "react";
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
+import useCSSVar from "../hooks/UseCSSVar";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
@@ -48,6 +49,8 @@ const SearchModalWorkOrder = ({ fields, onSearch, onClose }) => {
         { value: 'deleted', label: 'Eliminada' },
     ];
 
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
+
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
@@ -55,11 +58,11 @@ const SearchModalWorkOrder = ({ fields, onSearch, onClose }) => {
             minHeight: '45px',
             marginTop: '10px',
             marginBottom: '10px',
-            border: '1px solid rgb(0 0 0 / 34%)'
+            border: `1px solid ${blackAlpha34}`
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: 'rgb(0 0 0 / 34%)',
+            color: blackAlpha34,
             fontWeight: '600',
         }),
     };

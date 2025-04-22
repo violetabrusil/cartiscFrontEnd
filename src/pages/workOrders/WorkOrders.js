@@ -14,11 +14,16 @@ import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxS
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import { workOrderStatus } from "../../constants/workOrderConstants";
 import { useWorkOrderContext } from "../../contexts/searchContext/WorkOrderContext";
+import { useStatusColors } from "../../utils/useStatusColors";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const WorkOrders = () => {
+
+    const statusColors = useStatusColors();
+    const tertiaryColor = useCSSVar('--tertiary-color');
 
     const { selectedOption = 'Nombre Titular', setSelectedOption, searchTerm, setSearchTerm } = useWorkOrderContext();
     console.log("Selected Option:", selectedOption);
@@ -53,9 +58,9 @@ const WorkOrders = () => {
 
     function formatDate(isoDate) {
         const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
-        const year = date.getUTCFullYear();  
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = date.getUTCFullYear();
 
         return `${day}/${month}/${year}`;
     };
@@ -72,16 +77,6 @@ const WorkOrders = () => {
             );
         }
         return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
-    };
-
-    const statusColors = {
-        "Por iniciar": "#316EA8",
-        "Asignada": "#0C1F31",
-        "En desarrollo": "#4caf50",
-        "En espera": "#fbc02d",
-        "Cancelada": "#e74c3c",
-        "Completada": "#2e7d32",
-        "Eliminada": "#6E757D"
     };
 
     const handleAddNewWorkOrder = () => {
@@ -128,7 +123,7 @@ const WorkOrders = () => {
 
                 try {
                     const response = await apiClient.post(endpoint, payload);
-                   
+
                     // Transformamos la fecha y el status de cada work order
                     const transformedWorkOrders = response.data.map(workOrder => {
                         const newDateStart = formatDate(workOrder.date_start);
@@ -218,7 +213,7 @@ const WorkOrders = () => {
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
                         <>
@@ -292,7 +287,7 @@ const WorkOrders = () => {
                 <Modal
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
-                    options={['Nombre Titular','Placa', 'Código Orden de Trabajo', 'Asignada a', 'Entregada por', 'Creada por']}
+                    options={['Nombre Titular', 'Placa', 'Código Orden de Trabajo', 'Asignada a', 'Entregada por', 'Creada por']}
                     defaultOption={selectedOption}
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}

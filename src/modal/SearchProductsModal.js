@@ -10,6 +10,7 @@ import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
 import { EmptyTable } from "../dataTable/EmptyTable";
 import { values } from "lodash";
 import { PuffLoader } from "react-spinners";
+import useCSSVar from "../hooks/UseCSSVar";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -27,6 +28,11 @@ export function SearchProductsModal({ onClose,
     onProductQuantitiesUpdated,
     workOrderId,
 }) {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
+    const blackAlpha20 = useCSSVar('--black-alpha-20');
 
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
@@ -57,7 +63,7 @@ export function SearchProductsModal({ onClose,
             width: '400px',  // Aquí estableces el ancho
             height: '40px',  // Y aquí la altura
             minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
-            border: '1px solid rgb(0 0 0 / 34%)',
+            border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
             boxSizing: 'border-box',
@@ -66,7 +72,7 @@ export function SearchProductsModal({ onClose,
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         menu: (provided, state) => ({
             ...provided,
@@ -115,7 +121,7 @@ export function SearchProductsModal({ onClose,
                                 width: '13px',
                                 height: '13px',
                                 borderRadius: '10%',
-                                border: '1px solid rgba(0, 0, 0, 0.2)',
+                                border: `1px solid ${blackAlpha20}`,
                                 padding: '4px'
                             }}
                         />
@@ -323,8 +329,12 @@ export function SearchProductsModal({ onClose,
 
         onProductsSelected((prevProducts) => {
             if (prevProducts.some((p) => p.sku === productToAdd.sku)) {
+                toast.warn('El producto seleccionado ya se encuentra agregado.', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
                 return prevProducts; // retornar el mismo array si el producto ya está presente
             }
+
             return [productToAdd, ...prevProducts];
         });
     };
@@ -458,13 +468,13 @@ export function SearchProductsModal({ onClose,
     const fetchData = async () => {
 
         let endpoint = '/products/all';
-    
+
         if (searchTerm) {
             // Si la búsqueda tiene menos de 3 caracteres, no ejecutar la petición
             if (searchTerm.length < 3) {
                 return; // No hacemos la petición si el usuario aún no ha escrito 3 caracteres
             }
-    
+
             const searchTypes = {
                 sku: "sku",
                 supplier_name: "supplier_name",
@@ -472,27 +482,27 @@ export function SearchProductsModal({ onClose,
                 category: "category",
                 brand: "brand",
             };
-    
+
             if (selectedOption.value in searchTypes) {
                 console.log("valor selectedoptio", selectedOption.value)
                 endpoint = `/products/search?search_type=${searchTypes[selectedOption.value]}&criteria=${searchTerm}`;
                 console.log("endopoint", endpoint)
             }
         }
-    
+
         try {
             const response = await apiClient.get(endpoint);
             setAllProducts(response.data);
             console.log("datos", response.data)
         } catch (error) {
-    
-                toast.error('Error al obtener los datos de los productos.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                });
-            
+
+            toast.error('Error al obtener los datos de los productos.', {
+                position: toast.POSITION.TOP_RIGHT,
+            });
+
         }
     };
-    
+
 
     const handleManualProductChange = (field, value) => {
         setManualProduct((prevProduct) => ({
@@ -504,8 +514,8 @@ export function SearchProductsModal({ onClose,
     const addManualProduct = () => {
         //Título, precio y cantidad tengan valores válidos
         if (manualProduct.title.trim() !== '' && !isNaN(manualProduct.price) && manualProduct.quantity > 0) {
-            const updatedProducts = [{ ...manualProduct, sku: `.MA-${Date.now()}` }, ...selectedProducts ];
-            
+            const updatedProducts = [{ ...manualProduct, sku: `.MA-${Date.now()}` }, ...selectedProducts];
+
             onProductsSelected(updatedProducts);
             // Reinicia la fila de ingreso manual
             setManualProduct({
@@ -603,7 +613,7 @@ export function SearchProductsModal({ onClose,
                         <SearchBar onFilter={handleFilter} customSelectStyles={customSelectModalStyles} customClasses="div-search-modal" />
                         {loading ? (
                             <div className="spinner-container-products">
-                                <PuffLoader color="#316EA8" loading={loading} size={60} />
+                                <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                             </div>
                         ) : (
                             <div>

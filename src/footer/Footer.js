@@ -19,8 +19,8 @@ function Footer() {
 
   const styleFooter = {
     width: "100%",
-    backgroundColor: "#0C1F31",
-    color: "#fff",
+    backgroundColor: "var(--primary-color)",
+    color: "var(--white)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -36,7 +36,7 @@ function Footer() {
     fontSize: '13px',
     bottom: '10px',
     right: '10px',
-    color: 'white',
+    color: 'var(--white)',
     zIndex: 1000 
   };
 

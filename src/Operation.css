@@ -14,14 +14,14 @@
 }
 
 .left-section-operation {
-    background-color: #f0f0f0;
+    background-color: var(--gray-neutral-light);
     padding: 20px;
     display: flex;
     flex-direction: column;
 }
 
 .right-section-operation {
-    background-color: #d0d0d0;
+    background-color: var(--gray-medium);
     padding: 20px;
 }
 
@@ -53,8 +53,8 @@
 .container-new-operation input {
     width: 300px;
     height: 50px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
-    background: #FFF;
+    border: 1px solid var(--black-transparent);
+    background: var(--white);
     border-radius: 8px;
     font-size: 16px;
     margin-left: 50px;
@@ -76,7 +76,7 @@
 .accept-button {
     width: 180px;
     height: 50px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
 }
@@ -84,7 +84,7 @@
 .accept-button-disabled {
     width: 180px;
     height: 50px;
-    background-color: #6E757D;
+    background-color: var(--gray-dark);
     border: none;
     border-radius: 6px;
 }
@@ -92,13 +92,13 @@
 .edit-button {
     width: 180px;
     height: 50px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
 }
 
 .text-button-operation {
-    color: white;
+    color: var(--white);
     font-weight: bold;
     font-size: 17px;
 }
@@ -106,8 +106,8 @@
 .result-operation {
     max-width: 98%;
     height: 50px;
-    background: #FFF;
-    border: 1px solid #D4D4D4;
+    background: var(--white);
+    border: 1px solid var(--gray-medium-light);
 }
 
 .title-operation {
@@ -115,7 +115,7 @@
     height: 50px;
     flex-direction: column;
     justify-content: center;
-    color: #000;
+    color: var(--pure-black);
     font-size: 19px;
     font-style: normal;
     font-weight: 300;

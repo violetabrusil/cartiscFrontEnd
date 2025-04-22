@@ -22,8 +22,8 @@
     /* o cualquier otro porcentaje que funcione para ti */
     padding: 5px;
     border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
+    border: 2px solid var(--gray-soft-134);
+    background: var(--gray-soft-128);
     margin-right: 50px;
 }
 
@@ -69,11 +69,11 @@
 }
 
 .custom-select-option-payment-receipts--selected {
-    background-color: #ddd;
+    background-color: var(--gray-light-medium);
 }
 
 .custom-select-option-payment-receipts--hover {
-    background-color: #f5f5f5;
+    background-color: var(--gray-very-light);
 }
 
 .button-download-payment-receipt {
@@ -90,7 +90,7 @@
 
 .button-email {
     border: none;
-    background-image: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);
+    background-image: var(--gradient-blue-dark);
     border-radius: 10px;
     padding-top: 4px;
 }
@@ -103,7 +103,7 @@
 
 .button-payment-receipt {
     border: none;
-    background-image: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);
+    background-image: var(--gradient-blue-dark);
     border-radius: 10px;
 }
 
@@ -118,11 +118,11 @@
 }
 
 .custom-select-option-payment--selected {
-    background-color: #ddd;
+    background-color: var(--gray-light-medium);
 }
 
 .custom-select-option-payment--hover {
-    background-color: #f5f5f5;
+    background-color: var(--gray-very-light);
 }
 
 .button-payments-filter {
@@ -136,7 +136,7 @@
 }
 
 .button-payment-text-filter {
-    color: black;
+    color: var(--pure-black);
     font-weight: bold;
 }
 
@@ -144,19 +144,19 @@
     border-radius: 15px;
     padding: 5px 10px;
     text-align: center;
-    color: #FFFFFF; 
+    color: var(--white)FFF; 
     font-weight: 500;
 }
 
 .status-por-cobrar {
-    background-color: #FFD966;
-    color: #0C1F31;
+    background-color: var(--yellow-soft);
+    color: var(--primary-color);
     width: 100%;
 }
 
 .status-cobrado {
-    background-color: #316EA8;
-    color: white;
+    background-color: var(--tertiary-color);
+    color: var(--white);
     width: 100%;
 }
 
@@ -210,7 +210,7 @@
     display: flex;
     align-items: center; /* Centrar verticalmente */
     justify-content: center; /* Centrar horizontalmente */
-    background: rgba(255,255,255,0.7); /* Puedes agregar un fondo blanco semi-transparente si lo deseas */
+    background: var(--white-overlay-soft); /* Puedes agregar un fondo blanco semi-transparente si lo deseas */
     z-index: 10; /* Asegurarse de que esté encima de otros contenidos */
 }
 
@@ -245,7 +245,7 @@
     font-size: 50px;
     margin-top: 10px;
     font-weight: 100;
-    color: rgb(49, 110, 168)
+    color: var(--blue-medium);
 }
 
 @media screen and (max-width: 768px) {

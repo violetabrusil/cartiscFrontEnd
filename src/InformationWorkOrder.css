@@ -18,7 +18,7 @@
     box-sizing: border-box;
     height: 100px;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     padding-left: 6px;
     padding-top: 5px;
 }
@@ -31,7 +31,7 @@
 .container-div-products {
     border-radius: 13px;
     min-height: 350px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     position: relative;
 }
 
@@ -43,7 +43,7 @@
 .container-div-services {
     border-radius: 13px;
     min-height: 350px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
     position: relative;
     margin-bottom: 20px;
 }
@@ -52,10 +52,10 @@
     width: 30px;
     height: 30px;
     display: block;
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    position: static;
     cursor: pointer;
+    margin-top: 20px;
+    margin-right: 20px;
 }
 
 .div-section-information {
@@ -141,19 +141,19 @@
 
 .container-right-div-information-vehicle {
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
 }
 
 .container-right-div-information-vehicle-detail {
     width: 60%;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
 }
 
 .container-right-div-information-vehicle-km {
     width: 40%;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
+    border: 1px solid var(--black-transparent);
 }
 
 
@@ -179,7 +179,7 @@
 }
 
 .div-container-hidden {
-    margin-right: 102px;
+    margin-right: 158px;
   }
 
 .div-table-products {
@@ -200,12 +200,12 @@
 .btn-select-all {
     background: none;
     border: none;
-    color: #007aff;
+    color: var(--blue-intense);
     font-weight: 600;
 }
 
 .btn-select-all:disabled {
-    color: #6E757D;
+    color: var(--gray-dark);
 }
 
 .total-value-container {
@@ -227,7 +227,15 @@
     font-size: 41px;
     margin-top: -20px;
     font-weight: 600;
-    color: #1C4A74;
+    color: var(--second-color);
+}
+
+.total-value-items {
+    font-size: 33px;
+    font-weight: 600;
+    color: var(--second-color);
+    margin-right: 50px;
+    margin-top: 20px;
 }
 
 .container-data-client-information {
@@ -274,7 +282,7 @@
 }
 
 .total-products {
-    color: #1C4A74;
+    color: var(--second-color);
     font-weight: bold;
     font-size: 15px;
 }
@@ -282,8 +290,8 @@
 .input-plate-vehicle-work-order-detail {
     max-width: 50%;
     height: 15px;
-    border: 3px solid #000;
-    background: #fff;
+    border: 3px solid var(--pure-black);
+    background: var(--white);
     border-radius: 10px;
     padding: 8px;
     margin-bottom: 10px;
@@ -292,13 +300,19 @@
     font-weight: bold;
     font-size: 25px;
     text-align: center;
-    box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
+    box-shadow: 0 0 0 3px var(--white), 0 0 0 3px var(--white);
 }
 
 .input-new-km {
     width: 70%;
     text-align: right;
     margin-left: 69px;
+}
+
+.container-total-values {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {

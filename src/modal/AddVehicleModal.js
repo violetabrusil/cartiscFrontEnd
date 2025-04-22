@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select';
 import { CustomPlaceholder } from "../customPlaceholder/CustomPlaceholder";
 import apiClient from "../services/apiClient";
+import useCSSVar from "../hooks/UseCSSVar";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
@@ -27,6 +28,8 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
     const [km, setKm] = useState('');
 
     const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const customStyles = {
         control: (provided, state) => ({
@@ -34,7 +37,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
             className: 'custom-select-control',
             width: isTabletLandscape ? '90%' : '97%',
             height: '50px', // Estilo personalizado para la altura
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
+            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
             padding: '8px',
             marginBottom: '20px',
@@ -42,7 +45,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         option: (provided, state) => ({
             ...provided,

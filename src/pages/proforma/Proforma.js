@@ -14,10 +14,13 @@ import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxS
 import { proformaStatus } from "../../constants/proformaConstants";
 import { CustomButton, CustomButtonContainer } from "../../customButton/CustomButton";
 import { useProformaContext } from "../../contexts/searchContext/ProformaContext";
+import { useStatusColors } from "../../utils/useStatusColors";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
 const Proforma = () => {
+
+    const statusColors = useStatusColors();
 
     const { selectedOption, setSelectedOption, searcTerm, setSearchTerm } = useProformaContext();
     const [proformas, setProformas] = useState();
@@ -70,10 +73,6 @@ const Proforma = () => {
             );
         }
         return plateInput;
-    };
-
-    const statusColors = {
-        "Pendiente": "#FFB75A"
     };
 
     const handleAddNewProforma = () => {

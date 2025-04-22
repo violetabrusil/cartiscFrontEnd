@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import { usePaymentReceipt } from "../contexts/searchContext/PaymentReceiptContext";
+import useCSSVar from "../hooks/UseCSSVar";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
@@ -31,6 +32,8 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
         saveFormValues
     } = usePaymentReceipt();
 
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
+
     const selectPaymentStyles = {
         control: (provided, state) => ({
             ...provided,
@@ -39,11 +42,11 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
             minHeight: '45px',
             marginTop: '10px',
             marginBottom: '10px',
-            border: '1px solid rgb(0 0 0 / 34%)'
+            border: `1px solid ${blackAlpha34}`
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: 'rgb(0 0 0 / 34%)',
+            color: blackAlpha34,
             fontWeight: '600',
         }),
     };

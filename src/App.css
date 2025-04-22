@@ -18,7 +18,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: #000000;
+  color: var(--pure-black);
   margin-top: 20px;
   margin-bottom: 10px;
 }
@@ -137,21 +137,21 @@
 }
 
 .button-login-express {
-  background: white;
+  background: var(--white);
   width: 40%;
   padding: 6px 24px;
   box-sizing: border-box;
   border-radius: 13px;
-  color: #316EA8;
+  color: var(--tertiary-color);
   font-style: normal;
   font-size: 24px;
-  border: 2px solid #316EA8
+  border: 2px solid var(--tertiary-color);
 }
 
 .button-login-express:hover {
-  background-color: #00358B;
-  color: white;
-  border: 2px solid white;
+  background-color: var(--blue-deep-dark);
+  color: var(--white);
+  border: 2px solid var(--white);
   /* Cambiar el color de fondo al pasar el cursor sobre el botón */
 }
 
@@ -215,7 +215,7 @@
 .alternate-button {
   background-color: transparent;
   border: none;
-  color: #00358B;
+  color: var(--blue-deep-dark);
   /* Color del enlace */
   font-size: 16px;
   text-decoration: underline;
@@ -225,7 +225,7 @@
 }
 
 .alternate-button:hover {
-  color: #00358B;
+  color: var(--blue-deep-dark);
   /* Color del enlace al pasar el cursor */
 }
 
@@ -251,8 +251,8 @@
 }
 
 .number-pad button {
-  background-color: #316EA8;
-  color: white;
+  background-color: var(--tertiary-color);
+  color: var(--white);
   border: none;
   border-radius: 5px;
   padding: 9px 10px;
@@ -267,7 +267,7 @@
 }
 
 .number-pad button:hover {
-  background-color: #00358B;
+  background-color: var(--blue-deep-dark);
   /* Cambiar el color de fondo al pasar el cursor sobre el botón */
 }
 
@@ -303,7 +303,7 @@
   padding: 12px;
   box-sizing: border-box;
   /* esto hace que el padding no agregue ancho adicional al input */
-  border: 1px solid #E1E1E4;
+  border: 1px solid var(--gray-cloud);
   border-radius: 13px;
   font-style: normal;
   font-weight: 600;
@@ -316,7 +316,7 @@
   width: 80%;
   height: 43px;
   box-sizing: border-box;
-  border: 1px solid #E1E1E4;
+  border: 1px solid var(--gray-cloud);
   border-radius: 13px;
   font-style: normal;
   font-weight: 600;

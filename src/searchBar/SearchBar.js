@@ -1,6 +1,7 @@
 import "../SearchBar.css";
 import React, { useState } from 'react';
 import Select from 'react-select';
+import useCSSVar from "../hooks/UseCSSVar";
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 
@@ -20,6 +21,9 @@ const SearchBar = ({
 
     const [selectedOption, setSelectedOption] = useState(options[1]);
     const [searchTerm, setSearchTerm] = useState("");
+
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);
@@ -52,14 +56,14 @@ const SearchBar = ({
             width: '550px',  // Aquí estableces el ancho
             height: '40px',  // Y aquí la altura
             minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
-            border: '1px solid rgb(0 0 0 / 34%)',
+            border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
             boxSizing: 'border-box'  // Asegura que el borde y el relleno estén incluidos en el tamaño
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         option: (provided, state) => ({
             ...provided,

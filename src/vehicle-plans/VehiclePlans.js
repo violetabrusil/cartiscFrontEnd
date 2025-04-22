@@ -2,6 +2,7 @@ import "../VechiclePlans.css"
 import React, { useState, useEffect } from 'react';
 import { Stage, Layer, Image, Circle } from 'react-konva';
 import useImage from 'use-image';
+import useCSSVar from "../hooks/UseCSSVar";
 
 const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = true }) => {
 
@@ -9,6 +10,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
     const [image] = useImage(imgSrc);
     const imageWidth = 550;
     const imageHeight = 450;
+    const yellowNeon = useCSSVar('--yellow-neon');
 
     const handleStageClick = (event) => {
         if (!isEditable) return;
@@ -70,7 +72,7 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
                             x={(imageWidth - imageWidth) / 2}
                             y={(imageHeight - imageHeight) / 2} />
                         {points.map((point, index) => (
-                            <Circle key={index} x={point.x} y={point.y} radius={10} fill="#ffea00"
+                            <Circle key={index} x={point.x} y={point.y} radius={10} fill={yellowNeon}
                                 draggable={isEditable}
                                 onClick={() => handleDragEnd(index)()}
                                 onDragEnd={handleDragEnd(index)} />

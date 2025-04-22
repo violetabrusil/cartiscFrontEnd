@@ -15,14 +15,14 @@
 }
 
 .left-section-supplier {
-    background-color: #f0f0f0;
+    background-color: var(--gray-neutral-light);
     padding: 20px;
     display: flex;
     flex-direction: column;
 }
 
 .right-section-supplier {
-    background-color: #d0d0d0;
+    background-color: var(--gray-medium);
     padding: 20px;
 }
 
@@ -38,8 +38,8 @@
     align-items: center; /* Centra los elementos verticalmente */
     max-width: 98%;
     height: 50px;
-    background: #FFF;
-    border: 1px solid #D4D4D4;
+    background: var(--white);
+    border: 1px solid var(--gray-medium-light);
     margin-bottom: 10px;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .supplier-code {
-    color: #000;
+    color: var(--pure-black);
     font-size: 20px;
     font-style: normal;
     font-weight: bold;
@@ -70,7 +70,7 @@
 }
 
 .supplier-name {
-    color: #000;
+    color: var(--pure-black);
     font-size: 15px;
     font-style: normal;
     font-weight: 300;
@@ -113,8 +113,8 @@
 .name-supplier {
     width: 380px;
     height: 50px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
-    background: #FFF;
+    border: 1px solid var(--black-transparent);
+    background: var(--white);
     border-radius: 8px;
     text-transform: uppercase;
     font-size: 16px;
@@ -124,8 +124,8 @@
 .phone-supplier {
     width: 380px;
     height: 50px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
-    background: #FFF;
+    border: 1px solid var(--black-transparent);
+    background: var(--white);
     border-radius: 8px;
     font-size: 16px;
     padding-left: 10px;
@@ -152,13 +152,13 @@
 .button-add-supplier {
     width: 180px;
     height: 50px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
 }
 
 .text-button-supplier {
-    color: white;
+    color: var(--white);
     font-weight: bold;
     font-size: 17px;
 }

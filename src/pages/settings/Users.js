@@ -15,6 +15,8 @@ import { useDebounce } from "../../useDebounce";
 import { CustomPlaceholderWithLabel } from "../../customPlaceholder/CustomPlaceholderWithLabel";
 import { CustomSingleValueWithLabel } from "../../customSingleValue/CustomSingleValueWithLabel";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import useCSSVar from "../../hooks/UseCSSVar";
+import { useStatusColors } from "../../utils/useStatusColors";
 
 const addUserIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -29,6 +31,10 @@ const operatorIcon = process.env.PUBLIC_URL + "/images/icons/operator.png";
 const adminIcon = process.env.PUBLIC_URL + "/images/icons/admin.png";
 
 const Users = () => {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const [allUsers, setallUsers] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
@@ -56,10 +62,7 @@ const Users = () => {
     const { user, setUser } = useContext(AuthContext);
     const responsivePageSizeUsers = usePageSizeForTabletLandscape(12, 6);
 
-    const statusColors = {
-        "Activo": "#49A05C",
-        "Suspendido": "#6E757D"
-    };
+    const statusColors = useStatusColors();
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -95,10 +98,16 @@ const Users = () => {
             {
                 Header: "Estado",
                 accessor: "translated_user_status",
-                Cell: ({ value }) =>
-                    <label style={{ color: statusColors[value], fontWeight: "bold" }}>
-                        {value}
-                    </label>
+                Cell: ({ value }) => {
+                    const color = statusColors[value];
+                    console.log("Valor del estado:", value);
+                    console.log("Color encontrado:", statusColors[value]);
+                    return (
+                        <label style={{ color, fontWeight: "bold" }}>
+                            {value}
+                        </label>
+                    );
+                }
             },
             {
                 Header: "Fecha de creación",
@@ -125,7 +134,7 @@ const Users = () => {
                 id: 'button-more-information-user'
             },
         ],
-        []
+        [statusColors]
     );
 
     function formatDate(isoDate) {
@@ -222,10 +231,8 @@ const Users = () => {
         } catch (error) {
             toast.error('Error al obtener los datos de los usuarios', {
                 position: toast.POSITION.TOP_RIGHT
-               
+
             });
-            console.log("estoy aqui ")
-            console.log("usuario",user)
         }
     };
 
@@ -237,14 +244,14 @@ const Users = () => {
             width: '300px',
             height: '40px',
             minHeight: '40px',
-            border: '1px solid rgb(0 0 0 / 34%)',
+            border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
             boxSizing: 'border-box'
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999',
+            color: grayMediumDark,
             fontWeight: '600',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -263,10 +270,10 @@ const Users = () => {
                 ...provided,
                 height: '40px',
                 minHeight: '40px',
-                border: '1px solid rgb(0 0 0 / 34%)',
+                border: `1px solid ${blackAlpha34}`,
                 textAlign: 'left',
             };
-    
+
             // Agrega estilos específicos para tablet landscape
             if (isTabletLandscape) {
                 return {
@@ -274,7 +281,7 @@ const Users = () => {
                     width: '220px',
                 };
             }
-    
+
             // Agrega estilos específicos para desktop con max-width y max-height
             return {
                 ...baseStyles,
@@ -286,7 +293,7 @@ const Users = () => {
         },
         placeholder: (provided, state) => ({
             ...provided,
-            color: 'rgb(0 0 0 / 34%)',
+            color: blackAlpha34,
             fontWeight: '600',
         }),
         option: (provided, state) => ({
@@ -295,7 +302,7 @@ const Users = () => {
             textAlign: 'left',
         }),
     };
-    
+
 
     const handleShowMoreInfomation = (event, user) => {
         if (event && event.stopPropagation) {
@@ -328,7 +335,7 @@ const Users = () => {
         setUsername('');
         setPassword('');
         setPin('');
-        };
+    };
 
     const handleEditUser = () => {
         setActionType('edit');
@@ -493,7 +500,7 @@ const Users = () => {
     const editUser = async () => {
         // Decide qué usuario editar basado en la presencia de selectedUser
         const targetUser = selectedUser || user;
-    
+
         // Construye userData base
         const userData = {
             username: username,
@@ -502,7 +509,7 @@ const Users = () => {
             user_type: role,
             user_status: status
         };
-    
+
         // Añade profile_picture a userData solo si imageBase64 tiene valor
         if (imageBase64) {
             userData.profile_picture = imageBase64;
@@ -511,18 +518,18 @@ const Users = () => {
             // se usa esa imagen existente.
             userData.profile_picture = targetUser.profile_picture;
         }
-    
+
         try {
             const response = await apiAdmin.put(`/update-user/${targetUser.id}`, userData);
             const newUser = response.data;
-            
+
             if (selectedUser) {
                 setSelectedUser(newUser);
             } else {
-                setUser(newUser); 
+                setUser(newUser);
                 localStorage.setItem('user', JSON.stringify(newUser));
             }
-            
+
             toast.success('Usuario actualizado con éxito', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -534,7 +541,7 @@ const Users = () => {
             });
         }
     };
-    
+
     const createUser = async () => {
 
         const userData = {
@@ -645,7 +652,7 @@ const Users = () => {
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
                         <>

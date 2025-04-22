@@ -7,6 +7,7 @@ import './Home.css';
 import './Menu.css';
 import './Modal.css';
 import './NewClient.css';
+import './Colors.css';
 
 import { Route, Routes, Navigate } from "react-router-dom";
 import InactivityTimer from './inactivity/InactivityTimer';
@@ -25,7 +26,7 @@ import NewWorkOrder from './pages/workOrders/NewWorkOrder';
 import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
 import Suppliers from './pages/supplier/Supplier';
 import Settings from './pages/settings/Settings';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext } from './contexts/AuthContext';
 import InformationWorkOrder from './pages/workOrders/InformationWorkOrder';
 import ChangePassword from './pages/welcome/changePassword';
@@ -37,11 +38,13 @@ import Proforma from './pages/proforma/Proforma';
 import { ProformaProvider } from './contexts/searchContext/ProformaContext';
 import NewProforma from './pages/proforma/NewProforma';
 import { CarProvider } from './contexts/searchContext/CarContext';
+import useCSSVar from './hooks/UseCSSVar';
 
 
 function App() {
 
   const { isLoading } = useContext(AuthContext);
+  const tertiaryColor = useCSSVar('--tertiary-color');
 
   const workOrdersInitialOption = 'Nombre Titular';
   const proformaInitialOption = 'Placa';
@@ -49,7 +52,7 @@ function App() {
 
   if (isLoading) {
     return <div className="spinner-container-app">
-      <PuffLoader color="#316EA8" loading={isLoading} size={60} />
+      <PuffLoader color={tertiaryColor} loading={isLoading} size={60} />
     </div>;
   }
 

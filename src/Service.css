@@ -17,7 +17,7 @@
 }
 
 .left-section-service {
-    background-color: #f0f0f0;
+    background-color: var(--gray-neutral-light);
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -26,7 +26,7 @@
 }
 
 .right-section-service {
-    background-color: #d0d0d0;
+    background-color: var(--gray-medium);
     padding: 20px;
     overflow-y: auto;
     height: 100%;
@@ -37,7 +37,7 @@
 .button-add {
     width: 216px;
     height: 64px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
 }
@@ -45,13 +45,13 @@
 .button-add-operation {
     width: 180px;
     height: 50px;
-    background-color: #1C4A74;
+    background-color: var(--second-color);
     border: none;
     border-radius: 6px;
 }
 
 .text-button {
-    color: white;
+    color: var(--white);
     font-weight: bold;
     font-size: 17px;
 }
@@ -88,8 +88,8 @@
 .input-total-cost {
     width: 300px;
     height: 50px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
-    background: #FFF;
+    border: 1px solid var(--black-transparent);
+    background: var(--white);
     border-radius: 8px;
     font-size: 30px;
     font-weight: 600;
@@ -98,8 +98,8 @@
 .title-service {
     width: 300px;
     height: 50px;
-    border: 1px solid rgba(0, 0, 0, 0.50);
-    background: #FFF;
+    border: 1px solid var(--black-transparent);
+    background: var(--white);
     border-radius: 8px;
     text-transform: uppercase;
     font-size: 16px;
@@ -126,13 +126,13 @@ table {
 th {
     text-align: center;
     padding: 10px;
-    background-color: #f2f2f2;
+    background-color: var(--gray-ultra-light);
 }
 
 td {
     text-align: center;
     padding: 10px;
-    border-top: 1px solid black;
+    border-top: 1px solid var(--pure-black);
 }
 
 .container-table-buttons {
@@ -172,12 +172,12 @@ td {
     background: none;
     border: none;
     font-weight: bold;
-    color: #D8D9DA;
+    color: var(--light-gray-blue);
     position: relative;
 }
 
 .button-tab-service.active {
-    color: #316EA8;
+    color: var(--tertiary-color);
 }
 
 .line-tab {
@@ -188,11 +188,11 @@ td {
     transform: translateX(-50%);
     width: 130%;
     height: 1px;
-    background-color: #D8D9DA;
+    background-color: var(--light-gray-blue);
 }
 
 .button-tab-service.active .line-tab {
-    background-color: #316EA8;
+    background-color: var(--tertiary-color);
     height: 2px;
 }
 
@@ -211,8 +211,8 @@ td {
     /* Centra los elementos verticalmente */
     max-width: 98%;
     height: 50px;
-    background: #FFF;
-    border: 1px solid #D4D4D4;
+    background: var(--white);
+    border: 1px solid var(--gray-medium-light);
     margin-bottom: 10px;
 }
 
@@ -235,7 +235,7 @@ td {
 }
 
 .operation-code {
-    color: #000;
+    color: var(--pure-black);
     font-size: 20px;
     font-style: normal;
     font-weight: bold;
@@ -243,7 +243,7 @@ td {
 }
 
 .operation-name {
-    color: #000;
+    color: var(--pure-black);
     font-size: 15px;
     font-style: normal;
     font-weight: 300;
@@ -272,8 +272,8 @@ td {
     margin-bottom: 25px;
     padding: 5px;
     border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
+    border: 2px solid var(--gray-soft-134);
+    background: var(--gray-soft-128);
 }
 
 .input-search-operation {
@@ -296,7 +296,7 @@ td {
 }
 
 .operation-table tbody tr:nth-child(odd) {
-    background-color: #f2f2f2;
+    background-color: var(--gray-ultra-light);
 }
 
 .operation-table td {
@@ -322,7 +322,7 @@ td {
 }
 
 .operation-selected-table tbody tr:nth-child(odd) {
-    background-color: #f2f2f2;
+    background-color: var(--gray-ultra-light);
 }
 
 .operation-selected-table td {
@@ -340,7 +340,7 @@ td {
 }
 
 .table-container {
-    background-color: white;
+    background-color: var(--white);
     max-height: 300px;
     overflow: auto;
 }

@@ -14,7 +14,7 @@
   margin-bottom: 10px;
   box-sizing: border-box;
   /* esto hace que el padding no agregue ancho adicional al input */
-  border: 1px solid #E1E1E4;
+  border: 1px solid var(--gray-cloud);
   border-radius: 13px;
   font-style: normal;
   font-weight: 600;
@@ -28,9 +28,9 @@
   padding: 12px 24px;
   box-sizing: border-box;
   /* esto hace que el padding no agregue ancho adicional al button */
-  background: #1C4A74;
+  background: var(--second-color);
   border-radius: 13px;
-  color: white;
+  color: var(--white);
   font-style: normal;
   font-size: 24px;
   margin-top: 20px;

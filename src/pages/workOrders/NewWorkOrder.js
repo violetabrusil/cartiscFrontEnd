@@ -20,6 +20,7 @@ import apiClient from "../../services/apiClient";
 import ClientContext from "../../contexts/ClientContext";
 import { AddNewClientModal } from "../../modal/AddClientModal";
 import { AddNewVehicleModal } from "../../modal/AddVehicleModal";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
@@ -35,6 +36,8 @@ const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 
 
 const NewWorkOrder = () => {
+
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const WorkOrderStatusOptions = [
         { value: 'to_start', label: 'Por iniciar' },
@@ -162,11 +165,11 @@ const NewWorkOrder = () => {
             ...provided,
             height: '33px',
             minHeight: '33px',
-            border: '1px solid rgb(0 0 0 / 34%)'
+            border: `1px solid ${blackAlpha34}`
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: 'rgb(0 0 0 / 34%)',
+            color: blackAlpha34,
             fontWeight: '600',
         }),
     };

@@ -56,12 +56,12 @@
 .profile-name {
     font-size: 15px;
     font-weight: bold;
-    color: white;
+    color: var(--white);
 }
 
 .profile-role {
     font-size: 15px;
-    color: white;
+    color: var(--white);
     font-style: normal;
     font-weight: 200;
     padding-top: 3px;

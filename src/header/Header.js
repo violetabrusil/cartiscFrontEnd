@@ -61,7 +61,7 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
 
     const styleHeader = {
         padding: '10px',
-        background: '#0C1F31',
+        background: 'var(--primary-color)',
         display: 'flex',
         flexDirection: 'column',
         marginBottom: '0px',

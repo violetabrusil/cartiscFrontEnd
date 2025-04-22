@@ -5,6 +5,7 @@ import SearchBar from "../searchBar/SearchBar";
 import apiAdmin from "../services/apiAdmin";
 import DataTable from "../dataTable/DataTable";
 import apiClient from "../services/apiClient";
+import useCSSVar from "../hooks/UseCSSVar";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const userIcon = process.env.PUBLIC_URL + "/images/user.png";
@@ -17,6 +18,8 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOr
     const [selectedRow, setSelectedRow] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [username, setUsername] = useState("");
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const userSelectStyles = {
         control: (base, state) => ({
@@ -24,14 +27,14 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOr
             width: '300px',
             height: '40px',
             minHeight: '40px',
-            border: '1px solid rgb(0 0 0 / 34%)',
+            border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
             boxSizing: 'border-box'
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999',
+            color: grayMediumDark,
         }),
         option: (provided, state) => ({
             ...provided,

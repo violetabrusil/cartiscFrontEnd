@@ -6,10 +6,14 @@ import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
 const Stock = () => {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const blackAlpha20 = useCSSVar('--black-alpha-20');
 
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
@@ -133,7 +137,7 @@ const Stock = () => {
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '10%',
-                                border: '1px solid rgba(0, 0, 0, 0.2)',
+                                border: `1px solid ${blackAlpha20}`,
                                 padding: '4px'
                             }}
                         />
@@ -159,7 +163,7 @@ const Stock = () => {
                 <SearchBar onFilter={handleFilter} />
                 {loading ? (
                     <div className="spinner-container-stock">
-                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                        <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                     </div>
 
                 ) : (

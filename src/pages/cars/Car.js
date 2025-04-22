@@ -25,6 +25,8 @@ import { CustomSingleValue } from "../../customSingleValue/CustomSingleValue";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCarContext } from "../../contexts/searchContext/CarContext";
 import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxSpecial";
+import { useStatusColors } from "../../utils/useStatusColors";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -42,6 +44,10 @@ const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
 const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
 const Cars = () => {
+
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
+    const tertiaryColor = useCSSVar('--tertiary-color');
 
     //Variable para el filtro y la búsqueda de vehículos y clientes
     const { selectedOption = "Nombre Titular", setSelectedOption, searchTerm, setSearchTerm } = useCarContext();
@@ -104,6 +110,8 @@ const Cars = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isWorkOrderModalOpen, setIsWorkOrderModalOpen] = useState(false);
 
+    const statusColors = useStatusColors();
+
     const { vehicleId } = useParams();
 
     const navigate = useNavigate();
@@ -120,7 +128,7 @@ const Cars = () => {
             className: 'custom-select-control',
             width: isTabletLandscape ? '95%' : '99%',
             height: '50px', // Estilo personalizado para la altura
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
+            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
             padding: '8px',
             marginBottom: '20px',
@@ -128,7 +136,7 @@ const Cars = () => {
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         option: (provided, state) => ({
             ...provided,
@@ -268,16 +276,6 @@ const Cars = () => {
         return `${day}/${month}/${year}`;
     };
 
-    const statusColors = {
-        "Por iniciar": "#316EA8",
-        "Asignada": "#0C1F31",
-        "En ejecución": "#4caf50",
-        "En espera": "#fbc02d",
-        "Cancelada": "#e74c3c",
-        "Completada": "#2e7d32",
-        "Eliminada": "#6E757D"
-    };
-
     const getVehicleHistoryData = async (vehicleId) => {
         try {
             const response = await apiClient.get(`/work-orders/by-vehicle/${vehicleId}`)
@@ -326,7 +324,7 @@ const Cars = () => {
             setShowAddVehicle(false);
             setShowButtonAddVehicle(false);
             getVehicleHistoryData(numericVehicleId);
-            navigate(`/cars/carHistory/${numericVehicleId}`); 
+            navigate(`/cars/carHistory/${numericVehicleId}`);
         } else {
             // Maneja el caso en que el vehículo no se encuentra
             console.error(`No se encontró el vehículo con ID: ${numericVehicleId}`);
@@ -688,7 +686,7 @@ const Cars = () => {
             const searchTypePlate = "plate";
             const searchTypeClientName = "client_name";
             //Si hay un filtro de búsqueda
-        
+
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Placa':
@@ -700,7 +698,7 @@ const Cars = () => {
                     default:
                         break;
                 }
-            } 
+            }
             try {
                 const response = await apiClient.get(endpoint);
                 if (response.data && response.data.length > 0) {
@@ -751,7 +749,7 @@ const Cars = () => {
     useEffect(() => {
         // Convierte vehicleId a un número
         const numericVehicleId = Number(vehicleId);
-    
+
         if (numericVehicleId && vehicles.length > 0) {
             // Llama a handleCarHistory con el ID numérico
             handleCarHistory(numericVehicleId);
@@ -776,7 +774,7 @@ const Cars = () => {
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
 
@@ -807,8 +805,10 @@ const Cars = () => {
                                         <div className="third-result-car">
                                             <button className="button-eye-car">
                                                 <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car"
-                                                    onClick={(event) => {event.stopPropagation();
-                                                    handleCarInformation(vehicleData, event)}} />
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        handleCarInformation(vehicleData, event)
+                                                    }} />
                                             </button>
                                         </div>
 

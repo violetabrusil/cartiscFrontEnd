@@ -18,6 +18,7 @@ import { getVehicleCategory } from "../../constants/vehicleCategoryConstants";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
+import useCSSVar from "../../hooks/UseCSSVar";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -40,6 +41,10 @@ const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
 const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
 const Clients = () => {
+
+    const tertiaryColor = useCSSVar('--tertiary-color');
+    const grayMediumDark = useCSSVar('--gray-medium-dark');
+    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const navigate = useNavigate();
 
@@ -519,7 +524,7 @@ const Clients = () => {
             className: 'custom-select-control',
             width: isTabletLandscape ? '96%' : '93%', // Estilo personalizado para el ancho
             height: '50px', // Estilo personalizado para la altura
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
+            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
             padding: '8px',
             marginBottom: '20px',
@@ -527,7 +532,7 @@ const Clients = () => {
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: grayMediumDark, // Color del texto del placeholder
         }),
         option: (provided, state) => ({
             ...provided,
@@ -560,7 +565,7 @@ const Clients = () => {
                     {/*Lista de clientes*/}
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
+                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
                         <>
