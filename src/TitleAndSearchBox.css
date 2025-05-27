@@ -1,6 +1,7 @@
 .container-title {
     display: flex;
     align-items: center;
+    width: 96%;
 }
 
 .container-title h2 {
@@ -12,7 +13,7 @@
     width: 100px;
     height: 40px;
     border: none;
-    margin-top: 3px;
+    margin-top: 0.5rem;
     background-color: transparent;
 }
 
@@ -70,7 +71,7 @@
     margin-top: -7px;
 }
 
-.button-filter-special{
+.button-filter-special {
     width: 151px;
     height: 40px;
     border: none;
@@ -115,7 +116,7 @@
 }
 
 @media screen and (max-width: 320px) {
-   
+
     .container-title {
         flex-direction: column;
     }
@@ -139,7 +140,7 @@
     }
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) { 
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
     .search-box-special {
         margin-left: 25px;
     }

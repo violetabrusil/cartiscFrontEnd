@@ -27,6 +27,7 @@ import { useCarContext } from "../../contexts/searchContext/CarContext";
 import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxSpecial";
 import { useStatusColors } from "../../utils/useStatusColors";
 import useCSSVar from "../../hooks/UseCSSVar";
+import ResultItem from "../../resultItem/ResultItem";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -470,6 +471,7 @@ const Cars = () => {
 
     const handleTypeCarChange = (selectedOptionCategoryCar) => {
         setCategory(selectedOptionCategoryCar.value);
+        console.log("estoy dando click")
     };
 
     const openAlertModal = () => {
@@ -761,8 +763,9 @@ const Cars = () => {
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetVehicleState} />
 
-            <div className="containerCars">
-                <div className="left-section-cars">
+            <div className="two-column-layout">
+                <div className="left-panel">
+
                     {/*Título del contenedor y cuadro de búsqueda */}
                     <TitleAndSearchBoxSpecial
                         selectedOption={selectedOption}
@@ -778,50 +781,28 @@ const Cars = () => {
                         </div>
                     ) : (
 
-                        <>
+                        <div className="panel-content">
                             {/*Lista de vehículos */}
-                            <div className="container-list-vehicle">
-                                {vehicles.map(vehicleData => (
-                                    <div key={vehicleData.id} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)}>
-                                        <div className="first-result-car">
-                                            <div className="input-plate-container">
-                                                <input
-                                                    className="input-plate-vehicle"
-                                                    type="text"
-                                                    value={vehicleData.plate}
-                                                    readOnly />
-                                                <img src={flagIcon} alt="Flag" className="ecuador-icon" />
-                                                <label>ECUADOR</label>
-                                            </div>
-                                        </div>
-                                        <div className="second-result-car">
-                                            <div className="div-label">
-                                                <label>{vehicleData.client_name}</label>
-                                            </div>
-                                            <div className="div-icon-vehicle">
-                                                <img className="icon-vehicle" src={vehicleData.iconSrc} alt="Icon Vehicle" />
-                                            </div>
-                                        </div>
-                                        <div className="third-result-car">
-                                            <button className="button-eye-car">
-                                                <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car"
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                        handleCarInformation(vehicleData, event)
-                                                    }} />
-                                            </button>
-                                        </div>
-
-                                    </div>
+                            <div className="scrollable-list-container">
+                                {vehicles.map(vehicle => (
+                                    <ResultItem
+                                        key={vehicle.id}
+                                        type="car"
+                                        data={vehicle}
+                                        flagIcon={flagIcon}
+                                        eyeIcon={eyeIcon}
+                                        onClickMain={e => handleCarHistory(vehicle.id, e)}
+                                        onClickEye={handleCarInformation}
+                                    />
                                 ))}
                             </div>
-                        </>
+                        </div>
 
                     )}
 
                 </div>
 
-                <div className="right-section-cars">
+                <div className="right-panel">
                     <ToastContainer />
                     {/*Sección para mostrar el botón de agregar vehículo */}
                     {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
@@ -838,137 +819,146 @@ const Cars = () => {
                                 title={nameClient}
                             />
 
-                            <div className="container-add-car-form">
+                            <div className="panel-content-form">
                                 <div className="form-scroll">
-                                    <form>
-                                        <div className={`input-container ${isInputFocused ? "active" : ""}`}>
-                                            <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
-                                                onFocus={handleInputFocus} onBlur={handleInputBlur} />
+
+                                    <div className={`input-container ${isInputFocused ? "active" : ""}`}>
+                                        <div className="label-container">
                                             <img src={flagIcon} alt="Flag" className="flag-icon" />
                                             <label className="label-plate-vehicle">ECUADOR</label>
-                                            {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
+                                        </div>
+                                        <input
+                                            className="input-plate"
+                                            type="text"
+                                            value={plateCar}
+                                            onChange={handleCarPlateChange}
+                                            onFocus={handleInputFocus}
+                                            onBlur={handleInputBlur}
+                                        />
+
+                                        {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
                                             <img src={alertIcon} className="alert" alt="Alert" />
                                         </button>
                                         */}
+                                    </div>
+
+                                    <label className="label-form">
+                                        Año
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="number"
+                                                value={year}
+                                                onChange={(e) => setYear(parseInt(e.target.value))}
+                                            />
+
+                                            <img
+                                                src={yearIcon}
+                                                alt="Year Icon"
+                                                className="input-new-client-icon"
+                                            />
+
                                         </div>
 
-                                        <label className="label-form">
-                                            Año
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="number"
-                                                    value={year}
-                                                    onChange={(e) => setYear(parseInt(e.target.value))}
-                                                />
+                                    </label>
+                                    <label className="label-form">
+                                        Categoría
+                                        <Select
+                                            components={{ Placeholder: CustomPlaceholder }}
+                                            isSearchable={false}
+                                            options={options}
+                                            value={options.find(option => option.value === category)}
+                                            onChange={handleTypeCarChange}
+                                            styles={customStyles}
+                                            placeholder="Seleccionar"
+                                            menuPortalTarget={document.body} />
+                                    </label>
+                                    <label className="label-form">
+                                        Kilometraje actual
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="number"
+                                                value={km}
+                                                onChange={(e) => setKm(parseInt(e.target.value))}
+                                            />
+                                            <img
+                                                src={kmIcon}
+                                                alt="Km Icon"
+                                                className="input-new-client-icon"
+                                                style={{ width: '30px' }}
+                                            />
 
-                                                <img
-                                                    src={yearIcon}
-                                                    alt="Year Icon"
-                                                    className="input-new-client-icon"
-                                                />
+                                        </div>
 
-                                            </div>
+                                    </label>
+                                    <label className="label-form">
+                                        Marca
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="text"
+                                                value={brand}
+                                                onChange={(e) => setBrand(e.target.value)}
+                                            />
+                                            <img
+                                                src={brandIcon}
+                                                alt="Brand Icon"
+                                                className="input-new-client-icon"
+                                            />
 
-                                        </label>
-                                        <label className="label-form">
-                                            Categoría
-                                            <Select
-                                                components={{ Placeholder: CustomPlaceholder }}
-                                                isSearchable={false}
-                                                options={options}
-                                                value={options.find(option => option.value === category)}
-                                                onChange={handleTypeCarChange}
-                                                styles={customStyles}
-                                                placeholder="Seleccionar"
-                                                menuPortalTarget={document.body} />
-                                        </label>
-                                        <label className="label-form">
-                                            Kilometraje actual
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="number"
-                                                    value={km}
-                                                    onChange={(e) => setKm(parseInt(e.target.value))}
-                                                />
-                                                <img
-                                                    src={kmIcon}
-                                                    alt="Km Icon"
-                                                    className="input-new-client-icon"
-                                                    style={{ width: '30px' }}
-                                                />
+                                        </div>
 
-                                            </div>
+                                    </label>
+                                    <label className="label-form">
+                                        Modelo
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="text"
+                                                value={model}
+                                                onChange={(e) => setModel(e.target.value)}
+                                            />
+                                            <img
+                                                src={modelIcon}
+                                                alt="Model Icon"
+                                                className="input-new-client-icon"
+                                                style={{ top: '35%' }}
+                                            />
 
-                                        </label>
-                                        <label className="label-form">
-                                            Marca
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="text"
-                                                    value={brand}
-                                                    onChange={(e) => setBrand(e.target.value)}
-                                                />
-                                                <img
-                                                    src={brandIcon}
-                                                    alt="Brand Icon"
-                                                    className="input-new-client-icon"
-                                                />
+                                        </div>
 
-                                            </div>
+                                    </label>
+                                    <label className="label-form">
+                                        Motor
+                                        <div className="input-form-new-client">
+                                            <input
+                                                className="input-form-add-vehicle"
+                                                type="text"
+                                                value={motor}
+                                                onChange={(e) => setMotor(e.target.value)}
+                                            />
+                                            <img
+                                                src={motorIcon}
+                                                alt="Motor Icon"
+                                                className="input-new-client-icon"
 
-                                        </label>
-                                        <label className="label-form">
-                                            Modelo
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="text"
-                                                    value={model}
-                                                    onChange={(e) => setModel(e.target.value)}
-                                                />
-                                                <img
-                                                    src={modelIcon}
-                                                    alt="Model Icon"
-                                                    className="input-new-client-icon"
-                                                    style={{ top: '35%' }}
-                                                />
+                                            />
 
-                                            </div>
+                                        </div>
 
-                                        </label>
-                                        <label className="label-form">
-                                            Motor
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="text"
-                                                    value={motor}
-                                                    onChange={(e) => setMotor(e.target.value)}
-                                                />
-                                                <img
-                                                    src={motorIcon}
-                                                    alt="Motor Icon"
-                                                    className="input-new-client-icon"
+                                    </label>
 
-                                                />
+                                </div>
 
-                                            </div>
-
-                                        </label>
-                                    </form>
+                                <div className="container-button-next">
+                                    <button className="button-next" onClick={handleAddVehicle}>
+                                        GUARDAR
+                                    </button>
                                 </div>
                             </div>
 
-                            <div className="container-button-next">
-                                <button className="button-next" onClick={handleAddVehicle}>
-                                    GUARDAR
-                                </button>
-                            </div>
                         </>
-
 
                     )}
 

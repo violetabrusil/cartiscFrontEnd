@@ -6,6 +6,7 @@
 .container-custom-title h2{
     flex: 1;
     text-align: left;
+    margin-left: 0.3rem;
 }
 
 .button-arrow {

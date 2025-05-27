@@ -178,9 +178,9 @@ const Proforma = () => {
 
             <ToastContainer />
 
-            <div className="proforma-container">
+            <div className="two-column-layout">
 
-                <div className="left-section-proforma">
+                <div className="left-panel">
 
                     <TitleAndSearchBoxSpecial
                         selectedOption={selectedOption}
@@ -192,7 +192,7 @@ const Proforma = () => {
 
 
                     <>
-                        <div className="container-list-proformas">
+                        <div className="scrollable-list-container">
                             {/*Falta map*/}
                             <div className="result-proforma" onClick={() => handleShowInformationProforma()}>
 
@@ -245,7 +245,7 @@ const Proforma = () => {
 
                 </div>
 
-                <div className="right-sectin-proforma">
+                <div className="right-panel">
                     <CustomButtonContainer>
                         <CustomButton title="AGREGAR PROFORMA" onClick={handleAddNewProforma} />
                     </CustomButtonContainer>

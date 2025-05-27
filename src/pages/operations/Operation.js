@@ -19,7 +19,7 @@ const Operation = () => {
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
 
-            <div className="container-operations">
+            <div className="two-column-layout"> 
                 <div className="left-section-operation"></div>
                 <OperationRightSection
                     showAddOperation={showAddOperation}

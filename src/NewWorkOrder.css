@@ -83,7 +83,7 @@
 .right-div .input-group-work-order {
     margin-bottom: 10px;
     flex: 1;
-    
+
 }
 
 .right-div label {
@@ -553,13 +553,18 @@
     margin-bottom: -3px;
 }
 
+/* Contenedor para label + bandera */
 .label-container {
-    margin-bottom: 20px;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: flex-start;
     align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    /* no bloquea el input */
 }
-
 
 .label-title {
     margin-right: 50px;

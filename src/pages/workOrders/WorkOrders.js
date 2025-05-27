@@ -197,8 +197,8 @@ const WorkOrders = () => {
 
             <ToastContainer />
 
-            <div className="work-order-container">
-                <div className="left-section-work-order">
+            <div className="two-column-layout">
+                <div className="left-panel">
 
                     {/*Título del contenedor y cuadro de búsqueda */}
                     <TitleAndSearchBoxSpecial
@@ -217,7 +217,7 @@ const WorkOrders = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="container-list-work-orders">
+                            <div className="scrollable-list-container">
                                 {workOrders.map(workOrderData => (
                                     <div key={workOrderData.id} className="result-work-order" onClick={() => handleShowInformationWorkOrderClick(workOrderData.id)}>
                                         <div className="first-result-work-orders">
@@ -274,7 +274,7 @@ const WorkOrders = () => {
 
                 </div>
 
-                <div className="right-section-work-order">
+                <div className="right-panel">
                     <CustomButtonContainer>
                         <CustomButton title="AGREGAR ORDEN DE TRABAJO" onClick={handleAddNewWorkOrder} />
                     </CustomButtonContainer>

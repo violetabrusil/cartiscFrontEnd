@@ -1,112 +1,3 @@
-.containerCars {
-    position: absolute;
-    top: 80px;
-    bottom: 0;
-    left: 60px;
-    right: 0;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-gap: 0px;
-    height: calc(100vh - 80px); /* Altura del viewport menos 80px de la parte superior */
-    overflow: hidden;
-}
-
-.left-section-cars {
-    background-color: var(--gray-neutral-light);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto; 
-    height: 100%;
-}
-
-.right-section-cars {
-    background-color: var(--gray-medium);
-    padding: 20px;
-    overflow-y: auto;
-    height: 100%; /* Hace que ocupe todo el espacio disponible en .containerClients */
-    box-sizing: border-box;
-}
-
-.result-car {
-    max-width: 98%;
-    height: 70px;
-    background: var(--white);
-    border: 1px solid var(--gray-medium-light);
-    display: grid;
-    grid-template-columns: minmax(100px, 1fr) 2fr minmax(92px, 0fr);
-    gap: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.first-result-car {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 190px;
-}
-
-.icon-vehicle {
-    width: 33px;
-    height: 33px;
-}
-
-.first-result-car label {
-    font-size: 20px;
-}
-
-.second-result-car {
-    max-width: calc(100% - 20px); /* 120px es el espacio que quieres reservar para el botón del ojo */
-    overflow: hidden;
-}
-
-.second-result-car label {
-    font-size: 18px;
-}
-
-.div-label {
-    margin-top: 13px;
-    text-align: left;
-    width: 100%; /* Ajusta según necesidad, pero para este ejemplo lo pongo al 100% */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block; /* Asegúrate de que es un contenedor de bloque */
-}
-
-.div-icon-vehicle {
-    margin-top: -2px;
-    text-align: left;
-}
-
-.third-result-car {
-    position: relative;
-}
-
-.first-result-car, .second-result-car, .third-result-car {
-    margin: 0;
-    padding: 0;
-}
-
-.button-eye-car {
-    width: 100px;
-    height: 40px;
-    border: none;
-    margin-top: 3px;
-    background: none;
-    position: absolute;
-    right: 10px; /* Ajusta esto según tu diseño */
-    top: 50%;
-    transform: translateY(-50%); /* Centrar verticalmente */ 
-}
-
-.icon-eye-car {
-    width: 30px;
-    height: 30px;
-    opacity: 50%;
-}
-
 .button-eye-car-work-order {
     border: none;
     background: none;
@@ -186,15 +77,19 @@
     align-items: center;
     margin-left: 25px;
     /* Asegúrate de que tus botones no se empujen fuera de la pantalla */
-    padding-right: 25px; /* Añade el padding si es necesario */
+    padding-right: 25px;
+    /* Añade el padding si es necesario */
 }
 
 .container-maintenance-filter h2 {
     flex: 1;
-    flex-shrink: 0; /* Impide que el H2 se encoge */
+    flex-shrink: 0;
+    /* Impide que el H2 se encoge */
     text-align: left;
-    margin-right: auto; /* Empuja los elementos a la derecha */
-    font-size: clamp(16px, 2vw, 24px); /* Ajusta los valores a lo que necesites */
+    margin-right: auto;
+    /* Empuja los elementos a la derecha */
+    font-size: clamp(16px, 2vw, 24px);
+    /* Ajusta los valores a lo que necesites */
 }
 
 .container-checkbox {
@@ -223,56 +118,6 @@
     margin-right: 10px;
     margin-left: 200px;
     margin-top: 2px;
-}
-
-.container-list-vehicle {
-    flex: 1; /* Esto hará que ocupe todo el espacio no utilizado en .left-section */
-    overflow-y: auto;
-    max-height: 82%; /* Esto asegura que no exceda el espacio de su contenedor padre */
-    overflow-x: hidden;
-}
-
-.input-plate-container {
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-
-.input-plate-container label {
-    position: absolute;
-    top: 37%;
-    left: 23%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: var(--pure-black);
-    font-size: 11px;
-    font-weight: 500;
-}
-
-.input-plate-container .ecuador-icon {
-    height: 11px;
-    width: 11px;
-    position: absolute;
-    top: 37%;
-    left: calc(50% - 92px);
-    transform: translateY(-50%);
-}
-
-.input-plate-vehicle {
-    max-width: 40%;
-    height: 13px;
-    border: 3px solid var(--pure-black);
-    background: var(--white);
-    border-radius: 10px;
-    padding: 8px;
-    margin-bottom: 10px;
-    margin-top: 11px;
-    margin-left: 5%;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
-    padding-top: 22px;
-    box-shadow: 0 0 0 3px var(--white), 0 0 0 3px var(--white);
 }
 
 .button-suspend-vehicle-icon {
@@ -315,18 +160,6 @@
     padding: 4px;
 }
 
-@media screen and (max-width: 768px) {
-    .containerCar {
-        position: absolute;
-        display: block;
-        left: 0;
-    }
-
-    .left-sectionp-cars,
-    .right-section-cars {
-        width: 100%;
-    }
-}
 
 .modal-content {
     width: 80%;
@@ -402,11 +235,16 @@
     align-items: center;
     box-sizing: border-box;
     margin-right: 20px;
-    position: fixed; /* Fija el contenedor al viewport */
-    bottom: 0; /* Coloca el contenedor en la parte inferior */
-    left: 0; /* Alineación izquierda */
-    right: 0; /* Alineación derecha */
-    padding: 10px; /* Espacio alrededor del contenedor, opcional */
+    position: fixed;
+    /* Fija el contenedor al viewport */
+    bottom: 0;
+    /* Coloca el contenedor en la parte inferior */
+    left: 0;
+    /* Alineación izquierda */
+    right: 0;
+    /* Alineación derecha */
+    padding: 10px;
+    /* Espacio alrededor del contenedor, opcional */
 }
 
 .button-edit-data-vehicle {
@@ -421,15 +259,10 @@
 }
 
 .label-plate-vehicle {
-    position: absolute;
-    top: 23%;
-    left: 10%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease-out, font-size 0.3s ease-out;
-    pointer-events: none;
-    color: var(--pure-black);
     font-size: 20px;
     font-weight: 700;
+    color: var(--pure-black);
+    pointer-events: none;
 }
 
 .label-history-work-order {
@@ -437,52 +270,16 @@
     max-width: 100%;
 }
 
-@media screen and (max-width: 320px) {
-    .containerCars {
-        position: static;
-        display: block;
-        margin-top: 160px;
-        /* Ajusta la altura del header y el menú */
-        margin-left: 0;
-    }
-
-    .left-section-cars,
-    .right-section-cars {
-        width: 100%;
-    }
-}
-
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
-    .containerCars {
-        height: 88vh;
-        grid-template-columns: 1.5fr 2fr;
-    }
-    
     .input-plate-vehicle {
         max-width: 33%;
-    }
-
-    .input-plate-container label {
-        left: 22%;
-    }
-    
-    .input-plate-container .ecuador-icon {
-        left: calc(50% - 100px);
-        margin-top: -1px;
-    }
-
-    .result-car {
-        grid-template-columns: minmax(10px, 2fr) 2fr minmax(100px, 1fr);
     }
 
     .label-plate-vehicle {
         margin-left: 14%;
     }
 
-    .second-result-car {
-        max-width: calc(130% - 5px);
-        margin-left: -50px;
-    }
+
 
 }
 
@@ -496,22 +293,5 @@
         max-width: 34%;
         font-size: 16px;
     }
-    
-    .input-plate-container .ecuador-icon {
-        left: calc(50% - 87px);
-    }
-
-    .input-plate-container label {
-        left: 21%;
-    }
-
-    .button-eye-car {
-        width: 37px;
-    }
-
-    .result-car {
-        grid-template-columns: minmax(100px, 1fr) 2fr minmax(24px, 0fr);
-    }
-
-
 }
+

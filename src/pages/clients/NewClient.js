@@ -242,7 +242,7 @@ const NewClient = () => {
 
             <ToastContainer />
 
-            <div className="containerNewClient">
+            <div className="two-column-layout">
                 <div className="left-section-new-client">
 
                     <div className="containerNewClientTitle">

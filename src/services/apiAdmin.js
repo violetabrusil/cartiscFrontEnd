@@ -25,7 +25,7 @@ apiAdmin.interceptors.request.use(
         return config;
     }, (error) => Promise.reject(error)
 );
-
+/*
 apiAdmin.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -47,5 +47,5 @@ apiAdmin.interceptors.response.use(
     }
 
 )
-
+*/
 export default apiAdmin;

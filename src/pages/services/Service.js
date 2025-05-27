@@ -604,8 +604,8 @@ const Services = () => {
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetServiceState} />
 
-            <div className="container-services">
-                <div className="left-section-service">
+            <div className="two-column-layout">
+                <div className="left-panel">
                     {/*Título del contenedor con buscador */}
                     <div className="tabs-service-operation">
                         <button
@@ -640,7 +640,7 @@ const Services = () => {
                     ) : (
                         <>
                             {activeTab === 'servicios' &&
-                                <div className="search-results-operations">
+                                <div className="scrollable-list-container">
                                     {Array.isArray(services) && services.map(serviceData => (
                                         <div key={`service-${serviceData.id}`} className="result-operations">
                                             <div className="operation-code-section">
@@ -674,7 +674,7 @@ const Services = () => {
                     ) : (
                         <>
                             {activeTab === 'operaciones' &&
-                                <div className="search-results-operations">
+                                <div className="scrollable-list-container">
                                     {operations.map(operationData => (
                                         <div key={`operation-${operationData.id}`} className="result-operations">
                                             <div className="operation-code-section">
@@ -700,7 +700,7 @@ const Services = () => {
 
                 </div>
 
-                <div className="right-section-service">
+                <div className="right-panel">
                     <ToastContainer />
                     {showButtons && (
                         <CustomButtonContainer>

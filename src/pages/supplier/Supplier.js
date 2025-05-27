@@ -252,8 +252,8 @@ const Suppliers = () => {
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetSupplierState} />
 
-            <div className="container-suppliers">
-                <div className="left-section-supplier">
+            <div className="two-column-layout">
+                <div className="left-panel">
                     {/*Título del contenedor con buscador */}
                     <TitleAndSearchBox
                         selectedOption={selectedOption}
@@ -294,7 +294,7 @@ const Suppliers = () => {
                     )}
 
                 </div>
-                <div className="right-section-supplier">
+                <div className="right-panel">
                     <ToastContainer />
                     {showButtonAddSupplier && !showAddSupplier && (
                         <CustomButtonContainer>

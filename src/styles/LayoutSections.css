@@ -1,0 +1,98 @@
+.two-column-layout {
+    position: fixed;
+    top: 80px;
+    left: 60px;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    overflow: hidden;
+    z-index: 10;
+    
+}
+
+.left-panel {
+    background-color: var(--gray-neutral-light);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.right-panel {
+    background-color: var(--gray-medium);
+    padding: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.panel-content-form {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-left: 0.5rem;
+}
+
+/* Contenedor reutilizable para listas */
+.scrollable-list-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    max-height: 85%;
+}
+
+/* MEDIA QUERIES */
+
+@media screen and (max-width: 768px) {
+    .two-column-layout {
+        position: absolute;
+        display: block;
+        left: 0;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .two-column-layout {
+        position: static;
+        display: block;
+        margin-top: 160px;
+        /* Ajusta la altura del header y el menú */
+        margin-left: 0;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+    .two-column-layout {
+        height: 88vh;
+        grid-template-columns: 1.5fr 2fr;
+    }
+}

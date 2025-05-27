@@ -8,6 +8,7 @@ import './Menu.css';
 import './Modal.css';
 import './NewClient.css';
 import './Colors.css';
+import './styles/LayoutSections.css';
 
 import { Route, Routes, Navigate } from "react-router-dom";
 import InactivityTimer from './inactivity/InactivityTimer';

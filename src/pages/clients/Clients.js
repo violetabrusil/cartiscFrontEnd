@@ -552,8 +552,8 @@ const Clients = () => {
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetClientState} />
 
-            <div className="containerClients">
-                <div className="left-section">
+            <div className="two-column-layout">
+                <div className="left-panel">
                     {/*Título del contenedor con el botón para filtrar búsqueda */}
                     <TitleAndSearchBox
                         selectedOption={selectedOption}
@@ -569,7 +569,7 @@ const Clients = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="container-list-client">
+                            <div className="scrollable-list-container">
                                 {clients.map(clientData => (
                                     <div className="result-client" onClick={(event) => handleClientCarInformation(clientData.client.id, event)} key={clientData.client.id}>
                                         <div className="first-result">
@@ -653,7 +653,7 @@ const Clients = () => {
 
                 </div>
 
-                <div className="right-section">
+                <div className="right-panel">
 
                     {!selectedVehicle && showTitle && !showAddVehicle && (
                         <CustomTitleSection
