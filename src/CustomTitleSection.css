@@ -1,12 +1,43 @@
 .container-custom-title {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    position: relative;
+    padding: 1rem;
 }
 
-.container-custom-title h2{
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     flex: 1;
-    text-align: left;
-    margin-left: 0.3rem;
+}
+
+.center-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.title-prefix {
+    font-weight: 300;
+    color: var(--tertiary-color);
+    font-size: 1.3rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .button-arrow {
@@ -19,6 +50,21 @@
 .arrow-icon {
     width: 35px;
     height: 35px;
+}
+
+.custom-button-save {
+    padding: 0.5rem 1rem;
+    background-color: var(--second-color);
+    color: var(--white);
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 140px;
+    max-width: 100%;
+    height: 40px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .custom-button-unavailable {
@@ -62,4 +108,19 @@
     height: 35px;
     margin-right: 8px;
     margin-top: -7px;
+}
+
+.button-maintenance-filter {
+    width: 100px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border: none;
+    background: none;
+    margin-right: 0.5rem;
+}
+
+.button-maintenance-text-filter {
+    color: var(--pure-black);
+    font-weight: bold;
 }

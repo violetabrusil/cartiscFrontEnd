@@ -1,51 +1,64 @@
+.main-header {
+    background: var(--primary-color);
+    padding: 10px 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 0;
+    height: 60px;
+    border-radius: 10px;
+}
+
+/* Variante por defecto (pantallas pequeñas o diseño compacto) */
+.header-default {
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Variante para pantallas grandes */
+.header-large {
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+/* Sección izquierda */
 .header-left {
-    flex: 2;
-    flex-shrink: 0;
-}
-
-@media screen and (max-width: 600px) {
-    .header-left {
-        align-self: flex-start;
-    }
-}
-
-.header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex-grow: 1;
-    max-width: 200px;
-    margin-right: 30px;
+    flex: 1;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.icon-cartics {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
 }
 
 .icon-image {
-    max-width: 180px;
-    /* Ajusta el tamaño máximo de la imagen según tus necesidades */
-    width: 100%;
+    max-width: 160px;
     height: auto;
     object-fit: contain;
 }
 
-@media screen and (min-width: 768px) {
-    .icon-image {
-        max-height: 100px;
-        /* Ajusta la altura máxima en pantallas más grandes */
-    }
-}
+/* Sección derecha */
 
-.profile-info {
+.header-right {
     display: flex;
     align-items: center;
+    gap: 15px;
+    margin-left: auto;
+    flex-wrap: wrap;
 }
 
-.profile-image {
-    width: 50px;
-    /* Ajusta el tamaño de la foto de perfil según tus necesidades */
-    height: 50px;
-    border-radius: 50%;
-    /* Da forma circular a la foto de perfil */
-    object-fit: cover;
-    margin-right: 10px;
+.cartics-logo {
+    width: 100px;
+    height: auto;
 }
 
 .profile-text {
@@ -67,21 +80,19 @@
     padding-top: 3px;
 }
 
-/* Estilos responsive */
-@media screen and (max-width: 600px) {
+.profile-info {
+    display: flex;
+    align-items: center;
+}
 
-    .header-left,
-    .header-right {
-        flex-basis: 100%;
-        max-width: 100%;
-    }
-
-    .header-right {
-        max-width: 100%;
-        /* Cambia el ancho máximo a ocupar el 100% del espacio disponible */
-        overflow: hidden;
-        /* Oculta el contenido que se desborda */
-    }
+.profile-image {
+    width: 50px;
+    /* Ajusta el tamaño de la foto de perfil según tus necesidades */
+    height: 50px;
+    border-radius: 50%;
+    /* Da forma circular a la foto de perfil */
+    object-fit: cover;
+    margin-right: 10px;
 }
 
 .logout-button {
@@ -94,15 +105,40 @@
     height: 35px;
 }
 
-.cartics-logo {
-    width: 85%;
-    height: auto;
-    margin-left: auto;
-    margin-right: -27px;
-}
+/* Estilos responsive */
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
     .header-right {
         margin-right: 10px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .icon-image {
+        max-height: 100px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+
+    .main-header {
+        align-items: flex-end;
+    }
+
+    .header-left,
+    .header-right {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+
+    .header-left {
+        align-self: flex-start;
+    }
+
+    .header-right {
+        max-width: 100%;
+        /* Cambia el ancho máximo a ocupar el 100% del espacio disponible */
+        overflow: hidden;
+        /* Oculta el contenido que se desborda */
     }
 }

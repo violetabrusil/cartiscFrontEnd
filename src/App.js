@@ -1,12 +1,14 @@
 import 'normalize.css';
 import './App.css';
 import './Clients.css';
+import './NewClient.css';
+import './Car.css'
 import './Form.css';
 import './Header.css';
 import './Home.css';
 import './Menu.css';
 import './Modal.css';
-import './NewClient.css';
+import './Loader.css';
 import './Colors.css';
 import './styles/LayoutSections.css';
 
@@ -18,7 +20,7 @@ import LoginExpress from './pages/LoginExpress';
 import Home from './pages/Home';
 import Clients from './pages/clients/Clients';
 import NewClient from './pages/clients/NewClient';
-import Cars from './pages/cars/Car';
+import Cars from './pages/vehicles/Vehicles';
 import Services from './pages/services/Service';
 import Operation from './pages/operations/Operation';
 import Inventory from './pages/inventory/Inventory';
@@ -65,7 +67,7 @@ function App() {
           <PaymentReceiptProvider>
             <ProformaProvider initialSelectedOptionProforma={proformaInitialOption}>
               <div>
-                <InactivityTimer />
+              
                 <Routes>
                   <Route path="/" element={<Navigate to="/login" replace />} />
                   <Route path="/login" element={<Login />} />

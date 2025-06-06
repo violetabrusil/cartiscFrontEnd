@@ -1,53 +1,38 @@
-import "../../Car.css";
-import "../../Modal.css";
-import "../../NewClient.css";
-import "../../Clients.css";
-import "../../Loader.css";
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { debounce } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
-import Select from 'react-select';
 import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
-import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import apiClient from "../../services/apiClient";
 import DataTable from "../../dataTable/DataTable";
 import axios from "axios";
-import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
-import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
 import { workOrderStatus } from "../../constants/workOrderConstants";
 import SearchModalWorkOrder from "../../modal/SearchModalWorkOrder";
-import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
-import { CustomSingleValue } from "../../customSingleValue/CustomSingleValue";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCarContext } from "../../contexts/searchContext/CarContext";
 import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxSpecial";
 import { useStatusColors } from "../../utils/useStatusColors";
 import useCSSVar from "../../hooks/UseCSSVar";
 import ResultItem from "../../resultItem/ResultItem";
+import VehicleFormPanel from "./VehicleFormPanel";
+import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import { CustomColorContainer } from '../../customColorContainer/CustomColorContainer';
+import { ButtonCard } from '../../buttons/buttonCards/ButtonCard';
+import SectionTitle from '../../components/SectionTitle';
 
-const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
-//const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
+const eyeBlueIcon = process.env.PUBLIC_URL + "/images/icons/eyeBlueIcon.png";
 const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
-const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
-const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
-const yearIcon = process.env.PUBLIC_URL + "/images/icons/year.png";
-const kmIcon = process.env.PUBLIC_URL + "/images/icons/km.png";
-const brandIcon = process.env.PUBLIC_URL + "/images/icons/brand.png";
-const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
-const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
+const addVehicleIcon = process.env.PUBLIC_URL + "/images/icons/addVehicleIcon.svg";
 
 const Cars = () => {
 
-    const grayMediumDark = useCSSVar('--gray-medium-dark');
-    const blackAlpha34 = useCSSVar('--black-alpha-34');
     const tertiaryColor = useCSSVar('--tertiary-color');
 
     //Variable para el filtro y la búsqueda de vehículos y clientes
@@ -74,12 +59,7 @@ const Cars = () => {
     const [isSearchClientModalOpen, setIsSearchClientModalOpen] = useState(false);
     const isMounted = useRef(false);
     const source = axios.CancelToken.source();
-    const options = [
-        { value: 'car', label: 'Auto' },
-        { value: 'van', label: 'Camioneta' },
-        { value: 'bus', label: 'Buseta' },
-        { value: 'truck', label: 'Camión' }
-    ];
+
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [refreshVehicles, setRefreshVehicles] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -107,6 +87,13 @@ const Cars = () => {
     const [showMaintenance, setShowMaintenance] = useState(false);
     const [showButtonAddVehicle, setShowButtonAddVehicle] = useState(true);
     const [showAddVehicle, setShowAddVehicle] = useState(false);
+    const options = [
+        { value: 'car', label: 'Auto' },
+        { value: 'van', label: 'Camioneta' },
+        { value: 'bus', label: 'Buseta' },
+        { value: 'truck', label: 'Camión' }
+    ];
+
     const optionsMaintance = ['Cambio de aceite', 'Cambio de motor'];
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isWorkOrderModalOpen, setIsWorkOrderModalOpen] = useState(false);
@@ -119,36 +106,6 @@ const Cars = () => {
 
     const transformPlateForSaving = (plateWithDash) => {
         return plateWithDash.replace(/-/g, '');
-    };
-
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
-
-    const customStyles = {
-        control: (provided, state) => ({
-            ...provided,
-            className: 'custom-select-control',
-            width: isTabletLandscape ? '95%' : '99%',
-            height: '50px', // Estilo personalizado para la altura
-            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
-            padding: '8px',
-            marginBottom: '20px',
-            marginTop: '8px'
-        }),
-        placeholder: (provided, state) => ({
-            ...provided,
-            color: grayMediumDark, // Color del texto del placeholder
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            className: 'custom-select-option',
-            // otros estilos personalizados si los necesitas
-        }),
-        menu: (provided, state) => ({
-            ...provided,
-            width: '100%', // puedes ajustar el ancho del menú aquí
-        }),
-
     };
 
     // Función para restablecer el formulario
@@ -205,9 +162,11 @@ const Cars = () => {
             Header: 'Estado',
             accessor: 'work_order_status',
             Cell: ({ value }) =>
-                <label style={{ color: statusColors[value], fontWeight: "bold" }}>
-                    {value}
-                </label>
+                <CustomColorContainer
+                    statusColors={statusColors}
+                    value={value}
+
+                />
         },
         {
             Header: 'Fecha inicio',
@@ -223,22 +182,23 @@ const Cars = () => {
         {
             Header: 'Kilometraje',
             accessor: 'km',
+            Cell: ({ value }) => (
+                <span style={{ fontWeight: 'bold' }}>
+                    {value}
+                </span>
+            )
         },
         {
             Header: 'Total',
             accessor: 'total',
             Cell: ({ value }) => (
-                <span>
+                <span style={{ fontWeight: 'bold' }}>
                     $ {parseFloat(value).toFixed(2)}
                 </span>
             )
         },
         {
-            Header: 'Creado por',
-            accessor: 'created_by'
-        },
-        {
-            Header: "",
+            Header: "Ver detalle",
             Cell: ({ row }) => {
                 const workOrder = row.original;
                 return (
@@ -247,7 +207,7 @@ const Cars = () => {
                         onClick={() => handleShowInformationWorkOrderClick(workOrder.id)}
                     >
 
-                        <img src={eyeIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
+                        <img src={eyeBlueIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
                         />
                     </button>
                 );
@@ -314,11 +274,13 @@ const Cars = () => {
         // setSelectedVehicleId(vehicleId);
         const numericVehicleId = Number(vehicleId);
         // Encuentra el vehículo en el array de vehículos
-        const vehiclePlate = vehicles.find(vehicle => vehicle.id === numericVehicleId);
+        const vehicleInformation = vehicles.find(vehicle => vehicle.id === numericVehicleId);
 
         // Asegúrate de que el vehículo fue encontrado antes de continuar
-        if (vehiclePlate) {
-            setSelectedPlateVehicle(vehiclePlate.plate);
+        if (vehicleInformation) {
+            setSelectedPlateVehicle(vehicleInformation.plate);
+            setNameClient(vehicleInformation.client_name);
+            setCategory(vehicleInformation.category);
             setShowCarHistory(true);
             setShowCarInformation(false);
             setShowMaintenance(false);
@@ -326,6 +288,7 @@ const Cars = () => {
             setShowButtonAddVehicle(false);
             getVehicleHistoryData(numericVehicleId);
             navigate(`/cars/carHistory/${numericVehicleId}`);
+            console.log("pp")
         } else {
             // Maneja el caso en que el vehículo no se encuentra
             console.error(`No se encontró el vehículo con ID: ${numericVehicleId}`);
@@ -450,28 +413,8 @@ const Cars = () => {
         setIsInputFocused(false);
     };
 
-    const handleCarPlateChange = (e) => {
-        const value = e.target.value.toUpperCase();
-        const regex = /^([A-Z]{0,3})-?(\d{0,4})$/;
-
-        if (regex.test(value)) {
-            const formattedValue = value.replace(
-                /^([A-Z]{0,3})-?(\d{0,4})$/,
-                (match, p1, p2) => {
-                    if (p1 && p2) {
-                        return p1 + "-" + p2;
-                    } else {
-                        return value;
-                    }
-                }
-            );
-            setPlateCar(formattedValue);
-        }
-    };
-
     const handleTypeCarChange = (selectedOptionCategoryCar) => {
         setCategory(selectedOptionCategoryCar.value);
-        console.log("estoy dando click")
     };
 
     const openAlertModal = () => {
@@ -745,6 +688,8 @@ const Cars = () => {
             setBrand(selectedVehicle.brand);
             setModel(selectedVehicle.model);
             setMotor(selectedVehicle.motor);
+            setNameClient(selectedVehicle.client_name);
+
         }
     }, [selectedVehicle, iconsVehicles]);
 
@@ -760,7 +705,7 @@ const Cars = () => {
 
     return (
         <div>
-            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Header showIconCartics={true} showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetVehicleState} />
 
             <div className="two-column-layout">
@@ -781,22 +726,25 @@ const Cars = () => {
                         </div>
                     ) : (
 
-                        <div className="panel-content">
-                            {/*Lista de vehículos */}
-                            <div className="scrollable-list-container">
+                        <div className="scrollable-list-container">
+                            <div className="panel-content">
+                                {/*Lista de vehículos */}
+
                                 {vehicles.map(vehicle => (
                                     <ResultItem
                                         key={vehicle.id}
                                         type="car"
                                         data={vehicle}
                                         flagIcon={flagIcon}
-                                        eyeIcon={eyeIcon}
+                                        eyeIcon={eyeBlueIcon}
                                         onClickMain={e => handleCarHistory(vehicle.id, e)}
                                         onClickEye={handleCarInformation}
                                     />
                                 ))}
+
                             </div>
                         </div>
+
 
                     )}
 
@@ -806,159 +754,46 @@ const Cars = () => {
                     <ToastContainer />
                     {/*Sección para mostrar el botón de agregar vehículo */}
                     {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
-                        <CustomButtonContainer>
-                            <CustomButton title="AGREGAR VEHÍCULO" onClick={handleOpenModalSearchClient} />
-                        </CustomButtonContainer>
+                        <>
+                            <SectionTitle
+                            title="Panel de Vehículos"
+                            />
+
+                            <ButtonCard
+                                icon="addVehicle"
+                                title="Nuevo Vehículo"
+                                description="Agrega un vehículo de un cliente"
+
+                            />
+                        </>
+
+
                     )}
 
                     {/*Sección para mostrar el formulario para agregar un vehículo*/}
                     {showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
-                        <>
-                            <CustomTitleSection
-                                onBack={handleGoBackButton}
-                                title={nameClient}
-                            />
-
-                            <div className="panel-content-form">
-                                <div className="form-scroll">
-
-                                    <div className={`input-container ${isInputFocused ? "active" : ""}`}>
-                                        <div className="label-container">
-                                            <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                            <label className="label-plate-vehicle">ECUADOR</label>
-                                        </div>
-                                        <input
-                                            className="input-plate"
-                                            type="text"
-                                            value={plateCar}
-                                            onChange={handleCarPlateChange}
-                                            onFocus={handleInputFocus}
-                                            onBlur={handleInputBlur}
-                                        />
-
-                                        {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
-                                            <img src={alertIcon} className="alert" alt="Alert" />
-                                        </button>
-                                        */}
-                                    </div>
-
-                                    <label className="label-form">
-                                        Año
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-add-vehicle"
-                                                type="number"
-                                                value={year}
-                                                onChange={(e) => setYear(parseInt(e.target.value))}
-                                            />
-
-                                            <img
-                                                src={yearIcon}
-                                                alt="Year Icon"
-                                                className="input-new-client-icon"
-                                            />
-
-                                        </div>
-
-                                    </label>
-                                    <label className="label-form">
-                                        Categoría
-                                        <Select
-                                            components={{ Placeholder: CustomPlaceholder }}
-                                            isSearchable={false}
-                                            options={options}
-                                            value={options.find(option => option.value === category)}
-                                            onChange={handleTypeCarChange}
-                                            styles={customStyles}
-                                            placeholder="Seleccionar"
-                                            menuPortalTarget={document.body} />
-                                    </label>
-                                    <label className="label-form">
-                                        Kilometraje actual
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-add-vehicle"
-                                                type="number"
-                                                value={km}
-                                                onChange={(e) => setKm(parseInt(e.target.value))}
-                                            />
-                                            <img
-                                                src={kmIcon}
-                                                alt="Km Icon"
-                                                className="input-new-client-icon"
-                                                style={{ width: '30px' }}
-                                            />
-
-                                        </div>
-
-                                    </label>
-                                    <label className="label-form">
-                                        Marca
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-add-vehicle"
-                                                type="text"
-                                                value={brand}
-                                                onChange={(e) => setBrand(e.target.value)}
-                                            />
-                                            <img
-                                                src={brandIcon}
-                                                alt="Brand Icon"
-                                                className="input-new-client-icon"
-                                            />
-
-                                        </div>
-
-                                    </label>
-                                    <label className="label-form">
-                                        Modelo
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-add-vehicle"
-                                                type="text"
-                                                value={model}
-                                                onChange={(e) => setModel(e.target.value)}
-                                            />
-                                            <img
-                                                src={modelIcon}
-                                                alt="Model Icon"
-                                                className="input-new-client-icon"
-                                                style={{ top: '35%' }}
-                                            />
-
-                                        </div>
-
-                                    </label>
-                                    <label className="label-form">
-                                        Motor
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-add-vehicle"
-                                                type="text"
-                                                value={motor}
-                                                onChange={(e) => setMotor(e.target.value)}
-                                            />
-                                            <img
-                                                src={motorIcon}
-                                                alt="Motor Icon"
-                                                className="input-new-client-icon"
-
-                                            />
-
-                                        </div>
-
-                                    </label>
-
-                                </div>
-
-                                <div className="container-button-next">
-                                    <button className="button-next" onClick={handleAddVehicle}>
-                                        GUARDAR
-                                    </button>
-                                </div>
-                            </div>
-
-                        </>
+                        <VehicleFormPanel
+                            mode="add"
+                            plateCar={plateCar}
+                            setPlateCar={setPlateCar}
+                            year={year}
+                            setYear={setYear}
+                            brand={brand}
+                            setBrand={setBrand}
+                            model={model}
+                            setModel={setModel}
+                            motor={motor}
+                            setMotor={setMotor}
+                            category={category}
+                            setCategory={setCategory}
+                            km={km}
+                            setKm={setKm}
+                            handleInputFocus={handleInputFocus}
+                            handleInputBlur={handleInputBlur}
+                            onSubmit={handleAddVehicle}
+                            onBack={handleGoBackButton}
+                            nameClient={nameClient}
+                        />
 
                     )}
 
@@ -972,18 +807,45 @@ const Cars = () => {
                                     <img src={iconAlertWhite} className="icon-alert-white" alt="Icon Maintenance" />
                                 </button>
                             </div>
-                            */}
-                            <div className="container-maintenance-filter">
-                                <button onClick={handleGoBackButton} className="button-arrow-new-client">
-                                    <img src={arrowLeftIcon} className="arrow-icon-new-client" alt="Arrow Icon" />
-                                </button>
-                                <h2>Historial de Órdenes de trabajo</h2>
-                                <button className="button-maintenance-filter" onClick={handleOpenModalWorkOrder}>
-                                    <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
-                                    <span className="button-maintenance-text-filter">Filtro</span>
-                                </button>
+                             */}
+
+                            <CustomTitleSection
+                                onBack={handleGoBackButton}
+                                titlePrefix="Panel Vehículos"
+                                title="Historial de Órdenes de trabajo"
+                                showCustomButton={false}
+                                showDisableIcon={false}
+                                showEditIcon={false}
+                                showFilterIcon={true}
+                                onFilter={handleOpenModalWorkOrder}
+                            />
+
+                            <div className="vehicle-history-header">
+
+                                <div className="vehicle-info-left">
+                                    <div className="plate-container">
+                                        <div className="plate-display">
+                                            <div className="plate-ecuador-row">
+                                                <img src={flagIcon} alt="flag" className="ecuador-flag" />
+                                                <span className="ecuador-label">ECUADOR</span>
+                                            </div>
+                                            <div className="plate-value">{selectedPlateVehicle}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="vehicle-info-right">
+                                    <div className="vehicle-icon-container">
+                                        <img className="vehicle-icon" src={iconsVehicles[category]} alt="Icon Vehicle" />
+                                    </div>
+                                    <div className="vehicle-client-name">
+                                        <label>{nameClient}</label>
+                                    </div>
+                                </div>
+
 
                             </div>
+
 
                             <div className="car-history-section">
                                 <DataTable
@@ -997,162 +859,33 @@ const Cars = () => {
                     )}
 
                     {showCarInformation && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showMaintenance && (
-                        <div>
-                            <CustomTitleSection
-                                onBack={handleGoBackButton}
-                                title="Información del vehículo"
-                                showDisableIcon={true}
-                                onDisable={openAlertModalVehicleSuspend}
-                                showEditIcon={true}
-                                onEdit={() => setIsEditMode(true)}
-                            />
-
-                            <div className="container-add-car-form">
-                                <div className="form-scroll">
-                                    <form>
-                                        <div className={`input-container ${isInputFocused ? "active" : ""}`}>
-                                            <input
-                                                className="input-plate"
-                                                type="text"
-                                                value={plateCar}
-                                                onFocus={handleInputFocus}
-                                                onBlur={handleInputBlur}
-                                                onChange={handleCarPlateChange}
-                                                readOnly={!isEditMode}
-                                            />
-                                            <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                            <label className="label-plate-vehicle">ECUADOR</label>
-                                            {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
-                                                <img src={alertIcon} className="alert" alt="Alert" />
-                    </button                >*/}
-                                        </div>
-
-                                        <label className="label-form">
-                                            Año
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="number"
-                                                    value={year}
-                                                    onChange={(e) => setYear(parseInt(e.target.value))}
-                                                    readOnly={!isEditMode}
-                                                />
-
-                                                <img
-                                                    src={yearIcon}
-                                                    alt="Year Icon"
-                                                    className="input-new-client-icon"
-                                                />
-
-                                            </div>
-
-                                        </label>
-                                        <label className="label-form">
-                                            Categoría
-                                            <Select
-                                                components={{ SingleValue: CustomSingleValue }}
-                                                isSearchable={false}
-                                                options={options}
-                                                value={options.find(option => option.value === category)}
-                                                onChange={handleTypeCarChange}
-                                                styles={customStyles}
-                                                readOnly={!isEditMode}
-                                                menuPortalTarget={document.body}
-                                            />
-                                        </label>
-                                        <label className="label-form">
-                                            Kilometraje actual
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="number"
-                                                    value={km}
-                                                    onChange={(e) => setKm(parseInt(e.target.value))}
-                                                    readOnly={!isEditMode}
-                                                />
-
-                                                <img
-                                                    src={kmIcon}
-                                                    alt="Km Icon"
-                                                    className="input-new-client-icon"
-                                                    style={{ width: '30px' }}
-                                                />
-
-                                            </div>
-
-                                        </label>
-                                        <label className="label-form">
-                                            Marca
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="text"
-                                                    value={brand}
-                                                    onChange={(e) => setBrand(e.target.value)}
-                                                    readOnly={!isEditMode}
-                                                />
-                                                <img
-                                                    src={brandIcon}
-                                                    alt="Brand Icon"
-                                                    className="input-new-client-icon"
-                                                />
-
-                                            </div>
-
-                                        </label>
-                                        <label className="label-form">
-                                            Modelo
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="text"
-                                                    value={model}
-                                                    onChange={(e) => setModel(e.target.value)}
-                                                    readOnly={!isEditMode}
-                                                />
-                                                <img
-                                                    src={modelIcon}
-                                                    alt="Model Icon"
-                                                    className="input-new-client-icon"
-                                                    style={{ top: '35%' }}
-                                                />
-
-                                            </div>
-
-                                        </label>
-                                        <label className="label-form">
-                                            Motor
-                                            <div className="input-form-new-client">
-                                                <input
-                                                    className="input-form-add-vehicle"
-                                                    type="number"
-                                                    value={motor}
-                                                    onChange={(e) => setMotor(e.target.value)}
-                                                    readOnly={!isEditMode}
-                                                />
-                                                <img
-                                                    src={motorIcon}
-                                                    alt="Motor Icon"
-                                                    className="input-new-client-icon"
-
-                                                />
-
-                                            </div>
-
-                                        </label>
-                                    </form>
-                                </div>
-
-                                {isEditMode &&
-                                    <div className="container-button-edit-vehicle">
-                                        <button className="button-edit-data-vehicle" onClick={handleEditVehicle}>
-                                            GUARDAR
-                                        </button>
-                                    </div>
-                                }
-                            </div>
-
-                        </div>
+                        <VehicleFormPanel
+                            mode="edit"
+                            plateCar={plateCar}
+                            setPlateCar={setPlateCar}
+                            year={year}
+                            setYear={setYear}
+                            brand={brand}
+                            setBrand={setBrand}
+                            model={model}
+                            setModel={setModel}
+                            motor={motor}
+                            setMotor={setMotor}
+                            category={category}
+                            setCategory={setCategory}
+                            km={km}
+                            setKm={setKm}
+                            isEditMode={isEditMode}
+                            setIsEditMode={setIsEditMode}
+                            isInputFocused={isInputFocused}
+                            handleInputFocus={handleInputFocus}
+                            handleInputBlur={handleInputBlur}
+                            onSubmit={handleEditVehicle}
+                            onBack={handleGoBackButton}
+                            onDisable={openAlertModalVehicleSuspend}
+                            onEdit={() => setIsEditMode(true)}
+                            nameClient={nameClient}
+                        />
                     )}
 
                     {showMaintenance && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && (

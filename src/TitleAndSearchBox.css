@@ -1,7 +1,8 @@
 .container-title {
     display: flex;
     align-items: center;
-    width: 96%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .container-title h2 {
@@ -36,7 +37,7 @@
 .search-box {
     display: flex;
     align-items: center;
-    max-width: 95%;
+    max-width: 100%;
     height: 25px;
     margin-bottom: 25px;
     padding: 5px;

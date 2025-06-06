@@ -267,7 +267,7 @@ const NewClient = () => {
                                     <img
                                         src={cedulaIcon}
                                         alt="Id Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                     />
                                 </div>
 
@@ -285,7 +285,7 @@ const NewClient = () => {
                                     <img
                                         src={nameIcon}
                                         alt="Name Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                     />
                                 </div>
 
@@ -303,7 +303,7 @@ const NewClient = () => {
                                     <img
                                         src={addressIcon}
                                         alt="Address Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                     />
                                 </div>
 
@@ -321,7 +321,7 @@ const NewClient = () => {
                                     <img
                                         src={emailIcon}
                                         alt="Email Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                     />
                                 </div>
 
@@ -339,7 +339,7 @@ const NewClient = () => {
                                     <img
                                         src={phoneIcon}
                                         alt="Phone Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                     />
                                 </div>
 
@@ -399,7 +399,7 @@ const NewClient = () => {
                                             <img
                                                 src={yearIcon}
                                                 alt="Year Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
 
                                         </div>
@@ -432,7 +432,7 @@ const NewClient = () => {
                                             <img
                                                 src={kmIcon}
                                                 alt="Km Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                                 style={{ width: '30px' }}
                                             />
                                         </div>
@@ -450,7 +450,7 @@ const NewClient = () => {
                                             <img
                                                 src={brandIcon}
                                                 alt="Brand Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
 
                                         </div>
@@ -468,7 +468,7 @@ const NewClient = () => {
                                             <img
                                                 src={modelIcon}
                                                 alt="Model Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                                 style={{ top: '35%' }}
                                             />
 
@@ -487,7 +487,7 @@ const NewClient = () => {
                                             <img
                                                 src={motorIcon}
                                                 alt="Motor Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
 
                                             />
                                         </div>

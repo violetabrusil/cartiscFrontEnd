@@ -1,14 +1,15 @@
 .two-column-layout {
     position: fixed;
     top: 80px;
-    left: 60px;
+    left: 80px;
     right: 0;
     bottom: 0;
     display: grid;
     grid-template-columns: 1fr 2fr;
     overflow: hidden;
     z-index: 10;
-    
+    height: auto;
+    border-radius: 10px;
 }
 
 .left-panel {
@@ -16,40 +17,87 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
+    min-height: 0;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .right-panel {
-    background-color: var(--gray-medium);
+    background-color: var(--gray-light);
     padding: 20px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 100vh;
+    height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    box-shadow: inset 8px 0 8px 0px var(--gray-light-muted);
 }
 
 .panel-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
     box-sizing: border-box;
     overflow: hidden;
+    min-height: 0;
+}
+
+.panel-header-fixed {
+    flex-shrink: 0;
 }
 
 .panel-content-form {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white-cloud);
+    border: 1px solid var(--gray-light-muted);
+    border-radius: 6px;
+    box-shadow: 0 4px 8px var(--black-alpha-20)
+}
+
+.panel-scroll-container {
+    flex: 1;
+    min-height: 0;
     width: 100%;
-    height: 100%;
-    margin: 0 auto;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
-    margin-left: 0.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    /* Ajusta según tu espacio */
+}
+
+.client-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-dark);
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.client-label {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.client-name {
+    font-weight: 400;
+    font-size: 1.3rem;
+}
+
 
 /* Contenedor reutilizable para listas */
 .scrollable-list-container {
@@ -57,8 +105,84 @@
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 0;
-    max-height: 85%;
+    max-height: 97%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
+
+.label-form,
+.label-plate-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--gray-dark);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.label-plate-form {
+    margin-bottom: 0;
+    margin-top: 1rem;
+    margin-left: 0.1rem;
+}
+
+
+.input-form-new {
+    position: relative;
+    width: 100%;
+}
+
+.input-plate {
+    width: 100%;
+    height: 68px;
+    border: 3px solid var(--black-alpha-34);
+    background: var(--white);
+    border-radius: 10px;
+    padding-top: 30px;
+    /* espacio para label + icono */
+    padding-bottom: 8px;
+    font-weight: bold;
+    font-size: 45px;
+    text-align: center;
+    box-shadow: 0 0 0 3px var(--white), 0 0 0 3px var(--white);
+    outline: none;
+    color: var(--gray-obsidian);
+}
+
+.input-plate:focus {
+    border-color: var(--blue-primary-bright);
+    box-shadow: 0 0 0 1px var(--blue-primary-bright);
+}
+
+.input-form-add {
+    width: 100%;
+    height: 50px;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
+    border-radius: 4px;
+    padding: 4px 6px 7px 50px;
+    margin-top: 8px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.input-form-add:focus {
+    border-color: var(--blue-primary-bright);
+    box-shadow: 0 0 0 1px var(--blue-primary-bright);
+}
+
+.icon-new-value {
+    position: absolute;
+    top: 55%;
+    left: 12px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: auto;
+    pointer-events: none;
+}
+
 
 /* MEDIA QUERIES */
 
@@ -91,8 +215,24 @@
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+
     .two-column-layout {
         height: 88vh;
         grid-template-columns: 1.5fr 2fr;
+    }
+
+    .input-form-new {
+        width: 90%;
+    }
+
+    .input-plate {
+        width: 98%;
+    }
+}
+
+@media (max-width: 1440px) and (max-height: 900px) and (orientation: landscape) {
+
+    .input-plate {
+        width: 38%;
     }
 }

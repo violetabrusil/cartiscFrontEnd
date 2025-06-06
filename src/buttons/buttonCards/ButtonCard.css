@@ -1,0 +1,74 @@
+.container-general-button-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    height: 100vh;
+    margin-bottom: 16px;
+}
+
+.container-button-card {
+    width: clamp(120px, 20vw, 200px);
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-shadow: 0 4px 8px var(--black-alpha-20);
+    border-radius: 12px;
+    background-color: var(--white);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.container-button-card:hover {
+  transform: scale(1.13);
+}
+
+/* ícono centrado */
+.container-icon-center {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.button-card-icon {
+    width: 90px;
+    height: 90px;
+    fill: currentColor;
+    color: var(--blue-intense);
+}
+
+.container-button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.container-label-sticker {
+    background-color: var(--gray-medium-dark);
+    color: var(--gray-obsidian);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-bottom: 0.1rem;
+    font-weight: 300;
+}
+
+.container-button-card-title {
+    font-weight: 600;
+    text-align: left;
+    font-size: 1.3rem;
+}
+
+.container-button-card-description {
+    font-size: 1rem;
+    color: var(--gray-dark);
+    text-align: left;
+}
+
+.container-label-sticker,
+.container-button-card-title,
+.container-button-card-description {
+    text-overflow: ellipsis;
+}

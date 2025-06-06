@@ -70,19 +70,6 @@
     padding-left: 50px;
 }
 
-.input-form-add-vehicle {
-    width: 94%;
-    max-width: 94%;
-    height: 30px;
-    border: 1px solid var(--black-alpha-34);
-    background: var(--white);
-    border-radius: 4px;
-    padding: 8px;
-    margin-bottom: 20px;
-    margin-top: 8px;
-    padding-left: 50px;
-}
-
 .input-form-add-vehicle-modal {
     width: 82%;
     max-width: 94%;
@@ -118,20 +105,7 @@
     background-color: var(--gray-very-light);
 }
 
-.input-plate {
-    width: 100%;
-    height: 68px;
-    border: 4px solid var(--pure-black);
-    background: var(--white);
-    border-radius: 10px;
-    padding-top: 30px;
-    /* espacio para label + icono */
-    padding-bottom: 8px;
-    font-weight: bold;
-    font-size: 45px;
-    text-align: center;
-    box-shadow: 0 0 0 3px var(--white), 0 0 0 3px var(--white);
-}
+
 
 .input-plate-modal {
     width: 65%;
@@ -152,10 +126,12 @@
 }
 
 .input-container {
+    flex: 1;
     position: relative;
     width: 100%;
     max-width: 400px;
     margin: 10px 3px 0;
+    margin-bottom: 15px;
 }
 
 .input-container-modal {
@@ -205,15 +181,6 @@
     top: 23%;
 }
 
-.label-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    color: var(--pure-black);
-    font-size: 16px;
-    font-weight: 600;
-}
-
 .container-add-car-form {
     margin-bottom: 20px;
     margin-left: 16px;
@@ -243,19 +210,6 @@
 .alert {
     width: 30px;
     height: 30px;
-}
-
-.input-form-new-client {
-    position: relative;
-    width: 100%;
-}
-
-.input-new-client-icon {
-    position: absolute;
-    left: 13px;
-    top: 42%;
-    transform: translateY(-50%);
-    width: 26px;
 }
 
 .icon-role-option {
@@ -364,14 +318,6 @@
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
 
-    .input-form-new-client {
-        width: 90%;
-    }
-
-    .input-plate {
-        width: 98%;
-    }
-
     .label-flag {
         margin-left: 73px;
     }
@@ -404,10 +350,6 @@
 }
 
 @media (max-width: 1440px) and (max-height: 900px) and (orientation: landscape) {
-
-    .input-plate {
-        width: 38%;
-    }
 
     .input-container .flag-icon {
         left: calc(10% - -10px);

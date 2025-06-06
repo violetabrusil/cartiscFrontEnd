@@ -9,7 +9,7 @@ export const CustomPlaceholder = props => {
     
     return (
         <div style={{ display: 'flex', alignItems: 'center', marginLeft: '33px', marginTop: '-20px', color: grayMediumDark }}>
-            <img src={categoryIcon} alt="Category Icon" className="input-new-client-icon" style={{left: '5px'}} />
+            <img src={categoryIcon} alt="Category Icon" className="icon-new-value" style={{left: '5px'}} />
             {props.children}
         </div>
     );

@@ -563,7 +563,7 @@
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    /* no bloquea el input */
+    color: var(--gray-dark);
 }
 
 .label-title {

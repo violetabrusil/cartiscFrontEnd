@@ -14,7 +14,7 @@ import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
 import OperationRightSection from "../operations/OperationRightSection";
 import apiClient from "../../services/apiClient";
-import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
+import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import DataTable from "../../dataTable/DataTable";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";

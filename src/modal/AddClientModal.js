@@ -79,7 +79,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                                 <img
                                     src={cedulaIcon}
                                     alt="Id Icon"
-                                    className="input-new-client-icon"
+                                    className="icon-new-value"
                                 />
                             </div>
 
@@ -97,7 +97,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                                 <img
                                     src={nameIcon}
                                     alt="Name Icon"
-                                    className="input-new-client-icon"
+                                    className="icon-new-value"
                                 />
                             </div>
 
@@ -115,7 +115,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                                 <img
                                     src={addressIcon}
                                     alt="Address Icon"
-                                    className="input-new-client-icon"
+                                    className="icon-new-value"
                                 />
                             </div>
 
@@ -133,7 +133,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                                 <img
                                     src={emailIcon}
                                     alt="Email Icon"
-                                    className="input-new-client-icon"
+                                    className="icon-new-value"
                                 />
                             </div>
 
@@ -151,7 +151,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                                 <img
                                     src={phoneIcon}
                                     alt="Phone Icon"
-                                    className="input-new-client-icon"
+                                    className="icon-new-value"
                                 />
                             </div>
 

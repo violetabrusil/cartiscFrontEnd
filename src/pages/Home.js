@@ -9,7 +9,7 @@ const Home = () => {
 
     return (
         <div>
-            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Header showIconCartics={true} showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
             <div className="container">
 

@@ -15,7 +15,7 @@ import apiClient from "../../services/apiClient";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import Modal from "../../modal/Modal";
 import { getVehicleCategory } from "../../constants/vehicleCategoryConstants";
-import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
+import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 import useCSSVar from "../../hooks/UseCSSVar";
@@ -729,7 +729,7 @@ const Clients = () => {
                                             <img
                                                 src={cedulaIcon}
                                                 alt="Id Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -747,7 +747,7 @@ const Clients = () => {
                                             <img
                                                 src={nameIcon}
                                                 alt="Name Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -765,7 +765,7 @@ const Clients = () => {
                                             <img
                                                 src={addressIcon}
                                                 alt="Address Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
 
                                         </div>
@@ -784,7 +784,7 @@ const Clients = () => {
                                             <img
                                                 src={emailIcon}
                                                 alt="Email Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -802,7 +802,7 @@ const Clients = () => {
                                             <img
                                                 src={phoneIcon}
                                                 alt="Phone Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -867,7 +867,7 @@ const Clients = () => {
                                             <img
                                                 src={yearIcon}
                                                 alt="Year Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -883,7 +883,7 @@ const Clients = () => {
                                             <img
                                                 src={categoryIcon}
                                                 alt="Category Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -898,7 +898,7 @@ const Clients = () => {
                                             <img
                                                 src={kmIcon}
                                                 alt="Km Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                                 style={{ width: '30px' }}
                                             />
                                         </div>
@@ -915,7 +915,7 @@ const Clients = () => {
                                             <img
                                                 src={brandIcon}
                                                 alt="Brand Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -931,7 +931,7 @@ const Clients = () => {
                                             <img
                                                 src={modelIcon}
                                                 alt="Model Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                                 style={{ top: '35%' }}
                                             />
                                         </div>
@@ -949,7 +949,7 @@ const Clients = () => {
                                             <img
                                                 src={motorIcon}
                                                 alt="Motor Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
 
@@ -996,7 +996,7 @@ const Clients = () => {
                                             <img
                                                 src={yearIcon}
                                                 alt="Year Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
 
                                         </div>
@@ -1025,7 +1025,7 @@ const Clients = () => {
                                             <img
                                                 src={kmIcon}
                                                 alt="Km Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                                 style={{ width: '30px' }}
                                             />
                                         </div>
@@ -1042,7 +1042,7 @@ const Clients = () => {
                                             <img
                                                 src={brandIcon}
                                                 alt="Brand Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
                                         </div>
                                     </label>
@@ -1057,7 +1057,7 @@ const Clients = () => {
                                             <img
                                                 src={modelIcon}
                                                 alt="Model Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                                 style={{ top: '35%' }}
                                             />
 
@@ -1076,7 +1076,7 @@ const Clients = () => {
                                             <img
                                                 src={motorIcon}
                                                 alt="Motor Icon"
-                                                className="input-new-client-icon"
+                                                className="icon-new-value"
                                             />
 
                                         </div>

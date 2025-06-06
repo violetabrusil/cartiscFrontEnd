@@ -1,0 +1,19 @@
+.section-title-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 0;
+    box-sizing: border-box;
+    position: sticky; /* mantiene el título visible si haces scroll */
+    top: 0;
+    background: none;
+    z-index: 10;
+}
+
+.section-title-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-obsidian);
+    margin: 0;
+}

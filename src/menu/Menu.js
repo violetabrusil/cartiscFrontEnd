@@ -3,9 +3,8 @@ import React, { useState, useEffect, useMemo, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
-const menuButton = process.env.PUBLIC_URL + "/images/icons/menu-button.png";
-const logo = process.env.PUBLIC_URL + "/images/cartics-black.png";
-const logoClose = process.env.PUBLIC_URL + "/images/cartics-icon.png";
+const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIconGray.png";
+const arrowRightIcon = process.env.PUBLIC_URL + "/images/icons/arrowRightIconBlue.png";
 const settingsIconGray = process.env.PUBLIC_URL + "/images/icons/settingsIcon-gray.png";
 const settingsIconBlue = process.env.PUBLIC_URL + "/images/icons/settingsIcon-blue.png";
 const homeIconGray = process.env.PUBLIC_URL + "/images/icons/homeIcon-gray.png";
@@ -29,7 +28,7 @@ const proformaIconGray = process.env.PUBLIC_URL + "/images/icons/proformaIcon-gr
 
 const Menu = ({ resetFunction, onInventoryClick }) => {
 
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(null);
     const [manualToggle, setManualToggle] = useState(false);
@@ -77,59 +76,87 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
         setActiveIndex(foundIndex);
     }, [location.pathname, menuOptions]);
 
+    const configOption = menuOptions.find(option => option.path === "/settings");
+    const mainOptions = menuOptions.filter(option => option.path !== "/settings");
+
     return (
         <div className="Menu">
-            <div className={`menu-lateral ${isOpen ? "open" : ""}`}
+            <div
+                className={`menu-lateral ${isOpen ? "open" : "closed"}`}
                 onMouseEnter={() => {
-                    if (!manualToggle) {
-                        setIsOpen(false);
-                    }
+                    if (!manualToggle) setIsOpen(true);
                 }}
                 onMouseLeave={() => {
-                    if (!manualToggle) {
-                        setIsOpen(true);
-                    }
+                    if (!manualToggle) setIsOpen(false);
                 }}
             >
-                {menuOptions.map((option, index) => (
-                    <Link
-                        to={option.path}
-                        key={index}
-                        className={`opcion-container ${activeIndex === index ? "active" : ""}`}
-                        onClick={() => {
-                            if (option.path === "/inventory") {
-                                if (onInventoryClick) onInventoryClick();
-                            } else {
+                <div className="options-top-menu">
+                    {mainOptions.map((option, index) => (
+                        <Link
+                            to={option.path}
+                            key={index}
+                            className={`opcion-container ${activeIndex === menuOptions.findIndex(o => o.path === option.path) ? "active" : ""}`}
+                            onClick={() => {
+                                if (option.path === "/inventory") {
+                                    if (onInventoryClick) onInventoryClick();
+                                } else {
+                                    if (resetFunction) resetFunction();
+                                }
+                            }}
+                        >
+                            <div className="opcion-content">
+                                <span className="icono">
+                                    <img
+                                        src={activeIndex === menuOptions.findIndex(o => o.path === option.path) ? option.iconSelected : option.icon}
+                                        alt={option.label}
+                                    />
+                                </span>
+                                <span className="texto">{option.label}</span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+
+                <div className="options-bottom-menu">
+                    {configOption && (
+                        <Link
+                            to={configOption.path}
+                            className={`opcion-container ${activeIndex === menuOptions.findIndex(o => o.path === configOption.path) ? "active" : ""}`}
+                            onClick={() => {
                                 if (resetFunction) resetFunction();
-                            }
-                        }}
-                    >
-                        <span className="opcion-container">
-                            <span className="icono">
-                                <img src={activeIndex === index ? option.iconSelected : option.icon} alt="ClientIcon" />
-                            </span>
-                            <span className="texto" style={option.labelStyle}>{option.label}</span>
-                        </span>
+                            }}
+                        >
+                            <div className="opcion-content">
+                                <span className="icono">
+                                    <img
+                                        src={activeIndex === menuOptions.findIndex(o => o.path === configOption.path) ? configOption.iconSelected : configOption.icon}
+                                        alt={configOption.label}
+                                    />
+                                </span>
+                                <span className="texto">{configOption.label}</span>
+                            </div>
+                        </Link>
+                    )}
 
-                    </Link>
-                ))}
-
-                <img
-                    src={isOpen ? logoClose : logo}
-                    alt="Logo Vertical"
-                    className="imagen-vertical"
-                    onClick={handleImageClick}
-                />
-
-                {!isOpen && (
                     <div className="icono-menu">
+               
                         <button className="button-menu" onClick={toggleMenu}>
-                            <img src={menuButton} alt="Menu" />
+                            <img
+                                src={isOpen ? arrowLeftIcon : arrowRightIcon}
+                                alt="Toggle menu"
+                            />
+                            {isOpen && <span className={`button-menu-text ${isOpen ? 'visible' : ''}`}>Cerrar menú</span>}
                         </button>
                     </div>
-                )}
+
+                </div>
+
+
+
+
             </div>
         </div>
+
     );
 };
 

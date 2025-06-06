@@ -10,7 +10,7 @@ import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
 import apiClient from "../../services/apiClient";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
-import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
+import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import useCSSVar from "../../hooks/UseCSSVar";
 

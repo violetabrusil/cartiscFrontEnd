@@ -25,26 +25,11 @@
     padding-inline-start: 15px;
 }
 
-.button-maintenance-filter {
-    width: 100px;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    border: none;
-    background: none;
-    margin-right: 22px;
-}
-
 .button-sort {
     width: 100px;
     border: none;
     margin-top: 3px;
     background: none;
-}
-
-.button-maintenance-text-filter {
-    color: var(--pure-black);
-    font-weight: bold;
 }
 
 .label-maintenance {
@@ -152,14 +137,12 @@
     height: 25px;
 }
 
-.car-history-section .container-table {
-    background-color: var(--white);
+.car-history-section {
+    border-radius: 10px;
+    margin-top: 1rem;
+    margin-left: 1.3rem;
+    margin-right: 1.3rem;
 }
-
-.car-history-section .container-table .products-table td {
-    padding: 4px;
-}
-
 
 .modal-content {
     width: 80%;
@@ -261,7 +244,7 @@
 .label-plate-vehicle {
     font-size: 20px;
     font-weight: 700;
-    color: var(--pure-black);
+    color: var(---gray-dark);
     pointer-events: none;
 }
 
@@ -270,10 +253,92 @@
     max-width: 100%;
 }
 
+.vehicle-history-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem 2rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--gray-medium-light);
+    border-radius: 7px;
+    background: white;
+    margin-left: 1.3rem;
+    margin-right: 1.3rem;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px var(--black-alpha-20);
+}
+
+.vehicle-info-left,
+.vehicle-info-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.vehicle-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vehicle-icon {
+    width: 48px;
+    height: 48px;
+}
+
+.vehicle-client-name label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--pure-black);
+}
+
+/* Simula el input con borde */
+.plate-display {
+    width: 200px;
+    height: 70px;
+    border: 3px solid var(--pure-black);
+    border-radius: 8px;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6px 10px;
+    box-sizing: border-box;
+}
+
+/* Bandera y "Ecuador" arriba */
+.plate-ecuador-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+}
+
+.ecuador-flag {
+    width: 18px;
+    height: 18px;
+}
+
+.ecuador-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--pure-black);
+}
+
+/* Placa centrada */
+.plate-value {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #222;
+}
+
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
-    .input-plate-vehicle {
-        max-width: 33%;
-    }
+
 
     .label-plate-vehicle {
         margin-left: 14%;
@@ -289,9 +354,5 @@
         margin-left: 7%;
     }
 
-    .input-plate-vehicle {
-        max-width: 34%;
-        font-size: 16px;
-    }
-}
 
+}

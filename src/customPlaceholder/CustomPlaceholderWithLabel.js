@@ -10,7 +10,7 @@ export const CustomPlaceholderWithLabel = props => {
     
     return (
         <div style={{ display: 'flex', alignItems: 'center', marginLeft: '39px', color: grayMediumDark }}>
-            <img src={categoryIcon} alt="Category Icon" className="input-new-client-icon" />
+            <img src={categoryIcon} alt="Category Icon" className="icon-new-value" />
             <span>Seleccione</span>
         </div>
     );

@@ -167,7 +167,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
                                     <img
                                         src={yearIcon}
                                         alt="Year Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                     />
 
                                 </div>
@@ -196,7 +196,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
                                     <img
                                         src={kmIcon}
                                         alt="Km Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                         style={{ width: '30px' }}
                                     />
 
@@ -215,7 +215,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
                                     <img
                                         src={brandIcon}
                                         alt="Brand Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                     />
 
                                 </div>
@@ -233,7 +233,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
                                     <img
                                         src={modelIcon}
                                         alt="Model Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
                                         style={{ top: '35%' }}
                                     />
 
@@ -252,7 +252,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
                                     <img
                                         src={motorIcon}
                                         alt="Motor Icon"
-                                        className="input-new-client-icon"
+                                        className="icon-new-value"
 
                                     />
 

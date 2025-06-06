@@ -9,7 +9,7 @@ export const CustomSingleValueProduct = (props) => {
 
     return (
         <div style={{ display: 'flex', alignItems: 'center', marginTop: '-22px', color: grayMediumDark, marginLeft: "50px" }}>
-            <img src={supplierIcon} alt="Supplier Icon" className="input-new-client-icon" style={{left: '6px'}}/>
+            <img src={supplierIcon} alt="Supplier Icon" className="icon-new-value" style={{left: '6px'}}/>
             {props.children}
         </div>
     );

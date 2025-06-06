@@ -1,248 +1,135 @@
 .menu-lateral {
   height: calc(100vh - 80px);
-  width: 60px;
+  width: 80px;
   position: fixed;
-  z-index: 1000; 
+  z-index: 1000;
   top: 80px;
   left: 0;
-  background-color: var(--gray-light);
+  background-color: var(--primary-color);
   transition: width 0.3s ease-in-out;
-  overflow-x: hidden;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.options-top-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.options-bottom-menu {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 4px;
 }
 
-.menu-lateral:hover {
+/* Estado abierto */
+.menu-lateral.open {
   width: 280px;
 }
 
-.menu-lateral a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 16px;
-  color: var(--gray-dark);
-  display: block;
-  transition: 0.3s;
+/* Estado cerrado */
+.menu-lateral.closed {
+  width: 80px;
+}
+
+.opcion-container {
   position: relative;
-  height: 33px;
+  width: 100%;
+  display: block;
+  text-decoration: none;
+  color: var(--gray-muted);
+  padding: 10px 20px;
+  font-weight: 600;
 }
 
-.menu-lateral a .icono {
-  margin-right: 10px;
-  font-size: 20px;
+.opcion-content {
   display: flex;
   align-items: center;
-  max-width: auto;
-  max-height: auto;
 }
 
-.menu-lateral a .icono img {
+.icono {
   width: 30px;
-  height: 28px;
-  margin-left: -13px;
-  margin-top: 10px;
-}
-
-.menu-lateral a .texto {
-  transition: 0s;
-  white-space: nowrap;
-  /* Evita el salto de línea */
-  overflow: hidden;
-  /* Oculta el texto que excede el ancho */
-  text-overflow: ellipsis;
-  /* Agrega puntos suspensivos (...) al final del texto */
-}
-
-.menu-lateral a .opcion-container {
+  height: 30px;
   display: flex;
   align-items: center;
-  margin-top: 5px;
-  /* Ajusta el margen superior según sea necesario */
+  justify-content: center;
 }
 
-.menu-lateral a.active {
-  color: var(--tertiary-color);
+.icono img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Texto con animación */
+.texto {
+  margin-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.2s ease, margin 0.2s ease;
+  opacity: 1;
+  text-overflow: ellipsis;
+}
+
+/* Ocultar texto cuando está cerrado */
+.menu-lateral.closed .texto {
+  opacity: 0;
+  margin-left: 0;
+  pointer-events: none;
+  text-overflow: ellipsis;
+}
+
+/* Activación */
+.opcion-container.active {
   font-weight: bold;
+  color: var(--tertiary-color);
+  background-color: var(--gray-soft-128);
 }
 
-.menu-lateral a.active::before {
+.opcion-container.active::before {
   content: '';
   position: absolute;
-  top: 73%;
-  right: -20px;
-  transform: translate(0, -50%);
-  height: 60%;
-  width: 9px;
   left: 0;
+  top: 0;
+  height: 50px;
+  width: 6px;
   background-color: var(--tertiary-color);
 }
 
-.menu-lateral .icono-menu {
-  position: absolute;
-  bottom: -25px;
-  right: -24px;
-  transform: translateY(-50%) rotate(180deg);
-  transition: transform 0.3s;
-}
-
-.menu-lateral.open .icono-menu {
-  right: auto;
-  left: -13px;
-  /* Posiciona el icono a la izquierda */
-  transform: rotate(0deg);
-}
-
-.menu-lateral .icono-menu img {
-  width: 25px;
-  height: 23px;
-}
-
-.menu-lateral.open {
-  width: 60px;
-}
-
-.menu-lateral.open a .texto {
-  opacity: 0;
-  margin-left: -100px;
-}
-
-.menu-lateral .imagen-vertical {
-  width: 130px;
-  height: auto;
-  position: absolute;
-  bottom: 5px;
-  transform: rotate(0deg);
-  object-fit: contain;
-  transition: transform 0.3s;
+.icono-menu {
   margin-top: auto;
-  margin-left: 55px;
+  padding: 10px 10px 10px 10px;
 }
 
-.menu-lateral.open .imagen-vertical {
-  width: 45px;
-  right: 28px;
-  margin-top: 0;
-  margin-left: auto;
-  margin-right: -20px
-}
-
-.menu-lateral.open .button-menu {
+.button-menu {
   background: none;
   border: none;
-  margin-left: 25px;
-  margin-bottom: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gray-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+  overflow: hidden;
 }
 
-.menu-lateral .button-menu {
-  background: none;
-  border: none;
-  margin-left: 66px;
-  margin-bottom: 50px;
+.button-menu img {
+  width: 30px;
+  height: 30px;
 }
 
-@media screen and (max-width: 768px) {
-  .menu-lateral {
-    padding-top: 15px;
-  }
-
-  .menu-lateral a {
-    font-size: 16px;
-    padding: 8px 8px 8px 24px;
-  }
-
-  .menu-lateral .icono-menu {
-    bottom: -5px;
-    margin-right: 16px;
-  }
-
-  .menu-lateral.open {
-    width: 50px;
-  }
-
-  .menu-lateral a .icono img {
-    max-width: 20px;
-    height: auto;
-    margin-left: -9px;
-  }
-
-  .menu-lateral .imagen-vertical {
-    bottom: 20px;
-    right: 60px;
-    max-width: 50%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
-
-  .menu-lateral.open .imagen-vertical {
-    right: 23px;
-    margin-top: 10px;
-  }
-
-  .menu-lateral.open .icono-menu {
-    left: -19px;
-  }
-
-
+.button-menu-text {
+  max-width: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease, max-width 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-@media screen and (max-width: 520px) {
-  .menu-lateral a .icono img {
-    max-width: 20px;
-    height: auto;
-  }
-
-  .menu-lateral .imagen-vertical {
-    bottom: 23px;
-    right: 60px;
-    max-width: 62%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
-
-  .menu-lateral.open .imagen-vertical {
-    bottom: 60px;
-    left: -50px;
-    max-width: 300%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
-}
-
-@media screen and (max-width: 320px) {
-  .menu-lateral a {
-    font-size: 12px;
-    padding: 8px 8px 8px 20px;
-  }
-
-  .menu-lateral .icono-menu {
-    font-size: 20px;
-  }
-
-  .menu-lateral a .texto {
-    display: none;
-  }
-
-  .menu-lateral .imagen-vertical {
-    bottom: 23px;
-    right: 60px;
-    max-width: 62%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
-
-  .menu-lateral.open .imagen-vertical {
-    bottom: 104px;
-    left: -50px;
-    max-width: 300%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-    margin-top: auto;
-  }
-}
-
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
-  .menu-lateral {
-    height: 88vh; 
-  }
+.button-menu-text.visible {
+  max-width: 100px;
+  opacity: 1;
 }

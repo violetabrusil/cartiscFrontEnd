@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }) => {
         setWasInactive(false);
         navigate("/loginExpress");
     }
-
+/*
     useEffect(() => {
 
         if (sessionExpired) {
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
         }
 
     }, [sessionExpired]);
-
+*/
 
     if (isLoading) {
         return <div>Cargando...</div>; // Puedes agregar un cargador mientras se verifica el estado de la sesión
@@ -106,14 +106,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{ user, setUser, isLoading, sessionExpired, setSessionExpired }}>
             {children}
 
-            {sessionExpired && (
-                <AlertWindow
-                    title="Su sesión ha terminado."
-                    message="Por su seguridad inicie sesión nuevamente."
-                    onConfirm={handleSessionExpired}
-                    fullScreen={true}
-                />
-            )}
+      
 
         </AuthContext.Provider>
     );

@@ -8,8 +8,9 @@ const logoutIcon = process.env.PUBLIC_URL + "/images/icons/logout1Icon.png";
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const carticsLogo = process.env.PUBLIC_URL + "/images/cartics-white.png";
 const userIcon = process.env.PUBLIC_URL + "/images/user.png";
+const carticsIcon = process.env.PUBLIC_URL + "/images/cartics-icon.png";
 
-function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showLogoutButton }) {
+function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showLogoutButton, showIconCartics }) {
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const { user } = useContext(AuthContext);
@@ -22,7 +23,7 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
         ) : (
             <img src={userIcon} alt="Default User Icon" className="profile-image" />
         );
-    }  
+    }
 
     const saveUserForExpressLogin = (user) => {
         const expressLoginData = {
@@ -59,35 +60,17 @@ function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showL
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const styleHeader = {
-        padding: '10px',
-        background: 'var(--primary-color)',
-        display: 'flex',
-        flexDirection: 'column',
-        marginBottom: '0px',
-        height: '60px',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        "@media screen and (maxWidth: 600px)": {
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-        },
-
-    };
-
-    const styleHeaderLarge = {
-        ...styleHeader,
-        flexDirection: 'row',
-        justifyContent: 'space-around'
-    };
-
     const isWindowLarge = windowWidth > 768;
 
     return (
-        <header style={isWindowLarge ? styleHeaderLarge : styleHeader}>
+        <header className={`main-header ${isWindowLarge ? 'header-large' : 'header-default'}`}>
             <div className="header-left">
-                {showIcon && <img src={logo} alt="Mecatronica" className="icon-image" />}
+                {showIcon && showIconCartics &&
+                    <div className="logo-container">
+                        <img src={carticsIcon} alt="Icon Cartics" className="icon-cartics" />
+                        <img src={logo} alt="Mecatronica" className="icon-image" />
+                    </div>
+                }
             </div>
 
             <div className="header-right">

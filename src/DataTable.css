@@ -1,28 +1,30 @@
-
 .products-table {
-    font-size: 12px; 
+    font-size: 16px;
     width: 100%;
     border-collapse: collapse;
 }
 
 .products-table tbody tr:nth-child(odd) {
-    background-color: var(--gray-ultra-light);
+    border-top: 1px solid var(--gray-medium);
+    border-bottom: 1px solid var(--gray-medium);
 }
 
 .products-table td {
     text-align: center;
     padding: 3px;
-    border-top: 1px solid var(--pure-black)k;
+    border-top: 1px solid var(--gray-medium);
+    color: var(--gray-dark);
 }
 
 .products-table th {
     text-align: left;
     padding: 10px;
-    background-color: var(--white);
+    background-color: var(--gray-very-light);
+    color: var(--gray-dark);
 }
 
 .products-table thead th {
-    text-align: center;
+    text-align: center; 
 }
 
 .container-table-buttons {
@@ -33,13 +35,13 @@
 
 .container-table {
     background-color: var(--white);
-    width: 94%;
-    margin: auto;
-    padding-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px var(--black-alpha-20);
 }
 
 .custom-font-size {
-    font-size: 17px; 
+    font-size: 17px;
 }
 
 .add-operation-icon {

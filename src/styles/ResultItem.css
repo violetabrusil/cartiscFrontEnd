@@ -9,9 +9,10 @@
     border: 1px solid var(--gray-medium-light);
     border-radius: 5px;
     padding: 0.5rem;
-    width: 96%;
-    max-width: 1200px;
+    width: 100%;
+    max-width: 100%;
     margin-bottom: 0.5rem;
+    box-sizing: border-box;
 }
 
 /* === BLOQUES CAR=== */

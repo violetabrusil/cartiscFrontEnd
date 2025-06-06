@@ -12,7 +12,7 @@ import Modal from "../../modal/Modal";
 import apiClient from "../../services/apiClient";
 import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxSpecial";
 import { proformaStatus } from "../../constants/proformaConstants";
-import { CustomButton, CustomButtonContainer } from "../../customButton/CustomButton";
+import { CustomButton, CustomButtonContainer } from "../../buttons/customButton/CustomButton";
 import { useProformaContext } from "../../contexts/searchContext/ProformaContext";
 import { useStatusColors } from "../../utils/useStatusColors";
 
