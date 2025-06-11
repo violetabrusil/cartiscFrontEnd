@@ -703,10 +703,8 @@ const Services = () => {
                 <div className="right-panel">
                     <ToastContainer />
                     {showButtons && (
-                        <CustomButtonContainer>
-                            <CustomButton title="AGREGAR SERVICIO" onClick={handleAddService} buttonClassName="button-add-serv" />
-                            <CustomButton title="AGREGAR OPERACIÓN" onClick={handleAddOperation} buttonClassName="button-add-op" />
-                        </CustomButtonContainer>
+                        
+                      <></>
                     )}
 
                     {/*Contenedor para agregar servicio */}

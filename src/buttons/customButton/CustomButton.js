@@ -1,4 +1,4 @@
-import "../../CustomButton.css";
+import "./CustomButton.css";
 import React from "react";
 
 const CustomButtonContainer = ({ containerClassName, children }) => {
@@ -9,12 +9,25 @@ const CustomButtonContainer = ({ containerClassName, children }) => {
     );
 }
 
-const CustomButton = ({ title, onClick, className, buttonClassName, ...props }) => {
+export default function CustomButton({
+    onClick,
+    variant = 'primary',
+    fullWidth = false,
+    disabled = false,
+    type = 'button',
+    title = '', 
+}) {
     return (
-        <button className={`custom-button ${buttonClassName} ${className}`} onClick={onClick} {...props}>
-            <span className="span-custom-button">{title}</span>
+        <button
+            className={`custom-button ${variant} ${fullWidth ? 'full-width' : ''}`}
+            onClick={onClick}
+            disabled={disabled}
+            type={type}
+        >
+            {title}
         </button>
     );
 }
 
-export { CustomButtonContainer, CustomButton };
+
+export { CustomButtonContainer };

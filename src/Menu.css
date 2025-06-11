@@ -43,6 +43,14 @@
   color: var(--gray-muted);
   padding: 10px 20px;
   font-weight: 600;
+  transition: transform 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.opcion-container:hover {
+  transform: scale(1.13);
+  background-color: var(--gray-soft-128);
+  color: var(--tertiary-color);
 }
 
 .opcion-content {

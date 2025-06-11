@@ -297,9 +297,7 @@ const Suppliers = () => {
                 <div className="right-panel">
                     <ToastContainer />
                     {showButtonAddSupplier && !showAddSupplier && (
-                        <CustomButtonContainer>
-                            <CustomButton title="AGREGAR PROVEEDOR" onClick={handleShowAddSupplier} />
-                        </CustomButtonContainer>
+                        <></>
                     )}
 
                     {showAddSupplier && !showButtonAddSupplier && (

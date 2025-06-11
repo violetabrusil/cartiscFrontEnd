@@ -113,30 +113,6 @@
 
 }
 
-.search-client-box {
-    display: flex;
-    align-items: center;
-    max-width: 97%;
-    height: 25px;
-    margin-bottom: 25px;
-    padding: 5px;
-    border-radius: 6px;
-    border: 2px solid var(--gray-soft-134);
-    background: var(--gray-soft-128);
-}
-
-.input-search-client {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-}
-
-.search-client-icon {
-    width: 25px;
-    height: 25px;
-}
-
 .car-history-section {
     border-radius: 10px;
     margin-top: 1rem;
@@ -150,66 +126,6 @@
     background: var(--white);
     padding: 20px;
     border-radius: 5px;
-}
-
-.tabs {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-
-.button-tab {
-    cursor: pointer;
-    padding: 10px;
-    background: none;
-    border: none;
-    font-weight: bold;
-    color: var(--light-gray-blue);
-    position: relative;
-}
-
-.button-tab.active {
-    color: var(--tertiary-color);
-}
-
-.line {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 57%;
-    transform: translateX(-50%);
-    width: 200%;
-    height: 1px;
-    background-color: var(--light-gray-blue);
-}
-
-.button-tab.active .line {
-    background-color: var(--tertiary-color);
-    height: 2px;
-}
-
-.button-close {
-    background: none;
-    border: none;
-    display: flex;
-    margin-left: auto;
-}
-
-.close-icon {
-    width: 25px;
-    height: 25px;
-}
-
-.client-table tbody tr:nth-child(odd) {
-    background-color: var(--gray-ultra-light);
-}
-
-.client-table td {
-    text-align: left;
-}
-
-.client-table thead th {
-    text-align: left;
 }
 
 .container-button-edit-vehicle {

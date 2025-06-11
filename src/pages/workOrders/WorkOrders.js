@@ -275,9 +275,10 @@ const WorkOrders = () => {
                 </div>
 
                 <div className="right-panel">
-                    <CustomButtonContainer>
+                    {/*  <CustomButtonContainer>
                         <CustomButton title="AGREGAR ORDEN DE TRABAJO" onClick={handleAddNewWorkOrder} />
-                    </CustomButtonContainer>
+                    </CustomButtonContainer>*/}
+
                 </div>
             </div>
 

@@ -246,10 +246,11 @@ const Proforma = () => {
                 </div>
 
                 <div className="right-panel">
+                    {/*
                     <CustomButtonContainer>
                         <CustomButton title="AGREGAR PROFORMA" onClick={handleAddNewProforma} />
                     </CustomButtonContainer>
-
+*/}
                 </div>
 
             </div>

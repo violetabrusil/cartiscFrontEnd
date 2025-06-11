@@ -5,11 +5,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import Modal from "../../modal/Modal";
 import apiClient from "../../services/apiClient";
 import DataTable from "../../dataTable/DataTable";
 import axios from "axios";
-import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
 import { workOrderStatus } from "../../constants/workOrderConstants";
 import SearchModalWorkOrder from "../../modal/SearchModalWorkOrder";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,13 +21,12 @@ import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { CustomColorContainer } from '../../customColorContainer/CustomColorContainer';
 import { ButtonCard } from '../../buttons/buttonCards/ButtonCard';
 import SectionTitle from '../../components/SectionTitle';
+import CustomModal from "../../modal/customModal/CustomModal";
+import { vehicleSearchOptions } from '../../constants/filterOptions';
 
 const eyeBlueIcon = process.env.PUBLIC_URL + "/images/icons/eyeBlueIcon.png";
 const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
-const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
-const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
-const addVehicleIcon = process.env.PUBLIC_URL + "/images/icons/addVehicleIcon.svg";
 
 const Cars = () => {
 
@@ -37,7 +34,7 @@ const Cars = () => {
 
     //Variable para el filtro y la búsqueda de vehículos y clientes
     const { selectedOption = "Nombre Titular", setSelectedOption, searchTerm, setSearchTerm } = useCarContext();
-    const [activeTab, setActiveTab] = useState('cédula');
+    const [activeTab, setActiveTab] = useState('nombre');
     const [searchClienTerm, setSearchClientTerm] = useState('');
     const [clients, setClients] = useState([]);
     const [selectedClientId, setSelectedClientId] = useState(null);
@@ -142,10 +139,6 @@ const Cars = () => {
         setIsFilterModalOpen(false);
     };
 
-    const handleOptionChange = (option) => {
-        setSelectedOption(option);
-    };
-
     const handleSelectClick = (option) => {
         // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
@@ -206,7 +199,6 @@ const Cars = () => {
                         className="button-eye-car-work-order"
                         onClick={() => handleShowInformationWorkOrderClick(workOrder.id)}
                     >
-
                         <img src={eyeBlueIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
                         />
                     </button>
@@ -365,23 +357,28 @@ const Cars = () => {
 
     const handleOpenModalSearchClient = () => {
         setIsSearchClientModalOpen(true);
+        setSearchClientTerm('');
+        fetchAllClients();
     };
 
     const handleCloseModalSearchClient = () => {
         setIsSearchClientModalOpen(false);
         setSearchClientTerm('');
         setClients([]);
-        setActiveTab('cédula');
+        setActiveTab('nombre');
     };
 
-    const handleTabChange = (tabName) => {
-        setActiveTab(tabName);
-        setSearchClientTerm('');
-        setClients([]);
+    const onSearchChange = (e) => {
+        const value = e.target.value;
+        if (activeTab === 'nombre' && !/^[a-zA-Z\s]*$/.test(value)) return;
+        if (activeTab === 'cédula' && !/^[0-9]*$/.test(value)) return;
+        setSearchClientTerm(value);
     };
 
     const handleShowAddVehicle = (clientId, event) => {
-        event.stopPropagation();
+
+        if (event) event.stopPropagation();
+
         setShowButtonAddVehicle(false);
         setShowAddVehicle(true);
         handleCloseModalSearchClient();
@@ -390,6 +387,7 @@ const Cars = () => {
         setNameClient(name_client.client.name);
         resetForm();
     };
+
 
     const formatPlate = (plateInput) => {
         const regex = /^([A-Z]{3})(\d{3,4})$/;
@@ -480,8 +478,19 @@ const Cars = () => {
 
     };
 
+    const fetchAllClients = async () => {
+        const response = await apiClient.get('/clients/all');
+        setClients(response.data);
+    };
+
     const handleSearchClientWithDebounce = useCallback(
         debounce(async () => {
+
+            if (searchClienTerm.trim() === '') {
+                fetchAllClients();
+                return;
+            }
+
             let endpoint = '';
             if (activeTab === 'cédula') {
                 endpoint = `/clients/search-by-cedula/${searchClienTerm}`;
@@ -603,21 +612,39 @@ const Cars = () => {
 
     //Para realizar la búsqueda del cliente en el modal
     useEffect(() => {
-        // Al montar el componente
         isMounted.current = true;
 
-        if (searchClienTerm) {
-            handleSearchClientWithDebounce();
+        if (searchClienTerm.trim() === '') {
+            // Si el término de búsqueda está vacío, obtener todos los clientes
+            const fetchAllClients = async () => {
+                try {
+                    const response = await apiClient.get('/clients/all', {
+                        cancelToken: source.token,
+                    });
+                    if (isMounted.current) {
+                        setClients(response.data);
+                    }
+                } catch (error) {
+                    if (!axios.isCancel(error)) {
+                        // Manejar error
+                        console.error(error);
+                    }
+                }
+            };
+            fetchAllClients();
         } else {
-            setClients([]);
+            // Si hay texto, ejecutar la búsqueda con debounce
+            handleSearchClientWithDebounce();
         }
 
-        //Cleanup al desmontar el componente o al cambiar el término de búsqueda
         return () => {
-            isMounted.current = false;  // Indica que el componente ha sido desmontado
-            source.cancel('Search term changed or component unmounted'); // Cancela la solicitud
+            isMounted.current = false;
+            const CancelToken = axios.CancelToken;
+            const source = CancelToken.source();
+            source.cancel('Search term changed or component unmounted');
         };
     }, [searchClienTerm, handleSearchClientWithDebounce]);
+
 
     useEffect(() => {
         //Función que permite obtener todos los vehículos 
@@ -676,7 +703,6 @@ const Cars = () => {
     useEffect(() => {
         console.log("Valor de selectedOption al regresar:", selectedOption, searchTerm);
     }, [selectedOption, searchTerm]);
-
 
     //Obtención de la información del vehículo para editarlo
     useEffect(() => {
@@ -745,7 +771,6 @@ const Cars = () => {
                             </div>
                         </div>
 
-
                     )}
 
                 </div>
@@ -756,18 +781,16 @@ const Cars = () => {
                     {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
                         <>
                             <SectionTitle
-                            title="Panel de Vehículos"
+                                title="Panel de Vehículos"
                             />
 
                             <ButtonCard
                                 icon="addVehicle"
                                 title="Nuevo Vehículo"
                                 description="Agrega un vehículo de un cliente"
-
+                                onClick={handleOpenModalSearchClient}
                             />
                         </>
-
-
                     )}
 
                     {/*Sección para mostrar el formulario para agregar un vehículo*/}
@@ -933,14 +956,18 @@ const Cars = () => {
                 {/*Modal del filtro de búsqueda*/}
 
                 {isFilterModalOpen && (
-                    <Modal
+
+                    <CustomModal
                         isOpen={isFilterModalOpen}
-                        onClose={closeFilterModal}
-                        options={['Nombre Titular', 'Placa']}
-                        defaultOption={selectedOption}
-                        onOptionChange={handleOptionChange}
+                        onCancel={closeFilterModal}
+                        type="filter-options"
+                        subTitle="Seleccione el filtro de búsqueda"
                         onSelect={handleSelectClick}
+                        defaultOption={selectedOption}
+                        options={vehicleSearchOptions}
+                        showCloseButton={false}
                     />
+
                 )}
 
                 {/* 
@@ -968,85 +995,38 @@ const Cars = () => {
                 */}
 
                 {isSearchClientModalOpen && (
-                    <div className="filter-modal-overlay">
-                        <div className="modal-content">
-                            <button className="button-close" onClick={handleCloseModalSearchClient}  >
-                                <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                            </button>
-                            <div className="tabs">
-                                <button className={`button-tab ${activeTab === 'cédula' ? 'active' : ''}`}
-                                    onClick={() => handleTabChange('cédula')}>
-                                    Cédula
-                                    <div className="line"></div>
-                                </button>
-                                <button className={`button-tab ${activeTab === 'nombre' ? 'active' : ''}`}
-                                    onClick={() => handleTabChange('nombre')}>
-                                    Nombre
-                                    <div className="line"></div>
-                                </button>
-                            </div>
-                            <div className="search-client-box">
-                                <img src={searchIcon} alt="Search Icon" className="search-client-icon" />
-                                <input
-                                    className="input-search-client"
-                                    value={searchClienTerm}
-                                    onChange={e => {
-                                        const value = e.target.value;
-                                        if (activeTab === 'cédula' && !/^[0-9]*$/.test(value)) return;
-                                        if (activeTab === 'nombre' && !/^[a-zA-Z\s]*$/.test(value)) return;
-                                        setSearchClientTerm(value);
-                                    }}
-                                    placeholder={`Buscar por ${activeTab}`}
-                                    pattern={activeTab === 'cédula' ? "[0-9]*" : "[a-zA-Z ]*"}
-                                />
-                            </div>
 
-                            {clients.length > 0 && (
-                                <table className="client-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Nombre</th>
-                                            <th>Cédula</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {clients.map(client => (
-                                            <tr key={client.client.id} onClick={(event) => handleShowAddVehicle((client.client.id), event)}>
-                                                <td>{client.client.name}</td>
-                                                <td>{client.client.cedula}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-
-                            )}
-
-                        </div>
-
-                    </div>
+                    <CustomModal
+                        isOpen={isSearchClientModalOpen}
+                        onClose={handleCloseModalSearchClient}
+                        type="search-client"
+                        title="Buscar cliente"
+                        onSearchChange={onSearchChange}
+                        searchClientTerm={searchClienTerm}
+                        activeTab={activeTab}
+                        handleTabChange={setActiveTab}
+                        clients={clients}
+                        handleClientSelect={(id, event) => {
+                            handleShowAddVehicle(id, event);
+                            handleCloseModalSearchClient();
+                        }}
+                        showCloseButton={true}
+                    />
 
                 )}
 
                 {isAlertVehicleSuspend && (
-                    <div className="filter-modal-overlay">
-                        <div className="filter-modal">
-                            <h3 style={{ textAlign: "center" }}>¿Está seguro de suspender el vehículo?</h3>
-                            <div className="button-options">
-                                <div className="half">
-                                    <button className="optionNo-button" onClick={closeAlertModalVehicleSuspend}>
-                                        No
-                                    </button>
-                                </div>
-                                <div className="half">
-                                    <button className="optionYes-button" onClick={handleUnavailableVehicle}  >
-                                        Si
-                                    </button>
 
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                    <CustomModal
+                        isOpen={isAlertVehicleSuspend}
+                        type="confirm-suspend"
+                        subTitle="¿Está seguro de suspender el vehículo?"
+                        description="Al suspender el vehículo, se ocultará temporalmente del sistema.
+                        Podrás volver a activarlo desde Configuración en cualquier momento."
+                        onCancel={closeAlertModalVehicleSuspend}
+                        onConfirm={handleUnavailableVehicle}
+                        showCloseButton={false}
+                    />
 
                 )}
 
@@ -1067,25 +1047,17 @@ const Cars = () => {
                 )}
 
                 {isWorkOrderModalOpen && (
-                    <div className="filter-modal-overlay">
-                        <div className="filter-modal">
-                            <h3 style={{ textAlign: "center" }}>Desea generar una nueva orden de trabajo?</h3>
-                            <div className="button-options">
-                                <div className="half">
-                                    <button className="optionNo-button" onClick={closeWorkOrderModal}>
-                                        No
-                                    </button>
-                                </div>
-                                <div className="half">
-                                    <button className="optionYes-button" onClick={handleAddWorkOrder}>
-                                        Si
-                                    </button>
 
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                    <CustomModal
+                        isOpen={isWorkOrderModalOpen}
+                        type="confirm-workorder"
+                        subTitle="Desea generar una nueva orden de trabajo?"
+                        description="Se va a registrar una nueva orden de trabajo para este vehículo.
+                        Si lo prefiere, puede hacerlo más adelante desde el módulo Órdenes de Trabajo"
+                        onCancel={closeWorkOrderModal}
+                        onConfirm={handleAddWorkOrder}
+                        showCloseButton={false}
+                    />
                 )}
 
             </div>

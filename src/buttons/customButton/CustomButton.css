@@ -1,0 +1,90 @@
+.custom-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    align-self: center;
+    width: 160px;
+    height: 40px;
+    transition: background-color 0.3s ease;
+}
+
+.custom-button.full-width {
+    width: 100%;
+}
+
+.custom-button.primary {
+    background-color: var(--second-color);
+    color: var(--white);
+}
+
+.custom-button.primary:hover {
+    background-color: var(--deep-blue);
+}
+
+.custom-button.secondary {
+    background-color: var(--gray-dark);
+    color: var(--white);
+}
+
+.custom-button.secondary:hover {
+    background-color: var(--gray-medium-dark);
+}
+
+.custom-button:disabled {
+    background-color: var(--gray-shadow);
+    cursor: not-allowed;
+}
+
+.custom-button.alert {
+    background-color: var(--yellow-warm);
+    color: var(--white);
+}
+
+.custom-button.alert:hover {
+    background-color: var(--yellow-soft);
+}
+
+.custom-button.alert-second {
+    border: 1px solid var(--smoke-silver) ;
+    background-color: var(--white);
+    color: var(--gray-medium-dark);
+}
+
+.custom-button.alert-second:hover {
+    background-color: var(--gray-ultra-light);
+}
+
+.custom-button.confirm {
+    background-color: var(--electric-lime);
+    color: var(--white-cloud);
+}
+
+.custom-button.confirm:hover {
+    background-color: var(--lime-green);
+}
+
+.custom-button.confirm-second {
+    border: 1px solid var(--gray-medium-light) ;
+    background-color: var(--white);
+    color: var(--gray-medium-dark);
+}
+
+.custom-button.confirm-second:hover {
+    background-color: var(--gray-ultra-light);
+}
+
+.custom-button.select {
+    background-color: var(--blue-intense);
+    color: var(--white);
+}
+
+.custom-button.select:hover {
+    background-color: var(--blue-medium-soft);
+}
+
+
+

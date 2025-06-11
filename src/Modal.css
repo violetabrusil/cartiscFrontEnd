@@ -42,11 +42,6 @@
     /* Ajusta el valor según el espacio deseado */
 }
 
-.button-options {
-    display: flex;
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
 
 .half {
     flex: 1;

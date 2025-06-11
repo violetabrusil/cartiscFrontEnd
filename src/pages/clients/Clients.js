@@ -666,9 +666,12 @@ const Clients = () => {
 
                     {/* Aquí colocamos los componentes para la sección derecha */}
                     {!showClientCarInformation && !showClientInformation && !showAddVehicle && (
+                        <></>
+                        /* 
                         <CustomButtonContainer>
                             <CustomButton title="AGREGAR CLIENTE" onClick={handleAddClient} />
                         </CustomButtonContainer>
+                        */
                     )}
 
                     {/*Información del o los vehículos del cliente */}

@@ -1,9 +1,9 @@
 import "../CustomTitleSection.css";
 import React, { useState, useEffect } from "react";
+import Icon from "../components/Icons";
 
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
-const unavailableIcon = process.env.PUBLIC_URL + "/images/icons/unavailableIcon.png";
 const editIcon = process.env.PUBLIC_URL + "/images/icons/editIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
@@ -62,7 +62,7 @@ const CustomTitleSection = ({
                 }
                 {showDisableIcon && onDisable &&
                     <button onClick={onDisable} className="custom-button-unavailable">
-                        <img src={unavailableIcon} className="custom-button-unavailable-icon" alt="Unavailable Icon" />
+                        <Icon name="noHidden" className="custom-button-unavailable-icon" />
                     </button>
                 }
                 {showEditIcon && onEdit &&

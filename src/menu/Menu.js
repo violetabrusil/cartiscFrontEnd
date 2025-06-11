@@ -1,6 +1,6 @@
 import "../Menu.css";
-import React, { useState, useEffect, useMemo, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useMemo, useContext, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIconGray.png";
@@ -29,22 +29,57 @@ const proformaIconGray = process.env.PUBLIC_URL + "/images/icons/proformaIcon-gr
 const Menu = ({ resetFunction, onInventoryClick }) => {
 
     const [isOpen, setIsOpen] = useState(false);
-    const location = useLocation();
-    const [activeIndex, setActiveIndex] = useState(null);
     const [manualToggle, setManualToggle] = useState(false);
+    const [isHoverinMenu, setIsHoveringMenu] = useState(false);
+    const [activePath, setActivePath] = useState(null);
+    const manualToggleRef = useRef(false);
+    const closeTimeout = useRef(null);
 
+    const location = useLocation();
+    const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
+
+    const setManualToggleAndRef = (value, callback = null) => {
+        manualToggleRef.current = value;
+        setManualToggle(value);
+        if (callback) callback();
+    };
+
     const toggleMenu = () => {
+        const newValue = !manualToggleRef.current;
+        setManualToggleAndRef(newValue);
+        setIsOpen(newValue);
+    };
+
+    const handleClickOption = (event, path, isInventory = false) => {
+        event.preventDefault();
+        console.log("click en opción, abrir menú manualmente");
+
+        // Cancelar cualquier cierre pendiente
+        if (closeTimeout.current) {
+            clearTimeout(closeTimeout.current);
+            closeTimeout.current = null;
+        }
+
+        // ⚠️ FORZAR MANUALMENTE EL REF ANTES DE SETEAR isOpen
+        manualToggleRef.current = true;
         setManualToggle(true);
-        setIsOpen(prevIsOpen => !prevIsOpen);
+        setIsOpen(true);
+
+        if (isInventory && onInventoryClick) {
+            onInventoryClick();
+        } else if (resetFunction) {
+            resetFunction();
+        }
+
+        navigate(path);
     };
 
     const handleImageClick = () => {
         setManualToggle(true);
         setIsOpen(false);
     };
-
 
     const menuOptions = useMemo(() => {
 
@@ -70,24 +105,53 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
         return commonOptions;
     }, [user]);
 
-    useEffect(() => {
-        const currentPath = location.pathname;
-        const foundIndex = menuOptions.findIndex((option) => currentPath.startsWith(option.path));
-        setActiveIndex(foundIndex);
-    }, [location.pathname, menuOptions]);
-
     const configOption = menuOptions.find(option => option.path === "/settings");
     const mainOptions = menuOptions.filter(option => option.path !== "/settings");
+
+    useEffect(() => {
+        setActivePath(location.pathname);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        console.log("isOpen cambió a", isOpen);
+        console.log("manualToggleRef.current:", manualToggleRef.current);
+    }, [isOpen]);
+
+    useEffect(() => {
+        return () => {
+            if (closeTimeout.current) {
+                clearTimeout(closeTimeout.current);
+            }
+        };
+    }, []);
+
 
     return (
         <div className="Menu">
             <div
                 className={`menu-lateral ${isOpen ? "open" : "closed"}`}
                 onMouseEnter={() => {
-                    if (!manualToggle) setIsOpen(true);
+                    console.log("mouseenter");
+                    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+                    if (!manualToggleRef.current) {
+                        console.log("Abrir menú por hover");
+                        setIsOpen(true);
+                    }
+                    setIsHoveringMenu(true);
                 }}
                 onMouseLeave={() => {
-                    if (!manualToggle) setIsOpen(false);
+                    console.log("mouseleave");
+                    setIsHoveringMenu(false);
+                    if (!manualToggleRef.current) {
+                        console.log("Cerrar menú con delay");
+                        closeTimeout.current = setTimeout(() => {
+                            if (!manualToggleRef.current) {
+                                setIsOpen(false);
+                            }
+                        }, 100);
+                    } else {
+                        console.log("no cerrar menú porque fue abierto manualmente");
+                    }
                 }}
             >
                 <div className="options-top-menu">
@@ -95,19 +159,13 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                         <Link
                             to={option.path}
                             key={index}
-                            className={`opcion-container ${activeIndex === menuOptions.findIndex(o => o.path === option.path) ? "active" : ""}`}
-                            onClick={() => {
-                                if (option.path === "/inventory") {
-                                    if (onInventoryClick) onInventoryClick();
-                                } else {
-                                    if (resetFunction) resetFunction();
-                                }
-                            }}
+                            className={`opcion-container ${activePath === option.path && !isHoverinMenu ? "active" : ""}`}
+                            onClick={(event) => handleClickOption(event, option.path, option.path === "/inventory")}
                         >
                             <div className="opcion-content">
                                 <span className="icono">
                                     <img
-                                        src={activeIndex === menuOptions.findIndex(o => o.path === option.path) ? option.iconSelected : option.icon}
+                                        src={activePath === option.path && !isHoverinMenu ? option.iconSelected : option.icon}
                                         alt={option.label}
                                     />
                                 </span>
@@ -121,15 +179,13 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                     {configOption && (
                         <Link
                             to={configOption.path}
-                            className={`opcion-container ${activeIndex === menuOptions.findIndex(o => o.path === configOption.path) ? "active" : ""}`}
-                            onClick={() => {
-                                if (resetFunction) resetFunction();
-                            }}
+                            className={`opcion-container ${activePath === configOption.path && !isHoverinMenu ? "active" : ""}`}
+                            onClick={(event) => handleClickOption(event, configOption.path)}
                         >
                             <div className="opcion-content">
                                 <span className="icono">
                                     <img
-                                        src={activeIndex === menuOptions.findIndex(o => o.path === configOption.path) ? configOption.iconSelected : configOption.icon}
+                                        src={activePath === configOption.path && !isHoverinMenu ? configOption.iconSelected : configOption.icon}
                                         alt={configOption.label}
                                     />
                                 </span>
@@ -139,7 +195,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                     )}
 
                     <div className="icono-menu">
-               
+
                         <button className="button-menu" onClick={toggleMenu}>
                             <img
                                 src={isOpen ? arrowLeftIcon : arrowRightIcon}
