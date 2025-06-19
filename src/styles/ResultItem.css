@@ -13,6 +13,13 @@
     max-width: 100%;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
+    transition: padding 0.2s ease, border-color 0.2s ease;
+}
+
+.result-item:hover {
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    border-color: var(--blue-very-soft);
 }
 
 /* === BLOQUES CAR=== */
@@ -97,7 +104,7 @@
 }
 
 /* ===BUTTON EYE === */
-.button-eye-car {
+.button-eye {
     background: none;
     border: none;
     cursor: pointer;
@@ -108,7 +115,117 @@
     justify-content: center;
 }
 
-.icon-eye-car {
+.icon-eye {
+    width: 32px;
+    height: 32px;
+    opacity: 50%;
+}
+
+/* === BLOCK CLIENT === */
+.first-result-client {
+    display: flex;
+    flex: 1 1 95%;
+    gap: 1rem;
+    align-items: center;
+}
+
+.second-result-client {
+    flex: 1 1 5%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* === DATA CLIENT === */
+.container-data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.name-client {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--gray-darkest);
+    line-height: normal;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.id-client {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--blue-intense);
+    line-height: 1.2;
+}
+
+/* === CONTAINER VEHICLES=== */
+.vehicle-count-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.vehicle-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.vehicle-box {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid var(--blue-intense);
+    border-radius: 6px;
+    background-color: var(--blue-deep-dark);
+    min-width: 58px;
+    max-height: 25px;
+    justify-content: center;
+}
+
+.icon-vehicle-category {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+    color: var(--white);
+}
+
+.icon-client {
+    width: 45px;
+    height: 45px;
+    fill: currentColor;
+    color: var(--gray-medium);
+    margin-left: 0.2rem;
+}
+
+.vehicle-count {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.no-vehicles {
+    font-style: italic;
+    color: var(--gray-medium);
+    font-size: 0.9rem;
+}
+
+/* ===BUTTON EYE === */
+.button-eye {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-eye {
     width: 32px;
     height: 32px;
     opacity: 50%;
@@ -128,5 +245,24 @@
 
     .third-result-car {
         align-self: flex-end;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .first-result-client,
+    .second-result-client {
+        flex: 1 1 100%;
+        justify-content: space-between;
+        margin-left: 0;
+    }
+
+    .vehicle-box {
+        min-width: 50px;
+        padding: 0.25rem 0.4rem;
+    }
+
+    .vehicle-count {
+        font-size: 0.85rem;
     }
 }

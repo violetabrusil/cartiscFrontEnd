@@ -1,9 +1,13 @@
 import React from "react";
 import "../styles/ResultItem.css";
+import Icon from "../components/Icons";
+
+const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
+
 
 const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, icons = {}, extra = {} }) => {
 
-    const { autoIcon, camionetaIcon, busetaIcon, camionIcon, clientIcon, receiptIcon, statusColors = {} } = icons;
+    const { receiptIcon, statusColors = {} } = icons;
 
     return (
         <div className={`result-item result--${type}`} onClick={onClickMain}>
@@ -35,8 +39,8 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, ic
                     </div>
 
                     <div className="third-result-car">
-                        <button className="button-eye-car" onClick={e => { e.stopPropagation(); onClickEye(data, e); }}>
-                            <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car" />
+                        <button className="button-eye" onClick={e => { e.stopPropagation(); onClickEye(data, e); }}>
+                            <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye" />
                         </button>
                     </div>
                 </>
@@ -44,50 +48,15 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, ic
 
             {type === "client" && (
                 <>
-                    <div className="first-result">
-                        <img src={clientIcon} alt="Client Icon" className="icon-client" />
+                    <div className="first-result-client">
+                        <Icon name="client" className="icon-client" />
                         <div className="container-data">
                             <label className="name-client">{data.client.name}</label>
-
-                            <div className="vehicle-count-container">
-                                {!data.vehicles_count ||
-                                    Object.values(data.vehicles_count).every((val) => val === 0) ? (
-                                    <div className="no-vehicles">Sin vehículos</div>
-                                ) : (
-                                    <>
-                                        {data.vehicles_count.car > 0 && (
-                                            <div className="container-car-number">
-                                                <label className="car-number">{data.vehicles_count.car}</label>
-                                                <img src={autoIcon} alt="Car client" className="icon-car" />
-                                            </div>
-                                        )}
-                                        {data.vehicles_count.van > 0 && (
-                                            <div className="container-car-number">
-                                                <label className="car-number">{data.vehicles_count.van}</label>
-                                                <div className="van-container">
-                                                    <img src={camionetaIcon} alt="Van client" className="icon-van" />
-                                                </div>
-                                            </div>
-                                        )}
-                                        {data.vehicles_count.bus > 0 && (
-                                            <div className="container-car-number">
-                                                <label className="car-number">{data.vehicles_count.bus}</label>
-                                                <img src={busetaIcon} alt="Bus client" className="icon-bus" />
-                                            </div>
-                                        )}
-                                        {data.vehicles_count.truck > 0 && (
-                                            <div className="container-car-number">
-                                                <label className="car-number">{data.vehicles_count.truck}</label>
-                                                <img src={camionIcon} alt="Truck client" className="icon-car" />
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </div>
+                            <label className="id-client">{data.client.cedula}</label>
                         </div>
                     </div>
 
-                    <div className="second-result">
+                    <div className="second-result-client">
                         <button className="button-eye" onClick={(e) => { e.stopPropagation(); onClickEye(data.client.id, e); }}>
                             <img src={eyeIcon} alt="Eye Icon" className="icon-eye" />
                         </button>

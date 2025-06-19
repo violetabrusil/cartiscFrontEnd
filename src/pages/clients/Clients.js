@@ -3,60 +3,52 @@ import "../../Modal.css";
 import "../../NewClient.css";
 import 'react-toastify/dist/ReactToastify.css';
 import "../../Loader.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
 import PuffLoader from "react-spinners/PuffLoader";
-import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import apiClient from "../../services/apiClient";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
-import Modal from "../../modal/Modal";
 import { getVehicleCategory } from "../../constants/vehicleCategoryConstants";
-import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
-import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 import useCSSVar from "../../hooks/UseCSSVar";
+import ResultItem from "../../resultItem/ResultItem";
+import SectionTitle from "../../components/SectionTitle";
+import { ButtonCard } from "../../buttons/buttonCards/ButtonCard";
+import ClientFormPanel from "./ClientFormPanel";
+import CustomModal from "../../modal/customModal/CustomModal";
+import VehicleFormPanel from "../vehicles/VehicleFormPanel";
+import Icon from "../../components/Icons";
+import { clientSearchOptions } from "../../constants/filterOptions";
 
-const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
-const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
-const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
-const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
-const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
-//const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
+const eyeBlueIcon = process.env.PUBLIC_URL + "/images/icons/eyeBlueIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
-const cedulaIcon = process.env.PUBLIC_URL + "/images/icons/cedula.png";
-const nameIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
-const addressIcon = process.env.PUBLIC_URL + "/images/icons/address.png";
-const emailIcon = process.env.PUBLIC_URL + "/images/icons/email.png";
-const phoneIcon = process.env.PUBLIC_URL + "/images/icons/phone.png";
-const categoryIcon = process.env.PUBLIC_URL + "/images/icons/category.png";
-const yearIcon = process.env.PUBLIC_URL + "/images/icons/year.png";
-const kmIcon = process.env.PUBLIC_URL + "/images/icons/km.png";
-const brandIcon = process.env.PUBLIC_URL + "/images/icons/brand.png";
-const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
-const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
-const Clients = () => {
+const Client = () => {
 
     const tertiaryColor = useCSSVar('--tertiary-color');
-    const grayMediumDark = useCSSVar('--gray-medium-dark');
-    const blackAlpha34 = useCSSVar('--black-alpha-34');
 
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
     //Variables para la sección de clientes
     const [clients, setClients] = useState([]);
+    const [nameClient, setNameClient] = useState('');
+
+    const [showButtonAddClient, setShowButtonAddClient] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedOption, setSelectedOption] = useState('Nombre');
+    const [selectedOption, setSelectedOption] = useState('Nombre Cliente');
     const [selectedClient, setSelectedClient] = useState(null);
+    const [selectedClientId, setSelectedClientId] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [clientSuspended, setClientSuspended] = useState(false);
     const [isAlertClientSuspend, setIsAlertClientSuspend] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [refreshClients, setRefreshClients] = useState(false);
 
     const [cedula, setCedula] = useState('');
     const [name, setName] = useState('');
@@ -65,13 +57,14 @@ const Clients = () => {
     const [phone, setPhone] = useState('');
 
     //Variables para la sección de autos
-
-    const [clientVehicles, setClientVehicles] = useState([]);
-    const [vehicleData, setVehicleData] = useState(null);
     const [selectedClientData, setSelectedClientData] = useState(null);
-    const [isAlertVehicleSuspend, setIsAlertVehicleSuspend] = useState(false);
-    const [showAddVehicle, setShowAddVehicle] = useState(false);
-
+    const [clientVehicles, setClientVehicles] = useState([]);
+    const [selectedVehicle, setSelectedVehicle] = useState(false);
+    const [vehicleData, setVehicleData] = useState(null);
+    const [isAlertVehicleSuspend, setIsAlertVechicleSuspend] = useState(false);
+    const [vehicles, setVehicles] = useState([]);
+    const [refreshVehicles, setRefreshVehicles] = useState(false);
+    const [isWorkOrderModalOpen, setIsWorkOrderModalOpen] = useState(false);
     const [category, setCategory] = useState('');
     const [plateCar, setPlateCar] = useState('');
     const [brand, setBrand] = useState('');
@@ -79,44 +72,7 @@ const Clients = () => {
     const [year, setYear] = useState('');
     const [motor, setMotor] = useState('');
     const [km, setKm] = useState('');
-
-    const handleCarPlateChange = (e) => {
-        const value = e.target.value.toUpperCase();
-        const regex = /^([A-Z]{0,3})-?(\d{0,4})$/;
-
-        if (regex.test(value)) {
-            const formattedValue = value.replace(
-                /^([A-Z]{0,3})-?(\d{0,4})$/,
-                (match, p1, p2) => {
-                    if (p1 && p2) {
-                        return p1 + "-" + p2;
-                    } else {
-                        return value;
-                    }
-                }
-            );
-            setPlateCar(formattedValue);
-        }
-    };
-
-    const transformPlateForSaving = (plateWithDash) => {
-        return plateWithDash.replace(/-/g, '');
-    };
-
-    const handleTypeCarChange = (selectedOptionCategoryCar) => {
-        setCategory(selectedOptionCategoryCar.value);
-    };
-
-    //constantes para ver informacion del cliente y del vehiculo respectivamente
-    //y modales
-    const [showClientInformation, setShowClientInformation] = useState(false);
-    const [showClientCarInformation, setShowClientCarInformation] = useState(false);
-    const [showTitle, setShowTitle] = useState(false);
-    const [selectedVehicle, setSelectedVehicle] = useState(false);
     const [isInputFocused, setIsInputFocused] = useState(false);
-    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    //const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
-    const [refreshClients, setRefreshClients] = useState(false);
 
     const handleSearchClientChange = (term, filter) => {
         setSearchTerm(term);
@@ -133,101 +89,56 @@ const Clients = () => {
         setIsFilterModalOpen(false);
     };
 
-    const handleOptionChange = (option) => {
-        setSelectedOption(option);
-    };
-
     const handleSelectClick = (option) => {
+        // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
         // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
-    const handleAddClient = () => {
-        // Redirige a la página deseada
-        navigate("/clients/newClient");
+    //Estado para controlar la visibilidad del modal 
+    const [showModal, setShowModal] = useState(false);
+
+    // Estado para controlar la visibilidad de formularios
+    const [showFormClient, setShowFormClient] = useState(false);
+    const [showFormVehicle, setShowFormVehicle] = useState(false);
+    const [showClientCarInformation, setShowClientCarInformation] = useState(false);
+    const [showClientInformation, setShowClientInformation] = useState(false);
+    const [showDetailCarInformation, setShowDetailCarInformation] = useState(false);
+
+    const handleYes = () => {
+        setShowModal(false);
+        setShowButtonAddClient(false);
+        setShowFormVehicle(true);
     };
 
-    const handleClientInformation = (clientId, event) => {
-        event.stopPropagation();
-        const client = clients.find(client => client.client.id === clientId);
-        setSelectedClient(client);
-        setShowClientInformation(true);
-        setShowClientCarInformation(false);
-        setShowTitle(false);
-        setSelectedVehicle(null);
-        // Ahora, establece los estados relacionados con la visualización de la información del cliente
-        const clientdata = clients.find(client => client.client.id === clientId);
-        setSelectedClientData(clientdata);
-        setShowClientInformation(true);
-        setShowClientCarInformation(false);
-        setShowAddVehicle(false);
+    const handleNo = () => {
+        setShowModal(false);
+        setShowButtonAddClient(true);
+        setShowFormClient(false);
     };
 
-    const handleClientCarInformation = (clientId, event) => {
-        const clientData = clients.find(client => client.client.id === clientId);
-        event.stopPropagation();
-        fetchVehicleInfoByClientId(clientId);
-        setSelectedClientData(clientData);
+    const handleShowFormClient = () => {
+        setShowFormClient(true);
         setShowClientInformation(false);
-        setShowClientCarInformation(true);
-        setShowTitle(true);
-        setShowAddVehicle(false);
-        setSelectedVehicle(false);
-        resetForm();
-
+        setShowButtonAddClient(false);
     };
 
-    const handleCarInformation = (vehicle, event) => {
-        event.stopPropagation();
-        setVehicleData(vehicle);
-        setSelectedVehicle(true);
-        setShowAddVehicle(false);
-        setShowClientInformation(false);
-        setShowClientCarInformation(true);
-    };
-
-    const handleShowAddVehicle = (event) => {
-        event.stopPropagation();
-        setSelectedVehicle(false);
-        setShowAddVehicle(true);
+    const handleShowFormVehicle = () => {
+        setShowFormVehicle(true);
         setShowClientCarInformation(false);
-        setShowClientInformation(false);
-    };
-
-    const handleAddVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
-        const client_id = selectedClientData.client.id;
-        const plate = transformPlateForSaving(plateCar);
-        event.preventDefault();
-        try {
-            const response = await apiClient.post('/vehicles/register', { client_id, category, plate, brand, model, year, motor, km });
-
-            const newVehicle = response.data;
-            setClientVehicles(prevVehicles => [...prevVehicles, newVehicle]);
-            setRefreshClients(prev => !prev);
-            setShowClientCarInformation(true);
-            setShowClientInformation(false);
-            setShowAddVehicle(false);
-            setSelectedVehicle(false);
-
-            toast.success('Vehículo registrado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            setShowClientCarInformation(true);
-            // Restablecer el estado del formulario de agregar auto
-            resetForm();
-
-        } catch (error) {
-            toast.error('Error al guardar un vehiculo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-        }
-
+        setShowDetailCarInformation(false);
+        setShowButtonAddClient(false);
+        setShowFormClient(false);
     };
 
     // Función para restablecer el formulario
     const resetForm = () => {
+        setCedula("");
+        setName("");
+        setAddress("");
+        setEmail("");
+        setPhone("");
         setPlateCar("");
         setYear("");
         setCategory("");
@@ -236,44 +147,6 @@ const Clients = () => {
         setModel("");
         setMotor("");
     };
-
-    const handleInputFocus = () => {
-        setIsInputFocused(true);
-    };
-
-    const handleInputBlur = () => {
-        setIsInputFocused(false);
-    };
-
-    /*
-    const openAlertModal = () => {
-        setIsAlertModalOpen(true);
-    };
-
-    const closeAlertModal = () => {
-        setIsAlertModalOpen(false);
-    };
-    */
-
-    const openAlertModalClientSuspend = () => {
-        setIsAlertClientSuspend(true);
-    }
-
-    const closeAlerModalClientSuspend = () => {
-        setIsAlertClientSuspend(false);
-    }
-
-    const openAlertModalVehicleSuspend = () => {
-        setIsAlertVehicleSuspend(true);
-    }
-
-    const closeAlerModalVehicleSuspend = () => {
-        setIsAlertVehicleSuspend(false);
-    }
-
-    /*const handleAlertClick = () => {
-        openAlertModal();
-    };*/
 
     const formatPlate = (plateInput) => {
         const regex = /^([A-Z]{3})(\d{3,4})$/;
@@ -289,35 +162,80 @@ const Clients = () => {
         return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
     };
 
-    //Función para suspender un cliente
-    const handleUnavailableClient = async (event) => {
-        //Para evitar que el formulario recargue la página
-        event.preventDefault();
+    const handleInputFocus = () => {
+        setIsInputFocused(true);
+    };
+
+    const handleInputBlur = () => {
+        setIsInputFocused(false);
+    };
+
+    const openAlertModalClientSuspend = () => {
+        setIsAlertClientSuspend(true);
+    }
+
+    const closeAlerModalClientSuspend = () => {
         setIsAlertClientSuspend(false);
+    }
+
+    //Función para agregar un cliente
+    const handleAddClient = async (event) => {
+        // Para evitar que el formulario recargue la página
+        event.preventDefault();
+
         try {
+            const response = await apiClient.post('/clients/register', { cedula, name, address, phone, email });
 
-            const response = await apiClient.put(`/clients/suspend/${selectedClient.client.id}`)
+            const newClient = response.data;
+            setClients(prevClients => [...prevClients, { client: newClient }]);
+            setRefreshClients(prev => !prev);
+            setShowFormClient(false);
 
-            if (response.status === 200) {
-                setClientSuspended(prevState => !prevState);
-                const updatedClients = clients.filter(client => client.id !== selectedClient.client.id);
-                setClients(updatedClients);
-                setShowClientCarInformation(false);
-                setShowClientInformation(false);
-                toast.success('Cliente suspendido', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
-            } else {
-                toast.error('Ha ocurrido un error al suspender al cliente.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-            }
-
-        } catch (error) {
-            toast.error('Error al suspender al cliente. Por favor, inténtalo de nuevo..', {
+            toast.success('Cliente registrado', {
                 position: toast.POSITION.TOP_RIGHT
             });
+
+            setTimeout(() => {
+                setShowModal(true);
+            }, 3000);
+            setShowButtonAddClient(true);
+            setSelectedClient({ client: newClient });
+            setSelectedClientId(response.data.id)
+            setNameClient(response.data.name);
+            resetForm();
+
+        } catch (error) {
+            console.log("error registro cliente", error)
+
+            if (error.response && error.response.status === 400 && error.response.data.errors) {
+                // Muestra los errores en toasts
+                error.response.data.errors.forEach(err => {
+                    toast.error(`${err.field}: ${err.message}`, {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                });
+            }
+        }
+    };
+
+    //Función para obtener los vehículos de un cliente
+    const fetchVehicleInfoByClientId = async (clientId) => {
+        try {
+            const response = await apiClient.get(`/vehicles/active/${clientId}`);
+            if (response.data && response.data.length > 0) {
+                const formattedVehicles = response.data.map(vehicle => {
+                    if (vehicle.plate) {
+                        vehicle.plate = formatPlate(vehicle.plate);
+                    }
+                    return vehicle;
+                });
+
+                setClientVehicles(formattedVehicles);
+            } else {
+                setClientVehicles([]); // O lo que desees hacer si no hay vehículos
+            }
+        } catch (error) {
+            console.error("Error al obtener los datos del vehículo:", error);
         }
     };
 
@@ -349,6 +267,7 @@ const Clients = () => {
                     autoClose: 5000 // duración de 5 segundos
                 });
                 setShowClientInformation(false);
+                setShowButtonAddClient(true);
             } else {
                 toast.error('Ha ocurrido un error al actualizar la información.', {
                     position: toast.POSITION.TOP_RIGHT
@@ -374,40 +293,137 @@ const Clients = () => {
         }
     };
 
-    //Función para obtener los vehículos de un cliente
-    const fetchVehicleInfoByClientId = async (clientId) => {
+    //Función para suspender un cliente
+    const handleUnavailableClient = async (event) => {
+        //Para evitar que el formulario recargue la página
+        event.preventDefault();
+        setIsAlertClientSuspend(false);
         try {
-            const response = await apiClient.get(`/vehicles/active/${clientId}`);
-            if (response.data && response.data.length > 0) {
-                const formattedVehicles = response.data.map(vehicle => {
-                    if (vehicle.plate) {
-                        vehicle.plate = formatPlate(vehicle.plate);
-                    }
-                    return vehicle;
+
+            const response = await apiClient.put(`/clients/suspend/${selectedClient.client.id}`)
+
+            if (response.status === 200) {
+                setClientSuspended(prevState => !prevState);
+                const updatedClients = clients.filter(client => client.id !== selectedClient.client.id);
+                setClients(updatedClients);
+                setShowClientCarInformation(false);
+                setShowClientInformation(false);
+                setShowButtonAddClient(true);
+                setRefreshClients(prev => !prev);
+                toast.success('Cliente suspendido', {
+                    position: toast.POSITION.TOP_RIGHT
                 });
 
-                setClientVehicles(formattedVehicles);
             } else {
-                setClientVehicles([]); // O lo que desees hacer si no hay vehículos
+                toast.error('Ha ocurrido un error al suspender al cliente.', {
+                    position: toast.POSITION.TOP_RIGHT
+                });
             }
+
         } catch (error) {
-            console.error("Error al obtener los datos del vehículo:", error);
+            toast.error('Error al suspender al cliente. Por favor, inténtalo de nuevo..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     };
 
-    //Función para suspender el vehículo de un cliente
+    const transformPlateForSaving = (plateWithDash) => {
+        return plateWithDash.replace(/-/g, '');
+    };
+
+    //Función para agregar un vehículo
+    const handleAddVehicle = async (event) => {
+        // Para evitar que el formulario recargue la página
+        const client_id = selectedClientId;
+        const plate = transformPlateForSaving(plateCar);
+        event.preventDefault();
+        try {
+            const response = await apiClient.post('/vehicles/register', { client_id, category, plate, brand, model, year, motor, km });
+
+            const newVehicle = response.data;
+            setVehicles(prevVehicles => [...prevVehicles, newVehicle]);
+            setRefreshVehicles(prev => !prev);
+            setRefreshClients(prev => !prev);
+            toast.success('Vehículo registrado', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            setTimeout(() => {
+                openWorkOrderModal();
+            }, 3000);
+            setShowButtonAddClient(true);
+            // Restablecer el estado del formulario de agregar auto
+            resetForm();
+
+        } catch (error) {
+            toast.error('Error al guardar un vehiculo', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+
+    };
+
+    //Función para editar la información de un vehículo
+    const handleEditVehicle = async (event) => {
+        // Para evitar que el formulario recargue la página
+        event.preventDefault();
+        const plate = transformPlateForSaving(plateCar);
+
+        try {
+            const response = await apiClient.put(`/vehicles/update/${selectedVehicle.id}`, {
+                plate,
+                year,
+                category,
+                km,
+                brand,
+                model,
+                motor
+            });
+
+            if (response.data && response.data.id) {
+                setIsEditMode(false);
+                const newVehicle = response.data;
+                setVehicles(prevVehicles =>
+                    prevVehicles.map(vehicle =>
+                        vehicle.id === newVehicle.id ? newVehicle : vehicle
+                    )
+                );
+                setRefreshVehicles(prev => !prev);
+                toast.success('Información actualizada correctamente.', {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 5000 // duración de 5 segundos
+                });
+                setShowDetailCarInformation(false);
+                setShowButtonAddClient(true);
+            } else {
+                toast.error('Ha ocurrido un error al actualizar la información.', {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            }
+
+        } catch (error) {
+            console.log("error guardar vehiculo", error)
+            toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    };
+
+    //Función para suspender un cliente
     const handleUnavailableVehicle = async (event) => {
         //Para evitar que el formulario recargue la página
         event.preventDefault();
-        setIsAlertVehicleSuspend(false);
+        setIsAlertVechicleSuspend(false);
 
         try {
 
-            const response = await apiClient.put(`/vehicles/change-status/${vehicleData.id}?status=suspended`)
+            const response = await apiClient.put(`/vehicles/change-status/${selectedVehicle.id}?status=suspended`)
 
             if (response.status === 200) {
-                setShowClientCarInformation(false);
-                setShowClientInformation(false);
+
+                const updateVehicles = vehicles.filter(vehicle => vehicle.id !== selectedVehicle.id);
+                setVehicles(updateVehicles);
+                setShowDetailCarInformation(false);
+                setShowButtonAddClient(true);
                 toast.success('Vehículo suspendido', {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -422,35 +438,105 @@ const Clients = () => {
             toast.error('Error al suspender al vehículo. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
-
-            // Extrae todos los mensajes de error del objeto de respuesta
-            let mensajesError = [];
-            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
-                mensajesError = error.response.data.errors.map(err => err.message);
-            }
-
-            // Une todos los mensajes en uno solo
-            const mensajeFinal = mensajesError.join(" / ");
-
-            toast.error(mensajeFinal || "Hubo un error desconocido", {
-                position: toast.POSITION.TOP_RIGHT
-            });
         }
     };
 
+    const openWorkOrderModal = () => {
+        setIsWorkOrderModalOpen(true);
+    };
+
+    const closeWorkOrderModal = () => {
+        setIsWorkOrderModalOpen(false);
+    };
+
+    const handleAddWorkOrder = () => {
+        navigate("/workOrders/newWorkOrder")
+    };
+
+    const handleClientCarInformation = (clientId, event) => {
+        event.stopPropagation();
+
+        const clientData = clients.find(client => client.client.id === clientId);
+
+        if (!clientData) return;
+
+        setSelectedClientData(clientData);
+        setNameClient(clientData.client.name);
+        fetchVehicleInfoByClientId(clientId);
+
+        setShowClientInformation(false);
+        setShowClientCarInformation(true);
+        setSelectedVehicle(false);
+        setShowButtonAddClient(false);
+        setShowFormClient(false);
+        resetForm();
+    };
+
+
+    const handleClientInformation = (clientId, event) => {
+        event.stopPropagation();
+        const client = clients.find(client => client.client.id === clientId);
+        fetchVehicleInfoByClientId(client.client.id);
+        setSelectedClient(client);
+        setShowClientInformation(true);
+        setShowClientCarInformation(false);
+        setSelectedVehicle(null);
+        setShowButtonAddClient(false);
+        setShowFormClient(false);
+        setShowFormVehicle(false);
+        setShowDetailCarInformation(false);
+        resetForm();
+    };
+
+    const handleDetailCarInformation = (vehicle, event) => {
+        event.stopPropagation();
+
+        if (!selectedClientData) return;
+
+        fetchVehicleInfoByClientId(selectedClientData.client.id);
+        setSelectedClient(selectedClientData);
+        setNameClient(selectedClientData.client.name);
+        setVehicleData(vehicle);
+
+        setShowDetailCarInformation(true);
+        setShowClientInformation(false);
+        setShowClientCarInformation(false);
+
+        // Inicializar los campos con los datos del vehículo seleccionado
+        setPlateCar(vehicle.plate || "");
+        setYear(vehicle.year || "");
+        setBrand(vehicle.brand || "");
+        setModel(vehicle.model || "");
+        setMotor(vehicle.motor || "");
+        setCategory(vehicle.category || "");
+        setKm(vehicle.km || "");
+    };
+
     const handleGoBackToButtons = () => {
-        setShowAddVehicle(false);
+        setShowButtonAddClient(true);
+        setShowFormClient(false);
         setShowClientCarInformation(false);
         setShowClientInformation(false);
-        setShowTitle(false);
+        navigate('/clients');
         resetForm();
     };
 
     const handleGoBack = () => {
+        setShowButtonAddClient(false);
+        setShowFormClient(false);
         setShowClientCarInformation(true);
-        setSelectedVehicle(false);
         setShowClientInformation(false);
-        setShowAddVehicle(false);
+        setShowDetailCarInformation(false);
+        navigate('/clients');
+        resetForm();
+    };
+
+    const openAlertModalVehicleSuspend = () => {
+        setIsAlertVechicleSuspend(true);
+    };
+
+    const closeAlertModalVehicleSuspend = () => {
+        setIsAlertVechicleSuspend(false);
     };
 
     useEffect(() => {
@@ -484,14 +570,14 @@ const Clients = () => {
                 } else {
                     setLoading(false);
                 }
-            }  catch (error) {
+            } catch (error) {
                 console.error("Error en fetchData:", error.message);
             } finally {
                 setLoading(false);
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption, refreshClients, clientSuspended]);
+    }, [searchTerm, selectedOption, refreshClients, refreshVehicles, clientSuspended]);
 
     //Obtención de la información del cliente para editarlo
     useEffect(() => {
@@ -504,57 +590,15 @@ const Clients = () => {
         }
     }, [selectedClient]);
 
-    const options = [
-        { value: 'car', label: 'Auto' },
-        { value: 'van', label: 'Camioneta' },
-        { value: 'bus', label: 'Buseta' },
-        { value: 'truck', label: 'Camión' }
-    ];
-
-    const resetClientState = () => {
-        setShowClientCarInformation(false);
-        // resetea otros estados...
-    };
-
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
-
-    const customStyles = {
-        control: (provided, state) => ({
-            ...provided,
-            className: 'custom-select-control',
-            width: isTabletLandscape ? '96%' : '93%', // Estilo personalizado para el ancho
-            height: '50px', // Estilo personalizado para la altura
-            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
-            padding: '8px',
-            marginBottom: '20px',
-            marginTop: '8px'
-        }),
-        placeholder: (provided, state) => ({
-            ...provided,
-            color: grayMediumDark, // Color del texto del placeholder
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            className: 'custom-select-option',
-            // otros estilos personalizados si los necesitas
-        }),
-        menu: (provided, state) => ({
-            ...provided,
-            width: isTabletLandscape ? '96%' : '93%', // puedes ajustar el ancho del menú aquí
-            marginTop: '-17px'
-        }),
-
-    };
-
     return (
         <div>
-            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
-            <Menu resetFunction={resetClientState} />
+            <Header showIconCartics={true} showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Menu />
 
             <div className="two-column-layout">
+
                 <div className="left-panel">
-                    {/*Título del contenedor con el botón para filtrar búsqueda */}
+                    {/*Título del contenedor y cuadro de búsqueda */}
                     <TitleAndSearchBox
                         selectedOption={selectedOption}
                         title="Clientes"
@@ -570,81 +614,19 @@ const Clients = () => {
                     ) : (
                         <>
                             <div className="scrollable-list-container">
-                                {clients.map(clientData => (
-                                    <div className="result-client" onClick={(event) => handleClientCarInformation(clientData.client.id, event)} key={clientData.client.id}>
-                                        <div className="first-result">
-                                            <img src={clientIcon} alt="Client Icon" className="icon-client" />
-                                            <div className="container-data">
-                                                <label className="name-client">{clientData.client.name}</label>
+                                <div className="panel-content"></div>
+                                {clients.map(client => (
+                                    <ResultItem
+                                        key={client.id}
+                                        type="client"
+                                        data={client}
+                                        eyeIcon={eyeBlueIcon}
+                                        onClickMain={e => handleClientCarInformation(client.client.id, e)}
+                                        onClickEye={handleClientInformation}
 
-                                                <div className="vehicle-count-container">
-
-                                                    {
-                                                        (!clientData.vehicles_count ||
-                                                            Object.values(clientData.vehicles_count).every(val => val === 0)
-                                                        ) ? (
-                                                            <div className="no-vehicles">
-                                                                Sin vehículos
-                                                            </div>
-                                                        ) : (
-                                                            <>
-
-                                                                {clientData.vehicles_count.car > 0 && (
-                                                                    <div className="container-car-number">
-                                                                        <label className="car-number">{clientData.vehicles_count.car}</label>
-                                                                        <img src={autoIcon} alt="Car client" className="icon-car" />
-                                                                    </div>
-                                                                )}
-
-                                                                {clientData.vehicles_count.van > 0 && (
-                                                                    <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.van}
-                                                                        </label>
-                                                                        <div className="van-container">
-                                                                            <img src={camionetaIcon} alt="Van client" className="icon-van"></img>
-                                                                        </div>
-
-                                                                    </div>
-                                                                )}
-
-                                                                {clientData.vehicles_count.bus > 0 && (
-                                                                    <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.bus}
-                                                                        </label>
-                                                                        <img src={busetaIcon} alt="Bus client" className="icon-bus"></img>
-                                                                    </div>
-
-                                                                )}
-
-                                                                {clientData.vehicles_count.truck > 0 && (
-                                                                    <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.truck}
-                                                                        </label>
-                                                                        <img src={camionIcon} alt="Truck client" className="icon-car"></img>
-                                                                    </div>
-
-                                                                )}
-                                                            </>
-
-                                                        )
-                                                    }
-
-                                                </div>
-
-
-
-                                            </div>
-                                        </div>
-
-                                        <div className="second-result">
-                                            <button className="button-eye" onClick={(event) => handleClientInformation(clientData.client.id, event)}>
-                                                <img src={eyeIcon} alt="Eye Icon" className="icon-eye" />
-                                            </button>
-                                        </div>
-
-                                    </div>
-
+                                    />
                                 ))}
+
                             </div>
                         </>
                     )
@@ -654,542 +636,286 @@ const Clients = () => {
                 </div>
 
                 <div className="right-panel">
-
-                    {!selectedVehicle && showTitle && !showAddVehicle && (
-                        <CustomTitleSection
-                            title="Vehículos"
-                            onBack={handleGoBackToButtons}
-                            showAddIcon={true}
-                            onAdd={handleShowAddVehicle}
-                        />
-                    )}
-
-                    {/* Aquí colocamos los componentes para la sección derecha */}
-                    {!showClientCarInformation && !showClientInformation && !showAddVehicle && (
-                        <></>
-                        /* 
-                        <CustomButtonContainer>
-                            <CustomButton title="AGREGAR CLIENTE" onClick={handleAddClient} />
-                        </CustomButtonContainer>
-                        */
-                    )}
-
-                    {/*Información del o los vehículos del cliente */}
-
-                    {!selectedVehicle && showClientCarInformation && !showClientInformation && !showAddVehicle && (
-
-                        <div className="vehicle-info">
-                            {clientVehicles.map(vehicle => (
-                                <div key={vehicle.id} className="vehicle" onClick={(event) => handleCarInformation(vehicle, event)}>
-                                    <div className="vehicle-content">
-                                        {vehicle.category === "car" && (
-                                            <img src={autoIcon} alt="Auto Icon" className="auto-icon" />
-                                        )}
-                                        {vehicle.category === "van" && (
-                                            <img src={camionetaIcon} alt="Camioneta Icon" className="camioneta-icon" />
-                                        )}
-                                        {vehicle.category === "bus" && (
-                                            <img src={busetaIcon} alt="Buseta Icon" className="buseta-icon" />
-                                        )}
-                                        {vehicle.category === "truck" && (
-                                            <img src={camionIcon} alt="Camion Icon" className="camion-icon" />
-                                        )}
-                                        <label className="vehicle-plate"> {formatPlate(vehicle.plate)}</label>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                    )}
-
-                    {/*Información del cliente */}
                     <ToastContainer />
-                    {showClientInformation && !showClientCarInformation && !showAddVehicle && (
-                        <div>
-                            <CustomTitleSection
-                                title="Información del cliente"
-                                onBack={handleGoBackToButtons}
-                                showDisableIcon={true}
-                                onDisable={openAlertModalClientSuspend}
-                                showEditIcon={true}
-                                onEdit={() => setIsEditMode(true)}
 
+                    {/*Sección para mostrar el botón de agregar cliente */}
+                    {showButtonAddClient && !showFormClient && !showClientCarInformation && !showClientCarInformation && !selectedVehicle && (
+
+                        <>
+                            <SectionTitle
+                                title="Panel de Clientes"
                             />
 
-                            <div className="container-data-client-form">
-                                <form>
-                                    <label className="label-form">
-                                        Cédula
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={cedula}
-                                                onChange={(e) => setCedula(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
+                            <ButtonCard
+                                icon="addClient"
+                                title="Nuevo Cliente"
+                                description="Agrega un nuevo cliente"
+                                onClick={handleShowFormClient}
 
-                                            <img
-                                                src={cedulaIcon}
-                                                alt="Id Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Nombre completo
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
+                            />
+                        </>
 
-                                            <img
-                                                src={nameIcon}
-                                                alt="Name Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Dirección
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={address}
-                                                onChange={(e) => setAddress(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
-
-                                            <img
-                                                src={addressIcon}
-                                                alt="Address Icon"
-                                                className="icon-new-value"
-                                            />
-
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Email
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
-
-                                            <img
-                                                src={emailIcon}
-                                                alt="Email Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Teléfono
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
-                                                readOnly={!isEditMode}
-                                            />
-
-                                            <img
-                                                src={phoneIcon}
-                                                alt="Phone Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-
-                                    {isEditMode &&
-
-                                        <div className="container-button-edit-product">
-                                            <button className="button-edit-data-client" onClick={handleEditClient}>
-                                                GUARDAR
-                                            </button>
-                                        </div>
-                                    }
-                                    <ToastContainer />
-
-
-                                </form>
-                            </div>
-
-                        </div>
                     )}
 
-                    {/*Información del vehículo del cliente */}
+                    {showFormClient && !showButtonAddClient && !showClientCarInformation && !showClientCarInformation && !selectedVehicle && (
+                        <>
+                            <ClientFormPanel
+                                mode="add"
+                                cedula={cedula}
+                                setCedula={setCedula}
+                                name={name}
+                                setName={setName}
+                                address={address}
+                                setAddress={setAddress}
+                                email={email}
+                                setEmail={setEmail}
+                                phone={phone}
+                                setPhone={setPhone}
+                                onSubmit={handleAddClient}
+                                onBack={handleGoBackToButtons}
+                            />
+                        </>
 
-                    {selectedVehicle && (
-                        <CustomTitleSection
-                            title={selectedClientData?.client?.name}
-                            onBack={handleGoBack}
-                            showDisableIcon={true}
-                            onDisable={openAlertModalVehicleSuspend}
-                        />
                     )}
 
-                    {selectedVehicle && (
-                        <div className="container-add-car-form">
-                            <div className="form-scroll">
-                                <form>
-                                    <div className={`input-container ${isInputFocused ? "active" : ""}`}>
-                                        <input
-                                            className="input-plate"
-                                            type="text"
-                                            value={vehicleData ? vehicleData.plate : ""}
-                                            onFocus={handleInputFocus}
-                                            onBlur={handleInputBlur}
-                                            readOnly />
-                                        <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                        <label className="label-flag">ECUADOR</label>
-                                        {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
-                                            <img src={alertIcon} className="alert" alt="Alert" />
-                                            </button>*/}
-                                    </div>
+                    {showClientCarInformation && !selectedVehicle && !showButtonAddClient && !showFormClient && !showClientInformation && (
 
-                                    <label className="label-form">
-                                        Año
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={vehicleData ? vehicleData.year : ""}
-                                                readOnly
-                                            />
+                        <>
+                            <CustomTitleSection
+                                onBack={handleGoBackToButtons}
+                                titlePrefix="Panel Clientes"
+                                title="Panel Vehículos del Cliente"
+                                showAddIcon={true}
+                                showCustomButton={false}
+                                showDisableIcon={false}
+                                showEditIcon={false}
+                                showFilterIcon={false}
+                                onAdd={handleShowFormVehicle}
+                            />
 
-                                            <img
-                                                src={yearIcon}
-                                                alt="Year Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Categoría
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={vehicleData ? getVehicleCategory(vehicleData.category) : ""}
-                                                readOnly
-                                            />
-                                            <img
-                                                src={categoryIcon}
-                                                alt="Category Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Kilometraje actual
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                value={vehicleData ? vehicleData.km : ""}
-                                                readOnly
-                                            />
-                                            <img
-                                                src={kmIcon}
-                                                alt="Km Icon"
-                                                className="icon-new-value"
-                                                style={{ width: '30px' }}
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Marca
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={vehicleData ? vehicleData.brand : ""}
-                                                readOnly
-                                            />
-                                            <img
-                                                src={brandIcon}
-                                                alt="Brand Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Modelo
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={vehicleData ? vehicleData.model : ""}
-                                                readOnly
-                                            />
-                                            <img
-                                                src={modelIcon}
-                                                alt="Model Icon"
-                                                className="icon-new-value"
-                                                style={{ top: '35%' }}
-                                            />
-                                        </div>
-
-                                    </label>
-                                    <label className="label-form">
-                                        Motor
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form-detail"
-                                                type="text"
-                                                value={vehicleData ? vehicleData.motor : ""}
-                                                readOnly
-                                            />
-                                            <img
-                                                src={motorIcon}
-                                                alt="Motor Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-
-                                    </label>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {showAddVehicle && (
-                        <CustomTitleSection
-                            title="Agregar vehículo"
-                            onBack={handleGoBackToButtons}
-                        />
-                    )}
-
-                    <ToastContainer />
-
-                    {showAddVehicle && (
-                        <div className="container-add-car-form">
-                            <div className="form-scroll">
-                                <form>
-                                    <div className={`input-container ${isInputFocused ? "active" : ""}`}>
-                                        <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
-                                            onFocus={handleInputFocus} onBlur={handleInputBlur} />
-                                        <img src={flagIcon} alt="Flag" className="flag-icon" />
-                                        <label className="label-new-plate-vehicle">ECUADOR</label>
-                                        {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
-                                            <img src={alertIcon} className="alert" alt="Alert" />
-                                        </button>
-                                        */}
-                                    </div>
-
-                                    <label className="label-form">
-                                        Año
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form"
-                                                type="number"
-                                                value={year}
-                                                onChange={(e) => setYear(parseInt(e.target.value))}
-                                            />
-
-                                            <img
-                                                src={yearIcon}
-                                                alt="Year Icon"
-                                                className="icon-new-value"
-                                            />
-
-                                        </div>
-
-                                    </label>
-                                    <label className="label-form">
-                                        Categoría
-                                        <Select
-                                            components={{ Placeholder: CustomPlaceholder }}
-                                            isSearchable={false}
-                                            options={options}
-                                            value={options.find(option => option.value === category)}
-                                            onChange={handleTypeCarChange}
-                                            styles={customStyles}
-                                            placeholder="Seleccionar" />
-                                    </label>
-                                    <label className="label-form">
-                                        Kilometraje actual
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form"
-                                                type="number"
-                                                value={km}
-                                                onChange={(e) => setKm(parseInt(e.target.value))}
-                                            />
-                                            <img
-                                                src={kmIcon}
-                                                alt="Km Icon"
-                                                className="icon-new-value"
-                                                style={{ width: '30px' }}
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Marca
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form"
-                                                type="text"
-                                                value={brand}
-                                                onChange={(e) => setBrand(e.target.value)}
-                                            />
-                                            <img
-                                                src={brandIcon}
-                                                alt="Brand Icon"
-                                                className="icon-new-value"
-                                            />
-                                        </div>
-                                    </label>
-                                    <label className="label-form">
-                                        Modelo
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form"
-                                                type="text"
-                                                value={model} onChange={(e) => setModel(e.target.value)}
-                                            />
-                                            <img
-                                                src={modelIcon}
-                                                alt="Model Icon"
-                                                className="icon-new-value"
-                                                style={{ top: '35%' }}
-                                            />
-
-                                        </div>
-
-                                    </label>
-                                    <label className="label-form">
-                                        Motor
-                                        <div className="input-form-new-client">
-                                            <input
-                                                className="input-form"
-                                                type="text"
-                                                value={motor}
-                                                onChange={(e) => setMotor(e.target.value)}
-                                            />
-                                            <img
-                                                src={motorIcon}
-                                                alt="Motor Icon"
-                                                className="icon-new-value"
-                                            />
-
-                                        </div>
-
-                                    </label>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-                    {showAddVehicle && (
-                        <div className="container-button-next">
-                            <button className="button-next" onClick={handleAddVehicle}>
-                                GUARDAR
-                            </button>
-                        </div>
-                    )}
-
-                    {/*Modal para alertas */}
-
-                    {/* 
-
-                    {isAlertModalOpen && (
-                        <div className="filter-modal-overlay">
-                            <div className="filter-modal">
-                                <h3>Alertas</h3>
-                                <div className="button-options">
-                                    <div className="half">
-                                        <button className="optionNo-button" onClick={closeAlertModal}>
-                                            No
-                                        </button>
-                                    </div>
-                                    <div className="half">
-                                        <button className="optionYes-button" onClick={closeAlertModal}>
-                                            Si
-                                        </button>
-
+                            <div className="vehicle-info-header">
+                                <div className="vehicle-info-header-left">
+                                    <Icon name="client" className="icon-info-client" />
+                                    <div className="client-info">
+                                        <label className="client-info-name">{selectedClientData?.client?.name}</label>
+                                        <label className="client-info-id">{selectedClientData?.client?.cedula}</label>
                                     </div>
                                 </div>
 
+                                <div className="vehicle-info-header-right">
+                                    <span className="vehicle-label">Total vehículos:</span>
+                                    <span className="vehicle-info-count">{clientVehicles.length}</span>
+                                </div>
                             </div>
-                        </div>
+
+
+                            <div className="vehicle-info">
+                                {clientVehicles.length === 0 ? (
+                                    <div className="no-vehicles-message">
+                                        <Icon name="alert" className="no-vehicles-icon" />
+                                        <p>No hay vehículos registrados</p>
+                                    </div>
+                                ) : (
+                                    clientVehicles.map(vehicle => (
+                                        <div
+                                            key={vehicle.id}
+                                            className={`vehicle ${vehicle.category}`}
+                                            onClick={(event) => handleDetailCarInformation(vehicle, event)}
+                                        >
+                                            <div className="vehicle-content">
+
+                                                <div className="plate-display-client">
+                                                    <div className="plate-client-ecuador-row">
+                                                        <img src={flagIcon} alt="flag" className="ecuador-flag-client" />
+                                                        <span className="ecuador-label-client">ECUADOR</span>
+                                                    </div>
+                                                    <div className="plate-value-client">{formatPlate(vehicle.plate)}</div>
+                                                </div>
+
+
+                                                <label className="vehicle-category">{getVehicleCategory(vehicle.category)}</label>
+
+                                                <div className="icon-wrapper">
+                                                    {vehicle.category === "car" && <Icon name="car" className="vehicles-icon" />}
+                                                    {vehicle.category === "van" && <Icon name="van" className="vehicles-icon" />}
+                                                    {vehicle.category === "bus" && <Icon name="bus" className="vehicles-icon" />}
+                                                    {vehicle.category === "truck" && <Icon name="truck" className="vehicles-icon" />}
+                                                    {vehicle.category === "suv" && <Icon name="suv" className="vehicles-icon" />}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </>
+
+
+
                     )}
-                    */}
+
+                    {showClientInformation && !showClientCarInformation && !selectedVehicle && !showButtonAddClient && !showFormClient && (
+
+                        <ClientFormPanel
+                            mode="edit"
+                            cedula={cedula}
+                            setCedula={setCedula}
+                            name={name}
+                            setName={setName}
+                            address={address}
+                            setAddress={setAddress}
+                            email={email}
+                            setEmail={setEmail}
+                            phone={phone}
+                            setPhone={setPhone}
+                            isEditMode={isEditMode}
+                            setIsEditMode={setIsEditMode}
+                            onSubmit={handleEditClient}
+                            onBack={handleGoBackToButtons}
+                            onDisable={openAlertModalClientSuspend}
+                            onEdit={() => setIsEditMode(true)}
+                        />
+
+                    )}
+
+                    {isAlertClientSuspend && (
+
+                        <CustomModal
+                            isOpen={isAlertClientSuspend}
+                            type="confirm-suspend"
+                            subTitle="¿Está seguro de suspender el cliente?"
+                            description="Al suspender el cliente, se ocultará temporalmente del sistema.
+                            Podrás volver a activarlo desde Configuración en cualquier momento."
+                            onCancel={closeAlerModalClientSuspend}
+                            onConfirm={handleUnavailableClient}
+                            showCloseButton={false}
+                        />
+
+                    )}
+
+                    {showModal && (
+                        <CustomModal
+                            isOpen={showModal}
+                            type="confirm-vehicle"
+                            subTitle="Desea agregar un vehículo al cliente?"
+                            description="Se va a agregar un vehículo para este cliente. 
+                            Si lo prefiere, puede hacerlo más adelante desde el módulo Vehículos."
+                            onCancel={handleNo}
+                            onConfirm={handleYes}
+                            showCloseButton={false}
+                        />
+                    )}
+
+                    {showFormVehicle && !showButtonAddClient && !showClientCarInformation && !showClientCarInformation && !selectedVehicle && !showFormClient && (
+                        <VehicleFormPanel
+                            mode="add"
+                            titlePrefix="Panel Vehículos del Cliente"
+                            plateCar={plateCar}
+                            setPlateCar={setPlateCar}
+                            year={year}
+                            setYear={setYear}
+                            brand={brand}
+                            setBrand={setBrand}
+                            model={model}
+                            setModel={setModel}
+                            motor={motor}
+                            setMotor={setMotor}
+                            category={category}
+                            setCategory={setCategory}
+                            km={km}
+                            setKm={setKm}
+                            handleInputFocus={handleInputFocus}
+                            handleInputBlur={handleInputBlur}
+                            onSubmit={handleAddVehicle}
+                            onBack={handleGoBackToButtons}
+                            nameClient={nameClient}
+                        />
+                    )}
+
+                    {isWorkOrderModalOpen && (
+
+                        <CustomModal
+                            isOpen={isWorkOrderModalOpen}
+                            type="confirm-workorder"
+                            subTitle="Desea generar una nueva orden de trabajo?"
+                            description="Se va a registrar una nueva orden de trabajo para este vehículo.
+                            Si lo prefiere, puede hacerlo más adelante desde el módulo Órdenes de Trabajo"
+                            onCancel={closeWorkOrderModal}
+                            onConfirm={handleAddWorkOrder}
+                            showCloseButton={false}
+                        />
+
+                    )}
+
+                    {showDetailCarInformation && !showFormVehicle && !showButtonAddClient && !showClientCarInformation && !showClientCarInformation && !selectedVehicle && !showFormClient && (
+                        <VehicleFormPanel
+                            mode="edit"
+                            titlePrefix="Panel Vehículos del Cliente"
+                            plateCar={plateCar}
+                            setPlateCar={setPlateCar}
+                            year={year}
+                            setYear={setYear}
+                            brand={brand}
+                            setBrand={setBrand}
+                            model={model}
+                            setModel={setModel}
+                            motor={motor}
+                            setMotor={setMotor}
+                            category={category}
+                            setCategory={setCategory}
+                            km={km}
+                            setKm={setKm}
+                            isEditMode={isEditMode}
+                            setIsEditMode={setIsEditMode}
+                            isInputFocused={isInputFocused}
+                            handleInputFocus={handleInputFocus}
+                            handleInputBlur={handleInputBlur}
+                            onSubmit={handleEditVehicle}
+                            onBack={handleGoBack}
+                            onDisable={openAlertModalVehicleSuspend}
+                            onEdit={() => setIsEditMode(true)}
+                            nameClient={nameClient}
+                        />
+                    )}
+
+                    {isAlertVehicleSuspend && (
+
+                        <CustomModal
+                            isOpen={isAlertVehicleSuspend}
+                            type="confirm-suspend"
+                            subTitle="¿Está seguro de suspender el vehículo?"
+                            description="Al suspender el vehículo, se ocultará temporalmente del sistema.
+                                            Podrás volver a activarlo desde Configuración en cualquier momento."
+                            onCancel={closeAlertModalVehicleSuspend}
+                            onConfirm={handleUnavailableVehicle}
+                            showCloseButton={false}
+                        />
+
+                    )}
+
+                    {/*Modal del filtro de búsqueda*/}
+
+                    {isFilterModalOpen && (
+
+                        <CustomModal
+                            isOpen={isFilterModalOpen}
+                            onCancel={closeFilterModal}
+                            type="filter-options"
+                            subTitle="Seleccione el filtro de búsqueda"
+                            onSelect={handleSelectClick}
+                            defaultOption={selectedOption}
+                            options={clientSearchOptions}
+                            showCloseButton={false}
+                        />
+
+                    )}
 
                 </div>
+
             </div>
 
-            {/*Modal del filtro de búsqueda*/}
-
-            {isFilterModalOpen && (
-                <Modal
-                    isOpen={isFilterModalOpen}
-                    onClose={closeFilterModal}
-                    options={['Cédula', 'Nombre']}
-                    defaultOption="Nombre"
-                    onOptionChange={handleOptionChange}
-                    onSelect={handleSelectClick}
-                />
-            )}
-
-            {isAlertClientSuspend && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <h3 style={{ textAlign: "center" }}>¿Está seguro de suspender al cliente?</h3>
-                        <div className="button-options">
-                            <div className="half">
-                                <button className="optionNo-button" onClick={closeAlerModalClientSuspend}>
-                                    No
-                                </button>
-                            </div>
-                            <div className="half">
-                                <button className="optionYes-button" onClick={handleUnavailableClient}>
-                                    Si
-                                </button>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-            )}
-
-            {isAlertVehicleSuspend && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <h3 style={{ textAlign: "center" }}>¿Está seguro de suspender el vehículo?</h3>
-                        <div className="button-options">
-                            <div className="half">
-                                <button className="optionNo-button" onClick={closeAlerModalVehicleSuspend}>
-                                    No
-                                </button>
-                            </div>
-                            <div className="half">
-                                <button className="optionYes-button" onClick={handleUnavailableVehicle}>
-                                    Si
-                                </button>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-            )}
-
-
-
         </div>
-    );
+    )
 };
 
-export default Clients;
+export default Client;
+

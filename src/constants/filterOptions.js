@@ -13,3 +13,17 @@ export const vehicleSearchOptions = [
 
     }
 ]
+
+export const clientSearchOptions = [
+    {
+        value: 'Nombre Cliente',
+        label: 'Nombre Cliente',
+        iconName: 'text'
+    },
+    {
+        value: 'Cédula',
+        label: 'Cédula',
+        iconName: 'id'
+
+    }
+]

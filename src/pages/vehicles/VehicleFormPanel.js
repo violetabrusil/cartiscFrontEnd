@@ -30,6 +30,7 @@ const VehicleFormPanel = ({
     isInputFocused,
     handleInputFocus,
     handleInputBlur,
+    titlePrefix = "Panel Vehículos"
 }) => {
 
     const [localNameClient, setLocalNameClient] = useState(nameClient);
@@ -125,7 +126,7 @@ const VehicleFormPanel = ({
                         }
                         onBack?.();
                     }}
-                    titlePrefix="Panel Vehículos"
+                    titlePrefix={titlePrefix}
                     title={mode === "add" ? "Nuevo Vehículo" : "Información del vehículo"}
                     onCustomButtonClick={(mode === "add" || (mode === "edit" && isEditMode)) ? onSubmit : undefined}
                     customButtonLabel={(mode === "add" || (mode === "edit" && isEditMode)) ? "GUARDAR" : undefined}
@@ -135,8 +136,6 @@ const VehicleFormPanel = ({
                     showEditIcon={mode === "edit" && !isEditMode}
                     onEdit={mode === "edit" ? () => setIsEditMode(true) : undefined}
                 />
-
-
             </div>
 
             <div className="panel-content-form">

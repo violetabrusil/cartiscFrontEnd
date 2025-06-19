@@ -684,7 +684,6 @@ const Cars = () => {
 
                     setVehicles(formattedVehicles);
                     setLoading(false);
-                    console.log("datos vehiculo", response.data)
                 } else {
                     setLoading(false);
                 }
@@ -804,7 +803,7 @@ const Cars = () => {
                             brand={brand}
                             setBrand={setBrand}
                             model={model}
-                            setModel={setModel}
+                            setModel={setModel} 
                             motor={motor}
                             setMotor={setMotor}
                             category={category}

@@ -312,6 +312,7 @@
 
 .filter-option-card:hover {
     border-color: var(--blue-cloud);
+    transform: scale(1.05);
 }
 
 .filter-option-card.selected {

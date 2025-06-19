@@ -19,7 +19,7 @@ import Login from "./pages/Login";
 import LoginExpress from './pages/LoginExpress';
 import Home from './pages/Home';
 import Clients from './pages/clients/Clients';
-import NewClient from './pages/clients/NewClient';
+import NewClient from './pages/clients/ClientFormPanel';
 import Cars from './pages/vehicles/Vehicles';
 import Services from './pages/services/Service';
 import Operation from './pages/operations/Operation';

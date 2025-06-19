@@ -45,6 +45,7 @@ export default function CustomModal({
         'search-client': 'blue',
         'confirm-suspend': 'yellow',
         'confirm-workorder': 'green',
+        'confirm-vehicle': 'green',
         'filter-options': 'blue',
     }[type];
 
@@ -52,6 +53,7 @@ export default function CustomModal({
         'search-client': <Icon name="search" className="icon-background" />,
         'confirm-suspend': <Icon name="alert" className="floating-icon" />,
         'confirm-workorder': <Icon name="newOrder" className="icon-confirm" />,
+        'confirm-vehicle': <Icon name="addVehicle" className="icon-confirm" />,
         'filter-options': <Icon name="search" className="icon-background" />,
     }[type];
 
@@ -176,6 +178,24 @@ export default function CustomModal({
                     </>
                 );
 
+            case 'confirm-vehicle':
+                return (
+                    <>
+                        <div className="button-options">
+                            <CustomButton
+                                variant="confirm-second"
+                                onClick={onCancel}
+                                title="Cancelar"
+                            />
+                            <CustomButton
+                                variant="confirm"
+                                onClick={onConfirm}
+                                title="Registrar"
+                            />
+                        </div>
+                    </>
+                );
+
             case 'filter-options':
                 return (
                     <>
@@ -194,7 +214,7 @@ export default function CustomModal({
                                                 className={`option-icon ${isSelected ? 'icon-selected' : 'icon-unselected'}`}
                                             />
                                         </div>
-                                        <div className={`option-label ${isSelected ? 'label-selected': 'label-unselected'}`}>{option.label}</div>
+                                        <div className={`option-label ${isSelected ? 'label-selected' : 'label-unselected'}`}>{option.label}</div>
                                         {isSelected && (
                                             <input
                                                 type="radio"
@@ -207,11 +227,11 @@ export default function CustomModal({
                                 );
                             })}
 
-                            
+
 
                         </div>
 
-                        <div className="button-options" style={{justifyContent: 'right'}}>
+                        <div className="button-options" style={{ justifyContent: 'right' }}>
                             <CustomButton
                                 variant="select"
                                 onClick={() => {

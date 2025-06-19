@@ -11,6 +11,19 @@ import { ReactComponent as NewOrderIcon } from "./newOrderIcon.svg"
 import { ReactComponent as TextIcon } from "./textIcon.svg"
 import { ReactComponent as PlateVehicleIcon } from "./plateVehicleIcon.svg"
 import { ReactComponent as CloseIcon } from "./closeIcon.svg"
+import { ReactComponent as CarIcon } from "./carIcon.svg"
+import { ReactComponent as BusIcon } from "./busIcon.svg"
+import { ReactComponent as VanIcon } from "./vanIcon.svg"
+import { ReactComponent as TruckIcon } from "./truckIcon.svg"
+import { ReactComponent as SuvIcon } from "./suvIcon.svg"
+import { ReactComponent as TrailerIcon } from "./trailerIcon.svg"
+import { ReactComponent as BicycleIcon } from "./bicycleIcon.svg"
+import { ReactComponent as MotorcycleIcon } from "./motorcyleIcon.svg"
+import { ReactComponent as TricycleIcon } from "./tricycleIcon.svg"
+import { ReactComponent as ScooterIcon } from "./scooterIcon.svg"
+import { ReactComponent as QuadIcon } from "./quadIcon.svg"
+import { ReactComponent as ClientIcon } from "./clientIcon.svg"
+import { ReactComponent as IdIcon} from "./idIcon.svg"
 
 const icons = {
     addClient: AddClientIcon,
@@ -26,6 +39,19 @@ const icons = {
     text: TextIcon,
     plateVehicle: PlateVehicleIcon,
     close: CloseIcon,
+    car: CarIcon,
+    bus: BusIcon,
+    van: VanIcon,
+    truck: TruckIcon,
+    suv: SuvIcon,
+    trailer: TrailerIcon,
+    bicycle: BicycleIcon,
+    moto: MotorcycleIcon,
+    tricycle: TricycleIcon,
+    scooter: ScooterIcon,
+    quad: QuadIcon,
+    client: ClientIcon,
+    id: IdIcon,
 };
 
 export default icons;
