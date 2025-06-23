@@ -24,6 +24,14 @@ import { ReactComponent as ScooterIcon } from "./scooterIcon.svg"
 import { ReactComponent as QuadIcon } from "./quadIcon.svg"
 import { ReactComponent as ClientIcon } from "./clientIcon.svg"
 import { ReactComponent as IdIcon} from "./idIcon.svg"
+import { ReactComponent as EyeIcon} from "./eyeIcon.svg"
+import { ReactComponent as EditIcon} from "./editIcon.svg"
+import { ReactComponent as AddIcon} from "./addIcon.svg"
+import { ReactComponent as FilterIcon} from "./filterIcon.svg"
+import { ReactComponent as LeftArrowIcon} from "./leftArrowIcon.svg"
+import { ReactComponent as AddressIcon} from "./addressIcon.svg"
+import { ReactComponent as EmailIcon} from "./emailIcon.svg"
+import { ReactComponent as PhoneIcon} from "./phoneIcon.svg"
 
 const icons = {
     addClient: AddClientIcon,
@@ -52,6 +60,14 @@ const icons = {
     quad: QuadIcon,
     client: ClientIcon,
     id: IdIcon,
+    eye: EyeIcon,
+    edit: EditIcon,
+    add: AddIcon,
+    filter: FilterIcon,
+    leftArrow: LeftArrowIcon,
+    address: AddressIcon,
+    email: EmailIcon,
+    phone: PhoneIcon,
 };
 
 export default icons;

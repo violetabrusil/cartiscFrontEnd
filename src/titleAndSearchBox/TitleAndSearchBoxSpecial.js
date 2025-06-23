@@ -1,9 +1,7 @@
 import "../TitleAndSearchBox.css";
 import React, { useState, useEffect } from "react";
 import { useWorkOrderContext } from "../contexts/searchContext/WorkOrderContext";
-
-const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
-const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
+import Icon from "../components/Icons";
 
 const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch }) => {
     const { searchTerm, setSearchTerm } = useWorkOrderContext();
@@ -54,13 +52,13 @@ const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, select
             <div className="container-title">
                 <h2>{title}</h2>
                 <button className={buttonClass} onClick={onButtonClick}>
-                    <img src={filterIcon} alt="Filter Icon" className={iconClass} />
+                    <Icon name="filter" className={iconClass} />
                     <span className="filter-text">Filtro</span>
                 </button>
             </div>
 
             <div className={searchBoxClass}>
-                <img src={searchIcon} alt="Search Icon" className="search-icon" />
+                <Icon name="search" className="search-client-icon" />
                 <input
                     type="text"
                     className="input-search"

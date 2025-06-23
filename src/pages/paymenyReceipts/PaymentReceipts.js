@@ -19,8 +19,8 @@ import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import { usePaymentReceipt } from "../../contexts/searchContext/PaymentReceiptContext";
 import DataTablePagination from "../../dataTable/DataTablePagination";
 import useCSSVar from "../../hooks/UseCSSVar";
+import Icon from "../../components/Icons";
 
-const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
 const emailIcon = process.env.PUBLIC_URL + "/images/icons/email-icon.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
@@ -595,7 +595,7 @@ const PaymentReceipts = () => {
                         title="Comprobantes de pagos" />
 
                     <button className="button-payments-filter" onClick={handleOpenModal}>
-                        <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
+                        <Icon name="filter" className="filter-icon" />
                         <span className="button-payment-text-filter">Filtro</span>
                     </button>
 

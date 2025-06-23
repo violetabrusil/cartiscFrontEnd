@@ -24,7 +24,6 @@ import VehicleFormPanel from "../vehicles/VehicleFormPanel";
 import Icon from "../../components/Icons";
 import { clientSearchOptions } from "../../constants/filterOptions";
 
-const eyeBlueIcon = process.env.PUBLIC_URL + "/images/icons/eyeBlueIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
 const Client = () => {
@@ -620,7 +619,6 @@ const Client = () => {
                                         key={client.id}
                                         type="client"
                                         data={client}
-                                        eyeIcon={eyeBlueIcon}
                                         onClickMain={e => handleClientCarInformation(client.client.id, e)}
                                         onClickEye={handleClientInformation}
 

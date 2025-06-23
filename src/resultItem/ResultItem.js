@@ -2,12 +2,17 @@ import React from "react";
 import "../styles/ResultItem.css";
 import Icon from "../components/Icons";
 
-const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
-
-
-const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, icons = {}, extra = {} }) => {
+const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, showEye = true, icons = {}, extra = {} }) => {
 
     const { receiptIcon, statusColors = {} } = icons;
+
+    const iconMap = {
+        car: "car",
+        van: "van",
+        bus: "bus",
+        truck: "truck",
+        suv: "suv",
+    };
 
     return (
         <div className={`result-item result--${type}`} onClick={onClickMain}>
@@ -30,7 +35,7 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, ic
 
                     <div className="second-result-car">
                         <div className="div-icon-vehicle">
-                            <img className="icon-vehicle" src={data.iconSrc} alt="Icon Vehicle" />
+                            <Icon name={iconMap[data.category]} className="icon-vehicle" />
                         </div>
                         <div className="div-label">
                             <label>{data.client_name}</label>
@@ -38,11 +43,13 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, ic
 
                     </div>
 
-                    <div className="third-result-car">
-                        <button className="button-eye" onClick={e => { e.stopPropagation(); onClickEye(data, e); }}>
-                            <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye" />
-                        </button>
-                    </div>
+                    {showEye && (
+                        <div className="third-result-car">
+                            <button className="button-eye" onClick={e => { e.stopPropagation(); onClickEye(data, e); }}>
+                                <Icon name="eye" className="icon-eye" />
+                            </button>
+                        </div>
+                    )}
                 </>
             )}
 
@@ -56,11 +63,16 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, ic
                         </div>
                     </div>
 
-                    <div className="second-result-client">
-                        <button className="button-eye" onClick={(e) => { e.stopPropagation(); onClickEye(data.client.id, e); }}>
-                            <img src={eyeIcon} alt="Eye Icon" className="icon-eye" />
-                        </button>
-                    </div>
+                    {showEye && (
+                        <div className="second-result-client">
+                            <button className="button-eye" onClick={(e) => { e.stopPropagation(); onClickEye(data.client.id, e); }}>
+                                <Icon name="eye" className="icon-eye" />
+                            </button>
+                        </div>
+
+                    )}
+
+
                 </>
             )}
 
@@ -128,11 +140,15 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, eyeIcon, ic
                         </label>
                     </div>
 
-                    <div className="operation-eye-section">
-                        <button className="button-eye-operation" onClick={onClickEye}>
-                            <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
-                        </button>
-                    </div>
+                    {showEye && (
+                        <div className="operation-eye-section">
+                            <button className="button-eye-operation" onClick={onClickEye}>
+                                 <Icon name="eye" className="icon-eye" />
+                            </button>
+                        </div>
+                    )}
+
+
                 </>
             )}
         </div>

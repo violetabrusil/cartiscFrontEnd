@@ -24,7 +24,7 @@
 .right-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.8rem;
     flex: 1;
     justify-content: flex-end;
 }
@@ -43,13 +43,13 @@
 .button-arrow {
     background: none;
     border: none;
-    margin-right: 4px;
-    margin-top: 5px
 }
 
 .arrow-icon {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+    color: var(--blue-intense);
 }
 
 .custom-button-save {
@@ -67,12 +67,11 @@
     overflow: hidden;
 }
 
-.custom-button-unavailable {
-    width: 85px;
-    height: 40px;
+.custom-button-unavailable,
+.custom-button-edit,
+.custom-button-add {
     border: none;
     background: none;
-    margin-top: -16px;
 }
 
 .custom-button-unavailable-icon {
@@ -82,33 +81,18 @@
     color: var(--gray-muted);
 }
 
-.custom-button-edit {
-    width: 60px;
-    height: 40px;
-    border: none;
-    background: none;
-    margin-top: -12px;
-}
-
 .custom-button-edit-icon {
     width: 40px;
-    height: 40px;
-    margin-right: 10px;
-}
-
-.custom-button-add {
-    width: 100px;
-    height: 40px;
-    border: none;
-    margin-top: 3px;
-    background: none;
+    height: 38px;
+    fill: currentColor;
+    color: var(--gray-muted);
 }
 
 .custom-button-add-icon {
     width: 35px;
     height: 35px;
-    margin-right: 8px;
-    margin-top: -7px;
+    fill: currentColor;
+    color: var(--second-color);
 }
 
 .button-maintenance-filter {
@@ -122,6 +106,6 @@
 }
 
 .button-maintenance-text-filter {
-    color: var(--pure-black);
+    color: var(--gray-dark);
     font-weight: bold;
 }

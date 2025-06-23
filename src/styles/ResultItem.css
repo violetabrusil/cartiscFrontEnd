@@ -98,9 +98,10 @@
 }
 
 .icon-vehicle {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
+    width: 35px;
+    height: 35px;
+    fill: currentColor;
+     color: var(--blue-intense);
 }
 
 /* ===BUTTON EYE === */
@@ -118,7 +119,8 @@
 .icon-eye {
     width: 32px;
     height: 32px;
-    opacity: 50%;
+    fill: currentColor;
+    color: var(--blue-intense);
 }
 
 /* === BLOCK CLIENT === */
@@ -211,24 +213,6 @@
     font-style: italic;
     color: var(--gray-medium);
     font-size: 0.9rem;
-}
-
-/* ===BUTTON EYE === */
-.button-eye {
-    background: none;
-    border: none;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-eye {
-    width: 32px;
-    height: 32px;
-    opacity: 50%;
 }
 
 /* === RESPONSIVE === */

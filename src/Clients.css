@@ -6,46 +6,6 @@
     background: none;
 }
 
-.button-suspend-client-icon {
-    width: 50px;
-    height: 50px;
-    margin-right: -26px;
-    margin-top: -13px;
-
-}
-
-.result-client {
-    max-width: 98%;
-    height: 70px;
-    background: var(--white);
-    border: 1px solid var(--gray-medium-light);
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-gap: 1px;
-    border-radius: 5px;
-    /* Espacio entre las secciones */
-    margin-bottom: 10px;
-}
-
-.first-result {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    max-width: 200px;
-    margin-left: 14px;
-}
-
-.second-result {
-    margin-top: 13px;
-    margin-inline-start: auto;
-    margin-right: -18px;
-}
-
-.container-data {
-    display: flex;
-    flex-direction: column;
-}
-
 .car-number {
     color: var(--black-alpha-41);
     font-size: 17px;
@@ -54,55 +14,6 @@
     font-weight: bold;
 }
 
-.container-car-number {
-    display: grid;
-    grid-template-columns: 1fr 15fr;
-    grid-gap: 2px;
-    margin-top: 1px;
-    width: 15%;
-}
-
-.vehicle-count-container {
-    display: flex;
-    align-items: center;
-    /* Si deseas que los ítems estén centrados verticalmente */
-    gap: 16px;
-    /* Espaciado entre ítems, puedes ajustar este valor a tu preferencia */
-}
-
-
-.icon-eye {
-    width: 30px;
-    height: 30px;
-    opacity: 50%;
-}
-
-.icon-car {
-    width: 25px;
-    height: 25px;
-}
-
-.icon-van {
-    width: 25px;
-    height: 25px;
-}
-
-.icon-bus {
-    width: 25px;
-    height: 23px;
-}
-
-.van-container {
-    margin-bottom: -4px;
-}
-
-.button-eye {
-    width: 100px;
-    height: 40px;
-    border: none;
-    margin-top: 3px;
-    background: none;
-}
 
 .vehicle-info {
     display: flex;
@@ -243,7 +154,6 @@
     color: #222;
 }
 
-
 .vehicle-category {
     font-weight: 500;
     font-size: 1rem;
@@ -341,50 +251,4 @@
     margin-bottom: 12px;
     fill: currentColor;
     color: var(--blue-intense);
-}
-
-
-
-.container-data-client-form {
-    margin-bottom: 20px;
-    margin-left: 23px;
-}
-
-.container-button-edit-product {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    box-sizing: border-box;
-    margin-right: 20px;
-    position: fixed;
-    /* Fija el contenedor al viewport */
-    bottom: 0;
-    /* Coloca el contenedor en la parte inferior */
-    left: 0;
-    /* Alineación izquierda */
-    right: 0;
-    /* Alineación derecha */
-    padding: 10px;
-    /* Espacio alrededor del contenedor, opcional */
-}
-
-.button-edit-data-client {
-    width: 167px;
-    height: 40px;
-    background-color: var(--second-color);
-    color: var(--white);
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    font-size: 17px;
-}
-
-@media screen and (max-width: 768px) {}
-
-@media (max-width: 1440px) and (max-height: 900px) {
-
-    .name-client {
-        width: 250px;
-    }
-
 }

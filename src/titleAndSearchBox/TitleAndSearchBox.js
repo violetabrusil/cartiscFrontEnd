@@ -1,8 +1,6 @@
 import "../TitleAndSearchBox.css"
 import React from "react";
-
-const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
-const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
+import Icon from "../components/Icons";
 
 const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, onAddClient, showAddButton }) => {
 
@@ -23,13 +21,13 @@ const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOptio
                 )}
                 <h2>{title}</h2>
                 <button className={buttonClass} onClick={onButtonClick}>
-                    <img src={filterIcon} alt="Filter Icon" className={iconClass} />
+                    <Icon name="filter" className={iconClass} />
                     <span className="filter-text">Filtro</span>
                 </button>
             </div>
 
             <div className={searchBoxClass}>
-                <img src={searchIcon} alt="Search Icon" className="search-icon" />
+                <Icon name="search" className="search-client-icon" />
                 <input
                     type="text"
                     className="input-search"

@@ -23,8 +23,8 @@ import { ButtonCard } from '../../buttons/buttonCards/ButtonCard';
 import SectionTitle from '../../components/SectionTitle';
 import CustomModal from "../../modal/customModal/CustomModal";
 import { vehicleSearchOptions } from '../../constants/filterOptions';
+import Icon from '../../components/Icons';
 
-const eyeBlueIcon = process.env.PUBLIC_URL + "/images/icons/eyeBlueIcon.png";
 const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
@@ -43,14 +43,14 @@ const Cars = () => {
 
     //Varibales para el manejo de los vehículos
     const [vehicles, setVehicles] = useState([]);
-    const iconsVehicles = useMemo(() => {
-        return {
-            car: process.env.PUBLIC_URL + "/images/icons/autoIcon.png",
-            van: process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png",
-            bus: process.env.PUBLIC_URL + "/images/icons/busIcon.png",
-            truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
-        };
-    }, []); // No hay dependencias, ya que se trata de una inicialización única
+
+    const iconMap = {
+        car: "car",
+        van: "van",
+        bus: "bus",
+        truck: "truck",
+        suv: "suv",
+    };
 
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [isSearchClientModalOpen, setIsSearchClientModalOpen] = useState(false);
@@ -199,8 +199,7 @@ const Cars = () => {
                         className="button-eye-car-work-order"
                         onClick={() => handleShowInformationWorkOrderClick(workOrder.id)}
                     >
-                        <img src={eyeBlueIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
-                        />
+                         <Icon name="eye" className="icon-eye" />
                     </button>
                 );
             },
@@ -678,7 +677,6 @@ const Cars = () => {
                         if (vehicle.plate) {
                             vehicle.plate = formatPlate(vehicle.plate);
                         }
-                        vehicle.iconSrc = iconsVehicles[vehicle.category]
                         return vehicle;
                     });
 
@@ -697,7 +695,7 @@ const Cars = () => {
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption, refreshVehicles, vehicleSuspended, iconsVehicles]);
+    }, [searchTerm, selectedOption, refreshVehicles, vehicleSuspended]);
 
     useEffect(() => {
         console.log("Valor de selectedOption al regresar:", selectedOption, searchTerm);
@@ -716,7 +714,7 @@ const Cars = () => {
             setNameClient(selectedVehicle.client_name);
 
         }
-    }, [selectedVehicle, iconsVehicles]);
+    }, [selectedVehicle]);
 
     useEffect(() => {
         // Convierte vehicleId a un número
@@ -761,7 +759,6 @@ const Cars = () => {
                                         type="car"
                                         data={vehicle}
                                         flagIcon={flagIcon}
-                                        eyeIcon={eyeBlueIcon}
                                         onClickMain={e => handleCarHistory(vehicle.id, e)}
                                         onClickEye={handleCarInformation}
                                     />
@@ -803,7 +800,7 @@ const Cars = () => {
                             brand={brand}
                             setBrand={setBrand}
                             model={model}
-                            setModel={setModel} 
+                            setModel={setModel}
                             motor={motor}
                             setMotor={setMotor}
                             category={category}
@@ -858,7 +855,7 @@ const Cars = () => {
 
                                 <div className="vehicle-info-right">
                                     <div className="vehicle-icon-container">
-                                        <img className="vehicle-icon" src={iconsVehicles[category]} alt="Icon Vehicle" />
+                                         <Icon name={iconMap[category]} className="vehicle-icon" />
                                     </div>
                                     <div className="vehicle-client-name">
                                         <label>{nameClient}</label>
