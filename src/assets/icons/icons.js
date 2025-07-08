@@ -32,6 +32,9 @@ import { ReactComponent as LeftArrowIcon} from "./leftArrowIcon.svg"
 import { ReactComponent as AddressIcon} from "./addressIcon.svg"
 import { ReactComponent as EmailIcon} from "./emailIcon.svg"
 import { ReactComponent as PhoneIcon} from "./phoneIcon.svg"
+import { ReactComponent as DownArrowIcon } from "./downArrow.svg"
+import { ReactComponent as TopArrowIcon } from "./topArrow.svg"
+import { ReactComponent as DeleteIcon } from "./deleteIcon.svg"
 
 const icons = {
     addClient: AddClientIcon,
@@ -68,6 +71,9 @@ const icons = {
     address: AddressIcon,
     email: EmailIcon,
     phone: PhoneIcon,
+    down: DownArrowIcon,
+    top: TopArrowIcon,
+    delete: DeleteIcon,
 };
 
 export default icons;

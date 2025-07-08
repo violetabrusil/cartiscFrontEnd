@@ -1,8 +1,6 @@
 import "../../Supplier.css";
 import "../../Loader.css";
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
 import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
@@ -13,6 +11,11 @@ import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { showToastOnce } from "../../utils/toastUtils";
+import ScrollListWithIndicators from "../../components/ScrollListWithIndicators";
+import ResultItem from "../../resultItem/ResultItem";
+import SectionTitle from "../../components/SectionTitle";
+import { ButtonCard } from "../../buttons/buttonCards/ButtonCard";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
@@ -48,7 +51,6 @@ const Suppliers = () => {
     const resetSupplierState = () => {
         setShowSupplierInformation(false);
         setShowButtonAddSupplier(true);
-        // resetea otros estados...
     };
 
     const handleSearchSupplierChange = (term, filter) => {
@@ -72,7 +74,6 @@ const Suppliers = () => {
 
     const handleSelectClick = (option) => {
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -114,7 +115,7 @@ const Suppliers = () => {
 
     //Función para suspender un proveedor
     const handleUnavailableSupplier = async (event) => {
-        //Para evitar que el formulario recargue la página
+
         event.preventDefault();
         setIsAlertSupplierSuspended(false);
         const suspend = "suspended";
@@ -128,20 +129,12 @@ const Suppliers = () => {
                 setSuppliers(updatedSuppliers);
                 setShowAddSupplier(false);
                 setShowButtonAddSupplier(true);
-                toast.success('Proveedor suspendido', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Proveedor suspendido");
 
-            } else {
-                toast.error('Ha ocurrido un error al suspender al proveedor.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
             }
 
         } catch (error) {
-            toast.error('Error al suspender al proveedor. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al suspender al proveedor. Por favor, inténtalo de nuevo.");
         }
     };
 
@@ -150,27 +143,22 @@ const Suppliers = () => {
     };
 
     const handleSaveOrUpdateSupplier = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         event.preventDefault();
 
         if (mode === 'add') {
             try {
                 const response = await apiClient.post('/suppliers/create', { name, phone, contact_details });
                 setSuppliers(response.data);
-                toast.success('Proveedor registrado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Proveedor registrado");
                 setLastUpdated(Date.now());
                 setShowAddSupplier(false);
                 setShowButtonAddSupplier(true);
 
             } catch (error) {
                 if (error.response && error.response.status === 400 && error.response.data.errors) {
-                    // Muestra los errores en toasts
                     error.response.data.errors.forEach(err => {
-                        toast.error(`${err.field}: ${err.message}`, {
-                            position: toast.POSITION.TOP_RIGHT
-                        });
+                        showToastOnce("error", `${err.field}: ${err.message}`);
                     });
                 }
             }
@@ -178,22 +166,15 @@ const Suppliers = () => {
             try {
                 const response = await apiClient.put(`/suppliers/update/${selectedSupplier.id}`, { name, phone, contact_details });
                 setSuppliers(response.data);
-                toast.success('Proveedor actualizado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Proveedor actualizado");
                 setLastUpdated(Date.now());
                 setShowAddSupplier(false);
                 setShowButtonAddSupplier(true);
 
             } catch (error) {
-                toast.error('Error al actualizar el proveedor', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("error", "Error al actualizar los datos del proveedor");
             }
         }
-
-
-
     };
 
     const handleInputChange = (field, value) => {
@@ -203,19 +184,16 @@ const Suppliers = () => {
         }));
     };
 
-
+    //Función que permite obtener todos los proveedores
+    //registrados cuando inicia la pantalla y los busca
+    //por nombre o código
     useEffect(() => {
-        //Función que permite obtener todos los proveedores
-        //registrados cuando inicia la pantalla y los busca
-        //por nombre o código
 
         const fetchData = async () => {
 
-            //Endpoint por defecto
             let endpoint = '/suppliers/all';
             const searchPerSupplierCode = "supplier_code";
             const searchPerName = "supplier_name";
-            //Si hay un filtro de búsqueda
 
             if (searchTerm && searchTerm.length > 0) {
                 switch (selectedOption) {
@@ -237,9 +215,7 @@ const Suppliers = () => {
 
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                    showToastOnce("error", "La solicitud ha superado el tiempo límite.");
                 }
             }
         }
@@ -267,37 +243,34 @@ const Suppliers = () => {
                             <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
-                        <>
-                            <div className="search-results-suppliers">
-                                {Array.isArray(suppliers) && suppliers.map(supplierData => (
-                                    <div key={`suppliers-${supplierData.id}`} className="result-suppliers">
-                                        <div className="supplier-code-section">
-                                            <label className="supplier-code">{supplierData.supplier_code}</label>
-                                        </div>
+                        <ScrollListWithIndicators
+                            items={suppliers}
+                            renderItem={(supplierData) => (
+                                <ResultItem
+                                    key={supplierData.id}
+                                    type="supplier"
+                                    data={supplierData}
+                                    onClickEye={(e) => handleSupplierInformation(supplierData.id, e)}
+                                />
+                            )}
+                        />
 
-                                        <div className="supplier-name-section">
-                                            <label className="supplier-name">{supplierData.name}</label>
-                                        </div>
-
-                                        <div className="supplier-eye-section">
-                                            <button className="button-eye-supplier" onClick={(event) => handleSupplierInformation(supplierData.id, event)}>
-                                                <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
-                                            </button>
-                                        </div>
-
-                                    </div>
-
-                                ))}
-
-                            </div>
-                        </>
                     )}
 
                 </div>
                 <div className="right-panel">
-                    <ToastContainer />
+
                     {showButtonAddSupplier && !showAddSupplier && (
-                        <></>
+                        <>
+                            <SectionTitle title="Panel de Proveedores" />
+                            <ButtonCard
+                                icon="addSupplier"
+                                title="Nuevo Proveedor"
+                                description="Agrega un proveedor que abastece los productos de tu inventario"
+                                onClick={handleShowAddSupplier}
+                            />
+
+                        </>
                     )}
 
                     {showAddSupplier && !showButtonAddSupplier && (

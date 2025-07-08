@@ -10,6 +10,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    backdrop-filter: blur(5px);
 }
 
 .custom-modal {
@@ -77,6 +78,14 @@
 .floating-icon {
     width: 40px;
     height: 40px;
+    fill: currentColor;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+}
+
+.delete-icon {
+    width: 36px;
+    height: 36px;
     fill: currentColor;
     color: var(--white);
     margin-bottom: 0.4rem;
@@ -169,8 +178,9 @@
 }
 
 .modal-close-icon:hover {
-    background-color: var(--blue-cloud) ;
+    background-color: var(--blue-cloud);
 }
+
 .tabs {
     display: flex;
     justify-content: space-around;
@@ -257,7 +267,6 @@
 .client-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
 }
 
 .client-table th {
@@ -359,4 +368,14 @@
 
 .icon-unselected {
     color: var(--gray-medium-dark);
+}
+
+.title-list-container {
+    margin-bottom: 1rem;
+}
+
+.title-list-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gray-obsidian);
 }

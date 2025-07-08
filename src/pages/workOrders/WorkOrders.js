@@ -1,10 +1,8 @@
 import "../../WorkOrders.css";
 import "../../Loader.css";
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { debounce } from 'lodash';
-import { ToastContainer } from "react-toastify";
 import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
@@ -16,6 +14,7 @@ import { workOrderStatus } from "../../constants/workOrderConstants";
 import { useWorkOrderContext } from "../../contexts/searchContext/WorkOrderContext";
 import { useStatusColors } from "../../utils/useStatusColors";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { formatDate, formatPlate } from "../../utils/formatters";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
@@ -56,31 +55,7 @@ const WorkOrders = () => {
         closeFilterModal();
     };
 
-    function formatDate(isoDate) {
-        const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const year = date.getUTCFullYear();
-
-        return `${day}/${month}/${year}`;
-    };
-
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
-    };
-
     const handleAddNewWorkOrder = () => {
-        // Redirige a la página deseada
         navigate("/workOrders/newWorkOrder");
     };
 
@@ -96,10 +71,7 @@ const WorkOrders = () => {
             let endpoint = '/work-orders/all';
 
             if (searchTerm) {
-                // Si hay un término de búsqueda, cambia a la búsqueda POST
                 endpoint = '/work-orders/search';
-
-                // Mapea el selectedOption al campo de búsqueda correspondiente
                 const searchFieldMapping = {
                     'Placa': 'vehicle_plate',
                     'Código Orden de Trabajo': 'work_order_code',
@@ -116,7 +88,6 @@ const WorkOrders = () => {
                     return;
                 }
 
-                // Configuración para la solicitud POST
                 const payload = {
                     [searchField]: searchTerm,
                 };
@@ -124,7 +95,6 @@ const WorkOrders = () => {
                 try {
                     const response = await apiClient.post(endpoint, payload);
 
-                    // Transformamos la fecha y el status de cada work order
                     const transformedWorkOrders = response.data.map(workOrder => {
                         const newDateStart = formatDate(workOrder.date_start);
                         const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
@@ -154,7 +124,6 @@ const WorkOrders = () => {
                 try {
                     const response = await apiClient.get(endpoint);
 
-                    // Transformamos la fecha y el status de cada work order
                     const transformedWorkOrders = response.data.map(workOrder => {
                         const newDateStart = formatDate(workOrder.date_start);
                         const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
@@ -169,16 +138,9 @@ const WorkOrders = () => {
                     });
 
                     setWorkOrders(transformedWorkOrders);
-                    console.log("datos de la orden de trabajo", response.data)
                     setLoading(false);
 
-                } catch (error) {
-                    if (error.code === 'ECONNABORTED') {
-                        console.error('La solicitud ha superado el tiempo límite.');
-                    } else {
-                        console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
-                    }
-                }
+                } catch (error) {}
             }
         };
 
@@ -194,8 +156,6 @@ const WorkOrders = () => {
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
-
-            <ToastContainer />
 
             <div className="two-column-layout">
                 <div className="left-panel">

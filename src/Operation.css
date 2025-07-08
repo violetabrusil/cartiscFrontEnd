@@ -45,18 +45,6 @@
     margin-left: 50px;
 }
 
-.container-operation-buttons {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
-    margin-top: auto;
-    margin-right: 20px;
-    position: fixed; /* Fija el contenedor al viewport */
-    bottom: 0; /* Coloca el contenedor en la parte inferior */
-    left: 0; /* Alineación izquierda */
-    right: 0; /* Alineación derecha */
-    padding: 10px; /* Espacio alrededor del contenedor, opcional */
-}
 
 .accept-button {
     width: 180px;
@@ -160,15 +148,35 @@
 }
 
 .input-cost-operation {
-    padding-left: 25px; /* Espacio para el signo de dólar */
+    padding-left: 25px;
+    /* Espacio para el signo de dólar */
 }
 
 .dollar-sign {
-    position: absolute;
-    left: 61px;
-    top: 50%;
-    transform: translateY(-50%); /* Centrar verticalmente */
-    font-size: 1em;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.input-with-sign {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.input-total-cost-operation {
+    width: 100%;
+    flex: 1 1 auto;
+    height: 50px;
+    border: 1px solid var(--black-alpha-34);
+    background: var(--white);
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.3s ease;
+    box-sizing: border-box;
+    padding: 0.2rem 0.6rem;
 }
 
 .input-title-service {
@@ -178,5 +186,5 @@
 
 .input-cost-service {
     padding-left: 10px;
-  
+
 }

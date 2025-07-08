@@ -2,11 +2,11 @@ import '../App.css';
 import '../Form.css';
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from '../contexts/AuthContext';
 import apiLogin from '../services/api';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
+import { showToastOnce } from '../utils/toastUtils';
 
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png";
@@ -39,9 +39,8 @@ const LoginExpress = () => {
             localStorage.setItem('token', token);
 
             if (response.data.user) {
-                // Guarda todos los datos del usuario en localStorage
-                localStorage.setItem('user', JSON.stringify(response.data.user));
 
+                localStorage.setItem('user', JSON.stringify(response.data.user));
             }
 
             document.cookie = `jwt=${token}; path=/; samesite=none`;
@@ -53,19 +52,16 @@ const LoginExpress = () => {
             }
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data.errors) {
-                // Muestra los errores en toasts
+
                 error.response.data.errors.forEach(err => {
-                    toast.error(`${err.field}: ${err.message}`, {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("error", `${err.field}: ${err.message}`);
                 });
             }
         }
     };
 
-
     const handleDeleteClick = () => {
-        setPin(prevPin => prevPin.slice(0, -1));  // Esta línea elimina el último carácter del PIN.
+        setPin(prevPin => prevPin.slice(0, -1)); 
     };
 
     const handleLoginOtherAccount = () => {
@@ -92,8 +88,6 @@ const LoginExpress = () => {
         <div className="page-container">
 
             <Header showCarticsLogo={true}></Header>
-
-            <ToastContainer />
 
             <div className="content-container content-container-login-express">
                 <img src={logo} alt="Logo" className="logo" />

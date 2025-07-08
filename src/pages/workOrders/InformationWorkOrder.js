@@ -1,10 +1,8 @@
-import 'react-toastify/dist/ReactToastify.css';
 import "../../NewWorkOrder.css";
 import "../../InformationWorkOrder.css";
 import "../../Modal.css";
 import "../../Loader.css";
 import React, { useEffect, useState, useRef } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import Select from 'react-select';
 import PuffLoader from "react-spinners/PuffLoader";
@@ -22,6 +20,8 @@ import { AssignModal } from '../../modal/AssignModal';
 import { ConfirmationModal } from '../../modal/ConfirmationModal';
 import { WorkOrderInfoModal } from '../../modal/WorkOrderInfoModal';
 import useCSSVar from '../../hooks/UseCSSVar';
+import { showToastOnce } from "../../utils/toastUtils";
+import { formatPlate } from "../../utils/formatters";
 
 const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
@@ -241,20 +241,6 @@ const InformationWorkOrder = () => {
         };
     };
 
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
-    };
-
     function formatDate(isoDate) {
         const date = new Date(isoDate);
 
@@ -272,7 +258,7 @@ const InformationWorkOrder = () => {
     const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
 
     const toStart = useCSSVar('--tertiary-color');
-    const assigned = useCSSVar('--primary-color'); 
+    const assigned = useCSSVar('--primary-color');
     const inDevelopment = useCSSVar('--green-muted');
     const standBy = useCSSVar('--yellow-warm');
     const cancelled = useCSSVar('--red-intense');
@@ -282,7 +268,7 @@ const InformationWorkOrder = () => {
 
         control: (provided, state) => {
 
-            let borderColor = `1px solid ${blackAlpha34}`; // Color de borde predeterminado
+            let borderColor = `1px solid ${blackAlpha34}`;
 
             const status = state.selectProps.value?.value;
 
@@ -294,7 +280,7 @@ const InformationWorkOrder = () => {
                 cancelled: cancelled,
                 completed: completed,
             };
-             
+
             if (statusColors[status]) {
                 borderColor = `2px solid ${statusColors[status]}`
             }
@@ -303,7 +289,7 @@ const InformationWorkOrder = () => {
                 width: isTabletLandscape ? '280%' : '200%',
                 height: '49px',
                 minHeight: '49px',
-                border: borderColor, // Aplicar el color de borde determinado
+                border: borderColor,
             };
         },
         menu: (provided, state) => ({
@@ -312,11 +298,8 @@ const InformationWorkOrder = () => {
         }),
     };
 
-
     //Función para manejar los cambios en los porcentajes
     const handlePorcentageChange = (event) => {
-
-        // Actualiza el estado de fuelLevel con el nuevo valor
         setFuelLevel(event.target.value);
     };
 
@@ -334,9 +317,9 @@ const InformationWorkOrder = () => {
                 setModalConfig({
                     title: "Confirmación",
                     message: `Desea ${action} la orden de trabajo.?`,
-                    showNotes: nextStatus === 'completed', // Esta línea determina si se muestra el campo de notas.
-                    onConfirm: (notes) => {  // Recibe las notas como un argumento.
-                        changeOrderStatus(nextStatus, notes);  // Llama a `changeOrderStatus` con las notas.
+                    showNotes: nextStatus === 'completed',
+                    onConfirm: (notes) => {
+                        changeOrderStatus(nextStatus, notes);
                         setShowModal(false);
                     },
                     onCancel: () => {
@@ -349,9 +332,7 @@ const InformationWorkOrder = () => {
             }
 
         } else {
-            // Mostrar toast de advertencia si no es una transición válida
-            toast.warn("El cambio de estado de la orden de trabajo no es válido");
-            return; // Detener la ejecución aquí
+            showToastOnce("warn", "El cambio de estado de la orden de trabajo no es válido");
         }
     };
 
@@ -361,7 +342,7 @@ const InformationWorkOrder = () => {
             let params = `?work_order_status=${newStatus}`;
 
             if (newStatus === 'completed' && notes) {
-                params += `&notes=${encodeURIComponent(notes)}`; // Añade las notas a la petición solo si existen.
+                params += `&notes=${encodeURIComponent(notes)}`;
             }
             const url = `${baseEndpoint}${params}`;
 
@@ -373,10 +354,10 @@ const InformationWorkOrder = () => {
                     newStatus: newStatus,
                     dateChanged: new Date().toISOString(),
                     created_by: lastHistory.created_by || 'Unknown',
-                    notes: lastHistory.notes || '' // Esto garantiza que las notas no estén undefined.
+                    notes: lastHistory.notes || ''
                 });
 
-                toast.success("El cambio de estado de la orden de trabajo es válido");
+                showToastOnce("success", "El cambio de estado de la orden de trabajo es válido");
                 getWorkOrderDetailById();
 
                 if (newStatus === 'completed') {
@@ -398,8 +379,7 @@ const InformationWorkOrder = () => {
                 }
             }
         } catch (error) {
-            toast.error("Error al cambiar el estado de la orden de trabajo");
-            console.error("Error al cambiar el estado de la orden de trabajo:", error);
+            showToastOnce("error", "Error al cambiar el estado de la orden de trabajo");
         }
     };
 
@@ -408,11 +388,9 @@ const InformationWorkOrder = () => {
         try {
 
             const response = await apiClient.get(`/work-orders/${workOrderId}`);
-            // Formatear la placa del vehículo
             if (response.data.vehicle && response.data.vehicle.plate) {
                 response.data.vehicle.plate = formatPlate(response.data.vehicle.plate);
             }
-            // Transformar la categoría del vehículo
             if (response.data.vehicle && response.data.vehicle.category) {
                 response.data.vehicle.category = getVehicleCategory(response.data.vehicle.category);
             }
@@ -428,16 +406,12 @@ const InformationWorkOrder = () => {
             }
 
             if (response.data.work_order_status) {
-                // Encuentra el objeto correspondiente en el array WorkOrderStatusOptions
                 const matchingStatus = WorkOrderStatusOptions.find(option => option.value === response.data.work_order_status);
                 setWorkOrderStatus(matchingStatus);
             }
 
-            console.log("datos de la orden de trabaho", response.data)
-
             setWorkOrderDetail(response.data);
-            setNewKm(response.data.km)
-            console.log("datos del km", newKm)
+            setNewKm(response.data.km);
             const selectionFromApi = transformVehicleStatusToSelections(response.data.vehicle_status);
             setSelections(selectionFromApi);
             setFuelLevel(response.data.vehicle_status.fuel_level);
@@ -445,25 +419,22 @@ const InformationWorkOrder = () => {
             setWorkOrderItems(response.data.work_order_items || []);
             setWorkOrderOperations(response.data.work_order_operations || []);
             setWorkOrderServices(response.data.work_order_services || []);
+
             if (Array.isArray(response.data.work_order_services)) {
                 const allOperationsFromApiResponse = response.data.work_order_services.flatMap(item => item.operations);
                 setServicesWithOperations(allOperationsFromApiResponse);
-            } else {
-                console.error('work_order_services is not an array:', response.data.work_order_services);
             }
+
             const receivedSymptoms = response.data.vehicle_status.presented_symptoms;
+
             if (typeof receivedSymptoms === 'string') {
                 const symptomsArray = receivedSymptoms.split(',').map(symptom => symptom.trim()).filter(Boolean);
                 setSymptoms(symptomsArray);
-            } else {
-                console.error('Unexpected type for presented_symptoms:', typeof receivedSymptoms);
             }
             setLoading(false);
 
         } catch (error) {
-            toast.error('Error al obtener el detalle de la orden de trabajo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al obtener el detalle de la orden de trabajo");
         }
     };
 
@@ -496,11 +467,8 @@ const InformationWorkOrder = () => {
     };
 
     const handleUpdateSymptom = (index, newText) => {
-        // Crear una copia de "symptoms" para evitar la mutación directa
         const updatedSymptoms = [...symptoms];
-        // Actualizar el síntoma específico con el nuevo texto
         updatedSymptoms[index] = newText;
-        // Actualizar el estado con los nuevos valores
         setSymptoms(updatedSymptoms);
     };
 
@@ -536,7 +504,7 @@ const InformationWorkOrder = () => {
             },
             {
                 Header: "Total",
-                accessor: "total",  // Usaremos esta clave para calcular el total en el accessor
+                accessor: "total",
                 Cell: ({ row }) => {
                     const price = row.original.price || 0;
                     const quantity = row.original.quantity || 1;
@@ -599,7 +567,7 @@ const InformationWorkOrder = () => {
     };
 
     const handleServicesListUpdate = (updatedList) => {
-        setSelectedServicesList(updatedList); // Asumiendo que selectedServicesList es un estado en el padre.
+        setSelectedServicesList(updatedList);
     };
 
     const selectAllCheckboxes = () => {
@@ -633,21 +601,17 @@ const InformationWorkOrder = () => {
         vehicleStatus.id = idVehicleStatus;
         vehicleStatus.work_order_id = Number(workOrderId);
 
-        // Verificar si se ha ingresado el fuel_level
         const fuelLevelEntered = fuelLevel > 0
 
         if (!fuelLevelEntered) {
-            // Mostrar un toast de advertencia y salir de la función
-            toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("warn", "Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo");
             return;
         }
 
         Object.keys(optionsCheckBox).forEach(group => {
             optionsCheckBox[group].forEach((option, index) => {
                 const key = keyMapping[option];
-                if (key) {  // Si el mapeo existe
+                if (key) {
                     if (key !== 'fuel_level') {
                         vehicleStatus[key] = selections[group][index];
                     } else {
@@ -680,30 +644,17 @@ const InformationWorkOrder = () => {
         try {
             const response = await apiClient.put(`/work-orders/update/${workOrderId}`, payload);
 
-            if (response.status === 200) {  // Suponiendo que tu API devuelve 200 para una edición exitosa
-                toast.success('Orden de trabajo editada exitósamente', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+            if (response.status === 200) {
+                showToastOnce("success", "Orden de trabajo editada exitósamente");
                 setIsEditingWorkOrder(false);
                 setTextareaEditable(false);
                 setIsEditState(false);
 
-            } else {
-
-                toast.error('Ha ocurrido un error al editar la orden de trabajo', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
             }
 
         } catch (error) {
-
-            // Obtener el mensaje de error
             const errorMessage = error.message || 'Error al editar la orden de trabajo.';
-            console.log("error", error)
-            // Mostrar el mensaje de error en el toast
-            toast.error(errorMessage, {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", errorMessage);
         }
     };
 
@@ -732,7 +683,6 @@ const InformationWorkOrder = () => {
     };
 
     const handleProductsSelected = (updatedProducts) => {
-        // Actualiza el estado o realiza acciones adicionales según sea necesario
         setSelectedProducts(updatedProducts);
     };
 
@@ -756,7 +706,7 @@ const InformationWorkOrder = () => {
         selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
 
         try {
-            // Construir el payload
+
             const payload = {
                 client_id: workOrderDetail.client.id,
                 work_order_id: parseInt(workOrderDetail.id, 10),
@@ -768,15 +718,10 @@ const InformationWorkOrder = () => {
                 date: selectedDateAdjusted.toISOString()
             };
 
-            console.log("datos a enviasr", payload)
-
-            // Llamada a la API
             const response = await apiClient.post('/sales-receipts/create', payload);
 
             if (response.status === 201) {
-                toast.success('Operación exitosa', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Operación exitosa");
                 setLastAddedReceiptId(response.data.id);
                 navigate('/paymentReceipt');
             }
@@ -784,11 +729,7 @@ const InformationWorkOrder = () => {
             setWorkOrderModalOpen(false);
 
         } catch (error) {
-            console.log("error", error)
-            toast.error('Error al procesar la orden de trabajo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            console.error('', error);
+            showToastOnce("error", "Error al procesar la orden de trabajo");
         }
     };
 
@@ -876,7 +817,6 @@ const InformationWorkOrder = () => {
         const fetchData = async () => {
             try {
                 await getWorkOrderDetailById();
-                console.log("datos  orden de trabajo", workOrderDetail)
                 const newWorkOrderData = {
                     id: workOrderId,
                     workOrderCode: workOrderDetail.work_order_code,
@@ -886,7 +826,7 @@ const InformationWorkOrder = () => {
                     clientId: workOrderDetail.client.id
                 };
                 setWorkOrderData(newWorkOrderData);
-                setFetchingData(false); // Se ha completado la obtención de datos
+                setFetchingData(false); 
             } catch (error) {
 
             }
@@ -899,7 +839,7 @@ const InformationWorkOrder = () => {
 
     return (
         <div>
-            {!showAssignModal && <ToastContainer />}
+            {!showAssignModal}
 
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />

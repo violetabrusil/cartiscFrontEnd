@@ -1,14 +1,13 @@
 import '../../App.css';
 import '../../Form.css';
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect, useContext } from "react";
-import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "../../useDebounce";
 import { AuthContext } from '../../contexts/AuthContext';
 import apiAdmin from '../../services/apiAdmin';
 import Footer from "../../footer/Footer";
 import Header from "../../header/Header";
+import { showToastOnce } from '../../utils/toastUtils';
 
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png";
@@ -24,8 +23,6 @@ const ChangePIN = () => {
     const debouncedPIN = useDebounce(changePIN, 1000);
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
-
-   
 
     const handleConfirmPinNumberClick = (number) => {
         if (confirmPIN.length < 6) {
@@ -60,12 +57,9 @@ const ChangePIN = () => {
         e.preventDefault();
 
         if (!changePIN || !confirmPIN || pinError) {
-            toast.error('Revise los errores en el formulario.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("warn", "Revise los errores en el formulario.");
             return;
         }
-
         const userId = user.id;
         const userData = {
             new_pin: confirmPIN,
@@ -74,15 +68,11 @@ const ChangePIN = () => {
 
         try {
             await apiAdmin.put(`/change-pin/${userId}`, userData);
-            toast.success('PIN actualizado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            navigate("/login"); // O redirige a donde corresponda después de cambiar el PIN
+            showToastOnce("success", "PIN actualizado");
+            navigate("/login"); 
 
         } catch (error) {
-            toast.error('Error al cambiar el PIN. Inténtalo de nuevo.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+             showToastOnce("error", "Error al cambiar el PIN. Inténtalo de nuevo.");
         }
     };
 

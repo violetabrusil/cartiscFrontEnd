@@ -1,7 +1,6 @@
 import "../Modal.css";
 import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect } from 'react';
-import { ToastContainer } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
@@ -25,7 +24,7 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, 
 
     return (
         <div className="filter-modal-overlay">
-            <ToastContainer />
+          
             <div className="filter-modal">
                 <div style={{ display: 'flex' }}>
                     <h3 style={{ flex: '13', textAlign: 'center' }}>Resumen de pago</h3>

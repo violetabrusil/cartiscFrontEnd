@@ -2,7 +2,6 @@ import "../Modal.css";
 import 'react-toastify/dist/ReactToastify.css';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ToastContainer, toast } from "react-toastify";
 import DataTable from "../dataTable/DataTable";
 import SearchBar from "../searchBar/SearchBar";
 import apiClient from "../services/apiClient";
@@ -11,6 +10,7 @@ import { EmptyTable } from "../dataTable/EmptyTable";
 import { values } from "lodash";
 import { PuffLoader } from "react-spinners";
 import useCSSVar from "../hooks/UseCSSVar";
+import { showToastOnce } from "../utils/toastUtils";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -60,9 +60,9 @@ export function SearchProductsModal({ onClose,
     const customSelectModalStyles = {
         control: (base, state) => ({
             ...base,
-            width: '400px',  // Aquí estableces el ancho
-            height: '40px',  // Y aquí la altura
-            minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
+            width: '400px',
+            height: '40px',
+            minHeight: '40px',
             border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
@@ -72,11 +72,11 @@ export function SearchProductsModal({ onClose,
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: grayMediumDark, // Color del texto del placeholder
+            color: grayMediumDark,
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '400px', // puedes ajustar el ancho del menú aquí
+            width: '400px',
         }),
 
     };
@@ -173,12 +173,10 @@ export function SearchProductsModal({ onClose,
     ];
 
     const handleTitleEdit = (e) => {
-        const sku = e.target.dataset.sku; // Obtener el SKU del atributo de datos
+        const sku = e.target.dataset.sku;
         const newValue = e.target.value;
         setEditableTitleProduct(newValue);
-        console.log("cambio", newValue)
 
-        // Marcar el producto como editado
         setEditedProducts((prevEditedProducts) => ({
             ...prevEditedProducts,
             [sku]: newValue,
@@ -200,7 +198,7 @@ export function SearchProductsModal({ onClose,
                                 type="text"
                                 defaultValue={currentTitle}
                                 onBlur={(e) => {
-                                    handleTitleEdit(e); // Llamar a handleTitleEdit solo en onBlur
+                                    handleTitleEdit(e);
                                 }}
                                 data-sku={row.original.sku}
                             />
@@ -213,7 +211,7 @@ export function SearchProductsModal({ onClose,
                 accessor: "price",
                 width: '28%',
                 Cell: ({ value, row }) => {
-                    const currentPrice = row.original.price; // Usa el precio original del producto
+                    const currentPrice = row.original.price;
                     const handleBlur = (e) => {
                         handleCostChange(row.original.sku, parseFloat(e.target.value.trim()));
                     };
@@ -318,21 +316,16 @@ export function SearchProductsModal({ onClose,
     };
 
     const addProduct = (productToAdd) => {
-        // Verificar si el stock es diferente de cero
+
         if (productToAdd.stock === 0) {
-            // Mostrar un toast de advertencia y salir de la función
-            toast.warn('No se puede agregar el producto porque no cuenta con stock.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("warn", "No se puede agregar el producto porque no cuenta con stock.");
             return;
         }
 
         onProductsSelected((prevProducts) => {
             if (prevProducts.some((p) => p.sku === productToAdd.sku)) {
-                toast.warn('El producto seleccionado ya se encuentra agregado.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-                return prevProducts; // retornar el mismo array si el producto ya está presente
+                showToastOnce("info", "'El producto seleccionado ya se encuentra agregado.");
+                return prevProducts; 
             }
 
             return [productToAdd, ...prevProducts];
@@ -374,7 +367,7 @@ export function SearchProductsModal({ onClose,
             onProductsUpdated(updatedProducts);
             onProductPricesUpdated(productPrices);
             onProductQuantitiesUpdated(productQuantities);
-            resolve(updatedProducts); // Resuelve la promesa con los productos actualizados
+            resolve(updatedProducts); 
         });
     };
 
@@ -388,34 +381,26 @@ export function SearchProductsModal({ onClose,
                     price: parseFloat(parseFloat(product.price).toFixed(2))
                 })),
             };
-            console.log("datoa e nviar prodcutos", payload)
-            await apiClient.post(`work-orders/add-products/${workOrderId}`, payload)
-            toast.success('Productos agregados', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
+            await apiClient.post(`work-orders/add-products/${workOrderId}`, payload);
+            showToastOnce("success","Productos agregados");
+    
         } catch (error) {
-            toast.error('Error al guardar los productos', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error","Error al guardar los productos");
         }
 
     };
 
     const handleSave = async () => {
-        const updatedProducts = await handleConfirmChanges(); // Espera a que handleConfirmChanges se complete
-        // Agrega el producto manual si hay uno
+        const updatedProducts = await handleConfirmChanges(); 
+
         if (manualProduct.title.trim() !== '') {
             updatedProducts.push(manualProduct);
         }
 
         try {
-            await saveProducts(updatedProducts); // Guarda los productos
-            onCloseAndSave(); // Cierra el modal y actualiza los datos de inmediato
-        } catch (error) {
-            console.error("Error al guardar los productos:", error);
-            // En caso de error, podrías mostrar un mensaje de error aquí
-        }
+            await saveProducts(updatedProducts); 
+            onCloseAndSave(); 
+        } catch (error) {}
     };
 
     const updateProducts = async (updatedProducts) => {
@@ -430,49 +415,39 @@ export function SearchProductsModal({ onClose,
                 })),
             };
             console.log("data a enviar", payload)
-            await apiClient.put(`work-orders/update-products/${workOrderId}`, payload)
-            toast.success('Productos actualizados', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            await apiClient.put(`work-orders/update-products/${workOrderId}`, payload);
+            showToastOnce("success","Productos actualizados");
 
         } catch (error) {
-            console.log("error", error)
-            toast.error('Error al actualizar los productos', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+             showToastOnce("error","Error al actualizar los productos.");
         }
 
     };
 
     const handleUpdate = async () => {
-        const updatedProducts = await handleConfirmChanges(); // Espera a que handleConfirmChanges se complete
+        const updatedProducts = await handleConfirmChanges(); 
         try {
-            await updateProducts(updatedProducts); // Luego, guarda los productos
-            onCloseAndSave(); // Cierra el modal y actualiza los datos de inmediato
-        } catch (error) {
-            console.error("Error al guardar los productos:", error);
-            // En caso de error, podrías mostrar un mensaje de error aquí
-        }
+            await updateProducts(updatedProducts); 
+            onCloseAndSave(); 
+        } catch (error) {}
     };
 
     const handleSaveUpdateProducts = () => {
         if (isEditing) {
-            // Llama a la función para editar los productos
             handleUpdate();
         } else {
-            // Llama a la función para guardar los productos
             handleSave();
         }
-    }
+    };
 
     const fetchData = async () => {
 
         let endpoint = '/products/all';
 
         if (searchTerm) {
-            // Si la búsqueda tiene menos de 3 caracteres, no ejecutar la petición
+
             if (searchTerm.length < 3) {
-                return; // No hacemos la petición si el usuario aún no ha escrito 3 caracteres
+                return; 
             }
 
             const searchTypes = {
@@ -484,21 +459,16 @@ export function SearchProductsModal({ onClose,
             };
 
             if (selectedOption.value in searchTypes) {
-                console.log("valor selectedoptio", selectedOption.value)
                 endpoint = `/products/search?search_type=${searchTypes[selectedOption.value]}&criteria=${searchTerm}`;
-                console.log("endopoint", endpoint)
             }
         }
 
         try {
             const response = await apiClient.get(endpoint);
             setAllProducts(response.data);
-            console.log("datos", response.data)
         } catch (error) {
 
-            toast.error('Error al obtener los datos de los productos.', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+            showToastOnce("error","Error al obtener los datos de los productos.");
 
         }
     };
@@ -512,22 +482,20 @@ export function SearchProductsModal({ onClose,
     };
 
     const addManualProduct = () => {
-        //Título, precio y cantidad tengan valores válidos
+
         if (manualProduct.title.trim() !== '' && !isNaN(manualProduct.price) && manualProduct.quantity > 0) {
             const updatedProducts = [{ ...manualProduct, sku: `.MA-${Date.now()}` }, ...selectedProducts];
 
             onProductsSelected(updatedProducts);
-            // Reinicia la fila de ingreso manual
+
             setManualProduct({
                 title: '',
                 price: 0,
                 quantity: 1,
             });
         } else {
-            // Muestra un mensaje de advertencia si no ingresa valores válidos
-            toast.warn('Ingrese valores válidos.', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+          
+            showToastOnce("warn","Ingrese valores válidos.");
         }
     };
 
@@ -561,7 +529,7 @@ export function SearchProductsModal({ onClose,
     return (
 
         <div className='filter-modal-overlay'>
-            <ToastContainer />
+
             <div style={{ maxWidth: '850px' }} className="modal-payment">
                 <div style={{ display: 'flex', marginLeft: '10px', marginBottom: '0px', marginTop: '0px' }}>
                     <h3 style={{ marginBottom: '0px', flex: "1" }}>Productos</h3>

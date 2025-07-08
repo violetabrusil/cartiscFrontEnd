@@ -1,13 +1,12 @@
 import "../../Products.css";
 import "../../CustomTitleSection.css";
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import Select from 'react-select';
-import { ToastContainer, toast } from 'react-toastify'
 import apiClient from "../../services/apiClient";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { CustomSingleValueProduct } from "../../customSingleValue/CustomSingleValueProduct";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { showToastOnce } from "../../utils/toastUtils";
 
 const letterIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
 const categoryIcon = process.env.PUBLIC_URL + "/images/icons/category.png";
@@ -45,10 +44,9 @@ export function ProductForm({
     const [suppliers, setSuppliers] = useState([]);
     const [selectedOptionSupplier, setSelectedOptionSupplier] = useState("");
     const [searchTermSupplier, setSearchTermSupplier] = useState("");
-    const [searchType, setSearchType] = useState('Código');  // Por defecto buscará por código
+    const [searchType, setSearchType] = useState('Código');
     const [isEditable, setIsEditable] = useState(mode === "add");
     const [isAlertProductSuspend, setIsAlertProductSuspend] = useState(false);
-
 
     //Variables para guardar los datos de entrada de producto
     const [productId, setProductId] = useState(productData.id);
@@ -79,15 +77,15 @@ export function ProductForm({
             ...provided,
             className: 'custom-select-control-supplier',
             width: isTabletLandscape ? '80%' : '74%',
-            height: '50px', // Estilo personalizado para la altura
+            height: '50px',
             minHeight: '50px',
-            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
+            border: `1px solid ${blackAlpha34}`,
+            borderRadius: '4px',
             padding: '4px',
         }),
         valueContainer: (provided, state) => ({
             ...provided,
-            padding: '4px', // Ajusta según sea necesario
+            padding: '4px',
         }),
         singleValue: (provided, state) => ({
             ...provided,
@@ -96,29 +94,28 @@ export function ProductForm({
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '74%', // puedes ajustar el ancho del menú aquí
+            width: '74%',
         }),
         menuList: (provided, state) => ({
             ...provided,
-            maxHeight: '200px', // puedes ajustar la altura máxima del menú desplegable aquí
+            maxHeight: '200px',
         }),
         option: (provided, state) => ({
             ...provided,
             className: 'custom-select-option-supplier',
-            height: '40px',  // ajusta la altura de cada opción aquí
-            lineHeight: '40px', // alinea el texto verticalmente en el medio de la opción
-            fontSize: '16px', // ajusta el tamaño de la fuente de cada opción aquí
-            // otros estilos personalizados si los necesitas
+            height: '40px',
+            lineHeight: '40px',
+            fontSize: '16px',
         }),
         input: (provided) => ({
             ...provided,
-            paddingLeft: '50px' // Ajusta según tus necesidades
+            paddingLeft: '50px'
         }),
 
     };
 
-    const getSuppliers = async (event) => {
-        //Endpoint por defecto
+    const getSuppliers = async () => {
+
         let endpoint = '/suppliers/all';
         const searchPerSupplierCode = "supplier_code";
         const searchPerName = "name";
@@ -145,20 +142,17 @@ export function ProductForm({
             setSuppliers(supplierOptions);
 
         } catch (error) {
-            toast.error('Error al obtener los datos de las operaciones.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al obtener los datos de las operaciones.");
         }
 
     };
 
     const handleStockChange = (e) => {
         const value = e.target.value;
-        // Usar una regex para verificar si el valor es un número o una cadena vacía.
         if (/^\d*$/.test(value)) {
             setStock(value);
         }
-    }
+    };
 
     const handleImageUpload = event => {
         const file = event.target.files[0];
@@ -210,32 +204,22 @@ export function ProductForm({
     const createProduct = async (product) => {
         try {
             const response = await apiClient.post('/products/create', product)
-            toast.success('Producto creado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Producto creado");
             onProductChange();
             return response.data;
         } catch (error) {
-            toast.error('Hubo un error al crear el producto', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            console.error(error);
+            showToastOnce("error", "Hubo un error al crear el producto");
         }
     };
 
     const updateProduct = async (id, product) => {
         try {
             const response = await apiClient.put(`products/update/${id}`, product);
-            toast.success('Producto actualizado con éxito!', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Producto actualizado con éxito!");
             onProductChange();
             return response.data;
         } catch (error) {
-            toast.error('Hubo un error al actualizar el producto', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            console.error(error);
+            showToastOnce("error", "Hubo un error al actualizar el producto");
         }
     };
 
@@ -249,7 +233,7 @@ export function ProductForm({
 
     //Función para suspender un producto
     const handleUnavailableProduct = async (event) => {
-        //Para evitar que el formulario recargue la página
+     
         event.preventDefault();
         setIsAlertProductSuspend(false);
 
@@ -258,23 +242,15 @@ export function ProductForm({
             const response = await apiClient.put(`/products/change-status/${productData.id}?product_status=suspended`)
 
             if (response.status === 200) {
-                toast.success('Producto suspendido', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Producto suspendido");
                 onSuspendSuccess();
                 onProductChange();
                 return response.data;
 
-            } else {
-                toast.error('Ha ocurrido un error al suspender el producto', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
             }
 
         } catch (error) {
-            toast.error('Error al suspender el producto. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al suspender el producto. Por favor, inténtalo de nuevo.");
         }
     };
 
@@ -308,7 +284,6 @@ export function ProductForm({
 
     return (
         <div>
-            <ToastContainer />
 
             <div>
                 {mode === 'edit' ? (

@@ -2,11 +2,11 @@ import "../Modal.css";
 import "../NewClient.css";
 
 import React, { useState } from "react";
-import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select';
 import { CustomPlaceholder } from "../customPlaceholder/CustomPlaceholder";
 import apiClient from "../services/apiClient";
 import useCSSVar from "../hooks/UseCSSVar";
+import { showToastOnce } from "../utils/toastUtils";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
@@ -16,7 +16,7 @@ const brandIcon = process.env.PUBLIC_URL + "/images/icons/brand.png";
 const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
 const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
-export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientId}) => {
+export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate, selectedClientId }) => {
 
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [category, setCategory] = useState('');
@@ -102,30 +102,24 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
     };
 
     const handleAddVehicle = async (event) => {
-        
+
         if (event) {
-            event.preventDefault(); // Para evitar que el formulario recargue la página
+            event.preventDefault();
         }
-    
+
         const client_id = selectedClientId;
         const plate = transformPlateForSaving(plateCar);
-      
+
         try {
-           
+
             await apiClient.post('/vehicles/register', { client_id, category, plate, brand, model, year, motor, km });
 
-            toast.success('Vehículo registrado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
-            console.log("Llamando a OnUpdate");
+            showToastOnce("success", "Vehículo registrado")
             OnUpdate();
             onClose();
 
         } catch (error) {
-            toast.error('Error al guardar un vehiculo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al guardar un vehiculo");
         }
     };
 
@@ -133,7 +127,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
 
     return (
         <div className="filter-modal-overlay">
-            <ToastContainer />
+
             <div className="filter-modal">
                 <div style={{ display: 'flex' }}>
                     <h3 style={{ flex: '13', textAlign: 'center' }}>Información Vehículo</h3>
@@ -182,7 +176,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
                                     value={options.find(option => option.value === category)}
                                     onChange={handleTypeCarChange}
                                     styles={customStyles}
-                                    placeholder="Seleccionar"/>
+                                    placeholder="Seleccionar" />
                             </label>
                             <label className="label-form">
                                 Kilometraje actual

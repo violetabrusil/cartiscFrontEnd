@@ -1,13 +1,11 @@
 import "../../PaymentReceipts.css";
 import "../../Modal.css"
 import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PuffLoader from "react-spinners/PuffLoader";
 import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import DataTable from "../../dataTable/DataTable";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import apiClient from "../../services/apiClient";
 import { SearchModalPayment } from "../../modal/SearchModalPayment";
@@ -20,6 +18,8 @@ import { usePaymentReceipt } from "../../contexts/searchContext/PaymentReceiptCo
 import DataTablePagination from "../../dataTable/DataTablePagination";
 import useCSSVar from "../../hooks/UseCSSVar";
 import Icon from "../../components/Icons";
+import { showToastOnce } from "../../utils/toastUtils";
+import { formatDate, formatPlate } from "../../utils/formatters";
 
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
 const emailIcon = process.env.PUBLIC_URL + "/images/icons/email-icon.png";
@@ -72,20 +72,6 @@ const PaymentReceipts = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
-    };
-
     const navigateToDetail = (workOrderId) => {
         navigate(`/workOrders/detailWorkOrder/${workOrderId}`, {
             state: { currentPage: 'paymentReceipt' }
@@ -109,7 +95,7 @@ const PaymentReceipts = () => {
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '100%', // puedes ajustar el ancho del menú aquí
+            width: '100%',
         }),
     };
 
@@ -224,15 +210,6 @@ const PaymentReceipts = () => {
         [tertiaryColor]
     );
 
-    function formatDate(isoDate) {
-        const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
-        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
-
-        return `${day}/${month}/${year}`;
-    };
-
     const handleOpenModal = () => {
         setModalOpen(true);
     };
@@ -244,7 +221,7 @@ const PaymentReceipts = () => {
     const handleConfirm = async (data, page = 1, pageSize = 7) => {
         setLoading(true);
         try {
-            // Verifica si todos los campos de búsqueda están vacíos
+
             const isEmptySearch = !data.work_order_code &&
                 !data.vehicle_plate &&
                 !data.client_name &&
@@ -255,9 +232,8 @@ const PaymentReceipts = () => {
                 !data.date_start_of_search &&
                 !data.date_finish_of_search;
 
-            // Si los campos están vacíos, realiza una solicitud para obtener toda la lista
+
             if (isEmptySearch) {
-                // Llama a fetchData en lugar de hacer la solicitud directa
                 await fetchData();
             } else {
                 const response = await apiClient.post(`/sales-receipts/search/${page}/${pageSize}`, data);
@@ -269,7 +245,6 @@ const PaymentReceipts = () => {
 
                 const { current_page, total_pages, values, total_values } = response.data;
 
-                console.log("datos lista ", response.data)
                 const transformedPaymentReceipts = values.map(payment => {
                     const newDateStart = formatDate(payment.created_at);
                     const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
@@ -297,10 +272,7 @@ const PaymentReceipts = () => {
 
         } catch (error) {
             setLoading(false);
-            toast.error('Ha ocurrido un error', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            console.log("error", error)
+            showToastOnce("error", "Ha ocurrido un error al obtener los datos.");
         }
     };
 
@@ -317,8 +289,6 @@ const PaymentReceipts = () => {
                 setHasNextPage(false);
                 return;
             }
-
-            console.log("datos de comprobante", response.data);
 
             const { current_page, total_pages, values, total_values } = response.data;
 
@@ -339,8 +309,6 @@ const PaymentReceipts = () => {
                 };
             });
 
-            // Imprime los datos transformados
-            console.log("Datos transformados:", transformedPaymentReceipts);
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
             setTotalPages(total_pages);
@@ -348,15 +316,13 @@ const PaymentReceipts = () => {
         } catch (error) {
             setLoading(false);
             if (error.code === 'ECONNABORTED') {
-                console.error('La solicitud ha superado el tiempo límite.');
-            } else {
-                console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                showToastOnce("error", "La solicitud ha superado el tiempo límite");
             }
         }
     };
 
     const goToNextPage = () => {
-        if (currentPage ) {
+        if (currentPage) {
             setCurrentPage(prevPage => prevPage + 1);
         }
     };
@@ -372,32 +338,22 @@ const PaymentReceipts = () => {
         try {
             setDownloadingPdf(true)
             const response = await apiClient.get(`/sales-receipts/generate-pdf/${paymentId}`, { responseType: 'blob' });
-            console.log("response", response)
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'comprobante_venta.pdf'); // El nombre que quieras para el archivo descargado
+            link.setAttribute('download', 'comprobante_venta.pdf');
             document.body.appendChild(link);
             link.click();
 
-            // Limpieza: quitar el enlace cuando haya terminado
             link.parentNode.removeChild(link);
             if (response.status === 200) {
                 setDownloadingPdf(false);
-                toast.success('Archivo descargado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Archivo descargado");
             } else {
                 setDownloadingPdf(false);
-                toast.error('Error al descarar el archivo', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
             }
         } catch (error) {
-            console.error('Error descargando el archivo', error);
-
-            // Mostrar un toast de error
-            toast.error('Error descargando el archivo');
+            showToastOnce("error", "Error al descarar el archivo");
         }
         setDownloadingPdf(false);
     };
@@ -408,22 +364,13 @@ const PaymentReceipts = () => {
             const response = await apiClient.get(`/sales-receipts/send-email/${paymentId}`);
             if (response.status === 200) {
                 setSendingEmail(false);
-                toast.success('Email enviado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Email enviado");
             } else {
                 setSendingEmail(false);
-                toast.error('Error al enviar el email', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
             }
         } catch (error) {
             setSendingEmail(false);
-            toast.error('Error al enviar el email', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            setSendingEmail(false);
-            console.error('Error al enviar el email', error);
+            showToastOnce("error", "Error al enviar el email");
         } finally {
 
         }
@@ -437,7 +384,7 @@ const PaymentReceipts = () => {
         selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
 
         try {
-            // Construir el payload
+
             const payload = {
                 client_id: workOrderData.clientId,
                 work_order_id: parseInt(workOrderData.id, 10),
@@ -449,40 +396,29 @@ const PaymentReceipts = () => {
                 total: total,
             };
 
-            console.log("datos a enviasr", payload)
-
-            // Llamada a la API
             const response = await apiClient.post('/sales-receipts/create', payload);
 
             if (response.status === 201) {
-                toast.success('Operación exitosa', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Operación exitosa");
                 setLastAddedReceiptId(response.data.id);
                 await fetchData();
-
             }
             setLoading(false);
             setWorkOrderModalOpen(false);
 
 
         } catch (error) {
-            console.log("error", error)
-            toast.error('Error al procesar la orden de trabajo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            console.error('', error);
+            showToastOnce("error", "Error al procesar la orden de trabajo");
         }
     };
 
     const handleOpenPaymentModal = (receipt) => {
         setSelectedReceipt(receipt);
         setPaymentType(receipt.payment_type);
-        setAmountToPay(0); // o si deseas que esté preconfigurado con algún valor, cámbialo aquí
+        setAmountToPay(0);
         setPayAll(false);
         setPaymentModal(true);
     };
-
 
     const handleClosePaymentModal = () => {
         setPaymentModal(false);
@@ -497,9 +433,7 @@ const PaymentReceipts = () => {
 
         if (paymentType === 'pending') {
 
-            toast.error('Seleccione una forma de pago para continuar.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Seleccione una forma de pago para continuar.");
 
         } else {
             try {
@@ -515,18 +449,10 @@ const PaymentReceipts = () => {
                 handleClosePaymentModal();
                 await fetchData();
                 setLoading(false);
-                toast.success('Pago procesado con éxito.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
+                showToastOnce("success", "Pago procesado con éxito");
 
             } catch (error) {
-                console.log("Error en paga comprobante", error)
-
-                toast.error('Error al procesar el pago.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
+                showToastOnce("error", "Error al procesar el pago");
             }
         }
 
@@ -538,21 +464,17 @@ const PaymentReceipts = () => {
 
     useEffect(() => {
         fetchData(currentPage, responsivePageSize);
-        console.log("cursor", currentPage)
-        console.log("pageSize", responsivePageSize)
     }, [currentPage, responsivePageSize]);
 
     useEffect(() => {
         if (location.state?.fromWorkOrder) {
             setWorkOrderData(location.state.workOrderData);
-            console.log("data payment", workOrderData)
             setWorkOrderModalOpen(true);
-            navigate('/paymentReceipt', { replace: true }); // Esto reemplaza la entrada actual en el historial.
+            navigate('/paymentReceipt', { replace: true }); 
         }
     }, []);
 
     useEffect(() => {
-        console.log("Lista filtrada actualizada:", filterData);
     }, [filterData]);
 
 
@@ -566,9 +488,8 @@ const PaymentReceipts = () => {
                 } else {
                     await fetchData(currentPage);
                 }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
+            } catch (error) {} 
+            finally {
                 setLoading(false);
             }
         };
@@ -585,8 +506,6 @@ const PaymentReceipts = () => {
 
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
-
-            <ToastContainer />
 
             <div className="container-payment-receipts">
 
@@ -674,7 +593,7 @@ const PaymentReceipts = () => {
 
             {paymentModal && (
                 <div className="filter-modal-overlay">
-                    <ToastContainer />
+
                     <div className="modal-content">
                         <div className="title-modal-history">
                             <h4>Nuevo Pago</h4>

@@ -1,13 +1,13 @@
 import "../../Products.css";
 import React, { useEffect, useState, useCallback } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
-import { ToastContainer, toast } from "react-toastify";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { ProductForm } from "./ProductForm";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { showToastOnce } from "../../utils/toastUtils";
 
 const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -137,7 +137,6 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     };
 
     const handleNewProduct = () => {
-        // Luego, redirige a tu pantalla principal (por ejemplo, ocultando el formulario y mostrando la tabla):
         fetchData();
         setViewMode('general');
         setRefreshCount(refreshCount + 1);
@@ -161,9 +160,9 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
+        
         setLoading(true);
 
-        //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
         const searchPerSupplier = "supplier_name";
@@ -199,9 +198,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
             setAllProducts(response.data);
         } catch (error) {
             if (error.code === 'ECONNABORTED') {
-                toast.error('La solicitud ha superado el tiempo límite.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                });
+                showToastOnce("error", "La solicitd ha superado el tiempo límite ");
             } else {
             }
         }
@@ -214,7 +211,6 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
 
     return (
         <div style={{ marginTop: '-18px' }}>
-            <ToastContainer />
 
             {viewMode === 'general' && (
                 <div>

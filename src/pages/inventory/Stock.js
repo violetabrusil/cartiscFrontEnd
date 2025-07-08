@@ -1,12 +1,12 @@
 import "../../Stock.css";
 import React, { useState, useCallback, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { showToastOnce } from "../../utils/toastUtils";
 
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
@@ -30,8 +30,8 @@ const Stock = () => {
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
+
         setLoading(true);
-        //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
         const searchPerSupplier = "supplier_name";
@@ -81,7 +81,6 @@ const Stock = () => {
     }, []);
 
     const handleRowClick = (row, index) => {
-        // Aquí obtienes el stock del producto seleccionado y lo actualizas en el estado
         setSelectedProductStock(row.original.stock);
         setSelectedProductId(row.original.id);
         setSelectedRowIndex(index);
@@ -100,22 +99,14 @@ const Stock = () => {
                     }
                 })
                 if (response.status === 200) {
-                    toast.success('Stock actualizado', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("success", "Stock actualizado.");
                     setSelectedProductStock(stockToUpdate);
                     fetchData();
 
-                } else {
-                    toast.error('Ha ocurrido un error al actualizar el stock el producto', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
                 }
 
             } catch (error) {
-                toast.error('Error actualizar el stock del producto Por favor, inténtalo de nuevo..', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("error", "Error al actualizar el stock del producto. Por favor, inténtelo de nuevo.");
             }
 
         }
@@ -158,7 +149,7 @@ const Stock = () => {
     return (
 
         <div className="stock-container">
-            <ToastContainer />
+
             <div className="content-wrapper">
                 <SearchBar onFilter={handleFilter} />
                 {loading ? (

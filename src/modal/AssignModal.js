@@ -1,11 +1,11 @@
 import "../Modal.css";
 import React, { useState, useCallback, useEffect } from 'react';
-import { ToastContainer, toast } from "react-toastify";
 import SearchBar from "../searchBar/SearchBar";
 import apiAdmin from "../services/apiAdmin";
 import DataTable from "../dataTable/DataTable";
 import apiClient from "../services/apiClient";
 import useCSSVar from "../hooks/UseCSSVar";
+import { showToastOnce } from "../utils/toastUtils";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const userIcon = process.env.PUBLIC_URL + "/images/user.png";
@@ -89,7 +89,6 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOr
 
     const fetchData = async () => {
 
-        //Endpoint por defecto
         let endpoint = '/active-users';
         const searchPerUniqueCode = "unumber";
         const searchPerUserName = "username";
@@ -112,10 +111,7 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOr
             const response = await apiAdmin.get(endpoint);
             setallUsers(response.data);
         } catch (error) {
-            toast.error('Error al obtener los datos de los usuarios.', {
-                position: toast.POSITION.TOP_RIGHT,
-                containerId: "modal-toast-container"
-            });
+            showToastOnce("error", "Error al obtener los datos de los usuarios.");
         }
     };
 
@@ -130,37 +126,25 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOr
                     created_by: lastHistory.created_by,
                     notes: lastHistory.notes
                 });
-            }, 3000);  // Espera 3 segundos antes de cerrar el modal 
+            }, 3000);
         }
     };
-
 
     const assignOperatorToWorkOrder = async (username, workOrderId) => {
         const url = `/work-orders/assign/${workOrderId}?username_operator=${username}`;
         try {
             const response = await apiClient.put(url);
             if (response.status === 200) {
-                
-                toast.success('Asignación exitosa.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                    containerId: "modal-toast-container"
-                });
+
+                showToastOnce("success", "Asignación exitosa.");
                 await getWorkOrderDetail(workOrderId);
-                return response.data; // Si la asignación fue exitosa, retorna los datos
-                
+                return response.data;
+
             } else {
-                toast.error('Hubo un error al asignar el usuario a la orden de trabajo.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                    containerId: "modal-toast-container"
-                });
+                showToastOnce("error", "Hubo un error al asignar el usuario a la orden de trabajo.");
                 return null;
             }
         } catch (error) {
-            toast.error("Hubo un error al asignar el usuario a la orden de trabajo.", {
-                position: toast.POSITION.TOP_RIGHT,
-                containerId: "modal-toast-container"
-            });
-            console.error("Error:", error);
             return null;
         }
     };
@@ -177,7 +161,6 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOr
             {isOpen && (
 
                 <div style={{ maxWidth: '600px' }} className="modal-payment">
-                    <ToastContainer containerId="modal-toast-container" />
 
                     <div className="title-modal-history">
                         <h4>Asignar Orden de Trabajo</h4>
@@ -207,7 +190,7 @@ export function AssignModal({ isOpen, onClose, onConfirm, workOrderId, getWorkOr
                         />
                     </div>
 
-                    <div style={{textAlign: 'center'}}>
+                    <div style={{ textAlign: 'center' }}>
                         <button
                             onClick={handleSubmit}
                             disabled={!username}

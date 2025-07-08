@@ -4,7 +4,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
-import { ToastContainer } from "react-toastify";
 import { PuffLoader } from "react-spinners";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
@@ -15,6 +14,7 @@ import { proformaStatus } from "../../constants/proformaConstants";
 import { CustomButton, CustomButtonContainer } from "../../buttons/customButton/CustomButton";
 import { useProformaContext } from "../../contexts/searchContext/ProformaContext";
 import { useStatusColors } from "../../utils/useStatusColors";
+import { formatDate, formatPlate } from "../../utils/formatters";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
@@ -50,29 +50,6 @@ const Proforma = () => {
     const handleSelectClick = (option) => {
         setSelectedOption(option);
         closeFilterModal();
-    };
-
-    function formatDate(isoDate) {
-        const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const year = date.getUTCFullYear();
-
-        return `${day}/${month}/${year}`;
-    };
-
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput;
     };
 
     const handleAddNewProforma = () => {
@@ -175,8 +152,6 @@ const Proforma = () => {
         <>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
-
-            <ToastContainer />
 
             <div className="two-column-layout">
 

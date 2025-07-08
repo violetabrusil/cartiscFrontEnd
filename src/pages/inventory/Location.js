@@ -1,13 +1,12 @@
 import "../../Location.css";
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useCallback, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { showToastOnce } from "../../utils/toastUtils";
 
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
@@ -37,12 +36,10 @@ const Location = () => {
     }, []);
 
     const handleRowProductClick = (row, index) => {
-        // Se obtiene la fila y la columna de  producto seleccionado y se lo actualiza 
         setSelectedProductId(row.original.id);
         setSelectedProductRow(row.original.row);
         setSelectedProductColumn(row.original.column);
         setSelectedRowIndex(index);
-        // Restablecer los valores de edición
         setRowUpdate(null);
         setColumnUpdate(null);
     };
@@ -53,20 +50,17 @@ const Location = () => {
         if (isEditing) {
             const formData = new FormData();
     
-            // Añadir a formData solo si hay cambios
             if (rowUpdate !== null) {
                 formData.append('row', rowUpdate);
             } else {
-                formData.append('row', selectedProductRow); // Mantener el valor actual
+                formData.append('row', selectedProductRow); 
             }
     
             if (columnUpdate !== null) {
                 formData.append('column', columnUpdate);
             } else {
-                formData.append('column', selectedProductColumn); // Mantener el valor actual
+                formData.append('column', selectedProductColumn); 
             }
-    
-            console.log("datos a enviar", rowUpdate, columnUpdate);
     
             try {
                 const response = await apiClient.put(`/products/update-location/${selectedProductId}`, formData, {
@@ -76,11 +70,9 @@ const Location = () => {
                 });
     
                 if (response.status === 200) {
-                    toast.success('Ubicación actualizada', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+
+                    showToastOnce("success", "Ubicación actualizada");
     
-                    // Actualizar solo los valores editados
                     if (rowUpdate !== null) {
                         setSelectedProductRow(rowUpdate);
                     }
@@ -90,20 +82,12 @@ const Location = () => {
                     }
     
                     fetchData();
-                } else {
-                    toast.error('Ha ocurrido un error al actualizar la ubicación del producto', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
-                }
+                } 
     
             } catch (error) {
-                console.log("error ubicacion", error)
-                toast.error('Error al actualizar la ubicación del producto. Por favor, inténtalo de nuevo..', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("error", "Ha ocurrido un error al actualizar la ubicación del producto");
             }
     
-            // Restablecer los valores de edición
             setRowUpdate(null);
             setColumnUpdate(null);
         }
@@ -144,8 +128,8 @@ const Location = () => {
     //por número de serie, categoría o título
 
     const fetchData = async () => {
+
         setLoading(true);
-        //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
         const searchPerSupplier = "supplier_name";
@@ -196,7 +180,7 @@ const Location = () => {
     return (
 
         <div className="location-container">
-            <ToastContainer />
+
             <div className="content-location-wrapper">
                 <SearchBar onFilter={handleFilter} />
                 {loading ? (

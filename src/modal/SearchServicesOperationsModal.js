@@ -1,6 +1,5 @@
 import "../Modal.css";
 import React, { useState, useEffect, useCallback, useRef, } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import Carousel from "react-multi-carousel";
 import SearchBar from "../searchBar/SearchBar";
 import DataTable from "../dataTable/DataTable";
@@ -8,6 +7,7 @@ import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
 import { EmptyTable } from "../dataTable/EmptyTable";
 import useCSSVar from "../hooks/UseCSSVar";
+import { showToastOnce } from "../utils/toastUtils";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -251,9 +251,9 @@ const SearchServicesOperationsModal = ({
     const customSelectServicesModalStyles = {
         control: (base, state) => ({
             ...base,
-            width: '400px',  // Aquí estableces el ancho
-            height: '40px',  // Y aquí la altura
-            minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
+            width: '400px',
+            height: '40px',
+            minHeight: '40px',
             border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
@@ -263,11 +263,11 @@ const SearchServicesOperationsModal = ({
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: grayMediumDark, // Color del texto del placeholder
+            color: grayMediumDark,
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '400px', // puedes ajustar el ancho del menú aquí
+            width: '400px',
         }),
 
     };
@@ -275,9 +275,9 @@ const SearchServicesOperationsModal = ({
     const customSelectOperationsModalStyles = {
         control: (base, state) => ({
             ...base,
-            width: '400px',  // Aquí estableces el ancho
-            height: '40px',  // Y aquí la altura
-            minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
+            width: '400px',
+            height: '40px',
+            minHeight: '40px',
             border: `1px solid ${blackAlpha34}`,
             borderRadius: '4px',
             padding: '1px',
@@ -287,11 +287,11 @@ const SearchServicesOperationsModal = ({
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: grayMediumDark, // Color del texto del placeholder
+            color: grayMediumDark,
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '400px', // puedes ajustar el ancho del menú aquí
+            width: '400px',
         }),
 
     };
@@ -300,7 +300,7 @@ const SearchServicesOperationsModal = ({
 
     const addOperation = (operationToAdd) => {
         let operationExistsInAnyService = selectedServicesListRef.current.some(service => {
-            // Corregimos "Operations" a "operations"
+
             if (!service.operations) {
                 return false;
             }
@@ -309,17 +309,13 @@ const SearchServicesOperationsModal = ({
         });
 
         if (operationExistsInAnyService) {
-            toast.warn('La operación seleccionada ya se encuentra en Servicios.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("warn", "La operación seleccionada ya se encuentra en Servicios.");
             return;
         }
 
         onOperationsSelected(prevOperations => {
             if (prevOperations.some(op => op.operation_code === operationToAdd.operation_code)) {
-                toast.warn('La operación seleccionada ya ha sido agregada.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("warn", "La operación seleccionada ya ha sido agregada,");
                 return prevOperations;
             }
             return [{ ...operationToAdd }, ...prevOperations,];
@@ -337,11 +333,9 @@ const SearchServicesOperationsModal = ({
     };
 
     const handleServiceSelection = async (service) => {
-        // Verificar si el servicio ya ha sido agregado anteriormente
+
         if (selectedServicesListRef.current.some(srv => srv.service_code === service.service_code)) {
-            toast.warn('El servicio ya ha sido agregado.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("warn", "'El servicio ya ha sido agregado.");
             return;
         }
 
@@ -358,15 +352,12 @@ const SearchServicesOperationsModal = ({
                 );
 
                 if (operationAlreadyAdded || operationInOtherServices) {
-                    toast.warn("Una operación del Servicio seleccionado, ya se encuentra agregada", {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("warn", "Una operación del Servicio seleccionado, ya se encuentra agregada");
                     return;
                 }
 
-                // Si no hay problemas, procedemos a agregar el servicio
                 setSelectedServicesList(prevServices => [
-                   
+
                     {
                         ...response.data,
                         operations: response.data.operations.map(op => ({ ...op, serviceId: service.id, serviceTitle: service.service_title }))
@@ -381,14 +372,10 @@ const SearchServicesOperationsModal = ({
                 setServiceOperations(prevOperations => [...prevOperations, ...newOperations]);
                 onServiceOperationsUpdated(prevOperations => [...prevOperations, ...newOperations]);
             } else {
-                toast.warn('El servicio seleccionado no tiene operaciones', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("warn", "El servicio seleccionado no tiene operaciones");
             }
         } catch (error) {
-            toast.error('Error al obtener las operaciones del servicio', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al obtener las operaciones del servicio");
         }
     };
 
@@ -432,7 +419,6 @@ const SearchServicesOperationsModal = ({
             };
         });
 
-        // Construyendo el payload para operaciones
         const operationsPayload = selectedOperations.map(operation => ({
             work_order_id: parseInt(workOrderId, 10),
             operation_code: operation.operation_code.startsWith(".OPM-") ? "" : operation.operation_code,
@@ -455,7 +441,7 @@ const SearchServicesOperationsModal = ({
         const allServiceOperations = selectedServicesList.flatMap(service => service.operations);
 
         try {
-            // Llamada a la API para añadir
+
             if (workOrderOperations.length === 0 && workOrderServices.length === 0) {
                 const addResponse = await apiClient.post(`work-orders/add-services-operations/${workOrderId}`, combinedPayload);
                 handleApiResponse(addResponse, 'Operaciones añadidas');
@@ -468,12 +454,8 @@ const SearchServicesOperationsModal = ({
             }
 
         } catch (error) {
-            console.log("error", error)
-            toast.error(`Error al guardar las operaciones`, {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al guardar las operaciones.");
         }
-
 
         onOperationCostUpdated(operationCost);
         onOperationUpdated(selectedOperations);
@@ -486,29 +468,21 @@ const SearchServicesOperationsModal = ({
 
     const handleApiResponse = (response, type) => {
         if (response.status === 200) {
-            toast.success(`${type} con éxito!`, {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", `${type} con éxito!`);
         } else {
-            toast.error(`Error al guardar ${type}`, {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", `Error al guardar ${type}`);
         }
     };
 
     const handleRemoveService = (e, serviceCodeToRemove) => {
+
         e.stopPropagation();
 
-        // Encuentra el servicio que va a ser eliminado
         const serviceToRemove = selectedServicesList.find(service => service.service_id === serviceCodeToRemove);
-
-        // Obtener las operaciones asociadas con ese servicio
         const operationsToRemove = serviceToRemove ? serviceToRemove.operations : [];
 
-        // Elimina el servicio
         setSelectedServicesList(prevServices => prevServices.filter(service => service.service_id !== serviceCodeToRemove));
 
-        // Elimina todas las operaciones asociadas a ese servicio en servicesWithOperations
         onServiceOperationsUpdated(prevOperations => {
             return prevOperations.filter(op => !operationsToRemove.some(remOp => remOp.id === op.id));
         });
@@ -516,11 +490,7 @@ const SearchServicesOperationsModal = ({
 
     const getServices = async () => {
 
-        //Endpoint por defecto
         let endpoint = '/services/all';
-        
-        const searchTypeServiceCode = "service_code";
-        const searchTypeTitle = "title";
 
         if (searchTerm) {
 
@@ -534,26 +504,23 @@ const SearchServicesOperationsModal = ({
             };
 
             if (selectedOption.value in searchTypes) {
-                endpoint =  `/services/search?search_type=${searchTypes[selectedOption.value]}&criteria=${searchTerm}`;
+                endpoint = `/services/search?search_type=${searchTypes[selectedOption.value]}&criteria=${searchTerm}`;
             }
-          
+
         }
         try {
             const response = await apiClient.get(endpoint);
             setServices(response.data);
         } catch (error) {
             if (searchTerm && searchTerm.length >= 3) {
-                toast.error('Error al obtener los datos de los servicios.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                });
+                showToastOnce("error", "Error al obtener los datos de los servicios.");
             }
-    
+
         }
     };
 
     const getOperations = async () => {
 
-        //Endpoint por defecto
         let endpoint = '/operations/all';
 
         if (searchTerm) {
@@ -570,16 +537,14 @@ const SearchServicesOperationsModal = ({
             if (selectedOption.value in searchTypesOp) {
                 endpoint = `/operations/search?search_type=${searchTypesOp[selectedOption.value]}&criteria=${searchTerm}`;
             }
-         
+
         }
         try {
             const response = await apiClient.get(endpoint);
             setOperations(response.data);
         } catch (error) {
             if (searchTerm && searchTerm.length >= 3) {
-                toast.error('Error al obtener los datos de las operaciones.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                });
+                showToastOnce("error", "Error al obtener los datos de las operaciones.");
             }
         }
     };
@@ -592,20 +557,16 @@ const SearchServicesOperationsModal = ({
     };
 
     const addManualOperation = () => {
-        //Título y costo tenga valores válidos
+
         if (manualOperation.title.trim() !== '' && !isNaN(manualOperation.cost)) {
-            const updateOperations = [{...manualOperation, operation_code:`.OPM-${Date.now()}` }, ...selectedOperations];
+            const updateOperations = [{ ...manualOperation, operation_code: `.OPM-${Date.now()}` }, ...selectedOperations];
             onOperationUpdated(updateOperations);
-            //Reinicia la fila del ingreso manual
             setManualOperation({
                 title: '',
                 cost: 0,
             });
         } else {
-            //Muestra un mensaje de advertencia si no ingresa valores válidos
-            toast.warn('Ingrese valores válidos', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+            showToastOnce("warn", "Ingrese valores válidos.");
         }
     };
 
@@ -649,7 +610,7 @@ const SearchServicesOperationsModal = ({
 
     return (
         <div className="filter-modal-overlay">
-            <ToastContainer />
+
             <div style={{ maxWidth: '850px' }} className="modal-payment">
                 <div style={{ display: 'flex', marginLeft: '10px', marginBottom: '0px', marginTop: '0px' }}>
                     <div style={{ flex: '1' }}></div>

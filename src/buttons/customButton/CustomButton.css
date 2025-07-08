@@ -58,6 +58,16 @@
     background-color: var(--gray-ultra-light);
 }
 
+.custom-button.delete {
+    background-color: var(--red-intense);
+    color: var(--white);
+}
+
+.custom-button.delete:hover {
+    background-color: var(--light-coral);
+    color: var(--white);
+}
+
 .custom-button.confirm {
     background-color: var(--electric-lime);
     color: var(--white-cloud);

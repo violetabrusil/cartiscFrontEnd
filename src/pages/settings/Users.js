@@ -7,7 +7,6 @@ import DataTable from "../../dataTable/DataTable";
 import PuffLoader from "react-spinners/PuffLoader";
 import apiAdmin from "../../services/apiAdmin";
 import { AuthContext } from "../../contexts/AuthContext";
-import { ToastContainer, toast } from "react-toastify";
 import Select from 'react-select';
 import { userTypeMaping } from "../../constants/userRoleConstants";
 import { userStatusMaping } from "../../constants/userStatusConstants";
@@ -17,6 +16,8 @@ import { CustomSingleValueWithLabel } from "../../customSingleValue/CustomSingle
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import useCSSVar from "../../hooks/UseCSSVar";
 import { useStatusColors } from "../../utils/useStatusColors";
+import { showToastOnce } from "../../utils/toastUtils";
+import { formatDate } from "../../utils/formatters";
 
 const addUserIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -55,7 +56,7 @@ const Users = () => {
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
     const [passwordError, setPasswordError] = useState("");
-    const debouncedPassword = useDebounce(password, 1000); // espera 500ms antes de validar
+    const debouncedPassword = useDebounce(password, 1000);
     const [pinError, setPinError] = useState("");
     const debouncedPin = useDebounce(pin, 500);
     const [displayImage, setDisplayImage] = useState(null);
@@ -137,24 +138,14 @@ const Users = () => {
         [statusColors]
     );
 
-    function formatDate(isoDate) {
-        const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
-        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
-
-        return `${day}/${month}/${year}`;
-    };
-
     const determineImageToShow = () => {
+
         const base64Prefix = 'data:image/jpeg;base64,';
 
-        // Para 'add'
         if (actionType === 'add') {
             return displayImage || userIcon;
         }
 
-        // Para 'view'
         if (actionType === 'view') {
             let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
             if (userImage && !userImage.startsWith(base64Prefix)) {
@@ -163,13 +154,12 @@ const Users = () => {
             return userImage || userIcon;
         }
 
-        // Para 'edit'
         if (actionType === 'edit') {
-            // Si tienes una nueva imagen seleccionada para cargar, úsala
+
             if (displayImage) {
                 return displayImage;
             } else {
-                // Si no hay una nueva imagen, muestra la del usuario seleccionado
+
                 let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
                 if (userImage && !userImage.startsWith(base64Prefix)) {
                     userImage = base64Prefix + userImage;
@@ -192,7 +182,6 @@ const Users = () => {
     //por número de serie, categoría o título
     const fetchData = async () => {
 
-        //Endpoint por defecto
         let endpoint = '/all-users';
         const searchPerUniqueCode = "unumber";
         const searchPerUserName = "username";
@@ -229,10 +218,7 @@ const Users = () => {
             setallUsers(transformedUserData);
             setLoading(false);
         } catch (error) {
-            toast.error('Error al obtener los datos de los usuarios', {
-                position: toast.POSITION.TOP_RIGHT
-
-            });
+            showToastOnce("error", "Error al obtenerla información de los usuarios,");
         }
     };
 
@@ -274,7 +260,6 @@ const Users = () => {
                 textAlign: 'left',
             };
 
-            // Agrega estilos específicos para tablet landscape
             if (isTabletLandscape) {
                 return {
                     ...baseStyles,
@@ -282,7 +267,6 @@ const Users = () => {
                 };
             }
 
-            // Agrega estilos específicos para desktop con max-width y max-height
             return {
                 ...baseStyles,
                 width: '287px',
@@ -386,27 +370,21 @@ const Users = () => {
                 if (!passwordError && !pinError) {
                     resetPassword();
                 } else {
-                    toast.error('Revise los errores en el formulario.', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("error", "Revise los errore en el formulario.");
                 }
                 break;
             case 'resetPin':
                 if (!passwordError && !pinError) {
                     resetPIN();
                 } else {
-                    toast.error('Revise los errores en el formulario.', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("error", "Revise los errore en el formulario.");
                 }
                 break;
             case 'create':
                 if (!passwordError && !pinError) {
                     createUser();
                 } else {
-                    toast.error('Revise los errores en el formulario.', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("error", "Revise los errore en el formulario.");
                 }
                 break;
         }
@@ -424,9 +402,7 @@ const Users = () => {
     };
 
     const validatePin = (pin) => {
-        // De 4 a 6 dígitos.
         const regex = /^\d{4,6}$/;
-
         return regex.test(pin);
     };
 
@@ -438,7 +414,6 @@ const Users = () => {
                 setPasswordError("");
             }
         } else {
-            // Si el campo password está vacío o no cumple con la validación, elimina el mensaje de error.
             setPasswordError("");
         }
     }, [debouncedPassword]);
@@ -456,7 +431,6 @@ const Users = () => {
                 setPinError("");
             }
         } else {
-            // Si el campo pin está vacío o no cumple con la validación, elimina el mensaje de error.
             setPinError("");
         }
     }, [debouncedPin]);
@@ -483,10 +457,8 @@ const Users = () => {
         reader.onloadend = () => {
             let base64String = reader.result;
 
-            // Set the full image for display
             setDisplayImage(base64String);
 
-            // Remove the prefix "data:image/png;base64,"
             base64String = base64String.split(',')[1];
 
             setImageBase64(base64String);
@@ -498,10 +470,9 @@ const Users = () => {
     };
 
     const editUser = async () => {
-        // Decide qué usuario editar basado en la presencia de selectedUser
+
         const targetUser = selectedUser || user;
 
-        // Construye userData base
         const userData = {
             username: username,
             pin: pin,
@@ -510,12 +481,9 @@ const Users = () => {
             user_status: status
         };
 
-        // Añade profile_picture a userData solo si imageBase64 tiene valor
         if (imageBase64) {
             userData.profile_picture = imageBase64;
         } else if (targetUser && targetUser.profile_picture) {
-            // Si no se ha seleccionado una nueva imagen, pero targetUser tiene una imagen,
-            // se usa esa imagen existente.
             userData.profile_picture = targetUser.profile_picture;
         }
 
@@ -529,16 +497,11 @@ const Users = () => {
                 setUser(newUser);
                 localStorage.setItem('user', JSON.stringify(newUser));
             }
-
-            toast.success('Usuario actualizado con éxito', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Usuario actualizado con éxito");
             setActionType('view');
             fetchData();
         } catch (error) {
-            toast.error('Error al actualizar el usuario', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al actualizar al usuario");
         }
     };
 
@@ -556,18 +519,12 @@ const Users = () => {
             const response = await apiAdmin.post('/create-user', userData);
             const newUser = response.data;
             setSelectedUser(newUser);
-            toast.success('Usuario creado con éxito', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Usuario creado con éxito");
             setActionType('view');
             setIsOpenModal(false);
             fetchData();
         } catch (error) {
-            console.log("Error al crear usuario", error)
-            toast.error('Error al crear el usuario', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
+            showToastOnce("error", "Error al crear al usuario");
         }
     };
 
@@ -582,19 +539,14 @@ const Users = () => {
 
         try {
             await apiAdmin.put(`/change-password/${userId}`, userData);
-            toast.success('Contraseña actualizada', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Contraseña actualizada");
             setActionType('view');
             setIsOpenModal(false);
             resetForm();
             fetchData();
 
         } catch (error) {
-            toast.error('Error al resetear la contraseña', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
+             showToastOnce("error", "Error al resetear la contraseña");
         }
     };
 
@@ -609,19 +561,14 @@ const Users = () => {
 
         try {
             await apiAdmin.put(`/change-pin/${userId}`, userData);
-            toast.success('PIN actualizado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "PIN actualizado");
             setActionType('view');
             setIsOpenModal(false);
             resetForm();
             fetchData();
 
         } catch (error) {
-            toast.error('Error al resetear el PIN', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
+             showToastOnce("error", "Error al resetear el PIN");
         }
     };
 
@@ -631,7 +578,7 @@ const Users = () => {
 
     return (
         <div style={{ marginTop: '-18px' }}>
-            <ToastContainer />
+
             <div className="general-user">
                 <div className="general-user-right">
                     <div className="users-container-title">

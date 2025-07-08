@@ -13,13 +13,13 @@
     max-width: 100%;
     margin-bottom: 0.5rem;
     box-sizing: border-box;
-    transition: padding 0.2s ease, border-color 0.2s ease;
+    transition: padding 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .result-item:hover {
-    padding-left: 0.6rem;
-    padding-right: 0.6rem;
+    padding: 0.7rem;
     border-color: var(--blue-very-soft);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* === BLOQUES CAR=== */
@@ -100,25 +100,6 @@
 .icon-vehicle {
     width: 35px;
     height: 35px;
-    fill: currentColor;
-     color: var(--blue-intense);
-}
-
-/* ===BUTTON EYE === */
-.button-eye {
-    background: none;
-    border: none;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-eye {
-    width: 32px;
-    height: 32px;
     fill: currentColor;
     color: var(--blue-intense);
 }
@@ -215,6 +196,67 @@
     font-size: 0.9rem;
 }
 
+
+/* ===SERVICES AND OPERATIONS === */
+
+/* === SECCIÓN CÓDIGO (izquierda) === */
+.operation-code-section {
+    flex: 1 1 10%;
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.operation-code {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--blue-intense);
+    white-space: nowrap;
+}
+
+/* === SECCIÓN TÍTULO (centro) === */
+.operation-name-section {
+    flex: 1 1 80%;
+    display: flex;
+    align-items: center;
+    padding-left: 0.5rem;
+}
+
+.operation-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--gray-dark);
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+/* === SECCIÓN BOTÓN OJO (derecha) === */
+.operation-eye-section {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===BUTTON EYE === */
+.button-eye {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-eye {
+    width: 32px;
+    height: 32px;
+    fill: currentColor;
+    color: var(--blue-intense);
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
     .result-item {
@@ -234,6 +276,12 @@
 
 @media (max-width: 600px) {
 
+    .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
     .first-result-client,
     .second-result-client {
         flex: 1 1 100%;
@@ -248,5 +296,17 @@
 
     .vehicle-count {
         font-size: 0.85rem;
+    }
+
+    .operation-code-section,
+    .operation-name-section,
+    .operation-eye-section {
+        flex: 1 1 100%;
+        justify-content: flex-start;
+    }
+
+    .operation-eye-section {
+        justify-content: flex-end;
+        width: 100%;
     }
 }

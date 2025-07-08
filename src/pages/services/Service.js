@@ -1,40 +1,37 @@
-import "../../Service.css";
-import "../../Modal.css";
-import "../../Loader.css";
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useTable, usePagination } from "react-table";
 import { debounce } from 'lodash';
-import { ToastContainer, toast } from 'react-toastify';
 import PuffLoader from "react-spinners/PuffLoader";
 import axios from "axios";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
-import Modal from "../../modal/Modal";
 import OperationRightSection from "../operations/OperationRightSection";
 import apiClient from "../../services/apiClient";
-import { CustomButtonContainer, CustomButton } from "../../buttons/customButton/CustomButton";
-import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
-import DataTable from "../../dataTable/DataTable";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import useCSSVar from "../../hooks/UseCSSVar";
+import ResultItem from '../../resultItem/ResultItem';
+import Icon from '../../components/Icons';
+import ScrollListWithIndicators from '../../components/ScrollListWithIndicators';
+import SectionTitle from '../../components/SectionTitle';
+import { ButtonCard } from '../../buttons/buttonCards/ButtonCard';
+import ServiceForm from './ServiceForm';
+import CustomModal from '../../modal/customModal/CustomModal';
+import { showToastOnce } from '../../utils/toastUtils';
+import { searchOptions } from '../../constants/filterOptions';
 
-const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
-const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
-const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 
 const Services = () => {
-    
+
     const tertiaryColor = useCSSVar('--tertiary-color');
 
     //Variables para controlar el tab de servicios y operaciones
     const [activeTab, setActiveTab] = useState('servicios');
     const [loading, setLoading] = useState(true);
     const [currentSection, setCurrentSection] = useState(null);
-    const showButtons = currentSection === null;
+    const [showButtonAddService, setShowButtonAddService] = useState(true);
+    const [showButtonAddOperation, setShowButtonAddOperation] = useState(true);
     const [lastActiveSection, setLastActiveSection] = useState({
         servicios: null,  // o 'default' si hay una sección predeterminada
         operaciones: null
@@ -65,25 +62,19 @@ const Services = () => {
     const [operation, setOperation] = useState([]);
     const [selectedOperations, setSelectedOperations] = useState([]);
 
-    {/* Decidir cuál arreglo de operaciones usar basado en el modo */ }
-    const operationsToShow = mode === 'edit' ? selectedService.operations : selectedOperations;
 
-    const responsivePageSizeOperationsSelected = usePageSizeForTabletLandscape(6, 3);
     const responsivePageSizeOperations = usePageSizeForTabletLandscape(6, 3);
 
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
 
-        if (tabName === 'operaciones') { // Asumiendo que el nombre del tab de operaciones es 'operaciones'
-            setCurrentSection(null);  // Muestra la sección de botones
+        if (tabName === 'operaciones') {
+            setCurrentSection(null);
+        } else if (tabName === 'servicios') {
+            setCurrentSection(null);
         } else {
             const lastSectionForTab = lastActiveSection[tabName];
-
-            if (lastSectionForTab) {
-                setCurrentSection(lastSectionForTab);
-            } else {
-                setCurrentSection(null);
-            }
+            setCurrentSection(lastSectionForTab || null);
         }
 
     };
@@ -119,49 +110,42 @@ const Services = () => {
             ...prevState,
             operaciones: 'editOperation'
         }));
-        //setShowButtons(false);
-    };
-
-    const handleOptionChange = (option) => {
-        setSelectedOption(option);
+        setShowButtonAddOperation(false);
+        setShowButtonAddService(false);
     };
 
     const handleSelectClick = (option) => {
-        // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
     const handleAddService = (event) => {
         event.stopPropagation();
+        resetForm();
         setActiveTab('servicios');
         setCurrentSection('addService');
         setLastActiveSection(prevState => ({ ...prevState, servicios: 'addService' }));
-        // setShowButtons(false);
+        setShowButtonAddOperation(false);
+        setShowButtonAddService(false);
     };
+
 
     const handleShowServiceInformation = async (serviceId, event) => {
         event.stopPropagation();
         const selectedServ = services.find(serv => serv.id === serviceId);
         try {
-            // Hacer una petición al backend para obtener la información del servicio
             const response = await apiClient.get(`/services/${selectedServ.id}`);
-
-            // Aquí 'response.data' es la respuesta del servidor que debería contener la información del servicio.
             setSelectedService(response.data);
             setTitle(response.data.service_title);
             setMode('edit');
+            setIsEditing(false);
             setCurrentSection('addService');
-            setLastActiveSection(prevState => ({
-                ...prevState,
-                operaciones: 'addService'
-            }));
-
+            setActiveTab('servicios');
+            setShowButtonAddService(false);
+            setShowButtonAddOperation(false);
+            setLastActiveSection(prevState => ({ ...prevState, servicios: 'addService' }));
         } catch (error) {
             console.error("Error fetching service information:", error);
-            // Aquí puedes manejar los errores, por ejemplo mostrar un mensaje al usuario.
         }
     };
 
@@ -180,24 +164,20 @@ const Services = () => {
     const handleCloseModalSearchOperation = () => {
         setIsSearchOperationModalOpen(false);
         setSearchOperationTerm('');
-        setOperation([]);
-        setActiveTabOperation('código');
     };
 
     const handleTabChange = (tabName) => {
         setActiveTabOperation(tabName);
         setSearchOperationTerm('');
-        setOperation([]);
     };
 
     const handleSearchOperationsWithDebounce = useCallback(
         debounce(async () => {
-            // Define los tipos de búsqueda
+
             const searchTypeOperationCode = "operation_code";
             const searchTypeTitle = "title";
             let endpoint = '';
-    
-            // Si hay un término de búsqueda, decide el endpoint basado en la pestaña activa
+
             if (searchOperationTerm) {
                 if (activeTabOperation === 'código') {
                     endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchOperationTerm}`;
@@ -205,63 +185,38 @@ const Services = () => {
                     endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchOperationTerm}`;
                 }
             } else {
-                // Si no hay término de búsqueda, carga todas las operaciones
+
                 endpoint = `/operations/all`;
             }
-    
+
             try {
                 const response = await apiClient.get(endpoint, {
                     cancelToken: source.token
                 });
-    
-                // Solo actualiza el estado si el componente sigue montado
+
                 if (isMounted.current) {
                     setOperation(response.data);
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    // Maneja la cancelación aquí si es necesario
-                } else {
-                    // Maneja otros errores aquí si es necesario
                 }
             }
         }, 500),
-        [activeTabOperation, searchOperationTerm] // Actualiza esta dependencia
+        [activeTabOperation, searchOperationTerm]
     );
-    
+
     const handleAddOperationModal = (operationToAdd) => {
-        // Decide a qué conjunto de operaciones agregar dependiendo del modo
-        const operationsToModify = mode === 'edit' ? selectedService.operations : selectedOperations;
-
-        // Verifica si la operación ya está en la lista
-        if (operationsToModify.some(op => op.id === operationToAdd.id)) {
-            // Si ya fue agregada, termina la función
-            return;
-        }
-
-        // Si estás en modo edit, modifica las operaciones de selectedService
-        if (mode === 'edit') {
-            setSelectedService(prevState => ({
-                ...prevState,
-                operations: [...prevState.operations, operationToAdd]
-            }));
-        } else {
-            // Si no, modifica las operaciones seleccionadas normales
-            setSelectedOperations(prev => [...prev, operationToAdd]);
-        }
+        setSelectedOperations(prev => {
+            if (prev.some(op => op.id === operationToAdd.id)) {
+                showToastOnce("warn", "Esta operación ya ha sido agregada");
+                return prev;
+            }
+            return [...prev, operationToAdd];
+        });
     };
 
     const handleRemoveOperation = (operationIdToRemove) => {
-        // Si estás en modo edit, elimina de selectedService.Operations
-        if (mode === 'edit') {
-            setSelectedService(prevState => ({
-                ...prevState,
-                operations: prevState.operations.filter(op => op.id !== operationIdToRemove)
-            }));
-        } else {
-            // Si estás en modo add, elimina de selectedOperations
-            setSelectedOperations(prevOperations => prevOperations.filter(op => op.id !== operationIdToRemove));
-        }
+        setSelectedOperations(prevOperations => prevOperations.filter(op => op.id !== operationIdToRemove));
     };
 
     const columns = React.useMemo(
@@ -275,31 +230,19 @@ const Services = () => {
                     <span className="cost-cell">
                         $ {parseFloat(value).toFixed(2)}
                     </span>
-                    // Agrega un signo de dólar antes del valor y lo transforma float
                 )
-            }
-        ],
-        []
-    );
-
-    const columnsForSelectedOperations = React.useMemo(
-        () => [
-            { Header: "Código", accessor: "operation_code" },
-            { Header: "Título", accessor: "title" },
+            },
             {
                 Header: "",
                 accessor: "action",
                 Cell: ({ row }) => (
-                    <img
-                        className="less-operation-icon"
-                        src={deleteIcon}
-                        alt="Delete operation"
-                        onClick={() => handleRemoveOperation(row.original.id)}
-                    />
+                    <button className="custom-button-delete" onClick={() => handleRemoveOperation(row.original.id)}>
+                        <Icon name="delete" className="delete-icon-table" />
+                    </button>
                 )
             }
         ],
-        [deleteIcon, handleRemoveOperation]
+        []
     );
 
     const columnsForOperations = React.useMemo(
@@ -307,7 +250,7 @@ const Services = () => {
             { Header: "Código", accessor: "operation_code" },
             { Header: "Título", accessor: "title" },
             {
-                Header: "Costo",
+                Header: "Precio",
                 accessor: "cost",
                 Cell: ({ value }) =>
                     <div>
@@ -342,7 +285,7 @@ const Services = () => {
         previousPage,
     } = useTable({
         columns,
-        data: mode === 'edit' ? selectedService.operations : selectedOperations,
+        data: selectedOperations,
         initialState: { pageSize: 5 }
     }, usePagination);
 
@@ -352,7 +295,8 @@ const Services = () => {
         setActiveTab('operaciones');
         setCurrentSection('addOperation');
         setLastActiveSection(prevState => ({ ...prevState, operaciones: 'addOperation' }));
-        //setShowButtons(false);
+        setShowButtonAddOperation(false);
+        setShowButtonAddService(false);
     };
 
     const handleOperationChange = (updatedOperation, action) => {
@@ -364,11 +308,9 @@ const Services = () => {
                 const operationIndex = operations.findIndex(op => op.id === updatedOperation.id);
 
                 if (operationIndex !== -1) {
-                    // Si la operación ya existe, reemplázala
                     newOperations = [...operations];
                     newOperations[operationIndex] = updatedOperation;
                 } else {
-                    // Si es una nueva operación, añádela a la lista
                     newOperations = [...operations, updatedOperation];
                 }
                 break;
@@ -383,6 +325,7 @@ const Services = () => {
         }
         setOperations(newOperations);
         setCurrentSection(null);
+        setShowButtonAddOperation(true);
     };
 
     const resetServiceState = () => {
@@ -398,6 +341,17 @@ const Services = () => {
     const handleGoBackToButtons = () => {
         setCurrentSection(null);
         resetForm();
+        setActiveTab('servicios');
+        setShowButtonAddService(true);
+        setShowButtonAddOperation(false);
+    };
+
+    const handleGoBack = () => {
+        setCurrentSection(null);
+        resetForm();
+        setActiveTab('operaciones');
+        setShowButtonAddService(false);
+        setShowButtonAddOperation(true);
     };
 
     //Calcular el total del costo del servicio mediante el valor
@@ -409,59 +363,44 @@ const Services = () => {
 
         if (isNaN(cost)) {
             console.error('Valor inválido:', operation.cost);
-            return sum;  // Retorna la suma acumulada hasta ahora sin cambiarla
+            return sum;
         }
 
-        return sum + cost;  // Retorna la suma acumulada más el nuevo costo
+        return sum + cost;
     }, 0);
 
 
     //Función para crear un nuevo servicio 
     const handleSaveOrUpdateService = async (event) => {
         event.preventDefault();
-        const id_operations = selectedOperations.map(operation => operation.id);
-        if (mode === 'add') {
-            try {
+        const id_operations = selectedOperations.map(op => op.id);
+
+        try {
+            if (mode === 'add') {
                 const response = await apiClient.post('/services/create', { title, id_operations });
                 setServices(response.data);
-                toast.success('Servicio registrado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Servicio registrado");
                 resetForm();
                 setLastUpdated(Date.now());
                 setCurrentSection(null);
-            } catch (error) {
-                const mensajesError = error.response && error.response.data && error.response.data.errors
-                    ? error.response.data.errors.map(err => err.message).join(" / ")
-                    : 'Error al guardar el servicio';
-                toast.error(mensajesError, {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-            }
-        } else {
-            const id_operations = selectedService.operations.map(operation => operation.id);
-            try {
+            } else {
                 const response = await apiClient.put(`/services/update/${selectedService.id}`, { title, id_operations });
                 setServices(response.data);
-                toast.success('Servicio actualizado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Servicio actualizado");
                 setLastUpdated(Date.now());
                 setIsEditing(false);
-            } catch (error) {
-                const mensajesError = error.response && error.response.data && error.response.data.errors
-                    ? error.response.data.errors.map(err => err.message).join(" / ")
-                    : 'Error al actualizar el servicio';
-                toast.error(mensajesError, {
-                    position: toast.POSITION.TOP_RIGHT
-                });
             }
+        } catch (error) {
+            const mensajesError = error.response?.data?.errors?.map(err => err.message).join(" / ")
+                || 'Error al guardar el servicio';
+            showToastOnce("error", mensajesError);
         }
     };
 
+
     //Función para eliminar un servicio
     const handleDeleteService = async (event) => {
-        //Para evitar que el formulario recargue la página
+
         event.preventDefault();
         setIsAlertServiceSuspend(false);
 
@@ -470,42 +409,38 @@ const Services = () => {
             const response = await apiClient.delete(`/services/delete/${selectedService.id}`)
 
             if (response.status === 200) {
-                toast.success('Servicio eliminado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Servicio eliminado");
                 setLastUpdated(Date.now());
                 setCurrentSection(null);
             } else {
-                toast.error('Ha ocurrido un error al eliminar el servicio', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("error", "Error al eliminar el servicio");
             }
 
         } catch (error) {
-            toast.error('Antes de eliminar el servicio debe eliminar las operaciones asociadas al servicio', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Antes de eliminar el servicio debe eliminar las operaciones asociadas al servicio");
         }
     };
 
     const resetForm = () => {
-        setTitle('');
-        totalCost = 0;
+        setSelectedService({});
         setSelectedOperations([]);
+        setTitle('');
+
+        setMode('add');
+        setIsEditing(true);
     };
 
+    //Función que permite obtener todas las operaciones
+    //registrados cuando inicia la pantalla y las busca
+    //por título o código
     useEffect(() => {
-        //Función que permite obtener todas las operaciones
-        //registrados cuando inicia la pantalla y las busca
-        //por título o código
 
         const fetchData = async () => {
 
-            //Endpoint por defecto
             let endpoint = '/operations/all';
             const searchTypeOperationCode = "operation_code";
             const searchTypeTitle = "title";
-            //Si hay un filtro de búsqueda
+
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Código':
@@ -525,9 +460,7 @@ const Services = () => {
 
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
-                    toast.error('La solicitud ha superado el tiempo límite.', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("error", "La solicitud ha superado el tiempo límite");
                 } else {
                 }
             }
@@ -535,14 +468,13 @@ const Services = () => {
         fetchData();
     }, [searchTerm, selectedOption]);
 
+    //Función que permite obtener todos los servicios
+    //registrados cuando inicia la pantalla y las busca
+    //por título o código
     useEffect(() => {
-        //Función que permite obtener todos los servicios
-        //registrados cuando inicia la pantalla y las busca
-        //por título o código
 
         const fetchData = async () => {
 
-            //Endpoint por defecto
             let endpoint = '/services/all';
             const searchTypeServiceCode = "service_code";
             const searchTypeTitle = "title";
@@ -575,21 +507,19 @@ const Services = () => {
         fetchData();
     }, [searchTerm, selectedOption, lastUpdated]);
 
-    //Para realizar la búsqueda de las operaciones en el modal
+
     useEffect(() => {
-        // Al montar el componente
+
         isMounted.current = true;
-    
-        // Inicia la búsqueda o carga todas las operaciones según el término de búsqueda
+
         handleSearchOperationsWithDebounce();
-    
-        // Cleanup al desmontar el componente o al cambiar el término de búsqueda o la pestaña activa
+
         return () => {
-            isMounted.current = false;  // Indica que el componente ha sido desmontado
-            source.cancel('Search term changed or component unmounted'); // Cancela la solicitud pendiente
+            isMounted.current = false;
+            source.cancel('Search term changed or component unmounted');
         };
-    }, [searchOperationTerm, activeTabOperation, handleSearchOperationsWithDebounce]); // Asegúrate de incluir activeTabOperation aquí
-    
+    }, [searchOperationTerm, activeTabOperation, handleSearchOperationsWithDebounce]);
+
 
     React.useEffect(() => {
         if (currentSection === 'addService' && mode === 'add') {
@@ -599,39 +529,50 @@ const Services = () => {
         }
     }, [mode, currentSection]);
 
+    React.useEffect(() => {
+        if (mode === 'edit' && selectedService) {
+            setSelectedOperations(selectedService.operations || []);
+        }
+    }, [mode, selectedService]);
+
+    React.useEffect(() => {
+        if (activeTab === 'servicios') {
+            setShowButtonAddService(true);
+        } else if (activeTab === 'operaciones') {
+            setShowButtonAddOperation(true);
+        }
+    }, [activeTab]);
+
     return (
         <div>
-            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Header showIconCartics={true} showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetServiceState} />
 
             <div className="two-column-layout">
                 <div className="left-panel">
                     {/*Título del contenedor con buscador */}
                     <div className="tabs-service-operation">
+                        <div className={`tab-slider ${activeTab}`}></div>
                         <button
                             className={`button-tab-service ${activeTab === 'servicios' ? 'active' : ''}`}
                             onClick={() => handleTabClick('servicios')}
                         >
-                            <div className="line-tab"></div>
                             Servicios
                         </button>
                         <button
                             className={`button-tab-service ${activeTab === 'operaciones' ? 'active' : ''}`}
                             onClick={() => handleTabClick('operaciones')}
                         >
-                            <div className="line-tab "></div>
                             Operaciones
                         </button>
                     </div>
 
-                    <div style={{ marginTop: "-10px" }}>
-                        <TitleAndSearchBox
-                            selectedOption={selectedOption}
-                            title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} // Convertir a mayúscula inicial
-                            onSearchChange={activeTab === 'servicios' ? handleSearchServiceWithDebounce : handleSearchOperationWithDebounce}
-                            onButtonClick={openFilterModal}
-                        />
-                    </div>
+                    <TitleAndSearchBox
+                        selectedOption={selectedOption}
+                        title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} // Convertir a mayúscula inicial
+                        onSearchChange={activeTab === 'servicios' ? handleSearchServiceWithDebounce : handleSearchOperationWithDebounce}
+                        onButtonClick={openFilterModal}
+                    />
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
@@ -639,178 +580,91 @@ const Services = () => {
                         </div>
                     ) : (
                         <>
-                            {activeTab === 'servicios' &&
-                                <div className="scrollable-list-container">
-                                    {Array.isArray(services) && services.map(serviceData => (
-                                        <div key={`service-${serviceData.id}`} className="result-operations">
-                                            <div className="operation-code-section">
-                                                <label className="operation-code">{serviceData.service_code}</label>
-                                            </div>
+                            {activeTab === 'servicios' && (
+                                <ScrollListWithIndicators
+                                    items={services}
+                                    renderItem={(serviceData) => (
+                                        <ResultItem
+                                            key={serviceData.id}
+                                            type="service"
+                                            data={serviceData}
+                                            onClickEye={(e) => handleShowServiceInformation(serviceData.id, e)}
+                                        />
+                                    )}
+                                />
+                            )}
 
-                                            <div className="operation-name-section">
-                                                <label className="operation-name">{serviceData.service_title}</label>
-                                            </div>
-
-                                            <div className="operation-eye-section">
-                                                <button className="button-eye-operation" onClick={(event) => handleShowServiceInformation(serviceData.id, event)}>
-                                                    <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
-                                                </button>
-                                            </div>
-
-                                        </div>
-
-                                    ))}
-
-                                </div>
-                            }
-                        </>
-
-                    )}
-
-                    {loading ? (
-                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color={tertiaryColor} loading={loading} size={60} />
-                        </div>
-                    ) : (
-                        <>
-                            {activeTab === 'operaciones' &&
-                                <div className="scrollable-list-container">
-                                    {operations.map(operationData => (
-                                        <div key={`operation-${operationData.id}`} className="result-operations">
-                                            <div className="operation-code-section">
-                                                <label className="operation-code">{operationData.operation_code}</label>
-                                            </div>
-
-                                            <div className="operation-name-section">
-                                                <label className="operation-name">{operationData.title}</label>
-                                            </div>
-
-                                            <div className="operation-eye-section">
-                                                <button className="button-eye-operation" onClick={(event) => handleShowOperationInformation(operationData.id, event)}>
-                                                    <img src={eyeIcon} alt="Eye Icon" className="icon-eye-operation" />
-                                                </button>
-                                            </div>
-
-                                        </div>
-                                    ))}
-                                </div>
-                            }
+                            {activeTab === 'operaciones' && (
+                                <ScrollListWithIndicators
+                                    items={operations}
+                                    renderItem={(operationData) => (
+                                        <ResultItem
+                                            key={operationData.id}
+                                            type="operation"
+                                            data={operationData}
+                                            onClickEye={(e) => handleShowOperationInformation(operationData.id, e)}
+                                        />
+                                    )}
+                                />
+                            )}
                         </>
                     )}
 
                 </div>
 
                 <div className="right-panel">
-                    <ToastContainer />
-                    {showButtons && (
-                        
-                      <></>
+
+                    {activeTab === 'servicios' && showButtonAddService && (
+                        <>
+                            <SectionTitle title="Panel de Servicios" />
+                            <ButtonCard
+                                icon="addService"
+                                title="Nuevo Servicio"
+                                description="Agrega un nuevo servicio que incluye múltiples operaciones agrupadas"
+                                onClick={handleAddService}
+                            />
+                        </>
                     )}
 
-                    {/*Contenedor para agregar servicio */}
+                    {activeTab === 'operaciones' && showButtonAddOperation && (
+                        <>
+                            <SectionTitle title="Panel de Operaciones" />
+                            <ButtonCard
+                                icon="addOperation"
+                                title="Nueva Operación"
+                                description="Agrega una nueva operación"
+                                onClick={handleAddOperation}
+                            />
+                        </>
+                    )}
+
+                    {/*Contenedor para agregar/ editar un servicio */}
 
                     {currentSection === 'addService' && (
-                        <div className="container-general">
-
-                            <CustomTitleSection
-                                onBack={handleGoBackToButtons}
-                                title={mode === 'add' ? "Agregar Servicio" : "Información del servicio"}
-                                showEditIcon={mode === 'edit' ? true : false}
-                                onEdit={mode === 'edit' ? () => setIsEditing(true) : null}
-                                showDisableIcon={mode === 'edit' ? true : false}
-                                onDisable={openAlertModalServiceSuspend}
-                            />
-
-                            <div className="container-new-service">
-                                <div className="row">
-                                    <label>Título</label>
-                                    <input
-                                        value={title}
-                                        className="title-service"
-                                        style={{ marginLeft: "100px" }}
-                                        onChange={(e) => setTitle(e.target.value)}
-                                        disabled={!isEditing}
-                                    />
-                                </div>
-
-                                <div className="row">
-                                    <label>Costo Total</label>
-                                    <input
-                                        type="text"
-                                        value={`$ ${totalCost.toFixed(2)}`}
-                                        className="input-total-cost"
-                                        style={{ marginLeft: "50px" }}
-                                        readOnly />
-                                </div>
-
-                            </div>
-
-                            <div className="container-title-add-service">
-                                <h3>Operaciones</h3>
-                            </div>
-
-                            <div className="table-container">
-                                <table {...getTableProps()} className="operation-selected-table">
-                                    <thead>
-                                        {headerGroups.map((headerGroup) => (
-                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                {headerGroup.headers.map((column) => (
-                                                    <th {...column.getHeaderProps()}>
-                                                        {column.render('Header')}
-                                                    </th>
-                                                ))}
-
-                                            </tr>
-                                        ))}
-                                    </thead>
-                                    <tbody {...getTableBodyProps()}>
-                                        {page.map((row) => {
-                                            prepareRow(row);
-                                            return (
-                                                <tr {...row.getRowProps()}>
-                                                    {row.cells.map((cell) => (
-                                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                                    ))}
-                                                </tr>
-                                            )
-                                        })}
-
-                                    </tbody>
-
-                                </table>
-
-                                <div className="container-table-buttons">
-                                    <button style={{ marginRight: "10px", marginBottom: "10px" }} onClick={() => previousPage()} disabled={!canPreviousPage}>
-                                        Anterior
-                                    </button>
-                                    <button style={{ marginLeft: "10px", marginBottom: "10px" }} onClick={() => nextPage()} disabled={!canNextPage}>
-                                        Siguiente
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                            <div className="container-buttons">
-                                <button
-                                    className="button-add-operation"
-                                    style={{ marginRight: "10px", backgroundColor: isEditing ? 'var(--second-color)' : 'var(--gray-dark)' }}
-                                    onClick={handleOpenModalSearchOperation}
-                                    disabled={!isEditing}  >
-                                    <span className="text-button">
-                                        {((mode === 'edit' ? selectedService.operations : selectedOperations).length > 0) ? "Editar Operación" : "Agregar Operación"}
-                                    </span>
-                                </button>
-                                <button
-                                    className="button-add-operation"
-                                    style={{ marginLeft: "10px", backgroundColor: isEditing ? 'var(--second-color)' : 'var(--gray-dark)' }}
-                                    onClick={handleSaveOrUpdateService}>
-                                    <span className="text-button">Aceptar</span>
-                                </button>
-
-                            </div>
-
-                        </div>
+                        <ServiceForm
+                            mode={mode}
+                            isEditing={isEditing}
+                            setIsEditing={setIsEditing}
+                            title={title}
+                            setTitle={setTitle}
+                            totalCost={totalCost}
+                            handleOpenModalSearchOperation={handleOpenModalSearchOperation}
+                            onSubmit={handleSaveOrUpdateService}
+                            onBack={handleGoBackToButtons}
+                            openAlertModalServiceSuspend={openAlertModalServiceSuspend}
+                            tableInstance={{
+                                getTableProps,
+                                getTableBodyProps,
+                                headerGroups,
+                                prepareRow,
+                                page,
+                                canPreviousPage,
+                                canNextPage,
+                                previousPage,
+                                nextPage,
+                            }}
+                            onDelete={openAlertModalServiceSuspend}
+                        />
 
                     )}
 
@@ -820,7 +674,7 @@ const Services = () => {
                         <OperationRightSection
                             onOperationChange={handleOperationChange}
                             localOperations={operations}
-                            goBack={handleGoBackToButtons}
+                            goBack={handleGoBack}
                         />
                     )}
 
@@ -831,7 +685,7 @@ const Services = () => {
                             onOperationChange={handleOperationChange}
                             selectedOperation={selectedOperation}
                             localOperations={operations}
-                            goBack={handleGoBackToButtons}
+                            goBack={handleGoBack}
                         />
                     )}
 
@@ -843,108 +697,59 @@ const Services = () => {
 
             {
                 isFilterModalOpen && (
-                    <Modal
+                    <CustomModal
                         isOpen={isFilterModalOpen}
-                        onClose={closeFilterModal}
-                        options={['Título', 'Código']}
-                        defaultOption="Título"
-                        onOptionChange={handleOptionChange}
+                        onCancel={closeFilterModal}
+                        type="filter-options"
+                        subTitle="Seleccione el filtro de búsqueda"
                         onSelect={handleSelectClick}
+                        defaultOption={selectedOption}
+                        options={searchOptions}
+                        showCloseButton={false}
+
                     />
                 )
             }
 
             {
                 isSearchOperationModalOpen && (
-                    <div className="filter-modal-overlay">
-                        <div className="modal-content">
-                            <button className="button-close" onClick={handleCloseModalSearchOperation}  >
-                                <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                            </button>
-                            <div className="tabs">
-                                <button className={`button-tab ${activeTabOperation === 'título' ? 'active' : ''}`}
-                                    onClick={() => handleTabChange('título')}>
-                                    Título
-                                    <div className="line"></div>
-                                </button>
-                                <button className={`button-tab ${activeTabOperation === 'código' ? 'active' : ''}`}
-                                    onClick={() => handleTabChange('código')}>
-                                    Código
-                                    <div className="line"></div>
-                                </button>
-                            </div>
-                            <div className="search-operation-box">
-                                <img src={searchIcon} alt="Search Icon" className="search-operation-icon" />
-                                <input
-                                    className="input-search-operation"
-                                    value={searchOperationTerm}
-                                    onChange={e => {
-                                        const value = e.target.value;
-                                        if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
-                                        if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
-                                        setSearchOperationTerm(value);
-                                    }}
-                                    placeholder={`Buscar por ${activeTabOperation}`}
-                                    pattern={activeTabOperation === 'código' ? "[0-9]*" : "[a-zA-Z ]*"}
-                                />
-                            </div>
 
-                            {/* Tabla de operaciones seleccionadas */}
-                            {operationsToShow.length > 0 && (
-                                <div className="selected-operations-scroll-container">
-                                    <h5>Operaciones seleccionadas</h5>
-                                    <DataTable
-                                        data={operationsToShow}
-                                        columns={columnsForSelectedOperations}
-                                        deleteIconSrc={deleteIcon}
-                                        onRemoveOperation={handleRemoveOperation}
-                                        initialPageSize={responsivePageSizeOperationsSelected}
-                                    />
-                                </div>
-                            )}
-
-                            {operation.length > 0 && (
-                                <div className="list-operations-scroll-container">
-                                    <h5>Lista de operaciones</h5>
-                                    <DataTable
-                                        data={operation}
-                                        columns={columnsForOperations}
-                                        addIconSrc={addIcon}
-                                        onAddOperation={handleAddOperationModal}
-                                        initialPageSize={responsivePageSizeOperations}
-                                    />
-
-
-                                </div>
-                            )}
-
-                        </div>
-
-                    </div>
+                    <CustomModal
+                        isOpen={isSearchOperationModalOpen}
+                        onClose={handleCloseModalSearchOperation}
+                        type="search-operation"
+                        title="Buscar operaciones"
+                        handleTabChange={handleTabChange}
+                        onSearchChange={(e) => {
+                            const value = e.target.value;
+                            if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
+                            if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
+                            setSearchOperationTerm(value);
+                        }}
+                        searchOperationTerm={searchOperationTerm}
+                        activeTab={activeTabOperation}
+                        operation={operation}
+                        columnsForOperations={columnsForOperations}
+                        onAddOperation={handleAddOperationModal}
+                        addIcon={addIcon}
+                        responsivePageSizeOperations={responsivePageSizeOperations}
+                    />
                 )
             }
 
             {
                 isAlertServiceSuspend && (
-                    <div className="filter-modal-overlay">
-                        <div className="filter-modal">
-                            <h3 style={{ textAlign: "center" }}>¿Está seguro de eliminar el servicio?</h3>
-                            <div className="button-options">
-                                <div className="half">
-                                    <button className="optionNo-button" onClick={closeAlertModalServiceSuspend}>
-                                        No
-                                    </button>
-                                </div>
-                                <div className="half">
-                                    <button className="optionYes-button" onClick={handleDeleteService}  >
-                                        Si
-                                    </button>
 
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
+                    <CustomModal
+                        isOpen={isAlertServiceSuspend}
+                        type="confirm-delete"
+                        subTitle="¿Está seguro de eliminar el servicio?"
+                        description="Al eliminarlo, el servicio se perderá definitivamente y no podrá recuperarse. 
+                        ¿Desea continuar?"
+                        onCancel={closeAlertModalServiceSuspend}
+                        onConfirm={handleDeleteService}
+                        showCloseButton={false}
+                    />
 
                 )
             }

@@ -2,8 +2,8 @@ import "../Modal.css";
 import "../NewClient.css";
 
 import React, { useState } from "react";
-import { ToastContainer, toast } from 'react-toastify';
 import apiClient from "../services/apiClient";
+import { showToastOnce } from "../utils/toastUtils";
 
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
@@ -22,28 +22,22 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
     const [phone, setPhone] = useState("");
 
     const handleSaveClick = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         event.preventDefault();
 
         try {
             await apiClient.post('/clients/register', { cedula, name, address, phone, email });
 
-            toast.success('Cliente registrado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Cliente registrad");
 
             OnUpdate();
 
-
         } catch (error) {
-            console.log("error registro cliente", error)
 
             if (error.response && error.response.status === 400 && error.response.data.errors) {
-                // Muestra los errores en toasts
+
                 error.response.data.errors.forEach(err => {
-                    toast.error(`${err.field}: ${err.message}`, {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("error", `${err.field}: ${err.message} `);
                 });
             }
         }
@@ -53,7 +47,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
 
     return (
         <div className="filter-modal-overlay">
-            <ToastContainer />
+
             <div className="filter-modal">
                 <div style={{ display: 'flex' }}>
                     <h3 style={{ flex: '13', textAlign: 'center' }}>Información Cliente</h3>

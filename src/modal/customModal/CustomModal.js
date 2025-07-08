@@ -3,6 +3,8 @@ import "./CustomModal.css";
 import { PuffLoader } from "react-spinners";
 import CustomButton from "../../buttons/customButton/CustomButton";
 import Icon from "../../components/Icons";
+import DataTable from "../../dataTable/DataTable";
+import ScrollListWithIndicators from "../../components/ScrollListWithIndicators";
 
 import useCSSVar from "../../hooks/UseCSSVar";
 
@@ -19,6 +21,7 @@ export default function CustomModal({
     activeTab,
     handleTabChange,
     searchClientTerm,
+    searchOperationTerm,
     clients,
     handleClientSelect,
     options,
@@ -26,8 +29,12 @@ export default function CustomModal({
     defaultOption,
     showCloseButton = true,
     borderColor = '',
-    icon = null
-
+    icon = null,
+    operation,
+    columnsForOperations,
+    onAddOperation,
+    addIcon,
+    responsivePageSizeOperations,
 }) {
 
     const tertiaryColor = useCSSVar('--tertiary-color');
@@ -43,18 +50,22 @@ export default function CustomModal({
 
     const defaultBorderColor = {
         'search-client': 'blue',
+        'search-operation': 'blue',
         'confirm-suspend': 'yellow',
         'confirm-workorder': 'green',
         'confirm-vehicle': 'green',
         'filter-options': 'blue',
+        'confirm-delete': 'red',
     }[type];
 
     const defaultIcon = {
         'search-client': <Icon name="search" className="icon-background" />,
+        'search-operation': <Icon name="search" className="icon-background" />,
         'confirm-suspend': <Icon name="alert" className="floating-icon" />,
         'confirm-workorder': <Icon name="newOrder" className="icon-confirm" />,
         'confirm-vehicle': <Icon name="addVehicle" className="icon-confirm" />,
         'filter-options': <Icon name="search" className="icon-background" />,
+        'confirm-delete': <Icon name="delete" className="delete-icon" />
     }[type];
 
     const color = borderColor || defaultBorderColor || '';
@@ -118,25 +129,27 @@ export default function CustomModal({
 
                         <div className="container-client-table">
                             {clients?.length > 0 && (
-                                <table className="client-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Nombre</th>
-                                            <th>Cédula</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {clients.map(client => (
-                                            <tr
-                                                key={client.client.id}
-                                                onClick={(event) => handleClientSelect(client.client.id, event)}
-                                            >
-                                                <td>{client.client.name}</td>
-                                                <td>{client.client.cedula}</td>
+                                <ScrollListWithIndicators style={{ maxHeight: "400px" }}>
+                                    <table className="client-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Cédula</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {clients.map(client => (
+                                                <tr
+                                                    key={client.client.id}
+                                                    onClick={(event) => handleClientSelect(client.client.id, event)}
+                                                >
+                                                    <td>{client.client.name}</td>
+                                                    <td>{client.client.cedula}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </ScrollListWithIndicators>
                             )}
                         </div>
                     </>
@@ -155,6 +168,24 @@ export default function CustomModal({
                                 variant="alert"
                                 onClick={onConfirm}
                                 title="Suspender"
+                            />
+                        </div>
+                    </>
+                );
+
+            case 'confirm-delete':
+                return (
+                    <>
+                        <div className="button-options">
+                            <CustomButton
+                                variant="alert-second"
+                                onClick={onCancel}
+                                title="Cancelar"
+                            />
+                            <CustomButton
+                                variant="delete"
+                                onClick={onConfirm}
+                                title="Eliminar"
                             />
                         </div>
                     </>
@@ -245,6 +276,56 @@ export default function CustomModal({
                     </>
 
                 )
+
+            case 'search-operation':
+                return (
+                    <>
+                        <div className="tabs">
+                            <button
+                                className={`button-tab ${activeTab === 'título' ? 'active' : ''}`}
+                                onClick={() => handleTabChange('título')}
+                            >
+                                Título
+                                <div className="line"></div>
+                            </button>
+                            <button
+                                className={`button-tab ${activeTab === 'código' ? 'active' : ''}`}
+                                onClick={() => handleTabChange('código')}
+                            >
+                                Código
+                                <div className="line"></div>
+                            </button>
+                        </div>
+
+                        <div className="search-client-box">
+                            <Icon name="search" className="search-client-icon" />
+                            <input
+                                className="input-search-client"
+                                value={searchOperationTerm}
+                                onChange={onSearchChange}
+                                placeholder={`Buscar por ${activeTab}`}
+                            />
+                        </div>
+
+                        {operation.length > 0 && (
+                            <>
+                                <div className="title-list-container">
+                                    <span className="title-list-name">Lista de operaciones</span>
+                                </div>
+
+                                <DataTable
+                                    data={operation}
+                                    columns={columnsForOperations}
+                                    addIconSrc={addIcon}
+                                    onAddOperation={onAddOperation}
+                                    initialPageSize={responsivePageSizeOperations}
+                                />
+
+                            </>
+                        )}
+
+                    </>
+                );
             default:
                 return <p>Tipo de modal no soportado</p>;
         }

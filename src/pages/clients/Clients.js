@@ -1,11 +1,5 @@
-import "../../Clients.css";
-import "../../Modal.css";
-import "../../NewClient.css";
-import 'react-toastify/dist/ReactToastify.css';
-import "../../Loader.css";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
 import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
@@ -23,6 +17,9 @@ import CustomModal from "../../modal/customModal/CustomModal";
 import VehicleFormPanel from "../vehicles/VehicleFormPanel";
 import Icon from "../../components/Icons";
 import { clientSearchOptions } from "../../constants/filterOptions";
+import ScrollListWithIndicators from '../../components/ScrollListWithIndicators';
+import { showToastOnce } from "../../utils/toastUtils";
+import { formatPlate } from "../../utils/formatters";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
@@ -89,9 +86,7 @@ const Client = () => {
     };
 
     const handleSelectClick = (option) => {
-        // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -147,20 +142,6 @@ const Client = () => {
         setMotor("");
     };
 
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
-    };
-
     const handleInputFocus = () => {
         setIsInputFocused(true);
     };
@@ -179,7 +160,7 @@ const Client = () => {
 
     //Función para agregar un cliente
     const handleAddClient = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         event.preventDefault();
 
         try {
@@ -190,9 +171,7 @@ const Client = () => {
             setRefreshClients(prev => !prev);
             setShowFormClient(false);
 
-            toast.success('Cliente registrado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Cliente registrado");
 
             setTimeout(() => {
                 setShowModal(true);
@@ -204,14 +183,10 @@ const Client = () => {
             resetForm();
 
         } catch (error) {
-            console.log("error registro cliente", error)
 
             if (error.response && error.response.status === 400 && error.response.data.errors) {
-                // Muestra los errores en toasts
                 error.response.data.errors.forEach(err => {
-                    toast.error(`${err.field}: ${err.message}`, {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
+                    showToastOnce("error", `${err.field}: ${err.message}`);
                 });
             }
         }
@@ -231,16 +206,14 @@ const Client = () => {
 
                 setClientVehicles(formattedVehicles);
             } else {
-                setClientVehicles([]); // O lo que desees hacer si no hay vehículos
+                setClientVehicles([]);
             }
-        } catch (error) {
-            console.error("Error al obtener los datos del vehículo:", error);
-        }
+        } catch (error) { }
     };
 
     //Función para editar la información de un cliente
     const handleEditClient = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         event.preventDefault();
 
         try {
@@ -261,40 +234,32 @@ const Client = () => {
                     )
                 );
                 setRefreshClients(prev => !prev);
-                toast.success('Información actualizada correctamente.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 5000 // duración de 5 segundos
-                });
+                showToastOnce("success", "Información actualizada correctamente.");
                 setShowClientInformation(false);
                 setShowButtonAddClient(true);
             } else {
-                toast.error('Ha ocurrido un error al actualizar la información.', {
-                    position: toast.POSITION.TOP_RIGHT
-                })
+                showToastOnce("error", "Ha ocurrido un error al actualizar la información.");
             }
 
         } catch (error) {
-            toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            // Extrae todos los mensajes de error del objeto de respuesta
+
+            showToastOnce("error", "Error al guardar los cambios. Por favor, inténtalo de nuevo.");
+
             let mensajesError = [];
             if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
                 mensajesError = error.response.data.errors.map(err => err.message);
             }
 
-            // Une todos los mensajes en uno solo
             const mensajeFinal = mensajesError.join(" / ");
 
-            toast.error(mensajeFinal || "Hubo un error", {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", mensajeFinal || "Hubo un error");
+
         }
     };
 
     //Función para suspender un cliente
     const handleUnavailableClient = async (event) => {
-        //Para evitar que el formulario recargue la página
+
         event.preventDefault();
         setIsAlertClientSuspend(false);
         try {
@@ -309,20 +274,13 @@ const Client = () => {
                 setShowClientInformation(false);
                 setShowButtonAddClient(true);
                 setRefreshClients(prev => !prev);
-                toast.success('Cliente suspendido', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
 
-            } else {
-                toast.error('Ha ocurrido un error al suspender al cliente.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Cliente suspendido");
+
             }
 
         } catch (error) {
-            toast.error('Error al suspender al cliente. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al suspender al cliente. Por favor, inténtalo de nuevo.");
         }
     };
 
@@ -332,7 +290,7 @@ const Client = () => {
 
     //Función para agregar un vehículo
     const handleAddVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         const client_id = selectedClientId;
         const plate = transformPlateForSaving(plateCar);
         event.preventDefault();
@@ -343,27 +301,23 @@ const Client = () => {
             setVehicles(prevVehicles => [...prevVehicles, newVehicle]);
             setRefreshVehicles(prev => !prev);
             setRefreshClients(prev => !prev);
-            toast.success('Vehículo registrado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+
+            showToastOnce("success", "Vehículo registrado");
             setTimeout(() => {
                 openWorkOrderModal();
             }, 3000);
             setShowButtonAddClient(true);
-            // Restablecer el estado del formulario de agregar auto
             resetForm();
 
         } catch (error) {
-            toast.error('Error al guardar un vehiculo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al guardar un vehiculo'");
         }
 
     };
 
     //Función para editar la información de un vehículo
     const handleEditVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         event.preventDefault();
         const plate = transformPlateForSaving(plateCar);
 
@@ -387,29 +341,19 @@ const Client = () => {
                     )
                 );
                 setRefreshVehicles(prev => !prev);
-                toast.success('Información actualizada correctamente.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 5000 // duración de 5 segundos
-                });
+                showToastOnce("success", "Información actualizada correctamente.");
                 setShowDetailCarInformation(false);
                 setShowButtonAddClient(true);
-            } else {
-                toast.error('Ha ocurrido un error al actualizar la información.', {
-                    position: toast.POSITION.TOP_RIGHT
-                })
             }
 
         } catch (error) {
-            console.log("error guardar vehiculo", error)
-            toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al guardar los cambios. Por favor, inténtalo de nuevo.");
         }
     };
 
     //Función para suspender un cliente
     const handleUnavailableVehicle = async (event) => {
-        //Para evitar que el formulario recargue la página
+
         event.preventDefault();
         setIsAlertVechicleSuspend(false);
 
@@ -423,20 +367,11 @@ const Client = () => {
                 setVehicles(updateVehicles);
                 setShowDetailCarInformation(false);
                 setShowButtonAddClient(true);
-                toast.success('Vehículo suspendido', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
-            } else {
-                toast.error('Ha ocurrido un error al suspender el vehículo.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Vehículo suspendido.");
             }
 
         } catch (error) {
-            toast.error('Error al suspender al vehículo. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al suspender al vehículo. Por favor, inténtalo de nuevo.");
         }
     };
 
@@ -501,7 +436,6 @@ const Client = () => {
         setShowClientInformation(false);
         setShowClientCarInformation(false);
 
-        // Inicializar los campos con los datos del vehículo seleccionado
         setPlateCar(vehicle.plate || "");
         setYear(vehicle.year || "");
         setBrand(vehicle.brand || "");
@@ -538,16 +472,15 @@ const Client = () => {
         setIsAlertVechicleSuspend(false);
     };
 
+    //Función que permite obtener todos los clientes 
+    //cuando recien se inicia la pantala y busca lo clientes
+    //por cédula y nombre
     useEffect(() => {
-        //Función que permite obtener todos los clientes 
-        //cuando recien se inicia la pantala y busca lo clientes
-        //por cédula y nombre
 
         const fetchData = async () => {
 
-            let endpoint = '/clients/all'; //Endpoint por defecto
+            let endpoint = '/clients/all';
 
-            //Si hay un filtro de búsqueda
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Cédula':
@@ -569,9 +502,8 @@ const Client = () => {
                 } else {
                     setLoading(false);
                 }
-            } catch (error) {
-                console.error("Error en fetchData:", error.message);
-            } finally {
+            } catch (error) { }
+            finally {
                 setLoading(false);
             }
         }
@@ -611,30 +543,26 @@ const Client = () => {
                             <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
                     ) : (
-                        <>
-                            <div className="scrollable-list-container">
-                                <div className="panel-content"></div>
-                                {clients.map(client => (
-                                    <ResultItem
-                                        key={client.id}
-                                        type="client"
-                                        data={client}
-                                        onClickMain={e => handleClientCarInformation(client.client.id, e)}
-                                        onClickEye={handleClientInformation}
 
-                                    />
-                                ))}
+                        <ScrollListWithIndicators
+                            items={clients}
+                            renderItem={(client) => (
+                                <ResultItem
+                                    key={client.id}
+                                    type="client"
+                                    data={client}
+                                    onClickMain={e => handleClientCarInformation(client.client.id, e)}
+                                    onClickEye={handleClientInformation}
+                                />
+                            )}
+                        />
 
-                            </div>
-                        </>
                     )
                     }
-
 
                 </div>
 
                 <div className="right-panel">
-                    <ToastContainer />
 
                     {/*Sección para mostrar el botón de agregar cliente */}
                     {showButtonAddClient && !showFormClient && !showClientCarInformation && !showClientCarInformation && !selectedVehicle && (

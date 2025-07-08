@@ -1,7 +1,9 @@
 :root {
     --primary-color: #0C1F31;
+    --primary-color-rgb: 12, 31, 49;
     --second-color: #1C4A74;
     --tertiary-color: #316EA8;
+    --tertiary-color-60 :rgba(49, 110, 168, 0.6);
     --gray-darkest: #333;
     --gray-obsidian: #3E3E3E;
     --gray-soft-128: rgba(128, 128, 128, 0.26);
@@ -48,6 +50,7 @@
     --yellow-neon: #ffea00;
     --orange-warm-light: #FFB75A;
     --red-intense: #e74c3c;
+    --light-coral: #DE7C7D;
     --bright-orange: #FA7D09;
     --bright-orange-10: rgba(250, 125, 9, 0.3);
     --gradient-blue-dark: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);

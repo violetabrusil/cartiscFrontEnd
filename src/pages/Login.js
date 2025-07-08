@@ -7,7 +7,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import { userTypeMaping } from '../constants/userRoleConstants';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
-import { ToastContainer, toast } from 'react-toastify';
+import { showToastOnce } from '../utils/toastUtils';
 
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png";
@@ -26,71 +26,60 @@ const Login = () => {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-    
+
         try {
             const response = await apiLogin.post('/login', { username, password });
             const token = response.data.token;
-            console.log("user", response.data)
             localStorage.setItem('token', token);
-            
+
             const translatedUserType = userTypeMaping[response.data.user.user_type] || response.data.user.user_type;
             const modifiedUser = {
                 ...response.data.user,
                 translated_user_type: translatedUserType,
             };
-            
+
             setUser(modifiedUser);
             localStorage.setItem('user', JSON.stringify(modifiedUser));
-    
+
             if (response.data.user.change_password) {
                 navigate("/changePassword");
                 return;
             }
-    
+
             if (response.data.user.change_pin) {
                 navigate("/changePIN");
                 return;
             }
-    
+
             if (modifiedUser.translated_user_type === "Administrador") {
                 navigate("/settings");
             } else {
                 navigate("/home");
             }
-    
+
         } catch (error) {
-            console.error("Error en el inicio de sesión", error);
-            console.error("msg error", error.message);
-            console.error("msg stack", error.stack);
-    
+
             let mensajesError = [];
             if (error.response && error.response.data && error.response.data.errors) {
                 mensajesError = error.response.data.errors.map(err => err.message);
             }
-    
+
             const mensajeFinal = mensajesError.length ? mensajesError.join(" / ") : null;
-    
+
             if (error.message === "Network Error") {
-                toast.error('Error en el servidor. Conéctese con soporte técnico.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("error", "Error en el servidor. Conéctese con soporte técnico.");
             } else if (mensajeFinal) {
-                toast.error(mensajeFinal, {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("error", mensajeFinal);
             } else {
-                toast.error('Error en el inicio de sesión. Nombre de usuario o contraseña incorrectos', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("error", "Error en el inicio de sesión. Nombre de usuario o contraseña incorrectos");
             }
         }
-    };    
+    };
 
     return (
 
         <div className="page-container">
             <Header showCarticsLogo={true} showPhoto={false}></Header>
-            <ToastContainer />
 
             <div className="content-container">
 
@@ -120,8 +109,6 @@ const Login = () => {
                                 onChange={(e) => setUsername(e.target.value)}
 
                             />
-
-
 
                         </div>
 

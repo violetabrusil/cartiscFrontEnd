@@ -1,72 +1,74 @@
-import "../../Operation.css";
-import "../../Service.css";
-import "../../Modal.css";
-import 'react-toastify/dist/ReactToastify.css';
+
 import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from 'react-toastify';
 import apiClient from "../../services/apiClient";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import { showToastOnce } from "../../utils/toastUtils";
+import CustomModal from "../../modal/customModal/CustomModal";
 
-const OperationRightSection = ({ localOperations, selectedOperation, onOperationChange, goBack }) => {
+const OperationRightSection = ({ selectedOperation, onOperationChange, goBack }) => {
 
     const [title, setTitleOperation] = useState('');
     const [cost, setCostOperation] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [isAlertOperationSuspend, setIsAlertOperationSuspend] = useState(false);
 
-    const handleInputChange = (e) => {
-        setCostOperation(e.target.value.trim());
-    };
+    const mode = selectedOperation ? "edit" : "add";
 
-    const handleAddNewOperation = async (event) => {
-        event.preventDefault();
+    useEffect(() => {
+        if (selectedOperation) {
+            setTitleOperation(selectedOperation.title || '');
+            setCostOperation(parseFloat(selectedOperation.cost).toFixed(2) || '$0.00');
+            setIsEditing(false);
+        } else {
+            setTitleOperation('');
+            setCostOperation('');
+            setIsEditing(true);
+        }
+    }, [selectedOperation]);
 
-        try {
-            const response = await apiClient.post('/operations/create', { title, cost });
-            console.log("datos a guardar sin error",title, cost )
-            if (response.data) {
-                onOperationChange(response.data, "ADD");
-            }
-            toast.success('Operación registrada', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-        } catch (error) {
-
-            // Extrae todos los mensajes de error del objeto de respuesta
-            let mensajesError = [];
-            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
-                mensajesError = error.response.data.errors.map(err => err.message);
-            }
-
-            // Une todos los mensajes en uno solo
-            const mensajeFinal = mensajesError.join(" / ");
-
-            console.log("datos a guardar",title, cost )
-            console.log("error", error)
-
-            toast.error(mensajeFinal || "Hubo un error al guardar la operación", {
-                position: toast.POSITION.TOP_RIGHT
-            });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (mode === "edit") {
+            // update
+            await updateOperation();
+        } else {
+            // add new
+            await createOperation();
         }
     };
 
-    const handleUpdateOperation = async () => {
+    const createOperation = async () => {
+
+        try {
+            const response = await apiClient.post('/operations/create', { title, cost });
+            if (response.data) {
+                onOperationChange(response.data, "ADD");
+            }
+            showToastOnce("success", "Operación registrada");
+        } catch (error) {
+
+            handleErrors(error, "Hubo un error al guardar la operación");
+        }
+    };
+
+    const updateOperation = async () => {
         try {
             const response = await apiClient.put(`/operations/update/${selectedOperation.id}`, { title, cost });
             if (response.data) {
                 onOperationChange(response.data, "UPDATE");
             }
-            // Notifica al componente padre para actualizar la lista de operaciones
-
-            toast.success('Operación actualizada con éxito', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
+            showToastOnce("success", "Operación actualizada con éxito");
         } catch (error) {
-            toast.error('Error al actualizar la operación', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            handleErrors(error, "Hubo un error al actualizar la operación");
         }
+    };
+
+    const handleErrors = (error, fallbackMessage) => {
+        let mensajesError = [];
+        if (error.response?.data?.errors?.length > 0) {
+            mensajesError = error.response.data.errors.map(err => err.message);
+        }
+        showToastOnce("error", mensajesError.join(" / ") || fallbackMessage);
     };
 
     const openAlertModalOperationSuspend = () => {
@@ -79,7 +81,6 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
     //Función para suspender una operación
     const handleUnavailableOperation = async (event) => {
-        //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertOperationSuspend(false);
 
@@ -89,19 +90,11 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
             if (response.status === 200) {
                 onOperationChange(selectedOperation, "SUSPEND");
-                toast.success('Operación suspendida', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-            } else {
-                toast.error('Ha ocurrido un error al suspender la operación', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Operación suspendida");
             }
 
         } catch (error) {
-            toast.error('Error al suspender la operación. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al suspender la operación. Por favor, inténtalo de nuevo..");
         }
     };
 
@@ -113,124 +106,75 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
 
     return (
-        <div>
-            <ToastContainer />
+        <div className="container-general">
 
-            {selectedOperation ? (
-                <div className="container-general-operation">
+            <CustomTitleSection
+                onBack={() => {
+                    if (mode === "edit" && isEditing) {
+                        setIsEditing(false); // salir modo edición
+                    }
+                    goBack?.();
+                }}
+                titlePrefix="Panel Operaciones"
+                title={mode === "add" ? "Nueva Operación" : "Información de la Operación"}
+                onCustomButtonClick={(mode === "add" || (mode === "edit" && isEditing)) ? handleSubmit : undefined}
+                customButtonLabel={(mode === "add" || (mode === "edit" && isEditing)) ? "GUARDAR" : undefined}
+                showCustomButton={(mode === "add" || (mode === "edit" && isEditing))}
+                showDisableIcon={mode === "edit"}
+                onDisable={mode === "edit" ? openAlertModalOperationSuspend : undefined}
+                showEditIcon={mode === "edit" && !isEditing}
+                onEdit={mode === "edit" ? () => setIsEditing(true) : undefined}
+            />
 
-                    <CustomTitleSection
-                        onBack={goBack}
-                        title="Información de la Operación"
-                        showDisableIcon={true}
-                        onDisable={openAlertModalOperationSuspend}
-                        showEditIcon={true}
-                        onEdit={() => setIsEditing(true)}
-                    />
+            <div className="container-section-service">
 
-                    <div className="container-new-operation">
-                        <div className="row-operation">
-                            <label>Título</label>
-                            <input
-                                className="input-title-operation"
-                                type="text"
-                                value={title}
-                                disabled={!isEditing}
-                                onChange={(e) => setTitleOperation(e.target.value)}
-                            />
-                        </div>
+                <div className="service-column-title">
+                    <span className="section-title">Información General</span>
 
-                        <div className="row-operation">
-                            <label>Costo</label>
-                            <div className="input-container">
-                                <span className="dollar-sign">$</span>
-                                <input
-                                    style={{ width: '277px' }}
-                                    className="input-cost-operation"
-                                    type="number"
-                                    value={isEditing ? cost : parseFloat(cost).toFixed(2)}
-                                    disabled={!isEditing}
-                                    onChange={handleInputChange}
-                                />
-
-                            </div>
-
-                        </div>
+                    <div className="field-group">
+                        <label>Título</label>
+                        <input
+                            className="title-service"
+                            type="text"
+                            value={title}
+                            disabled={mode === "edit" && !isEditing}
+                            onChange={(e) => setTitleOperation(e.target.value)}
+                        />
                     </div>
-                    {isEditing && (
-                        <div className="container-operation-buttons">
-                            <button className="accept-button" onClick={handleUpdateOperation}>
-                                <span className="text-button-operation">Guardar</span>
-                            </button>
-                        </div>
-                    )}
                 </div>
-            ) : (
-                <div className="container-general-operation">
 
-                    <CustomTitleSection
-                        onBack={goBack}
-                        title="Agregar Operación"
-                    />
+                <div className="service-column-price">
+                    <span className="section-title">Información financiera</span>
 
-                    <div className="container-new-operation">
-
-                        <div className="row-operation">
-                            <label>Título</label>
-                            <input
-                                className="input-title-operation"
-                                type="text"
-                                value={title}
-                                onChange={(e) => setTitleOperation(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="row-operation">
-                            <label>Costo</label>
-                            <div className="input-container">
-                                <span className="dollar-sign">$</span>
-                                <input
-                                    style={{ width: '277px' }}
-                                    className="input-cost-operation"
-                                    type="text"
-                                    value={cost}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                        </div>
-
-                    </div>
-                    <div className="container-operation-buttons">
-                        <button className="accept-button" style={{ marginRight: "10px" }} onClick={handleAddNewOperation}>
-                            <span className="text-button-operation">Guardar</span>
-                        </button>
+                    <div className="field-group">
+                        <label>Precio Total</label>
+                        <input
+                            type="text"
+                            className="input-total-cost"
+                            value={`$${cost}`}
+                            disabled={mode === "edit" && !isEditing}
+                            onChange={(e) => {
+                                const cleanVal = e.target.value.replace(/[^0-9.]/g, '');
+                                setCostOperation(cleanVal);
+                            }}
+                        />
 
                     </div>
                 </div>
 
-            )}
+            </div>
 
             {isAlertOperationSuspend && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <h3 style={{ textAlign: "center" }}>¿Está seguro de suspender la operación?</h3>
-                        <div className="button-options">
-                            <div className="half">
-                                <button className="optionNo-button" onClick={closeAlertModalOperationSuspend}>
-                                    No
-                                </button>
-                            </div>
-                            <div className="half">
-                                <button className="optionYes-button" onClick={handleUnavailableOperation}  >
-                                    Si
-                                </button>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+                <CustomModal
+                    isOpen={isAlertOperationSuspend}
+                    type="confirm-suspend"
+                    subTitle="¿Está seguro de suspender la operación?"
+                    description="Al suspender la operación, se ocultará temporalmente del sistema.
+                        Podrás volver a activarlo desde Configuración en cualquier momento."
+                    onCancel={closeAlertModalOperationSuspend}
+                    onConfirm={handleUnavailableOperation}
+                    showCloseButton={false}
+                />
             )}
 
         </div>

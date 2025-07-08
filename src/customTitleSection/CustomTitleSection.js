@@ -9,11 +9,13 @@ const CustomTitleSection = ({
     onAdd,
     onEdit,
     onDisable,
+    onDelete,
     onFilter,
     showAddIcon = false,
     showEditIcon = false,
     showDisableIcon = false,
     showFilterIcon = false,
+    showDeleteIcon = false,
     onCustomButtonClick,
     customButtonLabel,
     showCustomButton,
@@ -24,12 +26,12 @@ const CustomTitleSection = ({
     useEffect(() => {
         if (showCustomButton) {
             setShowSaveButton(true);
-        } else if (!showAddIcon && !showEditIcon && !showDisableIcon) {
+        } else if (!showAddIcon && !showEditIcon && !showDisableIcon && !showDeleteIcon) {
             setShowSaveButton(true);
         } else {
             setShowSaveButton(false);
         }
-    }, [showAddIcon, showDisableIcon, showEditIcon, showCustomButton]);
+    }, [showAddIcon, showDisableIcon, showDeleteIcon, showEditIcon, showCustomButton]);
 
     return (
 
@@ -37,7 +39,7 @@ const CustomTitleSection = ({
             <div className="left-section">
                 {onBack &&
                     <button onClick={onBack} className="button-arrow">
-                         <Icon name="leftArrow" className="arrow-icon" />
+                        <Icon name="leftArrow" className="arrow-icon" />
                     </button>
                 }
                 {titlePrefix && <span className="title-prefix">{titlePrefix}</span>}
@@ -60,12 +62,16 @@ const CustomTitleSection = ({
                         <Icon name="noHidden" className="custom-button-unavailable-icon" />
                     </button>
                 }
+                {showDeleteIcon && onDelete &&
+                    <button onClick={onDelete} className="custom-button-delete">
+                        <Icon name="delete" className="custom-button-delete-icon" />
+                    </button>
+                }
                 {showEditIcon && onEdit &&
                     <button onClick={onEdit} className="custom-button-edit">
                         <Icon name="edit" className="custom-button-edit-icon" />
                     </button>
                 }
-
                 {showSaveButton && onCustomButtonClick && customButtonLabel &&
                     <button className="custom-button-save" onClick={onCustomButtonClick}>
                         {customButtonLabel}

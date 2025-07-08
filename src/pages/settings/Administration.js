@@ -1,7 +1,6 @@
 import "../../Administration.css";
 import "../../Loader.css";
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import Select from 'react-select';
 import PuffLoader from "react-spinners/PuffLoader";
 import DataTable from "../../dataTable/DataTable";
@@ -9,6 +8,7 @@ import apiClient from "../../services/apiClient";
 import { userStatusMaping } from "../../constants/userStatusConstants";
 import { vehicleCategory } from "../../constants/vehicleCategoryConstants";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { showToastOnce } from "../../utils/toastUtils";
 
 const Administration = () => {
 
@@ -76,11 +76,10 @@ const Administration = () => {
                 Cell: ({ value }) => {
                     const date = new Date(value);
 
-                    // Añadir un cero adelante si es un solo dígito
                     const formatNumber = (num) => num.toString().padStart(2, '0');
 
                     const day = formatNumber(date.getDate());
-                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const month = formatNumber(date.getMonth() + 1); 
                     const year = date.getFullYear();
                     const hours = formatNumber(date.getHours());
                     const minutes = formatNumber(date.getMinutes());
@@ -123,11 +122,10 @@ const Administration = () => {
                 Cell: ({ value }) => {
                     const date = new Date(value);
 
-                    // Añadir un cero adelante si es un solo dígito
                     const formatNumber = (num) => num.toString().padStart(2, '0');
 
                     const day = formatNumber(date.getDate());
-                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const month = formatNumber(date.getMonth() + 1);  
                     const year = date.getFullYear();
                     const hours = formatNumber(date.getHours());
                     const minutes = formatNumber(date.getMinutes());
@@ -179,11 +177,10 @@ const Administration = () => {
                 Cell: ({ value }) => {
                     const date = new Date(value);
 
-                    // Añadir un cero adelante si es un solo dígito
                     const formatNumber = (num) => num.toString().padStart(2, '0');
 
                     const day = formatNumber(date.getDate());
-                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const month = formatNumber(date.getMonth() + 1);  
                     const year = date.getFullYear();
                     const hours = formatNumber(date.getHours());
                     const minutes = formatNumber(date.getMinutes());
@@ -224,11 +221,10 @@ const Administration = () => {
                 Cell: ({ value }) => {
                     const date = new Date(value);
 
-                    // Añadir un cero adelante si es un solo dígito
                     const formatNumber = (num) => num.toString().padStart(2, '0');
 
                     const day = formatNumber(date.getDate());
-                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const month = formatNumber(date.getMonth() + 1);  
                     const year = date.getFullYear();
                     const hours = formatNumber(date.getHours());
                     const minutes = formatNumber(date.getMinutes());
@@ -269,11 +265,10 @@ const Administration = () => {
                 Cell: ({ value }) => {
                     const date = new Date(value);
 
-                    // Añadir un cero adelante si es un solo dígito
                     const formatNumber = (num) => num.toString().padStart(2, '0');
 
                     const day = formatNumber(date.getDate());
-                    const month = formatNumber(date.getMonth() + 1);  // Los meses empiezan en 0
+                    const month = formatNumber(date.getMonth() + 1); 
                     const year = date.getFullYear();
                     const hours = formatNumber(date.getHours());
                     const minutes = formatNumber(date.getMinutes());
@@ -322,10 +317,10 @@ const Administration = () => {
     };
 
     const fetchData = async (resourceType) => {
+
         try {
             const response = await apiClient.get(`/${resourceType}/suspended`);
     
-            // Verifica si response.data es null o no está definido
             if (!response.data) {
                 setData([]);
                 return;
@@ -335,9 +330,7 @@ const Administration = () => {
             setData(transformedData);
             setLoading(false);
         } catch (error) {
-            toast.error('Ha ocurrido un error al obtener los datos..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+          showToastOnce("error", "Error al obtener los datos.");
         }
     };
 
@@ -350,11 +343,9 @@ const Administration = () => {
     };
 
     const activateRecord = async (recordType, recordId) => {
+
         if (!resourceConfig[recordType]) {
-            toast.error('Tipo de recurso no soportado:', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            console.error('Tipo de recurso no soportado:', recordType);
+            showToastOnce("error", "Tipo de recurso no soportado");
             return;
         }
 
@@ -368,17 +359,12 @@ const Administration = () => {
 
         try {
             const response = await apiClient.put(endpoint);
-            toast.success('Registro restaurado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Registro restaurado");
             fetchData(recordType);
         } catch (error) {
-            toast.error('Error activando el registro', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al restaurar el registro");
         }
-    }
-
+    };
 
     useEffect(() => {
         if (selectedOption && selectedOption.value) {
@@ -390,7 +376,7 @@ const Administration = () => {
 
     return (
         <div style={{ marginTop: '-18px' }}>
-            <ToastContainer />
+            
             <div className="administration-container-title">
                 <label>Registros suspendidos</label>
             </div>

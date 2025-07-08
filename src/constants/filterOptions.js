@@ -27,3 +27,17 @@ export const clientSearchOptions = [
 
     }
 ]
+
+export const searchOptions = [
+      {
+        value: 'Título',
+        label: 'Título',
+        iconName: 'text'
+    },
+    {
+        value: 'Código',
+        label: 'Código',
+        iconName: 'text'
+
+    }
+]

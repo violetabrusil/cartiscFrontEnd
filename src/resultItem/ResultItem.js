@@ -76,6 +76,57 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, showEye = t
                 </>
             )}
 
+            {["operation", "service"].includes(type) && (
+                <>
+                    <div className="operation-code-section">
+                        <label className="operation-code">
+                            {data.operation_code || data.service_code}
+                        </label>
+                    </div>
+
+                    <div className="operation-name-section">
+                        <label className="operation-name">
+                            {data.title || data.service_title}
+                        </label>
+                    </div>
+
+                    {showEye && (
+                        <div className="operation-eye-section">
+                            <button className="button-eye" onClick={onClickEye}>
+                                <Icon name="eye" className="icon-eye" />
+                            </button>
+                        </div>
+                    )}
+
+                </>
+            )}
+
+            {type === "supplier" && (
+                <>
+                    <div className="operation-code-section">
+                        <label className="operation-code">
+                            {data.supplier_code}
+                        </label>
+                    </div>
+
+                    <div className="operation-name-section">
+                        <label className="operation-name">
+                            {data.name}
+                        </label>
+                    </div>
+
+                    {showEye && (
+                        <div className="operation-eye-section">
+                            <button className="button-eye" onClick={onClickEye}>
+                                <Icon name="eye" className="icon-eye" />
+                            </button>
+                        </div>
+                    )}
+
+                </>
+            )}
+
+
             {type === "work-order" && (
                 <>
                     <div className="first-result-work-orders">
@@ -126,31 +177,7 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, showEye = t
                 </>
             )}
 
-            {["operation", "service"].includes(type) && (
-                <>
-                    <div className="operation-code-section">
-                        <label className="operation-code">
-                            {data.operation_code || data.service_code}
-                        </label>
-                    </div>
 
-                    <div className="operation-name-section">
-                        <label className="operation-name">
-                            {data.title || data.service_title}
-                        </label>
-                    </div>
-
-                    {showEye && (
-                        <div className="operation-eye-section">
-                            <button className="button-eye-operation" onClick={onClickEye}>
-                                 <Icon name="eye" className="icon-eye" />
-                            </button>
-                        </div>
-                    )}
-
-
-                </>
-            )}
         </div>
     );
 };

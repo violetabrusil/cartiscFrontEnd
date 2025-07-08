@@ -8,7 +8,7 @@
     grid-template-columns: 1fr 2fr;
     overflow: hidden;
     z-index: 10;
-    height: auto;
+    height: calc(100vh - 80px);
     border-radius: 10px;
 }
 
@@ -33,15 +33,6 @@
     flex-direction: column;
     min-height: 0;
     box-shadow: inset 8px 0 8px 0px var(--gray-light-muted);
-}
-
-.panel-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    overflow: hidden;
-    min-height: 0;
 }
 
 .panel-header-fixed {
@@ -96,18 +87,6 @@
 .client-name {
     font-weight: 400;
     font-size: 1.3rem;
-}
-
-
-/* Contenedor reutilizable para listas */
-.scrollable-list-container {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    min-height: 0;
-    max-height: 97%;
-    max-width: 100%;
-    box-sizing: border-box;
 }
 
 .label-form,

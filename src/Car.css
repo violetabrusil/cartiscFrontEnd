@@ -136,8 +136,14 @@
     background: white;
     margin-left: 1.3rem;
     margin-right: 1.3rem;
+    margin-bottom: 1.3rem;
     box-sizing: border-box;
     box-shadow: 0 4px 8px var(--black-alpha-20);
+}
+
+.button-eye-car-work-order {
+    background: none;
+    border: none;
 }
 
 .vehicle-info-left,
@@ -208,6 +214,12 @@
     font-size: 1.5rem;
     font-weight: bold;
     color: #222;
+}
+
+.car-history-section {
+    margin-left: 1.3rem;
+    margin-right: 1.3rem;
+    box-sizing: border-box;
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {

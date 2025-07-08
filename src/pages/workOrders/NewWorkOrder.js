@@ -1,6 +1,5 @@
 import "../../NewWorkOrder.css";
 import "../../Modal.css"
-import 'react-toastify/dist/ReactToastify.css';
 import "react-multi-carousel/lib/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
@@ -8,7 +7,6 @@ import Carousel from "react-multi-carousel";
 import { debounce } from 'lodash';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import Header from "../../header/Header";
@@ -21,6 +19,8 @@ import ClientContext from "../../contexts/ClientContext";
 import { AddNewClientModal } from "../../modal/AddClientModal";
 import { AddNewVehicleModal } from "../../modal/AddVehicleModal";
 import useCSSVar from "../../hooks/UseCSSVar";
+import { showToastOnce } from "../../utils/toastUtils";
+import { formatPlate } from "../../utils/formatters";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
@@ -80,7 +80,7 @@ const NewWorkOrder = () => {
     const [shouldUpdateVehicles, setShouldUpdateVehicles] = useState(false);
 
     const showToast = (message, type) => {
-        toast[type](message, { position: toast.POSITION.TOP_RIGHT });
+        showToastOnce(type, message)
     };
 
     const handleSearchClientChange = (term, filter) => {
@@ -122,7 +122,6 @@ const NewWorkOrder = () => {
 
     const handleSelectClick = (option) => {
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -145,20 +144,6 @@ const NewWorkOrder = () => {
             truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
         };
     }, []);
-
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
-    };
 
     const customStylesStatus = {
         control: (provided, state) => ({
@@ -273,15 +258,13 @@ const NewWorkOrder = () => {
         const newSymptoms = [...symptoms];
         newSymptoms[index] = newSymptom;
         setSymptoms(newSymptoms);
-        // Si la lista no está vacía después de la actualización,
-        // oculta el texto del marcador de posición.
         if (newSymptoms.some(item => item)) {
             setPlaceholder("");
         }
     };
 
     const getVehicleOfClient = async (clientId) => {
-       
+
         try {
             const response = await apiClient.get(`/vehicles/active/${clientId}`);
             if (response.data && response.data.length > 0) {
@@ -305,10 +288,8 @@ const NewWorkOrder = () => {
 
     const handleWorkOrderCreation = () => {
         if (actualKm.trim() !== '') {
-            // Si el campo de kilometraje actual no está vacío, llamar directamente a la función de crear la orden de trabajo
             createNewWorkOrder();
         } else {
-            // Si el campo de kilometraje actual está vacío, abrir el modal
             setIsKmModalOpen(true);
         }
     };
@@ -318,29 +299,17 @@ const NewWorkOrder = () => {
     };
 
     const handleAccept = () => {
-        // Validar si el checkbox no está marcado y el input está vacío, mostrar el mensaje de advertencia
         if (!isChecked && !actualKm.trim()) {
-            toast.warn("Es necesario ingresar el nuevo kilometraje.", {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
-            // No cerrar el modal en este caso
+            showToastOnce("warn", "Es necesario ingresar el nuevo kilometraje.");
             return;
         }
 
-        // Validar si el checkbox está marcado y el valor del kilómetro no tiene un formato numérico válido
         if (isChecked && !isNumber(actualKm)) {
-            toast.warn('El KM ingresado no tiene un formato numérico válido. Intente nuevamente.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
-            // No cerrar el modal en este caso
+            showToastOnce("warn", "El KM ingresado no tiene un formato numérico válido. Intente nuevamente.");
             return;
         }
-
-        // Ahora, solo si isChecked es true y actualKm no está vacío o si el formato es válido, llamamos a la función
         createNewWorkOrder();
-        setIsKmModalOpen(false); // Cerrar el modal después de llamar a la función si todo está bien
+        setIsKmModalOpen(false);
     };
 
     const resetForm = () => {
@@ -360,7 +329,7 @@ const NewWorkOrder = () => {
         Object.keys(optionsCheckBox).forEach(group => {
             optionsCheckBox[group].forEach((option, index) => {
                 const key = keyMapping[option];
-                if (key) {  // Si el mapeo existe
+                if (key) {
                     if (key !== 'fuel_level') {
                         vehicleStatus[key] = selections[group][index];
                     } else {
@@ -372,7 +341,7 @@ const NewWorkOrder = () => {
 
         vehicleStatus.points_of_interest = pointsOfInterest.map(point => {
             return {
-                side: point.side, // Aquí deberías determinar el lado correcto si es necesario.
+                side: point.side,
                 x: point.x,
                 y: point.y
             }
@@ -383,9 +352,7 @@ const NewWorkOrder = () => {
         const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
 
         if (!isNumber(actualKm)) {
-            toast.warn('El KM ingresado no tiene un formato numérico válido. Intente nuevamente.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("warn", "El KM ingresado no tiene un formato numérico válido. Intente nuevamente.");
             return;
         }
 
@@ -401,33 +368,21 @@ const NewWorkOrder = () => {
             km: actualKmValue !== 0 ? actualKmValue : kmVehicleSelected.km,
         };
 
-        console.log("datos a enviar", payload)
-
         try {
 
             const response = await apiClient.post('/work-orders/create', payload)
             const workOrderId = response.data.id;
             if (response.status === 201) {
-                toast.success('Orden de trabajo creada exitósamente', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Orden de trabajo creada exitósamente");
                 setTimeout(() => {
                     navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
                     resetForm();
                 }, 3000);
 
-            } else {
-
-                toast.error('Ha ocurrido un error crear la orden de trabajo', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
             }
 
         } catch (error) {
-            console.error("Error al crear la orden de trabajo", error);
-            toast.error('Error al crear la orden de trabajo.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al crear la orden de trabajo.");
         }
 
     };
@@ -441,7 +396,6 @@ const NewWorkOrder = () => {
 
         let endpoint = '/clients/all';
 
-        //Si hay un filtro de búsqueda
         if (searchTerm) {
             switch (selectedOption) {
                 case 'Cédula':
@@ -459,10 +413,7 @@ const NewWorkOrder = () => {
             setClients(response.data);
 
         } catch (error) {
-            toast.error('Error al obtener los datos de los clientes', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
+            showToastOnce("error", "Error al obtener los datos de los clientes");
         }
     };
 
@@ -476,7 +427,7 @@ const NewWorkOrder = () => {
             setShouldUpdateClients(false);
         }
     }, [shouldUpdateClients]);
-    
+
     useEffect(() => {
         if (shouldUpdateVehicles && selectedClient) {
             getVehicleOfClient(selectedClient.id);
@@ -515,7 +466,6 @@ const NewWorkOrder = () => {
     useEffect(() => {
         if (selectedVehicle && selectedVehicle.km) {
             setActualKm(selectedVehicle.km);
-            //console.log("valor del km", selectedVehicle)
         }
     }, [selectedVehicle]);
 
@@ -524,7 +474,6 @@ const NewWorkOrder = () => {
             const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
             setActualKm(kmVehicleSelected ? kmVehicleSelected.km : '');
         } else {
-            // Si el checkbox no está marcado, restablecer a un valor vacío
             setActualKm('');
         }
     }, [isChecked, selectedVehicleId, vehicles]);
@@ -532,8 +481,6 @@ const NewWorkOrder = () => {
     return (
 
         <div>
-
-            <ToastContainer />
 
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />

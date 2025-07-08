@@ -3,6 +3,8 @@ import './App.css';
 import './Clients.css';
 import './NewClient.css';
 import './Car.css'
+import './Service.css';
+import './Operation.css';
 import './Form.css';
 import './Header.css';
 import './Home.css';
@@ -11,6 +13,8 @@ import './Modal.css';
 import './Loader.css';
 import './Colors.css';
 import './styles/LayoutSections.css';
+import './components/Scroll.css'
+
 
 import { Route, Routes, Navigate } from "react-router-dom";
 import InactivityTimer from './inactivity/InactivityTimer';
@@ -42,6 +46,7 @@ import { ProformaProvider } from './contexts/searchContext/ProformaContext';
 import NewProforma from './pages/proforma/NewProforma';
 import { CarProvider } from './contexts/searchContext/CarContext';
 import useCSSVar from './hooks/UseCSSVar';
+import { ToastContainer } from 'react-toastify';
 
 
 function App() {
@@ -67,7 +72,7 @@ function App() {
           <PaymentReceiptProvider>
             <ProformaProvider initialSelectedOptionProforma={proformaInitialOption}>
               <div>
-              
+
                 <Routes>
                   <Route path="/" element={<Navigate to="/login" replace />} />
                   <Route path="/login" element={<Login />} />
@@ -91,6 +96,9 @@ function App() {
                   <Route path="/proformas" element={<Proforma />} />
                   <Route path='/proforma/newProforma' element={<NewProforma />} />
                 </Routes>
+                <ToastContainer
+                  style={{ zIndex: 99999 }}
+                />
               </div>
             </ProformaProvider>
           </PaymentReceiptProvider>

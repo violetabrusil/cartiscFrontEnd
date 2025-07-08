@@ -1,7 +1,6 @@
 import "../../NewProforma.css";
 import "../../NewWorkOrder.css";
 import "../../Modal.css"
-import 'react-toastify/dist/ReactToastify.css';
 import "react-multi-carousel/lib/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
@@ -10,7 +9,6 @@ import { debounce } from 'lodash';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import DataTable from '../../dataTable/DataTable';
-import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import Header from "../../header/Header";
@@ -23,6 +21,8 @@ import { AddNewClientModal } from "../../modal/AddClientModal";
 import { AddNewVehicleModal } from "../../modal/AddVehicleModal";
 import SearchProductsModal from '../../modal/SearchProductsModal';
 import SearchServicesOperationsModal from '../../modal/SearchServicesOperationsModal';
+import { showToastOnce } from "../../utils/toastUtils";
+import { formatPlate } from "../../utils/formatters";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
@@ -94,10 +94,6 @@ const NewProforma = () => {
     const [totalValue, setTotalValue] = useState(0);
     const [oldTotalValue, setOldTotalValue] = useState(0);
 
-    const showToast = (message, type) => {
-        toast[type](message, { position: toast.POSITION.TOP_RIGHT });
-    };
-
     const iconsVehicles = useMemo(() => {
         return {
             car: process.env.PUBLIC_URL + "/images/icons/autoIcon.png",
@@ -157,7 +153,6 @@ const NewProforma = () => {
 
     const handleSelectClick = (option) => {
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -187,7 +182,6 @@ const NewProforma = () => {
 
         let endpoint = '/clients/all';
 
-        //Si hay un filtro de búsqueda
         if (searchTerm) {
             switch (selectedOption) {
                 case 'Cédula':
@@ -205,25 +199,8 @@ const NewProforma = () => {
             setClients(response.data);
 
         } catch (error) {
-            toast.error('Error al obtener los datos de los clientes', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
+            showToastOnce("error", "Error al obtener los datos de los clientes");
         }
-    };
-
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
     };
 
     const getVehicleOfClient = async (clientId) => {
@@ -239,13 +216,11 @@ const NewProforma = () => {
                     return vehicle;
                 });
                 setVehicles(formattedVehicles);
-                setToastShown(false);
             } else {
                 setVehicles([]);
-                setToastShown(true);
             }
         } catch (error) {
-            showToast('Error al obtener los vehículos del cliente', 'error');
+            showToastOnce("error", "Error al obtener los vehículos del cliente");
         }
     };
 
@@ -285,7 +260,7 @@ const NewProforma = () => {
             },
             {
                 Header: "Total",
-                accessor: "total",  // Usaremos esta clave para calcular el total en el accessor
+                accessor: "total",  
                 Cell: ({ row }) => {
                     const price = row.original.price || 0;
                     const quantity = row.original.quantity || 1;
@@ -356,7 +331,6 @@ const NewProforma = () => {
     };
 
     const handleProductsSelected = (updatedProducts) => {
-        // Actualiza el estado o realiza acciones adicionales según sea necesario
         setSelectedProducts(updatedProducts);
     };
 
@@ -373,7 +347,7 @@ const NewProforma = () => {
     };
 
     const handleServicesListUpdate = (updatedList) => {
-        setSelectedServicesList(updatedList); // Asumiendo que selectedServicesList es un estado en el padre.
+        setSelectedServicesList(updatedList); 
     };
 
     useEffect(() => {
@@ -459,9 +433,6 @@ const NewProforma = () => {
 
     return (
         <>
-
-            <ToastContainer />
-
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu />
 

@@ -1,7 +1,5 @@
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { debounce } from 'lodash';
-import { ToastContainer, toast } from 'react-toastify';
 import PuffLoader from "react-spinners/PuffLoader";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
@@ -24,6 +22,9 @@ import SectionTitle from '../../components/SectionTitle';
 import CustomModal from "../../modal/customModal/CustomModal";
 import { vehicleSearchOptions } from '../../constants/filterOptions';
 import Icon from '../../components/Icons';
+import ScrollListWithIndicators from '../../components/ScrollListWithIndicators';
+import { showToastOnce } from "../../utils/toastUtils";
+import { formatDate, formatPlate } from "../../utils/formatters";
 
 const sortLeftIcon = process.env.PUBLIC_URL + "/images/icons/sortLeftIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
@@ -121,7 +122,6 @@ const Cars = () => {
         setShowCarInformation(false);
         setShowCarHistory(false);
         setShowButtonAddVehicle(true);
-        // resetea otros estados...
     };
 
     const handleSearchCarChange = (term, filter) => {
@@ -140,9 +140,7 @@ const Cars = () => {
     };
 
     const handleSelectClick = (option) => {
-        // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -199,7 +197,7 @@ const Cars = () => {
                         className="button-eye-car-work-order"
                         onClick={() => handleShowInformationWorkOrderClick(workOrder.id)}
                     >
-                         <Icon name="eye" className="icon-eye" />
+                        <Icon name="eye" className="icon-eye" />
                     </button>
                 );
             },
@@ -219,15 +217,6 @@ const Cars = () => {
         navigate("/workOrders/newWorkOrder")
     };
 
-    function formatDate(isoDate) {
-        const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
-        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
-
-        return `${day}/${month}/${year}`;
-    };
-
     const getVehicleHistoryData = async (vehicleId) => {
         try {
             const response = await apiClient.get(`/work-orders/by-vehicle/${vehicleId}`)
@@ -244,30 +233,22 @@ const Cars = () => {
             });
 
             setWorkOrders(transformedWorkOrders);
-            console.log("datos del historial", response.data)
-
 
         } catch (error) {
-            toast.error('Hubo un error al obtener el historial', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al obtner el historial del vehículo.");
         }
 
     };
 
     const handleCarHistory = (vehicleId, event) => {
-        // Si se proporciona un evento, detiene la propagación
+
         if (event) {
             event.stopPropagation();
         }
 
-        // Guarda el ID del vehículo en el estado para usarlo después
-        // setSelectedVehicleId(vehicleId);
         const numericVehicleId = Number(vehicleId);
-        // Encuentra el vehículo en el array de vehículos
         const vehicleInformation = vehicles.find(vehicle => vehicle.id === numericVehicleId);
 
-        // Asegúrate de que el vehículo fue encontrado antes de continuar
         if (vehicleInformation) {
             setSelectedPlateVehicle(vehicleInformation.plate);
             setNameClient(vehicleInformation.client_name);
@@ -279,11 +260,6 @@ const Cars = () => {
             setShowButtonAddVehicle(false);
             getVehicleHistoryData(numericVehicleId);
             navigate(`/cars/carHistory/${numericVehicleId}`);
-            console.log("pp")
-        } else {
-            // Maneja el caso en que el vehículo no se encuentra
-            console.error(`No se encontró el vehículo con ID: ${numericVehicleId}`);
-            // Aquí puedes decidir qué hacer si no se encuentra el vehículo
         }
     };
 
@@ -298,7 +274,7 @@ const Cars = () => {
     const handleSearhWorkOrder = async (searchData) => {
 
         const plate = selectedPlateVehicle.replace(/-/g, "");
-        // Transformar las claves del objeto searchData
+
         const transformedSearchData = {
             work_order_code: searchData.WorkOrderCode || null,
             work_order_status: searchData.WorkOrderStatus || null,
@@ -330,9 +306,7 @@ const Cars = () => {
             handleCloseModalWorkOrder();
 
         } catch (error) {
-            toast.error('Hubo un error al realizar la búsqueda.', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+            showToastOnce("error", "Error al realizar la búsqueda");
         }
     };
 
@@ -387,21 +361,6 @@ const Cars = () => {
         resetForm();
     };
 
-
-    const formatPlate = (plateInput) => {
-        const regex = /^([A-Z]{3})(\d{3,4})$/;
-
-        if (regex.test(plateInput)) {
-            return plateInput.replace(
-                regex,
-                (match, p1, p2) => {
-                    return p1 + "-" + p2;
-                }
-            );
-        }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
-    };
-
     const handleInputFocus = () => {
         setIsInputFocused(true);
     };
@@ -437,17 +396,15 @@ const Cars = () => {
         const { name, checked } = event.target;
         setSelectedOptions(prev => {
             if (checked) {
-                // Si el checkbox está seleccionado, agrega la opción a la lista de seleccionados
                 return [...prev, name];
             } else {
-                // Si el checkbox está deseleccionado, quita la opción de la lista de seleccionados
                 return prev.filter(option => option !== name);
             }
         });
     };
 
     const handleAddVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         const client_id = selectedClientId;
         const plate = transformPlateForSaving(plateCar);
         event.preventDefault();
@@ -458,23 +415,16 @@ const Cars = () => {
             setVehicles(prevVehicles => [...prevVehicles, newVehicle]);
             setRefreshVehicles(prev => !prev);
             setShowAddVehicle(false);
-            toast.success('Vehículo registrado', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Vehículo registrado");
             setTimeout(() => {
                 openWorkOrderModal();
             }, 3000);
             setShowButtonAddVehicle(true);
-
-            // Restablecer el estado del formulario de agregar auto
             resetForm();
 
         } catch (error) {
-            toast.error('Error al guardar un vehiculo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al guardar un vehiculo");
         }
-
     };
 
     const fetchAllClients = async () => {
@@ -502,7 +452,6 @@ const Cars = () => {
                     cancelToken: source.token
                 });
 
-                // Solo actualiza el estado si el componente sigue montado
                 if (isMounted.current) {
                     setClients(response.data);
                 }
@@ -519,7 +468,7 @@ const Cars = () => {
 
     //Función para editar la información de un vehículo
     const handleEditVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
+
         event.preventDefault();
         const plate = transformPlateForSaving(plateCar);
 
@@ -543,29 +492,19 @@ const Cars = () => {
                     )
                 );
                 setRefreshVehicles(prev => !prev);
-                toast.success('Información actualizada correctamente.', {
-                    position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 5000 // duración de 5 segundos
-                });
+                showToastOnce("success", "Información actualizada correctamente.");
                 setShowCarInformation(false);
                 setShowButtonAddVehicle(true);
-            } else {
-                toast.error('Ha ocurrido un error al actualizar la información.', {
-                    position: toast.POSITION.TOP_RIGHT
-                })
             }
 
         } catch (error) {
-            console.log("error guardar vehiculo", error)
-            toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al guardar los cambios. Por favor, inténtalo de nuevo.");
         }
     };
 
     //Función para suspender un cliente
     const handleUnavailableVehicle = async (event) => {
-        //Para evitar que el formulario recargue la página
+
         event.preventDefault();
         setIsAlertVechicleSuspend(false);
 
@@ -580,20 +519,11 @@ const Cars = () => {
                 setShowCarInformation(false);
                 setShowCarHistory(false);
                 setShowButtonAddVehicle(true);
-                toast.success('Vehículo suspendido', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
-            } else {
-                toast.error('Ha ocurrido un error al suspender el vehículo.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
+                showToastOnce("success", "Vehículo suspendido.");
             }
 
         } catch (error) {
-            toast.error('Error al suspender al vehículo. Por favor, inténtalo de nuevo..', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al suspender al vehículo. Por favor, inténtalo de nuevo.");
         }
     };
 
@@ -611,10 +541,11 @@ const Cars = () => {
 
     //Para realizar la búsqueda del cliente en el modal
     useEffect(() => {
+
         isMounted.current = true;
 
         if (searchClienTerm.trim() === '') {
-            // Si el término de búsqueda está vacío, obtener todos los clientes
+
             const fetchAllClients = async () => {
                 try {
                     const response = await apiClient.get('/clients/all', {
@@ -624,15 +555,11 @@ const Cars = () => {
                         setClients(response.data);
                     }
                 } catch (error) {
-                    if (!axios.isCancel(error)) {
-                        // Manejar error
-                        console.error(error);
-                    }
+                    if (!axios.isCancel(error)) { }
                 }
             };
             fetchAllClients();
         } else {
-            // Si hay texto, ejecutar la búsqueda con debounce
             handleSearchClientWithDebounce();
         }
 
@@ -644,19 +571,16 @@ const Cars = () => {
         };
     }, [searchClienTerm, handleSearchClientWithDebounce]);
 
-
+    //Función que permite obtener todos los vehículos 
+    //registrados cuando inicia la pantalla y busca los vehículos 
+    //por placa y nombre de titular
     useEffect(() => {
-        //Función que permite obtener todos los vehículos 
-        //registrados cuando inicia la pantalla y busca los vehículos 
-        //por placa y nombre de titular
 
         const fetchData = async () => {
 
-            //Endpoint por defecto
             let endpoint = '/vehicles/all';
             const searchTypePlate = "plate";
             const searchTypeClientName = "client_name";
-            //Si hay un filtro de búsqueda
 
             if (searchTerm) {
                 switch (selectedOption) {
@@ -688,10 +612,8 @@ const Cars = () => {
 
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Error al cargar la información vuelva a intentarlo.', error.message);
-                }
+                    showToastOnce("error", "Error al cargar la información vuelva a intentarlo.");
+                } 
             }
         }
         fetchData();
@@ -717,14 +639,12 @@ const Cars = () => {
     }, [selectedVehicle]);
 
     useEffect(() => {
-        // Convierte vehicleId a un número
         const numericVehicleId = Number(vehicleId);
 
         if (numericVehicleId && vehicles.length > 0) {
-            // Llama a handleCarHistory con el ID numérico
             handleCarHistory(numericVehicleId);
         }
-    }, [vehicleId, vehicles]); // Dependencias del useEffect
+    }, [vehicleId, vehicles]); 
 
     return (
         <div>
@@ -749,30 +669,26 @@ const Cars = () => {
                         </div>
                     ) : (
 
-                        <div className="scrollable-list-container">
-                            <div className="panel-content">
-                                {/*Lista de vehículos */}
+                        <ScrollListWithIndicators
+                            items={vehicles}
+                            renderItem={(vehicle) => (
+                                <ResultItem
+                                    key={vehicle.id}
+                                    type="car"
+                                    data={vehicle}
+                                    flagIcon={flagIcon}
+                                    onClickMain={e => handleCarHistory(vehicle.id, e)}
+                                    onClickEye={handleCarInformation}
+                                />
 
-                                {vehicles.map(vehicle => (
-                                    <ResultItem
-                                        key={vehicle.id}
-                                        type="car"
-                                        data={vehicle}
-                                        flagIcon={flagIcon}
-                                        onClickMain={e => handleCarHistory(vehicle.id, e)}
-                                        onClickEye={handleCarInformation}
-                                    />
-                                ))}
-
-                            </div>
-                        </div>
-
+                            )}
+                        />
                     )}
 
                 </div>
 
                 <div className="right-panel">
-                    <ToastContainer />
+
                     {/*Sección para mostrar el botón de agregar vehículo */}
                     {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
                         <>
@@ -855,7 +771,7 @@ const Cars = () => {
 
                                 <div className="vehicle-info-right">
                                     <div className="vehicle-icon-container">
-                                         <Icon name={iconMap[category]} className="vehicle-icon" />
+                                        <Icon name={iconMap[category]} className="vehicle-icon" />
                                     </div>
                                     <div className="vehicle-client-name">
                                         <label>{nameClient}</label>

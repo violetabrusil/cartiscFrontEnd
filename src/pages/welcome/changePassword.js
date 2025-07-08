@@ -1,14 +1,13 @@
 import '../../App.css';
 import '../../Form.css';
-import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
 import apiAdmin from '../../services/apiAdmin';
 import Footer from '../../footer/Footer';
 import Header from '../../header/Header';
 import { useDebounce } from "../../useDebounce";
 import { AuthContext } from "../../contexts/AuthContext";
+import { showToastOnce } from '../../utils/toastUtils';
 
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
 const image = process.env.PUBLIC_URL + "/images/car.png";
@@ -66,9 +65,7 @@ const ChangePassword = () => {
         e.preventDefault();
 
         if (!changePassword || !confirmPassword || passwordError) {
-            toast.error('Revise los errores en el formulario.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Revise los errores en el formulario");
             return;
         }
 
@@ -81,9 +78,7 @@ const ChangePassword = () => {
 
         try {
             await apiAdmin.put(`/change-password/${userId}`, userData);
-            toast.success('Contraseña actualizada', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("success", "Contraseña actualizada");
 
             if (user.change_pin) {
                 navigate("/changePIN");
@@ -92,10 +87,7 @@ const ChangePassword = () => {
             }
 
         } catch (error) {
-            console.error("Hubo un error al cambiar la contraseña:", error);
-            toast.error('Error al cambiar la contraseña. Inténtalo de nuevo.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            showToastOnce("error", "Error al cambiar la contraseña. Inténtalo de nuevo");
         }
     };
 
@@ -103,8 +95,6 @@ const ChangePassword = () => {
 
         <div className="page-container">
             <Header showCarticsLogo={true}></Header>
-
-            <ToastContainer />
 
             <div className="content-container">
 
