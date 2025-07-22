@@ -1,5 +1,3 @@
-// ServiceForm.jsx
-import React, { useEffect } from "react";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 
 const ServiceForm = ({
@@ -46,8 +44,6 @@ const ServiceForm = ({
                 showEditIcon={mode === "edit" && !isEditing}
                 onEdit={mode === "edit" ? () => setIsEditing(true) : undefined}
             />
-
-
 
             <div className="container-section-service">
 

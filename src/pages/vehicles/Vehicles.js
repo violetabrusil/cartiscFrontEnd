@@ -154,9 +154,8 @@ const Cars = () => {
             accessor: 'work_order_status',
             Cell: ({ value }) =>
                 <CustomColorContainer
-                    statusColors={statusColors}
+                    color={statusColors}
                     value={value}
-
                 />
         },
         {
@@ -613,7 +612,7 @@ const Cars = () => {
             } catch (error) {
                 if (error.code === 'ECONNABORTED') {
                     showToastOnce("error", "Error al cargar la información vuelva a intentarlo.");
-                } 
+                }
             }
         }
         fetchData();
@@ -644,7 +643,7 @@ const Cars = () => {
         if (numericVehicleId && vehicles.length > 0) {
             handleCarHistory(numericVehicleId);
         }
-    }, [vehicleId, vehicles]); 
+    }, [vehicleId, vehicles]);
 
     return (
         <div>
@@ -934,7 +933,7 @@ const Cars = () => {
                         type="confirm-suspend"
                         subTitle="¿Está seguro de suspender el vehículo?"
                         description="Al suspender el vehículo, se ocultará temporalmente del sistema.
-                        Podrás volver a activarlo desde Configuración en cualquier momento."
+                        Podrá volver a activarlo desde Configuración en cualquier momento."
                         onCancel={closeAlertModalVehicleSuspend}
                         onConfirm={handleUnavailableVehicle}
                         showCloseButton={false}

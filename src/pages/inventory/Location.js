@@ -1,4 +1,3 @@
-import "../../Location.css";
 import React, { useState, useCallback, useEffect } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
@@ -7,8 +6,10 @@ import apiClient from "../../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import useCSSVar from "../../hooks/UseCSSVar";
 import { showToastOnce } from "../../utils/toastUtils";
+import Icon from "../../components/Icons";
 
-const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
+const columnIcon = process.env.PUBLIC_URL + "/images/icons/column.png";
+const rowIcon = process.env.PUBLIC_URL + "/images/icons/row.png";
 
 const Location = () => {
 
@@ -46,65 +47,64 @@ const Location = () => {
 
     const handleEditOrSave = async (event) => {
         event.preventDefault();
-    
+
         if (isEditing) {
             const formData = new FormData();
-    
+
             if (rowUpdate !== null) {
                 formData.append('row', rowUpdate);
             } else {
-                formData.append('row', selectedProductRow); 
+                formData.append('row', selectedProductRow);
             }
-    
+
             if (columnUpdate !== null) {
                 formData.append('column', columnUpdate);
             } else {
-                formData.append('column', selectedProductColumn); 
+                formData.append('column', selectedProductColumn);
             }
-    
+
             try {
                 const response = await apiClient.put(`/products/update-location/${selectedProductId}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-    
+
                 if (response.status === 200) {
 
                     showToastOnce("success", "Ubicación actualizada");
-    
+
                     if (rowUpdate !== null) {
                         setSelectedProductRow(rowUpdate);
                     }
-    
+
                     if (columnUpdate !== null) {
                         setSelectedProductColumn(columnUpdate);
                     }
-    
+
                     fetchData();
-                } 
-    
+                }
+
             } catch (error) {
                 showToastOnce("error", "Ha ocurrido un error al actualizar la ubicación del producto");
             }
-    
+
             setRowUpdate(null);
             setColumnUpdate(null);
         }
-    
+
         setIsEditing(!isEditing);
     };
-    
+
     const columns = React.useMemo(
         () => [
             {
                 Header: "Imagen",
                 accessor: "product_picture",
                 Cell: ({ value }) => {
-                    const imageUrl = value ? `data:image/jpeg;base64,${value}` : productIcon;
-                    return (
+                    return value ? (
                         <img
-                            src={imageUrl}
+                            src={`data:image/jpeg;base64,${value}`}
                             alt="Product"
                             style={{
                                 width: '30px',
@@ -113,6 +113,11 @@ const Location = () => {
                                 border: `1px solid ${blackAlpha20}`,
                                 padding: '4px'
                             }}
+                        />
+                    ) : (
+                        <Icon
+                            name="productDefault"
+                            className="default-icon-table"
                         />
                     );
                 }
@@ -179,16 +184,63 @@ const Location = () => {
 
     return (
 
-        <div className="location-container">
+        <div className="container-general-iventory">
 
-            <div className="content-location-wrapper">
-                <SearchBar onFilter={handleFilter} />
-                {loading ? (
-                    <div className="spinner-container-products ">
-                        <PuffLoader color={tertiaryColor} loading={loading} size={60} />
+            <div className="label-input-container">
+
+                <div className="field-row-location">
+
+                    <div className="field-group-information">
+                        <label>Columna</label>
+
+                        <div className="input-with-icon">
+
+                            <input
+                                type="text"
+                                style={{ color: blueMediumSoft }}
+                                value={(isEditing ? columnUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? columnUpdate : selectedProductColumn)}
+                                readOnly={!isEditing}
+                                onChange={e => setColumnUpdate(e.target.value)}
+                            />
+                            <Icon name="column" className="input-product-icon" />
+                        </div>
                     </div>
 
-                ) : (
+                    <div className="field-group-information">
+                        <label>Fila</label>
+                        <div className="input-with-icon">
+                            <input
+                                type="text"
+                                style={{ color: blueDesaturedDark }}
+                                value={(isEditing ? rowUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? rowUpdate : selectedProductRow)}
+                                readOnly={!isEditing}
+                                onChange={e => setRowUpdate(e.target.value)}
+                            />
+                            <Icon name="row" className="input-product-icon" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div className="container-section-button">
+                    <button className="location-button" onClick={handleEditOrSave}>
+                        <span className="span-location-button">
+                            {isEditing ? 'Guardar' : 'Editar'}
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+            <SearchBar onFilter={handleFilter} />
+            {loading ? (
+                <div className="spinner-container-products ">
+                    <PuffLoader color={tertiaryColor} loading={loading} size={60} />
+                </div>
+
+            ) : (
+                <div className="container-table-inventory">
                     <DataTable
                         data={allProducts}
                         columns={columns}
@@ -196,43 +248,10 @@ const Location = () => {
                         highlightRows={true}
                         selectedRowIndex={selectedRowIndex}
                         initialPageSize={responsivePageSize} />
-                )
-                }
-
-            </div>
-
-            <div className="input-location-container">
-                <div className="label-input-location-container">
-                    <label>Columna</label>
-                    <input
-                        type="text"
-                        style={{ color: blueMediumSoft }}
-                        value={(isEditing ? columnUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? columnUpdate : selectedProductColumn)}
-                        readOnly={!isEditing}
-                        onChange={e => setColumnUpdate(e.target.value)}
-                    />
-
                 </div>
 
-                <div className="label-input-location-container">
-                    <label>Fila</label>
-                    <input
-                        type="text"
-                        style={{ color: blueDesaturedDark }}
-                        value={(isEditing ? rowUpdate : selectedProductRow) === "NULL" ? "-" : (isEditing ? rowUpdate : selectedProductRow)}
-                        readOnly={!isEditing}
-                        onChange={e => setRowUpdate(e.target.value)}
-                    />
-
-
-                    <button className="location-button" onClick={handleEditOrSave}>
-                        <span className="span-location-button">
-                            {isEditing ? 'Guardar' : 'Editar'}
-                        </span>
-                    </button>
-                </div>
-            </div>
-
+            )
+            }
 
         </div>
 

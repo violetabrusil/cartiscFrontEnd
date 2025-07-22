@@ -29,10 +29,8 @@ const OperationRightSection = ({ selectedOperation, onOperationChange, goBack })
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (mode === "edit") {
-            // update
             await updateOperation();
         } else {
-            // add new
             await createOperation();
         }
     };
@@ -111,7 +109,7 @@ const OperationRightSection = ({ selectedOperation, onOperationChange, goBack })
             <CustomTitleSection
                 onBack={() => {
                     if (mode === "edit" && isEditing) {
-                        setIsEditing(false); // salir modo edición
+                        setIsEditing(false);
                     }
                     goBack?.();
                 }}

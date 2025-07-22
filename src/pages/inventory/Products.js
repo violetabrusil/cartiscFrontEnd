@@ -1,4 +1,3 @@
-import "../../Products.css";
 import React, { useEffect, useState, useCallback } from "react";
 import PuffLoader from "react-spinners/PuffLoader";
 import SearchBar from "../../searchBar/SearchBar";
@@ -8,15 +7,21 @@ import { ProductForm } from "./ProductForm";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import useCSSVar from "../../hooks/UseCSSVar";
 import { showToastOnce } from "../../utils/toastUtils";
+import Icon from "../../components/Icons";
+import { CustomColorContainer } from "../../customColorContainer/CustomColorContainer";
 
 const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
-const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
-const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
 
-const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }) => {
+const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct, setShowTabs }) => {
 
     const tertiaryColor = useCSSVar('--tertiary-color');
     const blackAlpha20 = useCSSVar('--black-alpha-20');
+    const redIntense = useCSSVar('--red-intense');
+    const yellowWarm = useCSSVar('--yellow-warm');
+    const greenDark = useCSSVar('--green-dark');
+    const grayDark = useCSSVar('--gray-dark');
+    const blueMediumSoft = useCSSVar('--blue-medium-soft');
+    const blueDesaturedDark = useCSSVar('--blue-desatured-dark');
 
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
@@ -30,38 +35,53 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
         setSearchTerm(term);
     }, []);
 
+    const stockColorMap = (stock) => {
+        const n = Number(stock);
+        if (isNaN(n)) return grayDark;
+        if (n === 0) return redIntense;
+        if (n >= 1 && n <= 5) return yellowWarm;
+        if (n > 5) return greenDark;
+        return grayDark;
+    };
+
     const columns = React.useMemo(
         () => [
             { Header: "Número de serie", accessor: "sku" },
             {
-                Header: "Imagen",
-                accessor: "product_picture",
-                Cell: ({ value }) => {
-                    const imageUrl = value ? `data:image/jpeg;base64,${value}` : productIcon;
+                Header: "Nombre de Producto",
+                accessor: "product",  
+                Cell: ({ row }) => {
+                    const { product_picture, title } = row.original;
 
                     return (
-                        <img
-                            src={imageUrl}
-                            alt="Product"
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '10%',
-                                border: `1px solid ${blackAlpha20}`,
-                                padding: '4px'
-                            }}
-                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            {product_picture ? (
+                                <img
+                                    src={`data:image/jpeg;base64,${product_picture}`}
+                                    alt={title || "Producto"}
+                                    style={{
+                                        width: '30px',
+                                        height: '30px',
+                                        borderRadius: '10%',
+                                        border: `1px solid ${blackAlpha20}`,
+                                        padding: '5px',
+                                        objectFit: 'cover',
+                                    }}
+                                />
+                            ) : (
+                                <Icon
+                                    name="productDefault"
+                                    className="default-icon-table"
+                                    style={{ width: 20, height: 20, padding: 4 }}
+                                />
+                            )}
+
+                            <div style={{alignItems: "center"}}>
+                                {title && title !== 'NULL' ? title : '-'}
+                            </div>
+                        </div>
                     );
                 }
-            },
-            {
-                Header: "Título",
-                accessor: "title",
-                Cell: ({ value }) => (
-                    <div>
-                        {value !== 'NULL' ? value : '-'}
-                    </div>
-                )
             },
             {
                 Header: "Categoría",
@@ -76,36 +96,55 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                 Header: "Precio",
                 accessor: "price",
                 Cell: ({ value }) => (
-                    <div>
+                    <div style={{ fontWeight: "bold", fontSize: "19px" }}>
                         {value !== 'NULL' ? `$ ${parseFloat(value).toFixed(2)}` : '-'}
                     </div>
                 )
-            },            
+            },
             {
                 Header: "Stock",
                 accessor: "stock",
-                Cell: ({ value }) =>
-                    <div style={{ fontSize: "16px" }}>
-                      {value !== 'NULL' ? value : '-'}
-                    </div>
+                Cell: ({ value }) => {
+                    const displayValue =
+                        value === 'NULL' || value === null || isNaN(Number(value)) ? '-' : value;
+
+                    return (
+                        <CustomColorContainer
+                            value={displayValue}
+                            color={stockColorMap}
+                        />
+                    )
+                }
 
             },
             {
                 Header: "Columna",
                 accessor: "column",
-                Cell: ({ value }) =>
-                    <div style={{ fontSize: "16px" }}>
-                       {value !== 'NULL' ? value : '-'}
-                    </div>
+
+                Cell: ({ value }) => {
+                    const displayValue =
+                        value === 'NULL' || value === null ? '-' : value;
+                    return (
+                        <CustomColorContainer
+                            value={displayValue}
+                            color={blueMediumSoft}
+                        />
+                    )
+                }
             },
             {
                 Header: "Fila",
                 accessor: "row",
-                Cell: ({ value }) => (
-                    <div style={{ fontSize: "16px" }}>
-                        {value !== 'NULL' ? value : '-'}
-                    </div>
-                )
+                Cell: ({ value }) => {
+                    const displayValue =
+                        value === 'NULL' || value === null || isNaN(Number(value)) ? '-' : value;
+                    return (
+                        <CustomColorContainer
+                            value={displayValue}
+                            color={blueDesaturedDark}
+                        />
+                    )
+                }
             },
             {
                 Header: "",
@@ -113,7 +152,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                     const product = row.original;
                     return (
                         <button className="button-edit-product" onClick={(event) => handleEditProducts(event, product)}>
-                            <img src={eyeIcon} alt="Edit Product Icon" className="edit-product-icon" />
+                            <Icon name="eye" className="edit-product-icon" />
                         </button>
                     );
                 },
@@ -160,7 +199,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async () => {
-        
+
         setLoading(true);
 
         let endpoint = '/products/all';
@@ -209,17 +248,33 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
         fetchData();
     }, [selectedOption, searchTerm, refreshCount]);
 
-    return (
-        <div style={{ marginTop: '-18px' }}>
+    useEffect(() => {
+        if (setShowTabs) {
+            setShowTabs(viewMode === 'general');
+        }
+    }, [viewMode]);
 
+    return (
+        <div className="container-general-iventory">
             {viewMode === 'general' && (
-                <div>
+                <>
                     <div className="product-container-title">
-                        <label>{String(allProducts.length).padStart(4, '0')}</label>
-                        <span>Productos</span>
-                        <button className="add-product-button" onClick={handleShowAddProducts}>
-                            <img src={addProductIcon} alt="Add Product Icon" className="add-product-icon" />
-                        </button>
+
+                        <div className="left-title-box">
+                            <div className="title-box">
+                                <label>{String(allProducts.length).padStart(4, '0')}</label>
+                                <span>Items</span>
+                            </div>
+
+
+                        </div>
+
+                        <div className="right-title-box">
+                            <button className="add-product-button" onClick={handleShowAddProducts}>
+                                <img src={addProductIcon} alt="Add Product Icon" className="add-product-icon" />
+                            </button>
+                        </div>
+
                     </div>
 
                     <SearchBar onFilter={handleFilter} />
@@ -229,19 +284,33 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                         </div>
 
                     ) : (
-                        <DataTable data={allProducts} columns={columns} highlightRows={false} initialPageSize={responsivePageSize}  />
+                        <div className="container-table-inventory">
+                            <DataTable data={allProducts} columns={columns} highlightRows={false} initialPageSize={responsivePageSize} />
+                        </div>
+
                     )
                     }
 
-                </div>
+                </>
             )}
 
             {viewMode === 'add' && (
-                <ProductForm mode="add" onSubmit={handleNewProduct} onBack={() => setViewMode('general')} onProductChange={fetchData}   />
+                <ProductForm
+                    mode="add"
+                    onSubmit={handleNewProduct}
+                    onBack={() => setViewMode('general')}
+                    onProductChange={fetchData} />
             )}
 
             {viewMode === 'edit' && selectedProduct && (
-                <ProductForm mode="edit" productData={selectedProduct} onSubmit={handleUpdateProduct} onSuspendSuccess={handleSuspendProduct} onBack={() => setViewMode('general')} onProductChange={fetchData} />
+                <ProductForm
+                    mode="edit"
+                    productData={selectedProduct}
+                    onSubmit={handleUpdateProduct}
+                    onSuspendSuccess={handleSuspendProduct}
+                    onBack={() => setViewMode('general')}
+                    onProductChange={fetchData}
+                />
             )}
 
         </div>

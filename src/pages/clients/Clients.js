@@ -710,7 +710,7 @@ const Client = () => {
                             type="confirm-suspend"
                             subTitle="¿Está seguro de suspender el cliente?"
                             description="Al suspender el cliente, se ocultará temporalmente del sistema.
-                            Podrás volver a activarlo desde Configuración en cualquier momento."
+                            Podrá volver a activarlo desde Configuración en cualquier momento."
                             onCancel={closeAlerModalClientSuspend}
                             onConfirm={handleUnavailableClient}
                             showCloseButton={false}
@@ -810,7 +810,7 @@ const Client = () => {
                             type="confirm-suspend"
                             subTitle="¿Está seguro de suspender el vehículo?"
                             description="Al suspender el vehículo, se ocultará temporalmente del sistema.
-                                            Podrás volver a activarlo desde Configuración en cualquier momento."
+                            Podrá volver a activarlo desde Configuración en cualquier momento."
                             onCancel={closeAlertModalVehicleSuspend}
                             onConfirm={handleUnavailableVehicle}
                             showCloseButton={false}

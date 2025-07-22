@@ -695,65 +695,58 @@ const Services = () => {
 
             {/*Modal del filtro de búsqueda*/}
 
-            {
-                isFilterModalOpen && (
-                    <CustomModal
-                        isOpen={isFilterModalOpen}
-                        onCancel={closeFilterModal}
-                        type="filter-options"
-                        subTitle="Seleccione el filtro de búsqueda"
-                        onSelect={handleSelectClick}
-                        defaultOption={selectedOption}
-                        options={searchOptions}
-                        showCloseButton={false}
+            {isFilterModalOpen && (
+                <CustomModal
+                    isOpen={isFilterModalOpen}
+                    onCancel={closeFilterModal}
+                    type="filter-options"
+                    subTitle="Seleccione el filtro de búsqueda"
+                    onSelect={handleSelectClick}
+                    defaultOption={selectedOption}
+                    options={searchOptions}
+                    showCloseButton={false}
 
-                    />
-                )
-            }
+                />
+            )}
 
-            {
-                isSearchOperationModalOpen && (
+            {isSearchOperationModalOpen && (
 
-                    <CustomModal
-                        isOpen={isSearchOperationModalOpen}
-                        onClose={handleCloseModalSearchOperation}
-                        type="search-operation"
-                        title="Buscar operaciones"
-                        handleTabChange={handleTabChange}
-                        onSearchChange={(e) => {
-                            const value = e.target.value;
-                            if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
-                            if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
-                            setSearchOperationTerm(value);
-                        }}
-                        searchOperationTerm={searchOperationTerm}
-                        activeTab={activeTabOperation}
-                        operation={operation}
-                        columnsForOperations={columnsForOperations}
-                        onAddOperation={handleAddOperationModal}
-                        addIcon={addIcon}
-                        responsivePageSizeOperations={responsivePageSizeOperations}
-                    />
-                )
-            }
+                <CustomModal
+                    isOpen={isSearchOperationModalOpen}
+                    onClose={handleCloseModalSearchOperation}
+                    type="search-operation"
+                    title="Buscar operaciones"
+                    handleTabChange={handleTabChange}
+                    onSearchChange={(e) => {
+                        const value = e.target.value;
+                        if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
+                        if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
+                        setSearchOperationTerm(value);
+                    }}
+                    searchOperationTerm={searchOperationTerm}
+                    activeTab={activeTabOperation}
+                    operation={operation}
+                    columnsForOperations={columnsForOperations}
+                    onAddOperation={handleAddOperationModal}
+                    addIcon={addIcon}
+                    responsivePageSizeOperations={responsivePageSizeOperations}
+                />
+            )}
 
-            {
-                isAlertServiceSuspend && (
+            {isAlertServiceSuspend && (
 
-                    <CustomModal
-                        isOpen={isAlertServiceSuspend}
-                        type="confirm-delete"
-                        subTitle="¿Está seguro de eliminar el servicio?"
-                        description="Al eliminarlo, el servicio se perderá definitivamente y no podrá recuperarse. 
+                <CustomModal
+                    isOpen={isAlertServiceSuspend}
+                    type="confirm-delete"
+                    subTitle="¿Está seguro de eliminar el servicio?"
+                    description="Al eliminarlo, el servicio se perderá definitivamente y no podrá recuperarse. 
                         ¿Desea continuar?"
-                        onCancel={closeAlertModalServiceSuspend}
-                        onConfirm={handleDeleteService}
-                        showCloseButton={false}
-                    />
+                    onCancel={closeAlertModalServiceSuspend}
+                    onConfirm={handleDeleteService}
+                    showCloseButton={false}
+                />
 
-                )
-            }
-
+            )}
 
         </div >
     )

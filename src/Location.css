@@ -1,53 +1,16 @@
-.location-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    margin-top: -30px;
-    position: relative;
-}
-
-.content-location-wrapper {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow-y: auto;  
-    margin-top: 10px;
-}
-
-.input-location-container {
+.field-row-location {
     display: flex;
     justify-content: center;
-    width: 100%;
-    gap: 100px;
-    position: fixed;
-    bottom: 50px; /* Esto asegurará que siempre esté al fondo del contenedor padre */
-    left: 0;
-    right: 0;
+    gap: 3rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.label-input-location-container {
+.container-section-button {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 60px;
-}
-
-.label-input-location-container label {
-    font-size: 24px;
-    font-weight: 700;
-}
-
-.label-input-location-container input {
-    border: 1px solid var(--black-transparent);
-    border-radius: 8px;
-    height: 40px;
-    width: auto;
-    font-weight: bold;
-    font-size: 22px;
-    text-align: center;
+    justify-content: flex-end;
+    margin-top: auto;
 }
 
 .location-button {
@@ -65,24 +28,12 @@
     font-size: 19px;
 }
 
-.Toastify__toast-container.Toastify__toast-container--top-right {
-    top: 75px;
-}
-
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
 
     .input-location-container {
         bottom: 5px;
         margin-left: 30px;
         gap: 60px;
-    }
-
-    .label-input-location-container {
-        gap: 30px;
-    }
-
-    .label-input-location-container input {
-        width: 60%;
     }
 
     .location-button {

@@ -2,13 +2,14 @@ import "../SearchBar.css";
 import React, { useState } from 'react';
 import Select from 'react-select';
 import useCSSVar from "../hooks/UseCSSVar";
+import Icon from "../components/Icons";
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 
-const SearchBar = ({ 
-    onFilter, 
-    placeholderText = "Buscar Productos", 
-    customSelectStyles, 
+const SearchBar = ({
+    onFilter,
+    placeholderText = "Buscar Productos",
+    customSelectStyles,
     customClasses = "",
     classNameSuffix = "",
     options = [
@@ -23,11 +24,11 @@ const SearchBar = ({
     const [searchTerm, setSearchTerm] = useState("");
 
     const grayMediumDark = useCSSVar('--gray-medium-dark');
-    const blackAlpha34 = useCSSVar('--black-alpha-34');
+    const grayMedium = useCSSVar('--gray-medium');
 
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);
-        setSearchTerm(""); //Para resetear el valor del input de búsqueda
+        setSearchTerm("");
         onFilter(selectedOption, searchTerm);
 
     };
@@ -49,29 +50,33 @@ const SearchBar = ({
             return () => clearTimeout(delayTimer); //Limpia el temporizador al desmontarse el componente
         }, [selectedOption, searchTerm, onFilter]);
     */
-    
+
     const customStyles = {
         control: (base, state) => ({
             ...base,
-            width: '550px',  // Aquí estableces el ancho
-            height: '40px',  // Y aquí la altura
-            minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
-            border: `1px solid ${blackAlpha34}`,
+            width: '100%',
+            minWidth: '420px',
+            maxWidth: '550px',
+            height: '40px',
+            minHeight: '40px',
+            border: `1px solid ${grayMedium}`,
             borderRadius: '4px',
             padding: '1px',
-            boxSizing: 'border-box'  // Asegura que el borde y el relleno estén incluidos en el tamaño
+            boxSizing: 'border-box',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: grayMediumDark, // Color del texto del placeholder
+            color: grayMediumDark,
         }),
         option: (provided, state) => ({
             ...provided,
             className: 'custom-select-option-product',
-            // otros estilos personalizados si los necesitas
         }),
-        menuPortal: base => ({ ...base, width: '29%', zIndex: 9999 }),
-
+        menuPortal: (base, state) => ({
+            ...base,
+            zIndex: 9999
+        })
     };
 
     const combinedStyles = {
@@ -93,7 +98,7 @@ const SearchBar = ({
             />
 
             <div className={`search-products-box ${classNameSuffix ? `search-products-box-${classNameSuffix}` : ""}`}>
-                <img src={searchIcon} alt="Search Product Icon" className="search-products-icon" />
+                <Icon name="search" className="search-products-icon" />
                 <input
                     type="text"
                     className="input-search-products"

@@ -1,64 +1,61 @@
 .container-inventory {
-    position: absolute;
+    position: fixed;
     top: 80px;
-    /* Ajusta la altura del header */
-    bottom: 0;
-    left: 60px;
-    /* Ancho del menú cerrado */
+    left: 80px;
     right: 0;
+    bottom: 0;
     display: flex;
-}
-
-.react-tabs {
-    width: 100%;  /* Asegura que el componente de tabs ocupa todo el ancho disponible */
+    flex-direction: column;
+    background-color: var(--gray-light);
+    overflow: hidden;
+    z-index: 10;
+    height: calc(100vh - 80px);
+    border-radius: 10px;
 }
 
 /* Estilo para los tabs en general */
 .react-tabs__tab-list {
     display: flex;
-    justify-content: space-around;
-    /* Esto hará que los tabs se separen uniformemente en la línea */
-    border-bottom: none;
-    /* Esto quitará la línea inferior de los tabs */
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 0px 40px;
+    flex-wrap: wrap;
 }
 
 /* Estilo para cada tab no seleccionado */
 .react-tabs__tab {
     list-style: none;
-    border: none;
-    font-size: 1.2em;
-    margin: 10px;
     cursor: pointer;
-    text-align: center;
-    flex-grow: 1;  /* Asegura que los tabs crezcan para ocupar el espacio disponible */
-    position: relative;
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--gray-dark);
+    padding: 15px 50px;
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid var(--tertiary-color);
+    background-color: var(--tertiary-color);
+    color: var(--white);
+    transition: all 0.3s ease;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
 }
 
 /* Estilo para el tab seleccionado */
 .react-tabs__tab--selected {
-    border: none;
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--tertiary-color);
+    background-color: var(--white-cloud);
+    color: var(--gray-obsidian);
+    border: 1px solid var(--gray-muted);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    z-index: 2;
+    margin-bottom: -1px;
+     box-shadow: 0 -5px 6px rgba(0,0,0,0.1);
 }
 
-/* Esto creará la línea azul en el tab seleccionado. Se posicionará absolutamente para que tenga el ancho completo del tab. */
-.react-tabs__tab--selected::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -10px;
-    height: 4px;
-    background: var(--tertiary-color);
-    width: calc(100% - 20px); /* Ajustamos el ancho para excluir el margen */
-    left: 10px; /* Centramos el pseudo-elemento */
+.react-tabs__tab:focus {
+    border-color: var(--gray-muted);
 }
 
-.react-tabs__tab-panel {
-    padding-left: 20px; /* Ajusta este valor para cambiar la cantidad de espacio a la izquierda del contenido */
-    padding-right: 20px;
+.react-tabs__tab:hover {
+    background-color: var(--blue-medium-soft);
+    color: var(--white);
 }

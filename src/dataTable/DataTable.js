@@ -48,7 +48,12 @@ const DataTable = ({
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
-                               <th {...column.getHeaderProps()} >{column.render('Header')}</th>
+                                <th {...column.getHeaderProps()}
+                                    style={{
+                                        width: column.width,  
+                                        minWidth: column.minWidth,
+                                        maxWidth: column.maxWidth,
+                                    }}>{column.render('Header')}</th>
                             ))}
                         </tr>
                     ))}
@@ -59,11 +64,9 @@ const DataTable = ({
 
                         let isHighlighted = false;
 
-                        // Si el selectedRowId se ha proporcionado, usarlo para determinar el resaltado
                         if (selectedRowId !== undefined) {
                             isHighlighted = row.original.id === selectedRowId;
                         }
-                        // De lo contrario, usar el selectedRowIndex
                         else if (selectedRowIndex !== undefined) {
                             isHighlighted = index === selectedRowIndex;
                         }

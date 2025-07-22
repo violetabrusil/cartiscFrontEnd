@@ -35,6 +35,16 @@ import { ReactComponent as PhoneIcon} from "./phoneIcon.svg"
 import { ReactComponent as DownArrowIcon } from "./downArrow.svg"
 import { ReactComponent as TopArrowIcon } from "./topArrow.svg"
 import { ReactComponent as DeleteIcon } from "./deleteIcon.svg"
+import { ReactComponent as SupplierIcon } from "./supplierIcon.svg"
+import { ReactComponent as ProductDeafultIcon } from "./productDefault.svg"
+import { ReactComponent as UploadIcon } from "./uploadIcon.svg"
+import { ReactComponent as DollarIcon } from "./dollarIcon.svg"
+import { ReactComponent as StockIcon } from "./stockIcon.svg"
+import { ReactComponent as ColumnIcon } from "./columnIcon.svg"
+import { ReactComponent as RowIcon } from "./rowIcon.svg"
+import { ReactComponent as CategoryIcon } from "./categoryIcon.svg"
+import { ReactComponent as BrandIcon } from "./brandIcon.svg" 
+
 
 const icons = {
     addClient: AddClientIcon,
@@ -74,6 +84,15 @@ const icons = {
     down: DownArrowIcon,
     top: TopArrowIcon,
     delete: DeleteIcon,
+    supplier: SupplierIcon,
+    productDefault: ProductDeafultIcon,
+    upload: UploadIcon,
+    dollar: DollarIcon,
+    stock: StockIcon,
+    column: ColumnIcon,
+    row: RowIcon,
+    category: CategoryIcon,
+    brand: BrandIcon,
 };
 
 export default icons;

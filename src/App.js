@@ -5,6 +5,10 @@ import './NewClient.css';
 import './Car.css'
 import './Service.css';
 import './Operation.css';
+import './Inventory.css';
+import './Products.css';
+import './Stock.css';
+import './Location.css'
 import './Form.css';
 import './Header.css';
 import './Home.css';

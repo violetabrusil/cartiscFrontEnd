@@ -1,17 +1,29 @@
 import React from "react";
 import "../customColorContainer/CustomColorContainer.css";
-export const CustomColorContainer = ({
-    statusColors,
-    value,
-}) => {
+import useCSSVar from "../hooks/UseCSSVar";
 
-    const color = statusColors[value];
+export const CustomColorContainer = ({ color, value }) => {
+    const gray = useCSSVar('--gray-dark');
+    let resolvedColor = gray;
+
+    if (typeof color === 'function') {
+        resolvedColor = color(value); 
+    } else if (typeof color === 'string') {
+        resolvedColor = color;
+    } else if (typeof color === 'object' && color !== null) {
+        resolvedColor = color[value] || color.default || '#ccc';
+    }
 
     return (
-        <div className="custom-color-container"
-            style={{ background: `linear-gradient(45deg, ${color}25, ${color}25)`, color: `${color}`}}>
-                {value}
+        <div
+            className="custom-color-container"
+            style={{
+                background: `linear-gradient(45deg, ${resolvedColor}25, ${resolvedColor}25)`,
+                color: resolvedColor,
+            }}
+        >
+            {value}
         </div>
-    )
-
+    );
 };
+

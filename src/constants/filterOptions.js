@@ -41,3 +41,17 @@ export const searchOptions = [
 
     }
 ]
+
+export const supplierSearch = [
+      {
+        value: 'Nombre',
+        label: 'Nombre',
+        iconName: 'text'
+    },
+    {
+        value: 'Código',
+        label: 'Código',
+        iconName: 'text'
+
+    }
+]

@@ -16,6 +16,9 @@ import ScrollListWithIndicators from "../../components/ScrollListWithIndicators"
 import ResultItem from "../../resultItem/ResultItem";
 import SectionTitle from "../../components/SectionTitle";
 import { ButtonCard } from "../../buttons/buttonCards/ButtonCard";
+import SupplierForm from "./SupplierForm";
+import CustomModal from "../../modal/customModal/CustomModal";
+import { supplierSearch } from "../../constants/filterOptions";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
@@ -225,7 +228,7 @@ const Suppliers = () => {
 
     return (
         <div>
-            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Header showIconCartics={true} showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetSupplierState} />
 
             <div className="two-column-layout">
@@ -274,65 +277,21 @@ const Suppliers = () => {
                     )}
 
                     {showAddSupplier && !showButtonAddSupplier && (
-                        <div className="container-general-supplier">
-                            <CustomTitleSection
-                                onBack={handleGoBackToButtons}
-                                title={mode === 'add' ? "Agregar Proveedor" : "Información del proveedor"}
-                                showEditIcon={mode === 'edit' ? true : false}
-                                onEdit={handleEditClick}
-                                showDisableIcon={mode === 'edit' ? true : false}
-                                onDisable={openAlertModalSupplierSuspend}
-                            />
-
-                            <div className="container-new-supplier">
-                                <div className="row-supplier">
-                                    <label>Nombre</label>
-                                    <input
-                                        value={name}
-                                        onChange={e => setName(e.target.value)}
-                                        className="name-supplier"
-                                        style={{ marginLeft: "140px" }}
-                                        disabled={!isEditing}
-                                    />
-                                </div>
-
-                                <div className="row-supplier">
-                                    <label>Teléfono</label>
-                                    <input
-                                        type="number"
-                                        className="phone-supplier"
-                                        style={{ marginLeft: "136px" }}
-                                        value={phone}
-                                        onChange={e => setPhone(e.target.value)}
-                                        disabled={!isEditing}
-                                    />
-                                </div>
-
-                                <div className="row-supplier">
-                                    <label style={{ marginBottom: "94px" }}>Detalle de contacto</label>
-                                    <textarea
-                                        className="text-area-supplier"
-                                        style={{ marginLeft: "37px" }}
-                                        value={contact_details}
-                                        onChange={e => setContactDetails(e.target.value)}
-                                        disabled={!isEditing}
-                                    />
-                                </div>
-
-                            </div>
-
-                            <div className="container-supplier-buttons">
-
-                                <button
-                                    className={`button-add-supplier ${isEditing ? "button-save-active" : ""}`}
-                                    onClick={handleSaveOrUpdateSupplier}>
-                                    <span className="text-button-supplier">Guardar</span>
-                                </button>
-
-                            </div>
-
-
-                        </div>
+                        <SupplierForm
+                            mode={mode}
+                            isEditing={isEditing}
+                            setIsEditing={setIsEditing}
+                            name={name}
+                            setName={setName}
+                            phone={phone}
+                            setPhone={setPhone}
+                            detailContact={contact_details}
+                            setDetailContact={setContactDetails}
+                            onSubmit={handleSaveOrUpdateSupplier}
+                            onBack={handleGoBackToButtons}
+                            openAlertModalSupplierSuspend={openAlertModalSupplierSuspend}
+                            onDisable={openAlertModalSupplierSuspend}
+                        />
                     )}
 
 
@@ -343,44 +302,34 @@ const Suppliers = () => {
             {/*Modal del filtro de búsqueda*/}
 
             {isFilterModalOpen && (
-                <Modal
+                <CustomModal
                     isOpen={isFilterModalOpen}
-                    onClose={closeFilterModal}
-                    options={['Código', 'Nombre']}
-                    defaultOption="Nombre"
-                    onOptionChange={handleOptionChange}
+                    onCancel={closeFilterModal}
+                    type="filter-options"
+                    subTitle="Seleccione el filtro de búsqueda"
                     onSelect={handleSelectClick}
+                    defaultOption={selectedOption}
+                    options={supplierSearch}
+                    showCloseButton={false}
                 />
             )}
 
             {isAlertSupplierSuspended && (
-                <div className="filter-modal-overlay">
-                    <div className="filter-modal">
-                        <h3 style={{ textAlign: "center" }}>¿Está seguro de suspender al proveedor?</h3>
-                        <div className="button-options">
-                            <div className="half">
-                                <button className="optionNo-button" onClick={closeAlertModalSupplierSuspend}>
-                                    No
-                                </button>
-                            </div>
-                            <div className="half">
-                                <button className="optionYes-button" onClick={handleUnavailableSupplier}>
-                                    Si
-                                </button>
 
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+                <CustomModal
+                    isOpen={isAlertSupplierSuspended}
+                    type="confirm-suspend"
+                    subTitle="¿Está seguro de suspender al proveedor?"
+                    description="Al suspender el proveedor, se ocultará temporalmente del sistema.
+                    Podrá volver a activarlo desde Configuración en cualquier momento."
+                    onCancel={closeAlertModalSupplierSuspend}
+                    onConfirm={handleUnavailableSupplier}
+                    showCloseButton={false}
+                />
             )}
-
 
         </div>
     )
-
-
 
 };
 

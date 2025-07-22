@@ -1,4 +1,3 @@
-import "../../Inventory.css"
 import React, { useState, useEffect } from "react";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
@@ -12,9 +11,10 @@ const Inventory = () => {
     const [activeTab, setActiveTab] = React.useState(0);
     const [viewMode, setViewMode] = useState('general');
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showTabs, setShowTabs] = useState(true);
 
     useEffect(() => {
-        if (activeTab === 0) { 
+        if (activeTab === 0) {
             setSelectedProduct(null);
         }
         setViewMode('general');
@@ -23,7 +23,7 @@ const Inventory = () => {
     return (
         <div>
 
-            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+            <Header showIconCartics={true} showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu onInventoryClick={() => {
                 setActiveTab(0);
                 setViewMode('general');
@@ -32,18 +32,22 @@ const Inventory = () => {
             <div className="container-inventory">
                 <Tabs selectedIndex={activeTab} onSelect={index => setActiveTab(index)}>
 
-                    <TabList>
-                        <Tab>Producto</Tab>
-                        <Tab>Stock</Tab>
-                        <Tab>Ubicación</Tab>
-                    </TabList>
+                    {showTabs && (
+                        <TabList>
+                            <Tab>Productos</Tab>
+                            <Tab>Stock</Tab>
+                            <Tab>Localización</Tab>
+                        </TabList>
+
+                    )}
 
                     <TabPanel>
-                        <Products 
-                        viewMode={viewMode} 
-                        setViewMode={setViewMode}
-                        selectedProduct={selectedProduct}
-                        setSelectedProduct={setSelectedProduct} />
+                        <Products
+                            viewMode={viewMode}
+                            setViewMode={setViewMode}
+                            selectedProduct={selectedProduct}
+                            setSelectedProduct={setSelectedProduct}
+                            setShowTabs={setShowTabs} />
                     </TabPanel>
 
                     <TabPanel>

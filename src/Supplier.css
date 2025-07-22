@@ -1,149 +1,78 @@
-.search-results-suppliers {
-    overflow-y: auto;
-    height: 60vh;
-    overflow-x: hidden;
-}
-
-.result-suppliers {
+.container-section-supplier {
     display: flex;
-    justify-content: space-between; /* Distribuye los elementos de manera uniforme a lo largo del contenedor */
-    align-items: center; /* Centra los elementos verticalmente */
-    max-width: 98%;
-    height: 50px;
-    background: var(--white);
-    border: 1px solid var(--gray-medium-light);
-    margin-bottom: 10px;
+    gap: 20px;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
 }
 
-.supplier-code-section {
-    flex: none;
-    width: 23%; 
-    text-align: center;
-}
-
-.supplier-name-section {
-    flex: none; 
-    width: 56%; 
-    text-align: left; 
-}
-
-.supplier-eye-section {
-    flex: none; 
-    width: 25%; 
-    text-align: center; 
-}
-
-.supplier-code {
-    color: var(--pure-black);
-    font-size: 20px;
-    font-style: normal;
-    font-weight: bold;
-    line-height: normal;
-}
-
-.supplier-name {
-    color: var(--pure-black);
-    font-size: 15px;
-    font-style: normal;
-    font-weight: 300;
-    line-height: normal;
-}
-
-.button-eye-supplier {
-    width: 100px;
-    height: 40px;
-    border: none;
-    margin-top: 3px;
-    background: none;
-}
-
-.icon-eye-supplier {
-    width: 30px;
-    height: 30px;
-    opacity: 50%;
-}
-
-.container-general-supplier {
+.supplier-column-title {
+    flex: 3;
+    min-width: 250px;
+    background-color: var(--white-cloud);
+    border-radius: 1rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.container-new-supplier {
-    margin-left: 50px;
-    align-items: center;
-    margin-bottom: 10px;
-    margin-top: 20px;
-}
-
-.row-supplier {
+.supplier-column-image {
+    flex: 1;
+    min-width: 150px;
+    background-color: var(--white-cloud);
+    border-radius: 1rem;
+    padding: 1rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 10px;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.name-supplier {
-    width: 380px;
+.name-supplier,
+.phone-supplier,
+.detail-contact-supplier {
+    width: 100%;
+    flex: 1 1 auto;
     height: 50px;
-    border: 1px solid var(--black-transparent);
+    border: 1px solid var(--black-alpha-34);
     background: var(--white);
     border-radius: 8px;
-    text-transform: uppercase;
-    font-size: 16px;
     padding-left: 10px;
-}
-
-.phone-supplier {
-    width: 380px;
-    height: 50px;
-    border: 1px solid var(--black-transparent);
-    background: var(--white);
-    border-radius: 8px;
     font-size: 16px;
-    padding-left: 10px;
-}
-
-.container-new-supplier label {
-    font-size: 20px;
-    font-weight: 500;
-}
-
-.container-supplier-buttons {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
     box-sizing: border-box;
-    margin-right: 20px;
-    position: fixed; /* Fija el contenedor al viewport */
-    bottom: 0; /* Coloca el contenedor en la parte inferior */
-    left: 0; /* Alineación izquierda */
-    right: 0; /* Alineación derecha */
-    padding: 10px; /* Espacio alrededor del contenedor, opcional */
+    outline: none;
+    transition: border 0.3s ease;
+    box-sizing: border-box;
 }
 
-.button-add-supplier {
-    width: 180px;
-    height: 50px;
-    background-color: var(--second-color);
-    border: none;
-    border-radius: 6px;
+.detail-contact-supplier {
+    padding-top: 0.8rem;
 }
 
-.text-button-supplier {
-    color: var(--white);
-    font-weight: bold;
-    font-size: 17px;
+.container-supplier-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 1px solid var(--smoke-silver);
+    overflow: hidden;
+    background: var(--white-cloud);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.text-area-supplier {
-    width: 380px;
-    height: 123px;
-    margin-left: 20px;
-    border-radius: 10px;
-    padding-left: 10px;
-    padding-top: 8px;
+.supplier-image {
+    fill: currentColor;
+    color: var(--blue-dark-bright);
 }
 
-.Toastify__toast-container.Toastify__toast-container--top-right {
-    top: 75px;
+@media (max-width: 768px) {
+    .container-section-supplier {
+        flex-direction: column;
+    }
 }
