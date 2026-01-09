@@ -29,7 +29,7 @@ export const clientSearchOptions = [
 ]
 
 export const searchOptions = [
-      {
+    {
         value: 'Título',
         label: 'Título',
         iconName: 'text'
@@ -43,7 +43,7 @@ export const searchOptions = [
 ]
 
 export const supplierSearch = [
-      {
+    {
         value: 'Nombre',
         label: 'Nombre',
         iconName: 'text'
@@ -54,4 +54,39 @@ export const supplierSearch = [
         iconName: 'text'
 
     }
+]
+
+export const workOrderSearchOptions = [
+    {
+        value: 'Nombre Titular',
+        label: 'Nombre Titular',
+        iconName: 'text'
+    },
+    {
+        value: 'Placa',
+        label: 'Placa',
+        iconName: 'plateVehicle'
+
+    },
+    {
+        value: 'Código Orden de Trabajo',
+        label: 'Código Orden de Trabajo',
+        iconName: 'code'
+    },
+    {
+        value: 'Asignada a',
+        label: 'Asignada a',
+        iconName: 'mechanic'
+    },
+    {
+        value: 'Entregada por',
+        label: 'Entregada por',
+        iconName: 'mechanic'
+    },
+    {
+        value: 'Creada por',
+        label: 'Creada por',
+        iconName: 'mechanic'
+    },
+
 ]

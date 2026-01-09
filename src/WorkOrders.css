@@ -1,212 +1,88 @@
-.result-work-order {
-    max-width: 98%;
-    height: 70px;
-    background: var(--white);
-    border: 1px solid var(--gray-medium-light);
-    display: grid;
-    grid-template-columns: 160px 153px 232px 30px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    align-items: center;
+.second-container-information {
+    margin-top: 1rem;
 }
 
-.first-result-work-orders,
-.second-result-work-order,
-.third-result-work-order {
-    overflow: hidden; /* para evitar desbordamiento */
-    text-overflow: ellipsis; /* para mostrar puntos suspensivos si el texto es demasiado largo */
-    white-space: nowrap; /* para evitar saltos de línea */
-}
-
-.first-result-work-orders {
-    margin-left: 12px;
-}
-
-.div-label-work-order-code {
-    margin-top: 3px;
-    text-align: center;
-    color: var(--pure-black);
-    font-size: 20px;
-    font-style: normal;
-    font-weight: bold;
-}
-
-.div-label-work-order-client {
-    text-align: center;
-    font-size: 14px;
-    font-weight: normal;
-    max-width: 200px; /* ajusta el valor según sea necesario */
-    /* Añade el desbordamiento y los puntos suspensivos */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.second-result-work-order {
+.plate-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 17px;
+    height: 100%;
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
 }
 
-.input-plate-container-work-order {
-    position: relative;
-    text-align: center;
-}
-
-.input-plate-container-work-order label {
-    position: absolute;
-    top: 36%;
-    left: 42%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: var(--pure-black);
-    font-weight: 450;
-    font-size: 9px;
-}
-
-.input-plate-container-work-order .ecuador-icon {
-    height: 11px;
-    width: 11px;
-    position: absolute;
-    top: 35%;
-    left: calc(50% - 33px);
-    transform: translateY(-50%);
-}
-
-.input-plate-vehicle-work-order {
-    max-width: 40%;
-    height: 13px;
-    border: 2px solid var(--pure-black);
-    background: var(--white);
-    border-radius: 10px;
-    padding: 8px;
-    margin-bottom: 10px;
-    margin-top: 11px;
-    padding-top: 16px;
-    font-weight: bold;
-    font-size: 15px;
-    text-align: center;
-    box-shadow: 0 0 0 3px var(--white), 0 0 0 3px var(--white);
-}
-
-.third-result-work-order {
-    width: 67%;
-    display: grid;
-    place-items: center;
-}
-
-.fourth-result-work-order {
-    width: 30%;
-    justify-content: center;
-    align-items: center;
-    margin-left: -96px;
-}
-
-.div-label-status {
-    text-align: center;
-    width: 100px;
-    font-size: 15px;
-    font-weight: 700;
-}
-
-.div-label-date {
-    margin-top: 1px;
-    text-align: center;
-    width: 100px;
-    font-size: 12px;
-}
-
-
-.container-button-add-work-orders {
+.plate-display-work-order {
+    width: 120px;
+    height: 55px;
+    border: 3px solid var(--pure-black);
+    border-radius: 8px;
+    background-color: var(--white);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6px 10px;
     box-sizing: border-box;
-    height: 84vh;
 }
 
-.button-add-work-orders {
-    width: 216px;
-    height: 64px;
-    background-color: var(--second-color);
-    border: none;
-    border-radius: 6px;
-    font-size: 17px;
+.ecuador-label-container {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--pure-black);
 }
 
-.text-button-add-work-orders {
-    color: var(--white);
+.plate-value-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1rem;
     font-weight: bold;
-    font-size: 17px;
+    color: var(--gray-darkest);
 }
 
-.Toastify__toast-container.Toastify__toast-container--top-right {
-    top: 75px;
+
+.button-edit-work-order {
+    border: none;
+    background: none;
 }
 
-.div-image-receipt {
-    background-image: var(--gradient-blue-dark);
+.edit-work-order-icon {
+    background: none;
     width: 30px;
-    border-radius: 3px;
-    text-align: center;
-    padding-top: 3px;
+    height: 30px;
+    fill: currentColor;
+    color: var(--blue-intense);
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
-
-    .result-work-order {
-        grid-template-columns: 190px 140px 250px 150px;
-    }
-
-    .input-plate-vehicle-work-order {
-        max-width: 33%;
-        height: 13px;
-    }
-
-    .input-plate-container-work-order label {
-        left: 45%;
-    }
-    
-    .input-plate-container-work-order .ecuador-icon {
-        left: calc(50% - 29px);
-    }
-  
+.new-work-order-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 20px;
+    background-color: var(--second-color);
+    color: var(--white);
+    border: none;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-@media (max-width: 1440px) and (max-height: 900px){
+.new-work-order-btn:hover {
+    background-color: var(--blue-medium);
+    transform: scale(1.02);
+}
 
-    .first-result-work-orders {
-        margin-right: 20px;
-    }
+.new-work-order-icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    color: var(--white);
+}
 
-    .second-result-work-order{
-        margin-left: -70px;
-    }
-
-    .third-result-work-order {
-        width: 42%;
-        margin-left: -47px;    
-    }
-
-    .div-label-work-order-code {
-        font-size: 15px;
-    }
-
-    .div-label-status {
-        font-size: 13px;
-    }
-
-    .div-label-date {
-        font-size: 11px;
-    }
-    
-    .fourth-result-work-order {
-        margin-left: -181px;
-    }
-
-    .div-image-receipt {
-        width: 23px;
-    }
-
+.new-vehicle-work-order-icon {
+    width: 50px;
+    height: 50px;
+    fill: currentColor;
+    color: var(--white);
 }

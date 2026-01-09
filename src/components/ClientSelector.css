@@ -1,0 +1,130 @@
+.header-container-search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem 1rem;
+}
+
+.header-container-search .new-work-order-btn {
+    width: fit-content;
+}
+
+.search-bar-filter-container.full-width {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.container-search {
+    padding: 1rem;
+    height: 100%;
+    min-height: 0;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin-top: -1rem;
+}
+
+.label-container {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    color: var(--gray-dark);
+}
+
+.label-title {
+    margin-right: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+}
+
+.label-input {
+    margin-right: 100px;
+    flex: 2;
+}
+
+.client-details-container {
+    margin: 10px 30px;
+}
+
+.client-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.client-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.client-back-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.client-back-icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    color: var(--tertiary-color);
+}
+
+.client-back-icon:hover {
+    opacity: 1;
+}
+
+.client-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.client-card-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--neutral-light);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.client-field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--gray-darkest);
+}
+
+.client-card-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  color: var(--tertiary-color);
+  flex-shrink: 0;
+}
+
+.client-card-value {
+  font-size: 1rem;
+  color: var(--gray-obsidian);
+  max-width: 60%;
+  word-wrap: break-word;
+  text-align: right;
+}

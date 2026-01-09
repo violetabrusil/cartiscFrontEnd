@@ -11,7 +11,7 @@ export const CustomColorContainer = ({ color, value }) => {
     } else if (typeof color === 'string') {
         resolvedColor = color;
     } else if (typeof color === 'object' && color !== null) {
-        resolvedColor = color[value] || color.default || '#ccc';
+        resolvedColor = color[value] || color.default || gray;
     }
 
     return (

@@ -5,14 +5,15 @@ import './NewClient.css';
 import './Car.css'
 import './Service.css';
 import './Operation.css';
-import './Inventory.css';
 import './Products.css';
 import './Stock.css';
 import './Location.css'
+import './WorkOrders.css'
 import './Form.css';
 import './Header.css';
 import './Home.css';
 import './Menu.css';
+import './Tabs.css';
 import './Modal.css';
 import './Loader.css';
 import './Colors.css';
@@ -33,7 +34,7 @@ import Services from './pages/services/Service';
 import Operation from './pages/operations/Operation';
 import Inventory from './pages/inventory/Inventory';
 import WorkOrders from './pages/workOrders/WorkOrders';
-import NewWorkOrder from './pages/workOrders/NewWorkOrder';
+//import NewWorkOrder from './pages/workOrders/NewWorkOrder';
 import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
 import Suppliers from './pages/supplier/Supplier';
 import Settings from './pages/settings/Settings';
@@ -94,7 +95,7 @@ function App() {
                   <Route path="/suppliers" element={<Suppliers />} />
                   <Route path="/inventory" element={<Inventory />} />
                   <Route path="/workOrders" element={<WorkOrders />} />
-                  <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
+                 {/*<Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />*/} 
                   <Route path="/workOrders/detailWorkOrder/:workOrderId" element={<InformationWorkOrder />} />
                   <Route path="/paymentReceipt" element={<PaymentReceipts />} />
                   <Route path="/proformas" element={<Proforma />} />

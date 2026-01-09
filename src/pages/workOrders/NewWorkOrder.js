@@ -9,6 +9,7 @@ import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import Icon from "../../components/Icons";
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import Modal from "../../modal/Modal";
@@ -21,21 +22,19 @@ import { AddNewVehicleModal } from "../../modal/AddVehicleModal";
 import useCSSVar from "../../hooks/UseCSSVar";
 import { showToastOnce } from "../../utils/toastUtils";
 import { formatPlate } from "../../utils/formatters";
+import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import ClientSelector from "../../components/ClientSelector";
 
-const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
-const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
-const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
-const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
-const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
-const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
 const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 
-
-const NewWorkOrder = () => {
+export function NewWorkOrder({
+    onSubmit,
+    onBack,
+}) {
 
     const blackAlpha34 = useCSSVar('--black-alpha-34');
 
@@ -51,9 +50,6 @@ const NewWorkOrder = () => {
 
     const { user } = useContext(AuthContext);
 
-    const [selectedOption, setSelectedOption] = useState('Nombre');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [clients, setClients] = useState([]);
     const { selectedClient, setSelectedClient } = useContext(ClientContext);
     const { selectedVehicle } = useContext(ClientContext);
@@ -73,7 +69,7 @@ const NewWorkOrder = () => {
     const symptomsContainerRef = useRef(null);
     const [placeholder, setPlaceholder] = useState("Describa los síntomas");
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
-    const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
+
     const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
     const [toastShown, setToastShown] = useState(false);
     const [shouldUpdateClients, setShouldUpdateClients] = useState(false);
@@ -81,30 +77,6 @@ const NewWorkOrder = () => {
 
     const showToast = (message, type) => {
         showToastOnce(type, message)
-    };
-
-    const handleSearchClientChange = (term, filter) => {
-        setSearchTerm(term);
-        setSelectedOption(filter);
-    };
-
-    const handleSearchClientWithDebounce = debounce(handleSearchClientChange, 500);
-
-    const openFilterModal = () => {
-        setIsFilterModalOpen(true);
-    };
-
-    const closeFilterModal = () => {
-        setIsFilterModalOpen(false);
-    };
-
-    const openAddClientModal = () => {
-        setIsAddClientModalOpen(true);
-    };
-
-    const closeAddClientModal = () => {
-        setIsAddClientModalOpen(false);
-        setShouldUpdateClients(true);
     };
 
     const openAddVehicleModal = () => {
@@ -116,24 +88,10 @@ const NewWorkOrder = () => {
         setShouldUpdateVehicles(true);
     };
 
-    const handleOptionChange = (option) => {
-        setSelectedOption(option);
-    };
-
-    const handleSelectClick = (option) => {
-        setSelectedOption(option);
-        closeFilterModal();
-    };
-
     const handleClientSelect = async (client) => {
         setSelectedClient(client);
         await getVehicleOfClient(client.id);
-    };
-
-    const handleDeselectClient = () => {
-        setSelectedClient();
-        setSearchTerm('');
-        setVehicles([]);
+        console.log("client selected information", client)
     };
 
     const iconsVehicles = useMemo(() => {
@@ -314,7 +272,6 @@ const NewWorkOrder = () => {
 
     const resetForm = () => {
         setSelectedClient(null);
-        setSearchTerm("");
         setClients([]);
         setActualKm("");
         setSymptoms([]);
@@ -378,6 +335,7 @@ const NewWorkOrder = () => {
                     navigate(`/workOrders/detailWorkOrder/${workOrderId}`);
                     resetForm();
                 }, 3000);
+                onSubmit();
 
             }
 
@@ -387,43 +345,9 @@ const NewWorkOrder = () => {
 
     };
 
-    const onBack = () => {
-        navigate("/workOrders");
-        resetForm();
-    };
-
-    const getClient = async () => {
-
-        let endpoint = '/clients/all';
-
-        if (searchTerm) {
-            switch (selectedOption) {
-                case 'Cédula':
-                    endpoint = `/clients/search-by-cedula/${searchTerm}`;
-                    break;
-                case 'Nombre':
-                    endpoint = `/clients/search-by-name/${searchTerm}`;
-                    break;
-                default:
-                    break;
-            }
-        }
-        try {
-            const response = await apiClient.get(endpoint);
-            setClients(response.data);
-
-        } catch (error) {
-            showToastOnce("error", "Error al obtener los datos de los clientes");
-        }
-    };
-
-    useEffect(() => {
-        getClient();
-    }, [searchTerm, selectedOption])
-
     useEffect(() => {
         if (shouldUpdateClients) {
-            getClient();
+
             setShouldUpdateClients(false);
         }
     }, [shouldUpdateClients]);
@@ -480,263 +404,130 @@ const NewWorkOrder = () => {
 
     return (
 
-        <div>
+        <div className="new-work-order-general-container">
 
-            <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
-            <Menu />
+            <CustomTitleSection
+                onBack={onBack}
+                titlePrefix="Lista de Órdenes de Trabajo"
+                title="Nueva Orden de Trabajo"
+                onCustomButtonClick={handleWorkOrderCreation}
+                customButtonLabel="CONFIRMAR"
+            />
 
-            <div className="new-work-order-general-container">
+            <div className="client-search-container">
+                <div className="left-div">
+                    <ClientSelector
+                        selectedClient={selectedClient}
+                        setSelectedClient={setSelectedClient}
+                        setVehicles={setVehicles}
+                        onClientSelect={handleClientSelect}
+                        setShouldUpdateClients={setShouldUpdateClients} />
 
-
-                <div className="new-work-order-title-container">
-                    <button onClick={onBack} className="button-arrow-client">
-                        <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
-                    </button>
-                    <h2 style={{ flex: 'auto' }}>Nueva Orden de Trabajo</h2>
-                    <button className="confirm-button" onClick={handleWorkOrderCreation}>
-                        <span className="text-confirm-button ">Confirmar</span>
-                    </button>
                 </div>
 
-                <div className="client-search-container">
-                    <div className="left-div">
-                        {selectedClient ? (
-                            <div style={{ marginLeft: '30px', marginRight: '30px', marginTop: '10px' }}>
-                                <div style={{ display: 'flex' }}>
-                                    <button onClick={handleDeselectClient} className="button-arrow-client">
-                                        <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
-                                    </button>
-                                    <h2>Cliente</h2>
+                <div className="right-div-container">
+
+                    <div className="right-div">
+                        {/* Contenido del segundo div derecho */}
+                        {selectedClient && (
+                            <>
+                                <div className="add-vehicle-container" onClick={openAddVehicleModal}>
+                                    <Icon name="addVehicle" className="new-vehicle-work-order-icon" />
+                                    <button className="add-new-vehicle-carousel" >Agregar Vehículo</button>
                                 </div>
 
-                                <div className="label-container">
-                                    <label className="label-title">Nombre:</label>
-                                    <label className="label-input">{selectedClient.name}</label>
-                                </div>
-                                <div className="label-container">
-                                    <label className="label-title">Cédula:</label>
-                                    <label className="label-input">{selectedClient.cedula}</label>
-                                </div>
-                                <div className="label-container">
-                                    <label className="label-title">Dirección:</label>
-                                    <label className="label-input">{selectedClient.address}</label>
-                                </div>
-                                <div className="label-container">
-                                    <label className="label-title">Teléfono:</label>
-                                    <label className="label-input">{selectedClient.phone}</label>
-                                </div>
-                                <div className="label-container">
-                                    <label className="label-title">Correo:</label>
-                                    <label className="label-input">{selectedClient.email}</label>
-                                </div>
+                                <div className="container-carousel">
+                                    <Carousel responsive={responsive}>
 
-                            </div>
-                        ) :
-                            (
-                                <>
-                                    <div>
-                                        {/*Título del contenedor y cuadro de búsqueda */}
-                                        <div style={{ marginTop: "10px" }}>
-                                            <TitleAndSearchBox
-                                                selectedOption={selectedOption}
-                                                onSearchChange={handleSearchClientWithDebounce}
-                                                onButtonClick={openFilterModal}
-                                                isSpecial={true}
-                                                showAddButton={true}
-                                                onAddClient={openAddClientModal}
-                                            />
-                                        </div>
-                                    </div>
-
-
-                                    {/*Lista de clientes*/}
-                                    {clients.length > 0 && (
-                                        <div>
-                                            {clients.map(clientData => (
-                                                <div className="result-client-container" key={clientData.client.id} onClick={() => handleClientSelect(clientData.client)}>
-                                                    <div className="first-result-work-order">
-                                                        <img src={clientIcon} alt="Client Icon" className="icon-client" />
-                                                        <div className="container-data-client">
-                                                            <label className="label-name-client">{clientData.client.name}</label>
-
-                                                            <div className="vehicle-count-container-work-order">
-                                                                {
-                                                                    (!clientData.vehicles_count ||
-                                                                        Object.values(clientData.vehicles_count).every(val => val === 0)
-                                                                    ) ? (
-                                                                        <div>
-                                                                            Sin vehículos
-                                                                        </div>
-                                                                    ) : (
-                                                                        <>
-                                                                            {clientData.vehicles_count.car > 0 && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order">{clientData.vehicles_count.car}</label>
-                                                                                    <img src={autoIcon} alt="Car client" className="icon-car" />
-                                                                                </div>
-
-                                                                            )}
-
-                                                                            {clientData.vehicles_count.van > 0 && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.van}
-                                                                                    </label>
-                                                                                    <div className="van-container-work-order">
-                                                                                        <img src={camionetaIcon} alt="Van client" className="icon-van-work-order"></img>
-                                                                                    </div>
-
-                                                                                </div>
-                                                                            )}
-
-
-                                                                            {clientData.vehicles_count.bus && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.bus}
-                                                                                    </label>
-                                                                                    <img src={busetaIcon} alt="Bus client" className="icon-bus-work-order"></img>
-                                                                                </div>
-
-                                                                            )}
-
-                                                                            {clientData.vehicles_count.truck && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.truck}
-                                                                                    </label>
-                                                                                    <img src={camionIcon} alt="Truck client" className="icon-car-work-order"></img>
-                                                                                </div>
-
-                                                                            )}
-
-                                                                        </>
-                                                                    )
-                                                                }
-
-
-
-                                                            </div>
-
-
-
-                                                        </div>
-                                                    </div>
-
-
-
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </>
-                            )
-                        }
-
-                    </div>
-
-                    <div className="right-div-container">
-
-                        <div className="right-div">
-                            {/* Contenido del segundo div derecho */}
-                            {selectedClient && (
-                                <>
-                                    <div className="add-vehicle-container" onClick={openAddVehicleModal}>
-                                        <img src={addIcon} alt="Add Vehicle" className="add-vehicle-icon" />
-                                        <button className="add-new-vehicle-carousel" >Agregar Vehículo</button>
-                                    </div>
-
-                                    <div className="container-carousel">
-                                        <Carousel responsive={responsive}>
-
-                                            {vehicles.map((vehicle, index) => (
-                                                <div
-                                                    key={index}
-                                                    className={`carousel ${vehicle.id === selectedVehicleId || (selectedVehicle && vehicle.id === selectedVehicle.id) ? 'selected' : ''}`}
-                                                    onClick={() => setSelectedVehicleId(vehicle.id)}
-                                                >
-                                                    <img
-                                                        src={iconsVehicles[vehicle.category]}
-                                                        alt={`Vehicle ${index + 1}`}
-                                                        className="vehicle-carousel"
+                                        {vehicles.map((vehicle, index) => (
+                                            <div
+                                                key={index}
+                                                className={`carousel ${vehicle.id === selectedVehicleId || (selectedVehicle && vehicle.id === selectedVehicle.id) ? 'selected' : ''}`}
+                                                onClick={() => setSelectedVehicleId(vehicle.id)}
+                                            >
+                                                <img
+                                                    src={iconsVehicles[vehicle.category]}
+                                                    alt={`Vehicle ${index + 1}`}
+                                                    className="vehicle-carousel"
+                                                />
+                                                <div className="input-plate-container-new-work-order">
+                                                    <input
+                                                        className="input-plate-vehicle-new-work-order"
+                                                        type="text"
+                                                        value={vehicle.plate}
+                                                        readOnly
                                                     />
-                                                    <div className="input-plate-container-new-work-order">
-                                                        <input
-                                                            className="input-plate-vehicle-new-work-order"
-                                                            type="text"
-                                                            value={vehicle.plate}
-                                                            readOnly
-                                                        />
-                                                        <img src={flagIcon} alt="Flag" className="ecuador-icon" />
-                                                        <label>ECUADOR</label>
-                                                    </div>
+                                                    <img src={flagIcon} alt="Flag" className="ecuador-icon" />
+                                                    <label>ECUADOR</label>
                                                 </div>
-                                            ))}
-                                        </Carousel>
-                                    </div>
+                                            </div>
+                                        ))}
+                                    </Carousel>
+                                </div>
 
 
-                                </>
+                            </>
 
-                            )}
+                        )}
+
+                    </div>
+
+                    <div className="right-div">
+                        <div className="container-fields-new-work-order">
+
+                            <div className="input-group-work-order">
+                                <label>Creada por</label>
+                                <input
+                                    type="text"
+                                    className="input-field-right"
+                                    value={createdBy}
+                                    onChange={e => setCreatedBy(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="input-group-work-order">
+                                <label>Fecha de inicio</label>
+                                <DatePicker
+                                    className="input-field-right"
+                                    selected={dateStart}
+                                    onChange={date => setDateStart(date)}
+                                />
+                            </div>
+
+                            <div className="input-group-work-order">
+                                <label>Estado</label>
+                                <Select
+                                    isSearchable={false}
+                                    styles={customStylesStatus}
+                                    value={workOrderStatus}
+                                    onChange={handleSelectChange}
+                                    options={WorkOrderStatusOptions}
+                                    placeholder="Seleccione"
+                                    classNamePrefix="react-select"
+                                    isDisabled={!selectedClient || !selectedVehicleId}
+                                />
+                            </div>
 
                         </div>
 
-                        <div className="right-div">
-                            <div className="container-fields-new-work-order">
-
-                                <div className="input-group-work-order">
-                                    <label>Creada por</label>
-                                    <input
-                                        type="text"
-                                        className="input-field-right"
-                                        value={createdBy}
-                                        onChange={e => setCreatedBy(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="input-group-work-order">
-                                    <label>Fecha de inicio</label>
-                                    <DatePicker
-                                        className="input-field-right"
-                                        selected={dateStart}
-                                        onChange={date => setDateStart(date)}
-                                    />
-                                </div>
-
-                                <div className="input-group-work-order">
-                                    <label>Estado</label>
-                                    <Select
-                                        isSearchable={false}
-                                        styles={customStylesStatus}
-                                        value={workOrderStatus}
-                                        onChange={handleSelectChange}
-                                        options={WorkOrderStatusOptions}
-                                        placeholder="Seleccione"
-                                        classNamePrefix="react-select"
-                                        isDisabled={!selectedClient || !selectedVehicleId}
-                                    />
-                                </div>
-
+                        <div className="container-div-comments" >
+                            <div className="container-div-left">
+                                <label>Comentarios</label>
+                                <textarea
+                                    className="textarea-work-order"
+                                    value={comments}
+                                    onChange={e => setComments(e.target.value)}
+                                ></textarea>
                             </div>
 
-                            <div className="container-div-comments" >
-                                <div className="container-div-left">
-                                    <label>Comentarios</label>
-                                    <textarea
-                                        className="textarea-work-order"
-                                        value={comments}
-                                        onChange={e => setComments(e.target.value)}
-                                    ></textarea>
-                                </div>
-
-                                <div className="container-div-rigth">
-                                    <label>Kilometraje actual</label>
-                                    <input
-                                        type="text"
-                                        className="input-field-km"
-                                        value={actualKm}
-                                        onChange={e => setActualKm(e.target.value)}
-                                    />
-
-                                </div>
+                            <div className="container-div-rigth">
+                                <label>Kilometraje actual</label>
+                                <input
+                                    type="text"
+                                    className="input-field-km"
+                                    value={actualKm}
+                                    onChange={e => setActualKm(e.target.value)}
+                                />
 
                             </div>
 
@@ -745,144 +536,125 @@ const NewWorkOrder = () => {
                     </div>
 
                 </div>
-
-                <div className="title-second-section-container">
-                    <h3>Estado entrega de vehículo</h3>
-                </div>
-
-                <div style={{ textAlign: "right", marginBottom: '10px' }}>
-                    <button
-                        className="btn-select-all"
-                        onClick={selectAllCheckboxes}>
-                        Seleccionar todos
-                    </button>
-                </div>
-
-                <div className="checkbox-container">
-                    {Object.keys(selections).map((group) => (
-                        <div key={group} className="checkbox-group">
-                            {selections[group].map((isChecked, index) => {
-                                const currentOption = optionsCheckBox[group][index];
-
-                                // Caso Gas
-                                if (currentOption === 'Gas') {
-                                    return (
-                                        <div key={index}>
-                                            <img src={fuelIcon} alt="Fuel Icon" className="fuel-icon" />
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                max="100"
-                                                value={percentages[group][index] || ''}
-                                                onChange={(event) => handlePorcentageChange(group, index, event)}
-                                            />
-                                            {' %'}
-                                        </div>
-                                    );
-                                }
-
-                                // Caso Combustible
-                                if (currentOption === 'Combustible') {
-                                    return <label key={index}>{currentOption}</label>; // Solo renderiza el label "Combustible"
-                                }
-
-                                // Caso Default (para todas las otras opciones)
-                                return (
-                                    <label key={index}>
-                                        {currentOption}
-                                        <input
-                                            type="checkbox"
-                                            checked={isChecked}
-                                            onChange={() => handleCheckboxChange(group, index)}
-                                        />
-                                    </label>
-                                );
-                            })}
-                        </div>
-                    ))}
-                </div>
-
-                <div className="second-container">
-
-                    <div className="half-second-container">
-                        <h3>Síntomas presentados</h3>
-                        <div className="content-new-work-order">
-                            <div
-                                contentEditable
-                                suppressContentEditableWarning
-                                onKeyDown={handleKeyPress}
-                                className={`editable-container ${symptoms.length ? '' : 'placeholder'}`}
-                                onFocus={() => setPlaceholder("")}
-
-                            >
-                                {placeholder}
-                            </div>
-
-                            <div className="list-sypmtoms-container" ref={symptomsContainerRef}>
-                                <ul>
-                                    {symptoms.map((item, index) => (
-                                        <li key={index}
-                                            ref={index === symptoms.length - 1 ? symptomsEndRef : null}
-                                            contentEditable
-                                            suppressContentEditableWarning
-                                            onBlur={(e) => handleUpdateSymptom(index, e.currentTarget.textContent)}
-                                        >
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="half-second-container">
-                        <h3>Observaciones generales</h3>
-                        <div className="content-new-work-order">
-                            <textarea
-                                className="textarea-class"
-                                placeholder="Describa las observaciones"
-                                value={observations}
-                                onChange={(e) => setObservations(e.target.value)}>
-
-                            </textarea>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div className="title-second-section-container">
-                    <h3>Puntos de interés</h3>
-                </div>
-
-                <VehiclePlans
-                    imgSrc={carPlan}
-                    updatePoints={(points) => setPointsOfInterest(points)}
-                />
 
             </div>
 
-            {/*Modal del filtro de búsqueda*/}
+            <div className="title-second-section-container">
+                <h3>Estado entrega de vehículo</h3>
+            </div>
 
-            {isFilterModalOpen && (
-                <Modal
-                    isOpen={isFilterModalOpen}
-                    onClose={closeFilterModal}
-                    options={['Cédula', 'Nombre']}
-                    defaultOption="Nombre"
-                    onOptionChange={handleOptionChange}
-                    onSelect={handleSelectClick}
-                />
-            )}
+            <div style={{ textAlign: "right", marginBottom: '10px' }}>
+                <button
+                    className="btn-select-all"
+                    onClick={selectAllCheckboxes}>
+                    Seleccionar todos
+                </button>
+            </div>
 
-            {/*Modal para agregar nuevo cliente*/}
+            <div className="checkbox-container">
+                {Object.keys(selections).map((group) => (
+                    <div key={group} className="checkbox-group">
+                        {selections[group].map((isChecked, index) => {
+                            const currentOption = optionsCheckBox[group][index];
 
-            {isAddClientModalOpen && (
-                <AddNewClientModal
-                    isOpen={isAddClientModalOpen}
-                    onClose={closeAddClientModal}
-                    OnUpdate={() => setShouldUpdateClients(true)}
-                />
-            )}
+                            // Caso Gas
+                            if (currentOption === 'Gas') {
+                                return (
+                                    <div key={index}>
+                                        <img src={fuelIcon} alt="Fuel Icon" className="fuel-icon" />
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            value={percentages[group][index] || ''}
+                                            onChange={(event) => handlePorcentageChange(group, index, event)}
+                                        />
+                                        {' %'}
+                                    </div>
+                                );
+                            }
+
+                            // Caso Combustible
+                            if (currentOption === 'Combustible') {
+                                return <label key={index}>{currentOption}</label>; // Solo renderiza el label "Combustible"
+                            }
+
+                            // Caso Default (para todas las otras opciones)
+                            return (
+                                <label key={index}>
+                                    {currentOption}
+                                    <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => handleCheckboxChange(group, index)}
+                                    />
+                                </label>
+                            );
+                        })}
+                    </div>
+                ))}
+            </div>
+
+            <div className="second-container">
+
+                <div className="half-second-container">
+                    <h3>Síntomas presentados</h3>
+                    <div className="content-new-work-order">
+                        <div
+                            contentEditable
+                            suppressContentEditableWarning
+                            onKeyDown={handleKeyPress}
+                            className={`editable-container ${symptoms.length ? '' : 'placeholder'}`}
+                            onFocus={() => setPlaceholder("")}
+
+                        >
+                            {placeholder}
+                        </div>
+
+                        <div className="list-sypmtoms-container" ref={symptomsContainerRef}>
+                            <ul>
+                                {symptoms.map((item, index) => (
+                                    <li key={index}
+                                        ref={index === symptoms.length - 1 ? symptomsEndRef : null}
+                                        contentEditable
+                                        suppressContentEditableWarning
+                                        onBlur={(e) => handleUpdateSymptom(index, e.currentTarget.textContent)}
+                                    >
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="half-second-container">
+                    <h3>Observaciones generales</h3>
+                    <div className="content-new-work-order">
+                        <textarea
+                            className="textarea-class"
+                            placeholder="Describa las observaciones"
+                            value={observations}
+                            onChange={(e) => setObservations(e.target.value)}>
+
+                        </textarea>
+                    </div>
+                </div>
+
+            </div>
+
+            <div className="title-second-section-container">
+                <h3>Puntos de interés</h3>
+            </div>
+
+            <VehiclePlans
+                imgSrc={carPlan}
+                updatePoints={(points) => setPointsOfInterest(points)}
+            />
+
+
+
+
 
             {/*Modal para agregar un nuevo vehículo*/}
 
@@ -957,8 +729,5 @@ const NewWorkOrder = () => {
 
         </div>
     );
+}
 
-
-};
-
-export default NewWorkOrder;

@@ -1,4 +1,4 @@
-.container-inventory {
+.container-general-tabs {
     position: fixed;
     top: 80px;
     left: 80px;
@@ -24,6 +24,9 @@
 
 /* Estilo para cada tab no seleccionado */
 .react-tabs__tab {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     list-style: none;
     cursor: pointer;
     padding: 15px 50px;
@@ -36,6 +39,7 @@
     transition: all 0.3s ease;
     border-bottom: none;
     border-radius: 8px 8px 0 0;
+   
 }
 
 /* Estilo para el tab seleccionado */
@@ -48,7 +52,7 @@
     position: relative;
     z-index: 2;
     margin-bottom: -1px;
-     box-shadow: 0 -5px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 -5px 6px rgba(0, 0, 0, 0.1);
 }
 
 .react-tabs__tab:focus {
@@ -58,4 +62,18 @@
 .react-tabs__tab:hover {
     background-color: var(--blue-medium-soft);
     color: var(--white);
+}
+
+.icon-tabs {
+    width: 1.3rem;
+    height: 1.3rem;
+    fill: currentColor;
+    color: var(--white-cloud);
+    display: inline-block;
+    vertical-align: middle;
+    transition: color 0.3s ease;
+}
+
+.react-tabs__tab--selected .icon-tabs {
+    color: var(--tertiary-color);
 }

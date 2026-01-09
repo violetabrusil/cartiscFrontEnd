@@ -34,6 +34,7 @@
     --white-cloud: #FDFDFD;
     --platium: #EDEDED;
     --white-overlay-soft: rgba(255, 255, 255, 0.7);
+    --neutral-light: #F6F6F6;
     --green-dark: #2e7d32;
     --forest-green: #347928;
     --forest-green-10: rgba(52, 121, 40, 0.1);
@@ -58,6 +59,7 @@
     --blue-deep-dark: #00358B;
     --blue-desatured-dark: #255177;
     --blue-dark-bright: #0056b3;
+    --blue-ocean: #134686;
     --blue-medium: rgb(49, 110, 168);
     --blue-primary-bright: #007bff;
     --blue-intense: #007aff;

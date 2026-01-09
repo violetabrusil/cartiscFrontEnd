@@ -5,6 +5,7 @@ import CustomButton from "../../buttons/customButton/CustomButton";
 import Icon from "../../components/Icons";
 import DataTable from "../../dataTable/DataTable";
 import ScrollListWithIndicators from "../../components/ScrollListWithIndicators";
+import { createPortal } from "react-dom";
 
 import useCSSVar from "../../hooks/UseCSSVar";
 
@@ -89,8 +90,6 @@ export default function CustomModal({
         }
     }, [isOpen, defaultOption]);
 
-
-    if (!isOpen) return null;
 
     if (!isOpen) return null;
 
@@ -331,7 +330,7 @@ export default function CustomModal({
         }
     };
 
-    return (
+    const ModalContent = (
         <>
             {loading && (
                 <div className="modal-loader-container">
@@ -379,8 +378,7 @@ export default function CustomModal({
 
 
         </>
+    )
 
-
-
-    );
+    return createPortal(ModalContent, document.body);
 }

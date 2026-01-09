@@ -17,7 +17,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct, 
     const tertiaryColor = useCSSVar('--tertiary-color');
     const blackAlpha20 = useCSSVar('--black-alpha-20');
     const redIntense = useCSSVar('--red-intense');
-    const yellowWarm = useCSSVar('--yellow-warm');
+    const brightOrange = useCSSVar('--bright-orange');
     const greenDark = useCSSVar('--green-dark');
     const grayDark = useCSSVar('--gray-dark');
     const blueMediumSoft = useCSSVar('--blue-medium-soft');
@@ -39,7 +39,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct, 
         const n = Number(stock);
         if (isNaN(n)) return grayDark;
         if (n === 0) return redIntense;
-        if (n >= 1 && n <= 5) return yellowWarm;
+        if (n >= 1 && n <= 5) return brightOrange;
         if (n > 5) return greenDark;
         return grayDark;
     };
@@ -49,7 +49,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct, 
             { Header: "Número de serie", accessor: "sku" },
             {
                 Header: "Nombre de Producto",
-                accessor: "product",  
+                accessor: "product",
                 Cell: ({ row }) => {
                     const { product_picture, title } = row.original;
 
@@ -76,7 +76,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct, 
                                 />
                             )}
 
-                            <div style={{alignItems: "center"}}>
+                            <div style={{ alignItems: "center" }}>
                                 {title && title !== 'NULL' ? title : '-'}
                             </div>
                         </div>
@@ -255,10 +255,10 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct, 
     }, [viewMode]);
 
     return (
-        <div className="container-general-iventory">
+        <div className="container-general-information">
             {viewMode === 'general' && (
                 <>
-                    <div className="product-container-title">
+                    <div className="container-information-title">
 
                         <div className="left-title-box">
                             <div className="title-box">
@@ -279,12 +279,12 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct, 
 
                     <SearchBar onFilter={handleFilter} />
                     {loading ? (
-                        <div className="spinner-container-products">
+                        <div className="spinner-container-general">
                             <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                         </div>
 
                     ) : (
-                        <div className="container-table-inventory">
+                        <div className="container-table-general">
                             <DataTable data={allProducts} columns={columns} highlightRows={false} initialPageSize={responsivePageSize} />
                         </div>
 

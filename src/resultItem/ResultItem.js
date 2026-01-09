@@ -2,9 +2,7 @@ import React from "react";
 import "../styles/ResultItem.css";
 import Icon from "../components/Icons";
 
-const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, showEye = true, icons = {}, extra = {} }) => {
-
-    const { receiptIcon, statusColors = {} } = icons;
+const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, showEye = true }) => {
 
     const iconMap = {
         car: "car",
@@ -16,6 +14,7 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, showEye = t
 
     return (
         <div className={`result-item result--${type}`} onClick={onClickMain}>
+
             {type === "car" && (
                 <>
                     <div className="first-result-car">
@@ -125,58 +124,6 @@ const ResultItem = ({ type, data, onClickMain, onClickEye, flagIcon, showEye = t
 
                 </>
             )}
-
-
-            {type === "work-order" && (
-                <>
-                    <div className="first-result-work-orders">
-                        <div className="div-label-work-order-code">
-                            <label>{data.work_order_code}</label>
-                        </div>
-                        <div className="div-label-work-order-client">
-                            <label>{data.client_name}</label>
-                        </div>
-                    </div>
-
-                    <div className="second-result-work-order">
-                        <div className="input-plate-container-work-order">
-                            <input
-                                className="input-plate-vehicle-work-order"
-                                type="text"
-                                value={data.vehicle_plate}
-                                readOnly
-                            />
-                            <img src={flagIcon} alt="Flag" className="ecuador-icon" />
-                            <label>ECUADOR</label>
-                        </div>
-                    </div>
-
-                    <div className="third-result-work-order">
-                        <div className="div-label-status">
-                            <label style={{ color: statusColors[data.work_order_status] }}>
-                                {data.work_order_status}
-                            </label>
-                        </div>
-                        <div className="div-label-date">
-                            <label>{data.date_start}</label>
-                        </div>
-                    </div>
-
-                    {data.work_order_status === "Completada" && !data.is_billed && (
-                        <div className="fourth-result-work-order">
-                            <div className="div-image-receipt">
-                                <img
-                                    src={receiptIcon}
-                                    alt="Receipt Icon"
-                                    className="payment-receipt-icon"
-                                    style={{ width: "20px", height: "20px" }}
-                                />
-                            </div>
-                        </div>
-                    )}
-                </>
-            )}
-
 
         </div>
     );

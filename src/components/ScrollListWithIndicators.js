@@ -3,8 +3,9 @@ import Icon from "./Icons";
 
 const ScrollListWithIndicators = ({ items, renderItem, children, style = {} }) => {
     const scrollRef = useRef(null);
-    const [scrollState, setScrollState] = useState("none"); // "top", "middle", "bottom", "none"
+    const [scrollState, setScrollState] = useState("none");
     const [hasOverflow, setHasOverflow] = useState(false);
+    const [showIndicators, setShowIndicators] = useState(false);
 
     useEffect(() => {
         const el = scrollRef.current;
@@ -13,26 +14,28 @@ const ScrollListWithIndicators = ({ items, renderItem, children, style = {} }) =
         const checkScroll = () => {
             const scrollTop = el.scrollTop;
             const totalHeight = el.scrollHeight;
-            const visibleHeight = el.offsetHeight; // <- alternativa a clientHeight
+            const visibleHeight = el.offsetHeight;
 
             const canScroll = totalHeight > visibleHeight;
             setHasOverflow(canScroll);
 
-            setScrollState(prev => {
-                if (!canScroll && prev !== "none") return "none";
-                if (scrollTop === 0 && prev !== "top") return "top";
-                if (Math.ceil(scrollTop + visibleHeight) >= totalHeight && prev !== "bottom")
-                    return "bottom";
-                if (prev !== "middle") return "middle";
-                return prev;
+            setScrollState(() => {
+                if (!canScroll) return "none";
+                if (scrollTop <= 2) return "top";
+                if (Math.ceil(scrollTop + visibleHeight) >= totalHeight - 2) return "bottom";
+                return "middle";
             });
+
+            setShowIndicators(true);
         };
 
-        checkScroll();
+        const raf = requestAnimationFrame(() => checkScroll());
+
         el.addEventListener("scroll", checkScroll);
         window.addEventListener("resize", checkScroll);
 
         return () => {
+            cancelAnimationFrame(raf);
             el.removeEventListener("scroll", checkScroll);
             window.removeEventListener("resize", checkScroll);
         };
@@ -55,22 +58,23 @@ const ScrollListWithIndicators = ({ items, renderItem, children, style = {} }) =
                 </div>
             </div>
 
-            {/* Botones ABSOLUTOS, fuera del scroll */}
-            {hasOverflow && scrollState === "top" && (
-                <div className="scroll-indicator bottom">
+            {showIndicators && hasOverflow && scrollState === "top" && (
+                <div className="scroll-indicator bottom" title="Bajar">
                     <Icon name="down" className="scroll-arrow-icon" />
                 </div>
             )}
 
-            {hasOverflow && scrollState === "bottom" && (
-                <div className="scroll-indicator top" onClick={scrollToTop}>
+            {showIndicators && hasOverflow && scrollState === "bottom" && (
+                <div className="scroll-indicator bottom" onClick={scrollToTop} title="Subir">
                     <Icon name="top" className="scroll-arrow-icon" />
                 </div>
             )}
-        </div>
 
+
+        </div>
     );
 };
+
 
 
 export default ScrollListWithIndicators;

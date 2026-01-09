@@ -166,7 +166,7 @@ const Stock = () => {
 
     return (
 
-        <div className="container-general-iventory">
+        <div className="container-general-information">
 
             <div className="label-input-container">
 
@@ -222,7 +222,7 @@ const Stock = () => {
                 </div>
 
             ) : (
-                <div className="container-table-inventory">
+                <div className="container-table-general">
                     <DataTable
                         data={allProducts}
                         columns={columns}

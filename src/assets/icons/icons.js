@@ -23,15 +23,15 @@ import { ReactComponent as TricycleIcon } from "./tricycleIcon.svg"
 import { ReactComponent as ScooterIcon } from "./scooterIcon.svg"
 import { ReactComponent as QuadIcon } from "./quadIcon.svg"
 import { ReactComponent as ClientIcon } from "./clientIcon.svg"
-import { ReactComponent as IdIcon} from "./idIcon.svg"
-import { ReactComponent as EyeIcon} from "./eyeIcon.svg"
-import { ReactComponent as EditIcon} from "./editIcon.svg"
-import { ReactComponent as AddIcon} from "./addIcon.svg"
-import { ReactComponent as FilterIcon} from "./filterIcon.svg"
-import { ReactComponent as LeftArrowIcon} from "./leftArrowIcon.svg"
-import { ReactComponent as AddressIcon} from "./addressIcon.svg"
-import { ReactComponent as EmailIcon} from "./emailIcon.svg"
-import { ReactComponent as PhoneIcon} from "./phoneIcon.svg"
+import { ReactComponent as IdIcon } from "./idIcon.svg"
+import { ReactComponent as EyeIcon } from "./eyeIcon.svg"
+import { ReactComponent as EditIcon } from "./editIcon.svg"
+import { ReactComponent as AddIcon } from "./addIcon.svg"
+import { ReactComponent as FilterIcon } from "./filterIcon.svg"
+import { ReactComponent as LeftArrowIcon } from "./leftArrowIcon.svg"
+import { ReactComponent as AddressIcon } from "./addressIcon.svg"
+import { ReactComponent as EmailIcon } from "./emailIcon.svg"
+import { ReactComponent as PhoneIcon } from "./phoneIcon.svg"
 import { ReactComponent as DownArrowIcon } from "./downArrow.svg"
 import { ReactComponent as TopArrowIcon } from "./topArrow.svg"
 import { ReactComponent as DeleteIcon } from "./deleteIcon.svg"
@@ -43,7 +43,21 @@ import { ReactComponent as StockIcon } from "./stockIcon.svg"
 import { ReactComponent as ColumnIcon } from "./columnIcon.svg"
 import { ReactComponent as RowIcon } from "./rowIcon.svg"
 import { ReactComponent as CategoryIcon } from "./categoryIcon.svg"
-import { ReactComponent as BrandIcon } from "./brandIcon.svg" 
+import { ReactComponent as BrandIcon } from "./brandIcon.svg"
+import { ReactComponent as ReceiptIcon } from "./receiptIcon.svg"
+import { ReactComponent as MechanicIcon } from "./mechanicIcon.svg"
+import { ReactComponent as CodeIcon } from "./codeIcon.svg"
+import { ReactComponent as InventoryIcon } from "./stockAndPriceIcon.svg"
+import { ReactComponent as CarMenuIcon } from "./carMenuIcon.svg"
+import { ReactComponent as SettingsIcon } from "./settingsIcon.svg"
+import { ReactComponent as DashboardIcon } from "./dashboardIcon.svg"
+import { ReactComponent as ServicesIcons } from "./servicesIcon.svg"
+import { ReactComponent as WorkOrderIcon } from "./workOrderIcon.svg"
+import { ReactComponent as RightArrow } from "./rightArrow.svg"
+import { ReactComponent as LeftArrow } from "./leftArrow.svg"
+import { ReactComponent as CarServiceScheduleIcon } from "./carServiceScheduleIcon.svg"
+import { ReactComponent as CarRepairIcon } from "./carRepairIcon.svg"
+import { ReactComponent as AssignmentIcon } from "./assignmentIcon.svg"
 
 
 const icons = {
@@ -93,6 +107,20 @@ const icons = {
     row: RowIcon,
     category: CategoryIcon,
     brand: BrandIcon,
+    receipt: ReceiptIcon,
+    mechanic: MechanicIcon,
+    code: CodeIcon,
+    inventory: InventoryIcon,
+    carMenu: CarMenuIcon,
+    settings: SettingsIcon,
+    dashboard: DashboardIcon,
+    services: ServicesIcons,
+    workOrder: WorkOrderIcon,
+    rightArrowMenu: RightArrow,
+    leftArrowMenu: LeftArrow,
+    carServiceSchedule: CarServiceScheduleIcon,
+    carRepair: CarRepairIcon,
+    assignment: AssignmentIcon,
 };
 
 export default icons;

@@ -7,7 +7,7 @@ export const useStatusColors = () => {
     const grayDark = useCSSVar('--gray-dark');
     const greenMedium = useCSSVar('--green-muted');
     const greenDark = useCSSVar('--green-dark');
-    const yellowWarm = useCSSVar('--yellow-warm');
+    const brightOrange = useCSSVar('--bright-orange');
     const redIntense = useCSSVar('--red-intense');
     const orangeWarmLight = useCSSVar('--orange-warm-light');
 
@@ -15,7 +15,7 @@ export const useStatusColors = () => {
         "Por iniciar": tertiaryColor,
         "Asignada": primaryColor,
         "En desarrollo": greenMedium,
-        "En pausa": yellowWarm,
+        "En pausa": brightOrange,
         "Cancelada": redIntense,
         "Completada": greenDark,
         "Eliminada": grayDark,

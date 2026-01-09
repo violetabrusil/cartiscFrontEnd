@@ -184,7 +184,7 @@ const Location = () => {
 
     return (
 
-        <div className="container-general-iventory">
+        <div className="container-general-information">
 
             <div className="label-input-container">
 
@@ -235,12 +235,12 @@ const Location = () => {
 
             <SearchBar onFilter={handleFilter} />
             {loading ? (
-                <div className="spinner-container-products ">
+                <div className="spinner-container-general">
                     <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                 </div>
 
             ) : (
-                <div className="container-table-inventory">
+                <div className="container-table-general">
                     <DataTable
                         data={allProducts}
                         columns={columns}

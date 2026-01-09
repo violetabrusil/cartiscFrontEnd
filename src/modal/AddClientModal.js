@@ -4,14 +4,10 @@ import "../NewClient.css";
 import React, { useState } from "react";
 import apiClient from "../services/apiClient";
 import { showToastOnce } from "../utils/toastUtils";
+import Icon from "../components/Icons";
 
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
-const cedulaIcon = process.env.PUBLIC_URL + "/images/icons/cedula.png";
-const nameIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
-const addressIcon = process.env.PUBLIC_URL + "/images/icons/address.png";
-const emailIcon = process.env.PUBLIC_URL + "/images/icons/email.png";
-const phoneIcon = process.env.PUBLIC_URL + "/images/icons/phone.png";
 
 export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
 
@@ -52,108 +48,81 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                 <div style={{ display: 'flex' }}>
                     <h3 style={{ flex: '13', textAlign: 'center' }}>Información Cliente</h3>
                     <div style={{ flex: "1", marginTop: '13px' }}>
-                        <button className="button-close" onClick={onClose}  >
-                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                        <button className="button-close-modal" onClick={onClose}  >
+                            <Icon name="close" className="close-icon-modal"/>
                         </button>
                     </div>
                 </div>
 
-                <div className="containerNewClient-form">
-                    <form>
-                        <label className="label-form">
-                            Cédula
-                            <div className="input-form-new-client">
+                <div className="form-container-modal">
+                    <form className="new-client-form">
+                        <div className="form-group">
+                            <label className="form-label">Cédula</label>
+                            <div className="form-input-wrapper">
+                                <Icon name="id" className="form-icon"/>
                                 <input
-                                    className="input-form"
+                                    className="input-control"
                                     type="text"
                                     value={cedula}
                                     onChange={(e) => setCedula(e.target.value)}
                                 />
-
-                                <img
-                                    src={cedulaIcon}
-                                    alt="Id Icon"
-                                    className="icon-new-value"
-                                />
                             </div>
+                        </div>
 
-                        </label>
-                        <label className="label-form">
-                            Nombre completo
-                            <div className="input-form-new-client">
+                        <div className="form-group">
+                            <label className="form-label">Nombre completo</label>
+                            <div className="form-input-wrapper">
+                                 <Icon name="text" className="form-icon"/>
                                 <input
-                                    className="input-form"
+                                    className="input-control"
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
-
-                                <img
-                                    src={nameIcon}
-                                    alt="Name Icon"
-                                    className="icon-new-value"
-                                />
                             </div>
+                        </div>
 
-                        </label>
-                        <label className="label-form">
-                            Dirección
-                            <div className="input-form-new-client">
+                        <div className="form-group">
+                            <label className="form-label">Dirección</label>
+                            <div className="form-input-wrapper">
+                                <Icon name="address" className="form-icon"/>
                                 <input
-                                    className="input-form"
+                                    className="input-control"
                                     type="text"
                                     value={address}
                                     onChange={(e) => setAddress(e.target.value)}
                                 />
-
-                                <img
-                                    src={addressIcon}
-                                    alt="Address Icon"
-                                    className="icon-new-value"
-                                />
                             </div>
+                        </div>
 
-                        </label>
-                        <label className="label-form">
-                            Email
-                            <div className="input-form-new-client">
+                        <div className="form-group">
+                            <label className="form-label">Correo Electrónico</label>
+                            <div className="form-input-wrapper">
+                                 <Icon name="email" className="form-icon"/>
                                 <input
-                                    className="input-form"
+                                    className="input-control"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
-
-                                <img
-                                    src={emailIcon}
-                                    alt="Email Icon"
-                                    className="icon-new-value"
-                                />
                             </div>
+                        </div>
 
-                        </label>
-                        <label className="label-form">
-                            Teléfono
-                            <div className="input-form-new-client">
+                        <div className="form-group">
+                            <label className="form-label">Teléfono</label>
+                            <div className="form-input-wrapper">
+                                <Icon name="phone" className="form-icon"/>
                                 <input
-                                    className="input-form"
+                                    className="input-control"
                                     type="text"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                 />
-
-                                <img
-                                    src={phoneIcon}
-                                    alt="Phone Icon"
-                                    className="icon-new-value"
-                                />
                             </div>
-
-                        </label>
-
-
+                        </div>
                     </form>
                 </div>
+
 
                 <div className="container-button-next">
                     <button className="button-next" onClick={handleSaveClick}>

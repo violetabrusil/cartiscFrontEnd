@@ -4,6 +4,7 @@ import { useWorkOrderContext } from "../contexts/searchContext/WorkOrderContext"
 import Icon from "../components/Icons";
 
 const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch }) => {
+    
     const { searchTerm, setSearchTerm } = useWorkOrderContext();
     const [searchInput, setSearchInput] = useState(searchTerm || "");
     const [debounceTimeout, setDebounceTimeout] = useState(null);
@@ -22,23 +23,21 @@ const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, select
 
     const handleInputChange = (e) => {
         const value = e.target.value;
-        setSearchInput(value); // Actualiza el estado local del input
+        setSearchInput(value); 
 
-        // Limpiar el timeout anterior si existe
         if (debounceTimeout) {
             clearTimeout(debounceTimeout);
         }
 
-        // Configurar un nuevo timeout para el debounce
         const timeout = setTimeout(() => {
             if (value.length === 0) {
-                onSearchChange(""); // Muestra toda la lista
-                setSearchTerm(""); // Restablece el término de búsqueda
+                onSearchChange(""); 
+                setSearchTerm("");
             } else if (value.length >= 3) {
-                onSearchChange(value, selectedOption); // Actualiza la búsqueda
-                setSearchTerm(value); // Actualiza el término de búsqueda global
+                onSearchChange(value, selectedOption); 
+                setSearchTerm(value); 
             }
-        }, 300); // Tiempo de espera de 300 ms (ajustable según la necesidad)
+        }, 300); 
 
         setDebounceTimeout(timeout);
     };

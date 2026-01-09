@@ -5,6 +5,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Products from "./Products";
 import Stock from "./Stock";
 import Location from "./Location";
+import Icon from "../../components/Icons";
 
 const Inventory = () => {
 
@@ -29,14 +30,23 @@ const Inventory = () => {
                 setViewMode('general');
             }} />
 
-            <div className="container-inventory">
+            <div className="container-general-tabs">
                 <Tabs selectedIndex={activeTab} onSelect={index => setActiveTab(index)}>
 
                     {showTabs && (
                         <TabList>
-                            <Tab>Productos</Tab>
-                            <Tab>Stock</Tab>
-                            <Tab>Localización</Tab>
+                            <Tab>
+                                <Icon name="productDefault" className="icon-tabs" />
+                                Productos
+                            </Tab>
+                            <Tab>
+                                <Icon name="stock" className="icon-tabs" />
+                                Precios y Stock
+                            </Tab>
+                            <Tab>
+                                <Icon name="column" className="icon-tabs"/>
+                                Localización
+                            </Tab>
                         </TabList>
 
                     )}
@@ -59,7 +69,6 @@ const Inventory = () => {
                     </TabPanel>
 
                 </Tabs>
-
             </div>
 
 

@@ -580,7 +580,7 @@ export function SearchProductsModal({ onClose,
                     <div style={{ marginTop: '20px' }}>
                         <SearchBar onFilter={handleFilter} customSelectStyles={customSelectModalStyles} customClasses="div-search-modal" />
                         {loading ? (
-                            <div className="spinner-container-products">
+                            <div className="spinner-container-general">
                                 <PuffLoader color={tertiaryColor} loading={loading} size={60} />
                             </div>
                         ) : (
