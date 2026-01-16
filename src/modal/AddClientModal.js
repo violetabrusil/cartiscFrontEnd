@@ -6,9 +6,6 @@ import apiClient from "../services/apiClient";
 import { showToastOnce } from "../utils/toastUtils";
 import Icon from "../components/Icons";
 
-
-const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
-
 export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
 
     const [cedula, setCedula] = useState("");
@@ -55,7 +52,7 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
                 </div>
 
                 <div className="form-container-modal">
-                    <form className="new-client-form">
+                    <form className="new-form">
                         <div className="form-group">
                             <label className="form-label">Cédula</label>
                             <div className="form-input-wrapper">

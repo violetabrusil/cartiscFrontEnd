@@ -54,14 +54,13 @@
 .scroll-indicator.visible {
     opacity: 1;
     pointer-events: auto;
-}
-
-.scroll-indicator.top {
-    top: 10px;
-}
+} 
 
 .scroll-indicator.bottom {
     bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
 }
 
 .scroll-arrow-icon {

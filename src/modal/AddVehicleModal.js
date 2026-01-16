@@ -7,6 +7,7 @@ import { CustomPlaceholder } from "../customPlaceholder/CustomPlaceholder";
 import apiClient from "../services/apiClient";
 import useCSSVar from "../hooks/UseCSSVar";
 import { showToastOnce } from "../utils/toastUtils";
+import Icon from "../components/Icons";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
@@ -36,25 +37,24 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate, selectedClientId
             ...provided,
             className: 'custom-select-control',
             width: isTabletLandscape ? '90%' : '97%',
-            height: '50px', // Estilo personalizado para la altura
-            border: `1px solid ${blackAlpha34}`, // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
+            height: '50px',
+            border: `1px solid ${blackAlpha34}`,
+            borderRadius: '4px',
             padding: '8px',
             marginBottom: '20px',
             marginTop: '8px'
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: grayMediumDark, // Color del texto del placeholder
+            color: grayMediumDark,
         }),
         option: (provided, state) => ({
             ...provided,
             className: 'custom-select-option',
-            // otros estilos personalizados si los necesitas
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '60%', // puedes ajustar el ancho del menú aquí
+            width: '60%',
         }),
 
     };
@@ -132,15 +132,16 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate, selectedClientId
                 <div style={{ display: 'flex' }}>
                     <h3 style={{ flex: '13', textAlign: 'center' }}>Información Vehículo</h3>
                     <div style={{ flex: "1", marginTop: '13px' }}>
-                        <button className="button-close" onClick={onClose}  >
-                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
+                        <button className="button-close-modal" onClick={onClose}  >
+                            <Icon name="close" className="close-icon-modal" />
                         </button>
                     </div>
                 </div>
 
-                <div className="container-add-car-modal">
-                    <div className="form-scroll-vehicle-modal">
-                        <form>
+
+                <div className="form-container-modal">
+                    <form className="new-form">
+                        <div className="form-group">
                             <div className={`input-container-modal ${isInputFocused ? "active" : ""}`}>
                                 <input className="input-plate-modal" type="text" value={plateCar} onChange={handleCarPlateChange}
                                     onFocus={handleInputFocus} onBlur={handleInputBlur} />
@@ -148,114 +149,120 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate, selectedClientId
                                 <label className="label-plate-vehicle-modal">ECUADOR</label>
                             </div>
 
-                            <label className="label-form">
-                                Año
-                                <div className="input-form-new-client">
-                                    <input
-                                        className="input-form-add-vehicle-modal "
-                                        type="number"
-                                        value={year}
-                                        onChange={(e) => setYear(parseInt(e.target.value))}
-                                    />
+                        </div>
 
-                                    <img
-                                        src={yearIcon}
-                                        alt="Year Icon"
-                                        className="icon-new-value"
-                                    />
 
-                                </div>
 
-                            </label>
-                            <label className="label-form">
-                                Categoría
-                                <Select
-                                    components={{ Placeholder: CustomPlaceholder }}
-                                    isSearchable={false}
-                                    options={options}
-                                    value={options.find(option => option.value === category)}
-                                    onChange={handleTypeCarChange}
-                                    styles={customStyles}
-                                    placeholder="Seleccionar" />
-                            </label>
-                            <label className="label-form">
-                                Kilometraje actual
-                                <div className="input-form-new-client">
-                                    <input
-                                        className="input-form-add-vehicle-modal "
-                                        type="number"
-                                        value={km}
-                                        onChange={(e) => setKm(parseInt(e.target.value))}
-                                    />
-                                    <img
-                                        src={kmIcon}
-                                        alt="Km Icon"
-                                        className="icon-new-value"
-                                        style={{ width: '30px' }}
-                                    />
 
-                                </div>
 
-                            </label>
-                            <label className="label-form">
-                                Marca
-                                <div className="input-form-new-client">
-                                    <input
-                                        className="input-form-add-vehicle-modal "
-                                        type="text"
-                                        value={brand}
-                                        onChange={(e) => setBrand(e.target.value)}
-                                    />
-                                    <img
-                                        src={brandIcon}
-                                        alt="Brand Icon"
-                                        className="icon-new-value"
-                                    />
+                        <label className="label-form">
+                            Año
+                            <div className="input-form-new-client">
+                                <input
+                                    className="input-form-add-vehicle-modal "
+                                    type="number"
+                                    value={year}
+                                    onChange={(e) => setYear(parseInt(e.target.value))}
+                                />
 
-                                </div>
+                                <img
+                                    src={yearIcon}
+                                    alt="Year Icon"
+                                    className="icon-new-value"
+                                />
 
-                            </label>
-                            <label className="label-form">
-                                Modelo
-                                <div className="input-form-new-client">
-                                    <input
-                                        className="input-form-add-vehicle-modal "
-                                        type="text"
-                                        value={model}
-                                        onChange={(e) => setModel(e.target.value)}
-                                    />
-                                    <img
-                                        src={modelIcon}
-                                        alt="Model Icon"
-                                        className="icon-new-value"
-                                        style={{ top: '35%' }}
-                                    />
+                            </div>
 
-                                </div>
+                        </label>
+                        <label className="label-form">
+                            Categoría
+                            <Select
+                                components={{ Placeholder: CustomPlaceholder }}
+                                isSearchable={false}
+                                options={options}
+                                value={options.find(option => option.value === category)}
+                                onChange={handleTypeCarChange}
+                                styles={customStyles}
+                                placeholder="Seleccionar" />
+                        </label>
+                        <label className="label-form">
+                            Kilometraje actual
+                            <div className="input-form-new-client">
+                                <input
+                                    className="input-form-add-vehicle-modal "
+                                    type="number"
+                                    value={km}
+                                    onChange={(e) => setKm(parseInt(e.target.value))}
+                                />
+                                <img
+                                    src={kmIcon}
+                                    alt="Km Icon"
+                                    className="icon-new-value"
+                                    style={{ width: '30px' }}
+                                />
 
-                            </label>
-                            <label className="label-form">
-                                Motor
-                                <div className="input-form-new-client">
-                                    <input
-                                        className="input-form-add-vehicle-modal "
-                                        type="text"
-                                        value={motor}
-                                        onChange={(e) => setMotor(e.target.value)}
-                                    />
-                                    <img
-                                        src={motorIcon}
-                                        alt="Motor Icon"
-                                        className="icon-new-value"
+                            </div>
 
-                                    />
+                        </label>
+                        <label className="label-form">
+                            Marca
+                            <div className="input-form-new-client">
+                                <input
+                                    className="input-form-add-vehicle-modal "
+                                    type="text"
+                                    value={brand}
+                                    onChange={(e) => setBrand(e.target.value)}
+                                />
+                                <img
+                                    src={brandIcon}
+                                    alt="Brand Icon"
+                                    className="icon-new-value"
+                                />
 
-                                </div>
+                            </div>
 
-                            </label>
-                        </form>
-                    </div>
+                        </label>
+                        <label className="label-form">
+                            Modelo
+                            <div className="input-form-new-client">
+                                <input
+                                    className="input-form-add-vehicle-modal "
+                                    type="text"
+                                    value={model}
+                                    onChange={(e) => setModel(e.target.value)}
+                                />
+                                <img
+                                    src={modelIcon}
+                                    alt="Model Icon"
+                                    className="icon-new-value"
+                                    style={{ top: '35%' }}
+                                />
+
+                            </div>
+
+                        </label>
+                        <label className="label-form">
+                            Motor
+                            <div className="input-form-new-client">
+                                <input
+                                    className="input-form-add-vehicle-modal "
+                                    type="text"
+                                    value={motor}
+                                    onChange={(e) => setMotor(e.target.value)}
+                                />
+                                <img
+                                    src={motorIcon}
+                                    alt="Motor Icon"
+                                    className="icon-new-value"
+
+                                />
+
+                            </div>
+
+                        </label>
+                    </form>
                 </div>
+
 
                 <div className="container-button-next">
                     <button className="button-next" onClick={handleAddVehicle}>
