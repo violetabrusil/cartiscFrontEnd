@@ -78,9 +78,6 @@ const InformationWorkOrder = () => {
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
     const [oldTotalValue, setOldTotalValue] = useState(0);
-    const [rawIntegerPart, rawDecimalPart] = totalValue ? totalValue.split('.') : [];
-    const integerPart = rawIntegerPart || '0';
-    const decimalPart = rawDecimalPart || '00';
     const [existProductsSaved, setExistProductsSaved] = useState(false);
     const [existServiceSaved, setExistServiceSaved] = useState(false);
     const [existOperationSaved, setExistOperationSaved] = useState(false);
@@ -89,13 +86,29 @@ const InformationWorkOrder = () => {
     const [isWorkOrderModalOpen, setWorkOrderModalOpen] = useState(false);
     const [lastAddedReceiptId, setLastAddedReceiptId] = useState(null);
     const [workOrderData, setWorkOrderData] = useState(null);
-    const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
     const [vat, setVat] = useState(0);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [fetchingData, setFetchingData] = useState(true);
     const [isEditingWorkOrder, setIsEditingWorkOrder] = useState(false);
     const [showButton, setShowButton] = useState(true);
+
+    const [isTaxFree, setIsTaxFree] = useState(false);
+
+    const subtotalNum = Number(totalValue) || 0;
+    const taxRate = 0.15;
+    const currentIvaNum = isTaxFree ? 0 : (subtotalNum * taxRate);
+    const finalTotalNum = subtotalNum + currentIvaNum;
+
+    const [integerPart, decimalPart] = subtotalNum.toFixed(2).split('.');
+    const [ivaInteger, ivaDecimal] = currentIvaNum.toFixed(2).split('.');
+    const [finalInteger, finalDecimal] = finalTotalNum.toFixed(2).split('.');
+
+    const [totalProductsValue, setTotalProductsValue] = useState(0);
+    const [totalOperationsValue, setTotalOperationsValue] = useState(0);
+    const [totalServicesValue, setTotalServicesValue] = useState(0);
+
+
 
     const [percentages, setPercentages] = useState({
         group3: [null, null, null, 0, null],
@@ -365,19 +378,7 @@ const InformationWorkOrder = () => {
 
                 if (newStatus === 'completed') {
                     getWorkOrderDetailById();
-                    navigate('/paymentReceipt', {
-                        state: {
-                            fromWorkOrder: true,
-                            workOrderData: {
-                                id: workOrderId,
-                                workOrderCode: workOrderDetail.work_order_code,
-                                clientName: workOrderDetail.client.name,
-                                plate: workOrderDetail.vehicle.plate,
-                                subtotal: parseFloat(totalValue).toFixed(2),
-                                clientId: workOrderDetail.client.id
-                            }
-                        }
-                    });
+                    handleOpenModalPayment()
 
                 }
             }
@@ -729,9 +730,9 @@ const InformationWorkOrder = () => {
                 work_order_id: parseInt(workOrderDetail.id, 10),
                 invoice_type: 'sales_note',
                 subtotal: totalValue,
-                discount: discount / 100,
-                vat: 0,
-                total: total,
+                discount: 0,
+                vat: currentIvaNum,
+                total: finalTotalNum,
                 date: selectedDateAdjusted.toISOString()
             };
 
@@ -823,19 +824,22 @@ const InformationWorkOrder = () => {
                 }, 0);
             }
 
+            const pValue = calculateTotalProduct(selectedProducts);
+            const oValue = calculateTotal(selectedOperations, 'cost');
+            const sValue = calculateTotal(servicesWithOperations, 'cost');
 
-            const totalProductsValue = calculateTotalProduct(selectedProducts);
-            const totalOperationsValue = calculateTotal(selectedOperations, 'cost');
-            const totalServicesValue = calculateTotal(servicesWithOperations, 'cost');
+            setTotalProductsValue(pValue);
+            setTotalOperationsValue(oValue);
+            setTotalServicesValue(sValue);
 
-            const total = totalProductsValue + totalOperationsValue + totalServicesValue;
+            const subtotal = pValue + oValue + sValue;
 
-            setTotalValue(total.toFixed(2));
-            setOldTotalValue(totalValue);
+            setTotalValue(subtotal.toFixed(2));
+            setOldTotalValue(subtotal);
         } else {
             setTotalValue(oldTotalValue);
         }
-    }, [selectedProducts, selectedOperations, servicesWithOperations, isModalOpenProducts, oldTotalValue, totalValue]);
+    }, [selectedProducts, selectedOperations, servicesWithOperations, isModalOpenProducts]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -913,35 +917,34 @@ const InformationWorkOrder = () => {
 
                             </div>
 
-                            <div className="client-search-container">
-                                <div className="left-div-detail">
-                                    <div className="container-data-client-information">
+                            <div className="client-search-container">                                <div className="left-div-detail">
+                                <div className="container-data-client-information">
 
-                                        <h2>Cliente</h2>
+                                    <h2>Cliente</h2>
 
-                                        <div className="label-container">
-                                            <label className="label-title">Nombre:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.name}</label>
-                                        </div>
-                                        <div className="label-container">
-                                            <label className="label-title">Cédula:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.cedula}</label>
-                                        </div>
-                                        <div className="label-container">
-                                            <label className="label-title">Dirección:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.address}</label>
-                                        </div>
-                                        <div className="label-container">
-                                            <label className="label-title">Teléfono:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.phone}</label>
-                                        </div>
-                                        <div className="label-container">
-                                            <label className="label-title">Correo:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.email}</label>
-                                        </div>
-
+                                    <div className="label-container">
+                                        <label className="label-title">Nombre:</label>
+                                        <label className="label-input-detail">{workOrderDetail.client.name}</label>
                                     </div>
+                                    <div className="label-container">
+                                        <label className="label-title">Cédula:</label>
+                                        <label className="label-input-detail">{workOrderDetail.client.cedula}</label>
+                                    </div>
+                                    <div className="label-container">
+                                        <label className="label-title">Dirección:</label>
+                                        <label className="label-input-detail">{workOrderDetail.client.address}</label>
+                                    </div>
+                                    <div className="label-container">
+                                        <label className="label-title">Teléfono:</label>
+                                        <label className="label-input-detail">{workOrderDetail.client.phone}</label>
+                                    </div>
+                                    <div className="label-container">
+                                        <label className="label-title">Correo:</label>
+                                        <label className="label-input-detail">{workOrderDetail.client.email}</label>
+                                    </div>
+
                                 </div>
+                            </div>
 
                                 <div className="right-div-container">
                                     <div className='right-div-container-top'>
@@ -986,32 +989,60 @@ const InformationWorkOrder = () => {
                                         </div>
 
                                         <div className="container-right-div-information-vehicle-km">
-                                            <div className="vehicle-km-fields">
-                                                <label className="label-vehicle-km">KM:</label>
+                                            {/* FILA 1: KM y SUBTOTAL */}
+                                            <div className="grid-cell highlight-km">
+                                                <label className="label-style">KM:</label>
                                                 <div className='vehicle-km-container'>
-                                                    {isEditingWorkOrder && (
-                                                        <input
-                                                            className="input-new-km"
-                                                            type="text"
-                                                            value={newKm}
-                                                            onChange={handleKmInputChange}
-                                                        />
-                                                    )}
-                                                    {!isEditingWorkOrder && (
-                                                        <label>{newKm}</label>
+                                                    {isEditingWorkOrder ? (
+                                                        <input className="input-new-km" value={newKm} onChange={handleKmInputChange} />
+                                                    ) : (
+                                                        <span>{newKm}</span>
                                                     )}
                                                 </div>
                                             </div>
 
-                                            <div className="vehicle-total-fields">
-                                                <label className="label-total">Total:</label>
+                                            <div className="grid-cell highlight-sub-total">
+                                                <label className="label-style">SUBTOTAL:</label>
                                                 <div className="total-value-container">
-                                                    <label className="total-value">
-                                                        ${integerPart}.<span style={{ fontSize: '28px' }}>{decimalPart}</span>
-                                                    </label>
+                                                    <span className="total-value">
+                                                        <span className="total-value">${integerPart}.<small>{decimalPart}</small></span>
+                                                    </span>
                                                 </div>
                                             </div>
 
+                                            {/* FILA 2: IVA y TOTAL FINAL */}
+                                            <div className="grid-cell highlight-iva">
+                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                                    <label className="label-iva-style ">IVA ({isTaxFree ? '0%' : '15%'}):</label>
+
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0px', marginTop: '0.1rem', marginBottom: '0.3rem' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            id="iva-toggle"
+                                                            className="iva-checkbox"
+                                                            checked={isTaxFree}
+                                                            onChange={(e) => setIsTaxFree(e.target.checked)}
+                                                        />
+                                                        <label htmlFor="iva-toggle" style={{ fontSize: '13px', cursor: 'pointer', color: '#000000ff' }}>
+                                                            Aplicar IVA 0%
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div className="total-value-container">
+                                                    <span className="iva-value">
+                                                        ${ivaInteger}.<small>{ivaDecimal}</small>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid-cell highlight-total">
+                                                <label className="label-style">VALOR FINAL:</label>
+                                                <div className="total-value-container">
+                                                    <span className="total-value-main">
+                                                        ${finalInteger}.<span className="decimal-part-large">{finalDecimal}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1244,8 +1275,14 @@ const InformationWorkOrder = () => {
                                 )
                                 }
 
-                                <div className="title-second-section-container">
+                                <div className="title-second-section-container" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                                     <h3>Repuestos</h3>
+                                    <div className="section-total-badge">
+                                        <label className="section-total-label">Subtotal Repuestos:</label>
+                                        <span className="section-total-value">
+                                            ${totalProductsValue.toFixed(2)}
+                                        </span>
+                                    </div>
                                     <button className="button-toggle" onClick={() => toggleComponentes('products')}>
                                         <img
                                             src={arrowIcon}
@@ -1291,8 +1328,14 @@ const InformationWorkOrder = () => {
                                     </>
 
                                 )}
-                                <div className="title-second-section-container">
+                                <div className="title-second-section-container" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                                     <h3>Servicios/Operaciones</h3>
+                                    <div className="section-total-badge">
+                                        <label className="section-total-label">Subtotal Servicios/Operaciones:</label>
+                                        <span className="section-total-value">
+                                            ${(totalServicesValue + totalOperationsValue).toFixed(2)}
+                                        </span>
+                                    </div>
                                     <button className="button-toggle" onClick={() => toggleComponentes('services')}>
                                         <img
                                             src={arrowIcon}
@@ -1427,12 +1470,10 @@ const InformationWorkOrder = () => {
                     onClose={closeModalPayment}
                     workOrderData={workOrderData}
                     onConfirm={handleWorkOrderConfirm}
-                    discount={discount}
-                    setDiscount={setDiscount}
-                    total={total}
-                    setTotal={setTotal}
-                    vat={vat}
-                    setVat={setVat}
+                    isTaxFree={isTaxFree}
+                    subtotalCalculated={subtotalNum}
+                    ivaCalculated={currentIvaNum}
+                    totalCalculated={finalTotalNum}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
                 />

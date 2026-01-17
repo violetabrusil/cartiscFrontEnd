@@ -1,26 +1,17 @@
 import "../Modal.css";
 import 'react-datepicker/dist/react-datepicker.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import DatePicker from 'react-datepicker';
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
-export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, discount, setDiscount, total, setTotal, vat, setVat, selectedDate, setSelectedDate }) => {
-
-    useEffect(() => {
-        const subtotal = parseFloat(workOrderData.subtotal);
-        const calculatedTotal = subtotal + (subtotal * vat) - (subtotal * (discount / 100));
-        setTotal(calculatedTotal);
-    }, [workOrderData, discount, vat]);
+export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, isTaxFree,subtotalCalculated, ivaCalculated, totalCalculated, selectedDate, setSelectedDate }) => {
 
     if (!isOpen) return null;
 
-    const handleDiscountChange = (event) => {
-        const value = parseFloat(event.target.value);
-        if (value >= 0 && value <= 100) {
-            setDiscount(value);
-        }
+    const formatSafe = (value) => {
+        return (value || 0).toFixed(2);
     };
 
     return (
@@ -47,7 +38,7 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, 
                         <DatePicker
                             className="selectedDate-input"
                             selected={selectedDate}
-                            onChange={date => setSelectedDate(date)} // Actualiza el estado cuando se selecciona una fecha
+                            onChange={date => setSelectedDate(date)} 
                         />
                     </label>
                     <label>Placa del vehículo:
@@ -56,26 +47,15 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, 
                     <label>Tipo de comprobante:
                         <span>Nota de venta</span>
                     </label>
-                    <label>Subtotal:
-                        <span>{workOrderData.subtotal}</span>
+                    <label>SUBTOTAL SIN IVA :
+                        <span>${formatSafe(subtotalCalculated)}</span>
                     </label>
-                    <label>IVA:
-                        <span>{vat * 100}%</span>
+                    <label>IVA ({isTaxFree ? '0%' : '15%'}):
+                        <span>${formatSafe(isTaxFree ? 0 : ivaCalculated)}</span>
                     </label>
-                    <div>
-                        <label htmlFor="discount-input">Descuento (%): </label>
-                        <input
-                            type="number"
-                            id="discount-input"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value={discount}
-                            onChange={handleDiscountChange}
-                        />
-                    </div>
-                    <label>Total:
-                        <span>{total.toFixed(2)}</span>
+
+                    <label>VALOR TOTAL A PAGAR:
+                        <span style={{ fontSize: "18px", fontWeight: "bold" }}>${formatSafe(totalCalculated)}</span>
                     </label>
                 </div>
 

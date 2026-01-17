@@ -128,9 +128,12 @@
     margin-left: 47px;
 }
 
-.label-vehicle-km {
-    font-size: 16px;
-    font-weight: 600;
+.label-vehicle-km,
+.label-total {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 .label-work-order {
@@ -145,18 +148,163 @@
 }
 
 .container-right-div-information-vehicle-detail {
-    width: 60%;
+    width: 50%;
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
 }
 
 .container-right-div-information-vehicle-km {
-    width: 40%;
+    width: 50%;
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+    padding-bottom: 0.5rem;
+}
+ 
+.grid-cell {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 10px;
 }
 
+.label-style {
+    font-size: 15px;
+    color: #000000;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-bottom: 1.5rem;
+    margin-left: 5px;
+}
 
+.label-iva-style {
+    font-size: 15px;
+    color: #000000;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-bottom: 0.3rem;
+    margin-left: 5px;
+}
+
+.vehicle-km-container {
+    margin-left: auto;
+    margin-top: 0.3rem;
+    margin-right: 0.3rem;
+    align-items: baseline;
+    font-size: 31px;
+    color: #000000;
+    font-weight: 600;
+    display: flex;
+}
+
+.total-value-container {
+    margin-left: auto;
+    display: flex;
+    align-items: baseline;
+}
+
+.total-value {
+    font-size: 31px;
+    color: #1C4A74;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    margin-right: 0.3rem;
+}
+
+.iva-value {
+    font-size: 31px;
+    color: #1C4A74;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-right: 0.3rem;
+}
+
+.iva-checkbox {
+    appearance: none; 
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #1C4A74; 
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+.iva-checkbox:checked {
+    background-color: #1C4A74; 
+}
+
+.iva-checkbox:checked::after {
+    content: '✔';
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.total-value-main {
+    font-size: 41px;
+    font-weight: 700;
+    color: #1C4A74;
+    margin-top: 0.3rem;
+    margin-right: 0.3rem;
+}
+
+.decimal-part {
+    font-size: 20px;
+}
+
+.decimal-part-large {
+    font-size: 28px;
+}
+
+.highlight-total {
+    background-color: #d7e6f1;
+    border-radius: 8px;
+    margin-right: 0.5rem
+}
+
+.highlight-km {
+    background-color: #e3ffde;
+    border-radius: 8px;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.highlight-sub-total {
+    background-color: #ecf7ff;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.highlight-iva {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background-color: #fffbd3;
+    border-radius: 8px;
+    margin-left: 0.5rem;
+}
+
+.highlight-iva label {
+    line-height: 1.2;
+}
+
+.input-new-km {
+    width: 100%;
+    font-size: 24px;
+    color: #1C4A74;
+    border: 1px solid #ccc;
+    padding: 4px;
+}
 
 .container-right-div-information-vehicle:first-child {
     min-height: 47%;
@@ -180,7 +328,7 @@
 
 .div-container-hidden {
     margin-right: 102px;
-  }
+}
 
 .div-table-products {
     margin-top: 50px;
@@ -206,28 +354,6 @@
 
 .btn-select-all:disabled {
     color: #6E757D;
-}
-
-.total-value-container {
-    text-align: left;
-    margin-top: -21px;
-    margin-left: auto;
-    margin-right: 37px;
-}
-
-.vehicle-km-container {
-    text-align: left;
-    margin-top: -10px;
-    margin-left: auto;
-    margin-right: 37px;
-    font-size: 31px;
-}
-
-.total-value {
-    font-size: 41px;
-    margin-top: -20px;
-    font-weight: 600;
-    color: #1C4A74;
 }
 
 .container-data-client-information {
@@ -293,12 +419,6 @@
     font-size: 25px;
     text-align: center;
     box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
-}
-
-.input-new-km {
-    width: 70%;
-    text-align: right;
-    margin-left: 69px;
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {

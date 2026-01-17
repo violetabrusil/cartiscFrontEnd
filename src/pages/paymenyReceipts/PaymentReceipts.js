@@ -32,7 +32,6 @@ const PaymentReceipts = () => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [isWorkOrderModalOpen, setWorkOrderModalOpen] = useState(false);
     const [workOrderData, setWorkOrderData] = useState(null);
-    const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
     const [vat, setVat] = useState(0);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -115,16 +114,6 @@ const PaymentReceipts = () => {
                 Cell: ({ value }) => <span>{value}</span>,
             },
             {
-                Header: "",
-                accessor: "work_order.id",
-                Cell: ({ value }) => (
-                    <button className="button-eye-workorder-payment" onClick={() => navigateToDetail(value)}>
-                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-payment" />
-                    </button>
-                ),
-                className: "small-row"
-            },
-            {
                 Header: "Estado",
                 accessor: "sales_receipt_status",
                 Cell: ({ value }) => {
@@ -156,7 +145,7 @@ const PaymentReceipts = () => {
                 Cell: ({ value }) => <span>{formatDate(value)}</span>,
             },
             {
-                Header: "Subtotal",
+                Header: "Subtotal sin IVA",
                 accessor: "subtotal",
                 Cell: ({ value }) => {
                     const formattedValue = parseFloat(value).toFixed(2);
@@ -164,33 +153,45 @@ const PaymentReceipts = () => {
                 }
             },
             {
-                Header: "Descuento",
-                accessor: "discount",
-                Cell: ({ value }) => `${value}%`
-            },
-            {
-                Header: "IVA",
+                Header: "IVA (15%)",
                 accessor: "vat",
-                Cell: ({ value }) => `${value}%`
+                width: 165,
+                minWidth: 120,
+                Cell: ({ value }) => {
+                    const vatAmount = parseFloat(value).toFixed(2);
+
+                    return (
+                        <div style={{ width: '60px' }}>
+                            $ {vatAmount}
+                        </div>
+                    );
+                }
             },
             {
-                Header: "Total",
+                Header: "Valor Total",
                 accessor: "total",
                 Cell: ({ value }) => {
-                    // Asegurarse de que el valor tenga dos decimales
                     const formattedValue = parseFloat(value).toFixed(2);
-
-                    // Divide el valor en partes entera y decimal
                     const [wholePart, decimalPart] = formattedValue.split(".");
 
                     return (
                         <div style={{ display: 'inline-block', color: '#316EA8', fontWeight: '600' }} className="no-wrap-column-total">
                             <span className="whole-part">$ {wholePart}.</span>
-                            <span className="decimal-part">{decimalPart}</span>
+                            <span className="decimal-part" style={{ fontSize: '0.85em' }}>{decimalPart}</span>
                         </div>
                     );
                 },
                 headerClassName: 'bold-text large-text'
+            },
+            {
+                Header: "",
+                accessor: "work_order.id",
+                Cell: ({ value }) => (
+                    <button className="button-eye-workorder-payment" onClick={() => navigateToDetail(value)}>
+                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-payment" />
+                    </button>
+                ),
+                className: "small-row"
             },
             {
                 Header: "",
@@ -435,7 +436,7 @@ const PaymentReceipts = () => {
                 work_order_id: parseInt(workOrderData.id, 10),
                 invoice_type: 'sales_note',
                 subtotal: parseFloat(workOrderData.subtotal).toFixed(2),
-                discount: discount / 100,
+                discount: 0,
                 date: selectedDateAdjusted.toISOString(),
                 vat: 0,
                 total: total,
@@ -635,8 +636,6 @@ const PaymentReceipts = () => {
                     onClose={closeModal}
                     workOrderData={workOrderData}
                     onConfirm={handleWorkOrderConfirm}
-                    discount={discount}
-                    setDiscount={setDiscount}
                     total={total}
                     setTotal={setTotal}
                     vat={vat}

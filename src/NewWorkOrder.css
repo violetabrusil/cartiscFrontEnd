@@ -83,7 +83,7 @@
 .right-div .input-group-work-order {
     margin-bottom: 10px;
     flex: 1;
-    
+
 }
 
 .right-div label {
@@ -355,13 +355,40 @@
 
 .title-second-section-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+   padding: 8px 15px;
+    width: 100%;
 }
 
 .title-second-section-container h3 {
-    flex: 1;
-    text-align: left;
+    margin: 0;
+}
+
+.section-total-badge {
+    background-color: #e3f1ff;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    margin-left: auto;
+    margin-right: 1.3rem;
+    gap: 10px;
+    padding: 0.5rem;
+}
+
+.section-total-label {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #000;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.section-total-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1C4A74;
 }
 
 .button-toggle {
@@ -639,7 +666,7 @@
 
 .container-fields-new-work-order-vehicle {
     display: flex;
-    margin-top: 40px;
+    margin-top: 24px;
     margin-left: 25px;
 }
 
