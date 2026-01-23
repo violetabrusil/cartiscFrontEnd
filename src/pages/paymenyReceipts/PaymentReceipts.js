@@ -363,34 +363,32 @@ const PaymentReceipts = () => {
     const downloadPDF = async (paymentId) => {
 
         try {
-            setDownloadingPdf(true)
+            setDownloadingPdf(true);
             const response = await apiClient.get(`/sales-receipts/generate-pdf/${paymentId}`, { responseType: 'blob' });
-            console.log("response", response)
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+
+            const header = response.headers['content-disposition'];
+            const fileName = header.split('filename=')[1].replace(/['"]/g, '');
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'comprobante_venta.pdf'); // El nombre que quieras para el archivo descargado
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
-            link.click();
+            link.click()
 
-            // Limpieza: quitar el enlace cuando haya terminado
             link.parentNode.removeChild(link);
-            if (response.status === 200) {
-                setDownloadingPdf(false);
-                toast.success('Archivo descargado', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-            } else {
-                setDownloadingPdf(false);
-                toast.error('Error al descarar el archivo', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-            }
+            window.URL.revokeObjectURL(url);
+
+            toast.success('Archivo descargado correctamente', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+
         } catch (error) {
             console.error('Error descargando el archivo', error);
 
-            // Mostrar un toast de error
-            toast.error('Error descargando el archivo');
+            toast.error('Error al generar el PDF. Verifique los datos e intente nuevamente.');
         }
         setDownloadingPdf(false);
     };
