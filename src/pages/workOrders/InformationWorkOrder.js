@@ -1023,7 +1023,7 @@ const InformationWorkOrder = () => {
                                                             checked={isTaxFree}
                                                             onChange={(e) => setIsTaxFree(e.target.checked)}
                                                         />
-                                                        <label htmlFor="iva-toggle" style={{ fontSize: '13px', cursor: 'pointer', color: '#000000ff' }}>
+                                                        <label htmlFor="iva-toggle" style={{ fontSize: '11px', cursor: 'pointer', color: '#000000ff', whiteSpace: 'nowrap'  }}>
                                                             Aplicar IVA 0%
                                                         </label>
                                                     </div>

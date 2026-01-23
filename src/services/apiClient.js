@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiClient = axios.create({
 
-    baseURL: 'http://192.168.100.164:1313/cartics',
+    baseURL: 'http://localhost:1313/cartics',
     headers: {
         'Content-Type': 'application/json',
         'Accept': '*/*',
