@@ -18,12 +18,12 @@ const SearchBar = ({
         { value: 'branch', label: 'Marca' }
     ] }) => {
 
-    const [selectedOption, setSelectedOption] = useState(options[1]);
+    const [selectedOption, setSelectedOption] = useState(options[2]);
     const [searchTerm, setSearchTerm] = useState("");
 
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);
-        setSearchTerm(""); //Para resetear el valor del input de búsqueda
+        setSearchTerm("");
         onFilter(selectedOption, searchTerm);
 
     };
@@ -84,7 +84,6 @@ const SearchBar = ({
                 value={selectedOption}
                 onChange={handleOptionsChange}
                 styles={combinedStyles}
-                placeholder="Seleccionar"
                 menuPortalTarget={document.body}
             />
 
