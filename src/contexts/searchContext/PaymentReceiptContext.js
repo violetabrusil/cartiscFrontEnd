@@ -25,7 +25,20 @@ export const PaymentReceiptProvider = ({ children }) => {
         setInvoiceType(values.invoiceType);
         setStartDate(values.startDate);
         setEndDate(values.endDate);
-    }
+    };
+
+    const resetAllFilters = () => {
+        setOrderCode('');
+        setVehiclePlate('');
+        setClientName('');
+        setClientId('');
+        setStatus('');
+        setPaymentType('');
+        setInvoiceType('');
+        setStartDate('');
+        setEndDate('');
+        setFilterData([]);
+    };
 
     return (
         <PaymentReceiptContext.Provider
@@ -50,7 +63,8 @@ export const PaymentReceiptProvider = ({ children }) => {
                 setEndDate,
                 filterData,
                 setFilterData,
-                saveFormValues
+                saveFormValues,
+                resetAllFilters
             }}>
             {children}
         </PaymentReceiptContext.Provider>

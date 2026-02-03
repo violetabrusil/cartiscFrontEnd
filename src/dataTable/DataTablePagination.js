@@ -13,7 +13,7 @@ const DataTablePagination = ({
     totalPages,
     pageSize,
     setCurrentPage,
-    isFilter, // Recibe setCurrentPage como prop
+    onPageChange,
 }) => {
     const {
         getTableProps,
@@ -52,7 +52,10 @@ const DataTablePagination = ({
             return (
                 <button
                     key={number}
-                    onClick={() => setCurrentPage(number)}
+                    onClick={() => {
+                        setCurrentPage(number);
+                        if (onPageChange) onPageChange(number);
+                    }}
                     className={currentPage === number ? 'active' : ''}
                 >
                     {number}
@@ -88,7 +91,7 @@ const DataTablePagination = ({
                     })}
                 </tbody>
             </table>
-            {!isFilter && (
+            {totalPages > 0 && (
                 <div className="container-table-pagination-buttons">
                     <button onClick={goToPreviousPage} disabled={!hasPreviousPage}>
                         &lt; Anterior

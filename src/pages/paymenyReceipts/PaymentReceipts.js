@@ -2,7 +2,7 @@ import "../../PaymentReceipts.css";
 import "../../Modal.css"
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import PuffLoader from "react-spinners/PuffLoader";
 import Select from 'react-select';
 import Header from "../../header/Header";
@@ -46,13 +46,14 @@ const PaymentReceipts = () => {
     const [sendingEmail, setSendingEmail] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(7, 5);
     const { filterData, setFilterData } = usePaymentReceipt();
-    const [isFilter, setIsFilter] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     //const [pageSize, setPageSize] = useState(7);
     const [totalValues, setTotalValues] = useState(0);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { resetAllFilters } = usePaymentReceipt();
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },
@@ -236,65 +237,88 @@ const PaymentReceipts = () => {
         setModalOpen(false);
     };
 
-    const handleConfirm = async (data) => {
+    const handleConfirm = async (data, isRestoringFromUrl = false, page = 1, pageSize = responsivePageSize) => {
+
+        let cleanParams = Object.fromEntries(
+            Object.entries(data).filter(([_, v]) => v !== "" && v !== null && v !== undefined)
+        );
+
+        const formatToStartOfDayISO = (date) => {
+            if (!date) return null;
+            const d = new Date(date);
+            if (isNaN(d)) return null;
+            return d.toISOString().split('T')[0] + "T00:00:00Z";
+        };
+
+        if (cleanParams.date_start_of_search) {
+            cleanParams.date_start_of_search = formatToStartOfDayISO(cleanParams.date_start_of_search);
+        }
+        if (cleanParams.date_finish_of_search) {
+            cleanParams.date_finish_of_search = formatToStartOfDayISO(cleanParams.date_finish_of_search);
+        }
+
+        if (!isRestoringFromUrl) {
+            setCurrentPage(1);
+            setSearchParams({ ...cleanParams, page: 1 });
+            return;
+        }
+
         setLoading(true);
         try {
-            // Verifica si todos los campos de búsqueda están vacíos
-            const isEmptySearch = !data.work_order_code &&
-                !data.vehicle_plate &&
-                !data.client_name &&
-                !data.client_cedula &&
-                !data.sales_receipt_status &&
-                !data.payment_type &&
-                !data.invoice_type &&
-                !data.date_start_of_search &&
-                !data.date_finish_of_search;
-
+            const isEmptySearch = Object.keys(cleanParams).filter(k => k != 'page').length === 0;
             let response;
 
-            // Si los campos están vacíos, realiza una solicitud para obtener toda la lista
             if (isEmptySearch) {
-                response = await apiClient.get('/sales-receipts/all'); // Ajusta esta URL según tu API
+                await fetchData(page, pageSize);
+                setLoading(false)
+                return;
             } else {
-                response = await apiClient.post('/sales-receipts/search', data);
+                response = await apiClient.post(`/sales-receipts/search/${page}/${pageSize}`, cleanParams);
+                console.log("datos de busqueda con fechas formateadas", cleanParams);
             }
 
-            // Si response.data es null o undefined, cierra el modal y retorna.
-            if (!response.data) {
+            if (!response.data || !response.data.values) {
+                setPaymentReceipts([]);
+                setTotalPages(0);
+                setTotalValues(0);
+                setLoading(false);
                 setModalOpen(false);
                 return;
             }
 
-            // Procesa la respuesta
-            const transformedPaymentReceipts = response.data.map(payment => {
-                const newDateStart = formatDate(payment.created_at);
-                const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
-                const translatedPaymentType = paymentTypeMaping[payment.payment_type] || payment.payment_type;
-                const translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
+            const { values, total_pages, total_values } = response.data;
+
+            const transformed = values.map(payment => {
+                let translatedStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
+                if (payment.paid === payment.total) translatedStatus = "Cobrado";
 
                 return {
                     ...payment,
-                    created_at: newDateStart,
-                    invoice_type: translatedInvoiceType,
-                    payment_type: translatedPaymentType,
-                    sales_receipt_status: translatedPaymentStatus
+                    created_at: formatDate(payment.created_at),
+                    invoice_type: invoiceTypeMaping[payment.invoice_type] || payment.invoice_type,
+                    payment_type: paymentTypeMaping[payment.payment_type] || payment.payment_type,
+                    sales_receipt_status: translatedStatus
                 };
             });
 
-            // Actualiza los estados con los datos filtrados o la lista completa
-            setIsFilter(true);
-            setPaymentReceipts(transformedPaymentReceipts);
-            setFilterData(transformedPaymentReceipts);
+            setPaymentReceipts(transformed);
+            setFilterData(transformed);
+            setTotalPages(total_pages);
+            setTotalValues(total_values);
+
+            if (page > total_pages && total_pages > 0) {
+                setCurrentPage(1);
+                setSearchParams({ ...cleanParams, page: 1 })
+            }
             setLoading(false);
             setModalOpen(false);
 
         } catch (error) {
-            toast.error('Ha ocurrido un error', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            setLoading(false);
+            toast.error('Error al procesar la solicitud');
+            console.error(error);
         }
     };
-
 
     //Función que permite obtener todos los recibos de pago
     //cuando inicia la pantalla y las busca por
@@ -312,7 +336,7 @@ const PaymentReceipts = () => {
 
             console.log("datos de comprobante", response.data);
 
-            const { current_page, total_pages, values, total_values } = response.data;
+            const { total_pages, values, total_values } = response.data;
 
             const transformedPaymentReceipts = values.map(payment => {
                 const newDateStart = formatDate(payment.created_at);
@@ -331,9 +355,6 @@ const PaymentReceipts = () => {
                 };
             });
 
-            // Imprime los datos transformados
-            console.log("Datos transformados:", transformedPaymentReceipts);
-            setIsFilter(false);
             setPaymentReceipts(transformedPaymentReceipts);
             setLoading(false);
             setTotalPages(total_pages);
@@ -348,16 +369,17 @@ const PaymentReceipts = () => {
         }
     };
 
+    const handlePageChange = (newPage) => {
+        const currentParams = Object.fromEntries([...searchParams]);
+        setSearchParams({ ...currentParams, page: newPage })
+    };
+
     const goToNextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(prevPage => prevPage + 1);
-        }
+        if (currentPage < totalPages) handlePageChange(currentPage + 1);
     };
 
     const goToPreviousPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage(prevPage => prevPage - 1);
-        }
+        if (currentPage > 1) handlePageChange(currentPage - 1);
     };
 
     const downloadPDF = async (paymentId) => {
@@ -528,30 +550,33 @@ const PaymentReceipts = () => {
     };
 
     useEffect(() => {
-        fetchData(currentPage, responsivePageSize);
-        console.log("cursor", currentPage)
-        console.log("pageSize", responsivePageSize)
-    }, [currentPage, responsivePageSize]);
-
-    useEffect(() => {
         if (location.state?.fromWorkOrder) {
             setWorkOrderData(location.state.workOrderData);
             console.log("data payment", workOrderData)
             setWorkOrderModalOpen(true);
-            navigate('/paymentReceipt', { replace: true }); // Esto reemplaza la entrada actual en el historial.
+            navigate('/paymentReceipt', { replace: true });
         }
     }, []);
-
-    useEffect(() => {
-        // Recuperar datos filtrados al cargar el componente o al regresar a la página
-        setPaymentReceipts(filterData); // Ajusta esto según cómo manejes tus datos en el contexto
-    }, [filterData]); // Ejecuta este efecto cuando filterData cambie en el contexto
 
     useEffect(() => {
         console.log("Lista filtrada actualizada:", filterData);
     }, [filterData]);
 
+    useEffect(() => {
+        const params = Object.fromEntries([...searchParams]);
+        const pageToLoad = params.page ? parseInt(params.page) : 1;
 
+        setCurrentPage(pageToLoad);
+        const filters = { ...params };
+        delete filters.page;
+
+        if (Object.keys(params).filter(k => k !== 'page').length === 0) {
+            fetchData(pageToLoad, responsivePageSize);
+        } else {
+            handleConfirm(filters, true, pageToLoad, responsivePageSize);
+        }
+
+    }, [searchParams, responsivePageSize]);
 
     return (
 
@@ -600,7 +625,7 @@ const PaymentReceipts = () => {
                         {paymentReceipts.length > 0 && (
                             <DataTablePagination
                                 data={paymentReceipts}
-                                columns={columns} // Define tus columnas
+                                columns={columns}
                                 goToNextPage={goToNextPage}
                                 goToPreviousPage={goToPreviousPage}
                                 hasNextPage={currentPage < totalPages}
@@ -609,7 +634,7 @@ const PaymentReceipts = () => {
                                 totalPages={totalPages}
                                 pageSize={responsivePageSize}
                                 setCurrentPage={setCurrentPage}
-                                isFilter={isFilter}
+                                onPageChange={handlePageChange}
                             />
                         )}
 

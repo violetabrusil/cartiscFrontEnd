@@ -4,10 +4,15 @@ import React, { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import { usePaymentReceipt } from "../contexts/searchContext/PaymentReceiptContext";
+import { useSearchParams } from "react-router-dom";
+
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
 export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { resetAllFilters } = usePaymentReceipt();
 
     const {
         orderCode,
@@ -66,6 +71,28 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
         { value: 'sales_note', label: 'Nota de venta' }
     ];
 
+    useEffect(() => {
+        if (isOpen) {
+            const params = Object.fromEntries([...searchParams]);
+
+            if (params.work_order_code) setOrderCode(params.work_order_code);
+            if (params.vehicle_plate) setVehiclePlate(params.vehicle_plate);
+            if (params.client_name) setClientName(params.client_name);
+            if (params.client_cedula) setClientId(params.client_cedula);
+            if (params.sales_receipt_status) setStatus(params.sales_receipt_status);
+            if (params.payment_type) setPaymentType(params.payment_type);
+            if (params.invoice_type) setInvoiceType(params.invoice_type);
+            if (params.date_start_of_search) {
+                const date = new Date(params.date_start_of_search);
+                if (!isNaN(date)) setStartDate(date);
+            }
+            if (params.date_finish_of_search) {
+                const date = new Date(params.date_finish_of_search);
+                if (!isNaN(date)) setEndDate(date);
+            }
+        }
+    }, [isOpen, searchParams]);
+
     const handleConfirm = () => {
 
         onConfirm({
@@ -88,11 +115,13 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
         setVehiclePlate('');
         setClientName('');
         setClientId('');
-        setStatus('');
-        setPaymentType('');
-        setInvoiceType('');
+        setStatus(null);
+        setPaymentType(null);
+        setInvoiceType(null);
         setStartDate('');
         setEndDate('');
+        resetAllFilters();
+        setSearchParams({});
     };
 
     useEffect(() => {
@@ -145,7 +174,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                     </div>
                     <div style={{ marginRight: '28px' }}>
                         <label className="label-fields-payment">Cédula</label>
-                        <input style={{ width: '107%' }} className="input-fields-payment" onChange={e => setClientId(e.target.value)} value={clientId || ''}/>
+                        <input style={{ width: '107%' }} className="input-fields-payment" onChange={e => setClientId(e.target.value)} value={clientId || ''} />
                     </div>
 
                 </div>
@@ -156,7 +185,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                         isSearchable={false}
                         styles={selectPaymentStyles}
                         options={paymentStatus}
-                        value={paymentStatus.find(option => option.value === status)}
+                        value={paymentStatus.find(option => option.value === status) || null}
                         onChange={selectedOption => setStatus(selectedOption.value)}
                         placeholder="Seleccione"
                     />
@@ -167,7 +196,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                         isSearchable={false}
                         styles={selectPaymentStyles}
                         options={paymentTypeOptions}
-                        value={paymentTypeOptions.find(option => option.value === paymentType)}
+                        value={paymentTypeOptions.find(option => option.value === paymentType) || null}
                         onChange={selectedOption => setPaymentType(selectedOption.value)}
                         placeholder="Seleccione"
                     />
@@ -178,7 +207,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                         isSearchable={false}
                         styles={selectPaymentStyles}
                         options={invoiceTypeOptions}
-                        value={invoiceTypeOptions.find(option => option.value === invoiceType)}
+                        value={invoiceTypeOptions.find(option => option.value === invoiceType) || null}
                         onChange={selectedOption => setInvoiceType(selectedOption.value)}
                         placeholder="Seleccione"
                     />
@@ -204,7 +233,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                 </div>
                 <div style={{ textAlign: "center" }}>
                     <button onClick={handleConfirm} className="modal-button">Confirmar</button>
-               
+
                 </div>
 
             </div>
