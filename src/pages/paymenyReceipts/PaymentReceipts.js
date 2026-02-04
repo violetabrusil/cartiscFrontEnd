@@ -45,15 +45,12 @@ const PaymentReceipts = () => {
     const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(7, 5);
-    const { filterData, setFilterData } = usePaymentReceipt();
+    const { filterData, setFilterData, resetAllFilters } = usePaymentReceipt();
     const [currentPage, setCurrentPage] = useState(1);
-    //const [pageSize, setPageSize] = useState(7);
     const [totalValues, setTotalValues] = useState(0);
-    const [hasNextPage, setHasNextPage] = useState(true);
-    const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
     const [searchParams, setSearchParams] = useSearchParams();
-    const { resetAllFilters } = usePaymentReceipt();
+    const [isTableLoading, setIsTableLoading] = useState(false);
 
     const paymentTypeOptions = [
         { value: 'pending', label: 'Pendiente' },
@@ -258,7 +255,6 @@ const PaymentReceipts = () => {
         }
 
         if (!isRestoringFromUrl) {
-            setCurrentPage(1);
             setSearchParams({ ...cleanParams, page: 1 });
             return;
         }
@@ -266,16 +262,13 @@ const PaymentReceipts = () => {
         setLoading(true);
         try {
             const isEmptySearch = Object.keys(cleanParams).filter(k => k != 'page').length === 0;
-            let response;
 
             if (isEmptySearch) {
                 await fetchData(page, pageSize);
-                setLoading(false)
                 return;
-            } else {
-                response = await apiClient.post(`/sales-receipts/search/${page}/${pageSize}`, cleanParams);
-                console.log("datos de busqueda con fechas formateadas", cleanParams);
             }
+
+            const response = await apiClient.post(`/sales-receipts/search/${page}/${pageSize}`, cleanParams);
 
             if (!response.data || !response.data.values) {
                 setPaymentReceipts([]);
@@ -305,11 +298,7 @@ const PaymentReceipts = () => {
             setFilterData(transformed);
             setTotalPages(total_pages);
             setTotalValues(total_values);
-
-            if (page > total_pages && total_pages > 0) {
-                setCurrentPage(1);
-                setSearchParams({ ...cleanParams, page: 1 })
-            }
+            setCurrentPage(page)
             setLoading(false);
             setModalOpen(false);
 
@@ -324,13 +313,17 @@ const PaymentReceipts = () => {
     //cuando inicia la pantalla y las busca por
     //por número de serie, categoría o título
     const fetchData = async (page = 1, pageSize = responsivePageSize) => {
+
+        if (paymentReceipts.length === 0) {
+            setLoading(true)
+        }
+
         setLoading(true);
         try {
             const response = await apiClient.get(`/sales-receipts/list/${page}/${pageSize}`);
 
             if (!response.data || response.data.length === 0) {
                 setLoading(false);
-                setHasNextPage(false);
                 return;
             }
 
@@ -360,18 +353,25 @@ const PaymentReceipts = () => {
             setTotalPages(total_pages);
             setTotalValues(total_values);
         } catch (error) {
-            setLoading(false);
+            ;
             if (error.code === 'ECONNABORTED') {
                 console.error('La solicitud ha superado el tiempo límite.');
             } else {
                 console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
             }
         }
+        finally {
+            setLoading(false);
+            setIsTableLoading(false);
+        }
     };
 
     const handlePageChange = (newPage) => {
         const currentParams = Object.fromEntries([...searchParams]);
-        setSearchParams({ ...currentParams, page: newPage })
+        const cleanParams = Object.fromEntries(
+            Object.entries(currentParams).filter(([_, v]) => v !== undefined && v !== null)
+        );
+        setSearchParams({ ...cleanParams, page: newPage })
     };
 
     const goToNextPage = () => {
@@ -563,20 +563,32 @@ const PaymentReceipts = () => {
     }, [filterData]);
 
     useEffect(() => {
+        if (location.pathname !== '/paymentReceipt') return;
+
         const params = Object.fromEntries([...searchParams]);
         const pageToLoad = params.page ? parseInt(params.page) : 1;
 
         setCurrentPage(pageToLoad);
+
         const filters = { ...params };
         delete filters.page;
 
-        if (Object.keys(params).filter(k => k !== 'page').length === 0) {
+        const hasFilters = Object.keys(filters).length > 0;
+
+        if (!hasFilters) {
             fetchData(pageToLoad, responsivePageSize);
         } else {
             handleConfirm(filters, true, pageToLoad, responsivePageSize);
         }
 
-    }, [searchParams, responsivePageSize]);
+    }, [searchParams, responsivePageSize, location.pathname]);
+
+    useEffect(() => {
+        const hasUrlParams = searchParams.toString().length > 0;
+        if (!location.state?.fromDetail && !hasUrlParams) {
+            resetAllFilters();
+        }
+    }, [location.pathname]);
 
     return (
 
@@ -605,40 +617,54 @@ const PaymentReceipts = () => {
                     </div>
                 </div>
 
-                {loading ? (
+                {loading && paymentReceipts.length === 0 ? (
                     <div className="loader-container">
                         <PuffLoader color="#316EA8" loading={loading} size={60} />
                     </div>
                 ) : (
-                    <div className="data-table-container">
-                        {downloadingPdf && (
+                    <div className="data-table-container" style={{ position: 'relative' }}>
+
+                        {(downloadingPdf || sendingEmail) && (
                             <div className="absolute-loader-container">
                                 <PuffLoader color="#316EA8" loading={true} size={60} />
                             </div>
                         )}
 
-                        {sendingEmail && (
-                            <div className="absolute-loader-container">
-                                <PuffLoader color="#316EA8" loading={true} size={60} />
+                        {isTableLoading && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                zIndex: 10
+                            }}>
+                                <PuffLoader color="#316EA8" size={50} />
                             </div>
                         )}
-                        {paymentReceipts.length > 0 && (
-                            <DataTablePagination
-                                data={paymentReceipts}
-                                columns={columns}
-                                goToNextPage={goToNextPage}
-                                goToPreviousPage={goToPreviousPage}
-                                hasNextPage={currentPage < totalPages}
-                                hasPreviousPage={currentPage > 1}
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                pageSize={responsivePageSize}
-                                setCurrentPage={setCurrentPage}
-                                onPageChange={handlePageChange}
-                            />
-                        )}
 
-
+                        <div style={{
+                            opacity: 1,
+                            transition: 'none',
+                            pointerEvents: isTableLoading ? 'none' : 'auto'
+                        }}>
+                            {paymentReceipts.length > 0 ? (
+                                <DataTablePagination
+                                    data={paymentReceipts}
+                                    columns={columns}
+                                    goToNextPage={goToNextPage}
+                                    goToPreviousPage={goToPreviousPage}
+                                    hasNextPage={currentPage < totalPages}
+                                    hasPreviousPage={currentPage > 1}
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    pageSize={responsivePageSize}
+                                    setCurrentPage={setCurrentPage}
+                                    onPageChange={handlePageChange}
+                                />
+                            ) : (
+                                !loading && <p style={{ textAlign: 'center', marginTop: '20px' }}>No se encontraron resultados</p>
+                            )}
+                        </div>
                     </div>
 
                 )}
