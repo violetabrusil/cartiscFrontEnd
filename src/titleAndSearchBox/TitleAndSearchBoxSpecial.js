@@ -5,7 +5,7 @@ import { useWorkOrderContext } from "../contexts/searchContext/WorkOrderContext"
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
-const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch }) => {
+const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch, debounceTime = 300 }) => {
     const { searchTerm, setSearchTerm } = useWorkOrderContext();
     const [searchInput, setSearchInput] = useState(searchTerm || "");
     const [debounceTimeout, setDebounceTimeout] = useState(null);
@@ -24,23 +24,28 @@ const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, select
 
     const handleInputChange = (e) => {
         const value = e.target.value;
-        setSearchInput(value); // Actualiza el estado local del input
+        setSearchInput(value); 
 
-        // Limpiar el timeout anterior si existe
-        if (debounceTimeout) {
-            clearTimeout(debounceTimeout);
+        if (debounceTime === 0) {
+            if (value.length === 0) {
+                onSearchChange("");
+                setSearchTerm("");
+            } else if (value.length >= 5) {
+                onSearchChange(value, selectedOption);
+                setSearchTerm(value);
+            }
+            return;
         }
 
-        // Configurar un nuevo timeout para el debounce
         const timeout = setTimeout(() => {
             if (value.length === 0) {
-                onSearchChange(""); // Muestra toda la lista
-                setSearchTerm(""); // Restablece el término de búsqueda
+                onSearchChange("");
+                setSearchTerm("");
             } else if (value.length >= 5) {
-                onSearchChange(value, selectedOption); // Actualiza la búsqueda
-                setSearchTerm(value); // Actualiza el término de búsqueda global
+                onSearchChange(value, selectedOption);
+                setSearchTerm(value);
             }
-        }, 300); // Tiempo de espera de 300 ms (ajustable según la necesidad)
+        }, debounceTime);
 
         setDebounceTimeout(timeout);
     };
@@ -53,6 +58,11 @@ const TitleAndSearchBoxSpecial = ({ title, onSearchChange, onButtonClick, select
         <div>
             <div className="container-title">
                 <h2>{title}</h2>
+                {(subtitle !== undefined && subtitle !== null) && (
+                    <span className="subtitle-badge">
+                        {subtitle}
+                    </span>
+                )}
                 <button className={buttonClass} onClick={onButtonClick}>
                     <img src={filterIcon} alt="Filter Icon" className={iconClass} />
                     <span className="filter-text">Filtro</span>
