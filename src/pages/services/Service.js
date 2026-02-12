@@ -2,7 +2,7 @@ import "../../Service.css";
 import "../../Modal.css";
 import "../../Loader.css";
 import 'react-toastify/dist/ReactToastify.css';
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useTable, usePagination } from "react-table";
 import { debounce } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
@@ -85,19 +85,21 @@ const Services = () => {
 
     };
 
-    const handleSearchServiceChange = (term, filter) => {
-        setSearchTerm(term);
-        setSelectedOption(filter);
-    };
+    const handleMainSearchDebounce = useMemo(
+        () => debounce((term) => {
+            if (term.length === 0 || term.length >= 3) {
+                setSearchTerm(term);
+            }
+        }, 500),
+        [setSearchTerm]
+    );
 
-    const handleSearchServiceWithDebounce = debounce(handleSearchServiceChange, 500);
-
-    const handleSearchOperationChange = (term, filter) => {
-        setSearchTerm(term);
-        setSelectedOption(filter);
-    };
-
-    const handleSearchOperationWithDebounce = debounce(handleSearchOperationChange, 500);
+    const handleModalSearchDebounce = useMemo(
+        () => debounce((term) => {
+            setSearchOperationTerm(term);
+        }, 500),
+        []
+    );
 
     const openFilterModal = () => {
         setIsFilterModalOpen(true);
@@ -193,7 +195,7 @@ const Services = () => {
             const searchTypeOperationCode = "operation_code";
             const searchTypeTitle = "title";
             let endpoint = '';
-    
+
             // Si hay un término de búsqueda, decide el endpoint basado en la pestaña activa
             if (searchOperationTerm) {
                 if (activeTabOperation === 'código') {
@@ -205,12 +207,12 @@ const Services = () => {
                 // Si no hay término de búsqueda, carga todas las operaciones
                 endpoint = `/operations/all`;
             }
-    
+
             try {
                 const response = await apiClient.get(endpoint, {
                     cancelToken: source.token
                 });
-    
+
                 // Solo actualiza el estado si el componente sigue montado
                 if (isMounted.current) {
                     setOperation(response.data);
@@ -225,7 +227,7 @@ const Services = () => {
         }, 500),
         [activeTabOperation, searchOperationTerm] // Actualiza esta dependencia
     );
-    
+
     const handleAddOperationModal = (operationToAdd) => {
         // Decide a qué conjunto de operaciones agregar dependiendo del modo
         const operationsToModify = mode === 'edit' ? selectedService.operations : selectedOperations;
@@ -492,17 +494,15 @@ const Services = () => {
     };
 
     useEffect(() => {
-        //Función que permite obtener todas las operaciones
-        //registrados cuando inicia la pantalla y las busca
-        //por título o código
+
+        const controller = new AbortController();
 
         const fetchData = async () => {
-
-            //Endpoint por defecto
+            if (activeTab !== 'operaciones') return;
+            setLoading(true);
             let endpoint = '/operations/all';
             const searchTypeOperationCode = "operation_code";
             const searchTypeTitle = "title";
-            //Si hay un filtro de búsqueda
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Código':
@@ -516,30 +516,36 @@ const Services = () => {
                 }
             }
             try {
-                const response = await apiClient.get(endpoint);
-                setOperations(response.data);
-                setLoading(false);
+                const response = await apiClient.get(endpoint, {
+                    signal: controller.signal
+                });
+                if (!controller.signal.aborted) {
+                    setOperations(response.data || []);
+                }
 
             } catch (error) {
-                if (error.code === 'ECONNABORTED') {
-                    toast.error('La solicitud ha superado el tiempo límite.', {
-                        position: toast.POSITION.TOP_RIGHT
-                    });
-                } else {
+                if (error.name === 'AbortError' || error.name === 'CanceledError') {
+                    return;
+                }
+                console.error('Error al cargar la información:', error.message);
+                setOperations([]);
+            } finally {
+                if (!controller.signal.aborted) {
+                    setLoading(false);
                 }
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption]);
+        return () => controller.abort();
+    }, [searchTerm, selectedOption, activeTab]);
 
     useEffect(() => {
-        //Función que permite obtener todos los servicios
-        //registrados cuando inicia la pantalla y las busca
-        //por título o código
+
+        const controller = new AbortController();
 
         const fetchData = async () => {
-
-            //Endpoint por defecto
+            if (activeTab !== 'servicios') return;
+            setLoading(true);
             let endpoint = '/services/all';
             const searchTypeServiceCode = "service_code";
             const searchTypeTitle = "title";
@@ -557,36 +563,43 @@ const Services = () => {
                 }
             }
             try {
-                const response = await apiClient.get(endpoint);
-                setServices(response.data);
-                setLoading(false);
-            } catch (error) {
-                if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                const response = await apiClient.get(endpoint, {
+                    signal: controller.signal
+                });
+                if (!controller.signal.aborted) {
+                    setServices(response.data || []);
                 }
+            } catch (error) {
+                if (error.name === 'AbortError' || error.name === 'CanceledError') {
+                    return;
+                }
+                console.error('Error al cargar la información:', error.message);
                 setServices([]);
+            } finally {
+                if (!controller.signal.aborted) {
+                    setLoading(false);
+                }
             }
         }
         fetchData();
-    }, [searchTerm, selectedOption, lastUpdated]);
+        return () => controller.abort();
+    }, [searchTerm, selectedOption, lastUpdated, activeTab]);
 
     //Para realizar la búsqueda de las operaciones en el modal
     useEffect(() => {
         // Al montar el componente
         isMounted.current = true;
-    
+
         // Inicia la búsqueda o carga todas las operaciones según el término de búsqueda
         handleSearchOperationsWithDebounce();
-    
+
         // Cleanup al desmontar el componente o al cambiar el término de búsqueda o la pestaña activa
         return () => {
             isMounted.current = false;  // Indica que el componente ha sido desmontado
             source.cancel('Search term changed or component unmounted'); // Cancela la solicitud pendiente
         };
     }, [searchOperationTerm, activeTabOperation, handleSearchOperationsWithDebounce]); // Asegúrate de incluir activeTabOperation aquí
-    
+
 
     React.useEffect(() => {
         if (currentSection === 'addService' && mode === 'add') {
@@ -625,7 +638,7 @@ const Services = () => {
                         <TitleAndSearchBox
                             selectedOption={selectedOption}
                             title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} // Convertir a mayúscula inicial
-                            onSearchChange={activeTab === 'servicios' ? handleSearchServiceWithDebounce : handleSearchOperationWithDebounce}
+                            onSearchChange={handleMainSearchDebounce}
                             onButtonClick={openFilterModal}
                         />
                     </div>
@@ -882,6 +895,7 @@ const Services = () => {
                                         if (activeTabOperation === 'código' && !/^[0-9]*$/.test(value)) return;
                                         if (activeTabOperation === 'título' && !/^[a-zA-Z\s]*$/.test(value)) return;
                                         setSearchOperationTerm(value);
+                                        handleModalSearchDebounce(value);
                                     }}
                                     placeholder={`Buscar por ${activeTabOperation}`}
                                     pattern={activeTabOperation === 'código' ? "[0-9]*" : "[a-zA-Z ]*"}

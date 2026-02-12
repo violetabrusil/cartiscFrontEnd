@@ -1,22 +1,33 @@
 import "../TitleAndSearchBox.css"
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
 const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, onAddClient, showAddButton }) => {
 
+    const [localValue, setLocalValue] = useState("");
+
     const searchBoxClass = isSpecial ? "search-box-special" : "search-box";
     const buttonClass = isSpecial ? "button-filter-special" : "button-filter";
     const iconClass = isSpecial ? "filter-icon-special" : "filter-icon";
 
-    // Define el texto del placeholder según selectedOption
     let placeholderText = `Buscar por ${selectedOption}`;
+
+    const handleChange = (e) => {
+        const val = e.target.value;
+        setLocalValue(val); 
+        onSearchChange(val); 
+    };
+
+    useEffect(() => {
+        setLocalValue("");
+    }, [selectedOption]);
 
     return (
         <div>
             <div className="container-title">
-                {showAddButton && ( // Condición para mostrar el botón nuevo
+                {showAddButton && (
                     <button className="add-new-client" onClick={onAddClient}>
                         Agregar Cliente
                     </button>
@@ -33,13 +44,13 @@ const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOptio
                 <input
                     type="text"
                     className="input-search"
-                    onChange={e => onSearchChange(e.target.value, selectedOption)}
-                    placeholder={placeholderText} // Usa el placeholderText aquí
+                    value={localValue}
+                    onChange={handleChange}
+                    placeholder={placeholderText}
                 />
             </div>
-
         </div>
-    )
+    );
 };
 
 export default TitleAndSearchBox;

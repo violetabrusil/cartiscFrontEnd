@@ -70,10 +70,20 @@ const WorkOrders = () => {
 
     const handleSearchWorkOrdersWithDebounce = useMemo(
         () => debounce((term) => {
-            setSearchTerm(term);
+
+            if (term.length === 0) {
+                setSearchTerm("");
+            } else if (term.length >= 3) {
+                setSearchTerm(term);
+            } 
         }, 500),
         [setSearchTerm]
     );
+
+    useEffect(() => {
+        setPage(1);
+        setHasMore(true);
+    }, [searchTerm, selectedOption]);
 
     const handleOptionChange = (option) => {
         setSelectedOption(option);
@@ -85,34 +95,22 @@ const WorkOrders = () => {
     };
 
     useEffect(() => {
-        setWorkOrders([]);
-        setPage(1);
-        setHasMore(true);
-        setLoading(true);
-    }, [searchTerm, selectedOption])
-
-    useEffect(() => {
-
         const controller = new AbortController();
 
         const fetchData = async () => {
 
-            if (!hasMore || isFetching) return;
+            if (isFetching && page !== 1) return;
 
-
-            if (page === 1) {
-                setLoading(true);
-            }
-
+            if (page === 1) setLoading(true);
             setIsFetching(true);
 
             try {
                 let response;
+                const endpoint = searchTerm
+                    ? `/work-orders/search/${page}/${PAGE_SIZE}`
+                    : `/work-orders/list/${page}/${PAGE_SIZE}`;
 
                 if (searchTerm) {
-
-                    const endpoint = `/work-orders/search/${page}/${PAGE_SIZE}`;
-
                     const searchFieldMapping = {
                         'Placa': 'vehicle_plate',
                         'Código Orden de Trabajo': 'work_order_code',
@@ -121,63 +119,40 @@ const WorkOrders = () => {
                         'Entregada por': 'delivered_by',
                         'Creada por': 'created_by',
                     };
-
                     const payload = { [searchFieldMapping[selectedOption]]: searchTerm };
-                    response = await apiClient.post(endpoint, payload, {
-                        signal: controller.signal
-                    });
-                    console.log("Respuesta del server cuando es search", response.data)
+                    response = await apiClient.post(endpoint, payload, { signal: controller.signal });
                 } else {
-
-                    const endpoint = `/work-orders/list/${page}/${PAGE_SIZE}`;
-                    response = await apiClient.get(endpoint, {
-                        signal: controller.signal
-                    });
-                    console.log("Respuesta del server", response.data)
+                    response = await apiClient.get(endpoint, { signal: controller.signal });
                 }
 
-                const rawData = response.data.values || [];
-                const totalPages = parseInt(response.data.total_pages);
-                const currentPage = parseInt(response.data.current_page);
+                if (!controller.signal.aborted) {
+                    const rawData = response.data.values || [];
+                    const totalPages = parseInt(response.data.total_pages) || 0;
 
-                const total_values = parseInt(response.data.total_values);
+                    setHasMore(page < totalPages && rawData.length > 0);
 
-                if (currentPage >= totalPages || rawData.length === 0) {
-                    setHasMore(false);
+                    const transformed = rawData.map(wo => ({
+                        ...wo,
+                        date_start: formatDate(wo.date_start),
+                        work_order_status: workOrderStatus[wo.work_order_status] || wo.work_order_status,
+                        vehicle_plate: formatPlate(wo.vehicle_plate),
+                        is_billed: wo.is_billed,
+                    }));
+
+                    setWorkOrders(prev => (page === 1 ? transformed : [...prev, ...transformed]));
+                    setTotalValues(parseInt(response.data.total_values) || 0);
                 }
-
-                const transformedWorkOrders = rawData.map(workOrder => {
-
-                    const newDateStart = formatDate(workOrder.date_start);
-                    const translatedStatus = workOrderStatus[workOrder.work_order_status] || workOrder.work_order_status;
-                    const formattedPlate = formatPlate(workOrder.vehicle_plate);
-
-                    return {
-                        ...workOrder,
-                        date_start: newDateStart,
-                        work_order_status: translatedStatus,
-                        vehicle_plate: formattedPlate,
-                        is_billed: workOrder.is_billed,
-                    };
-
-                });
-
-                setWorkOrders(prev => (page === 1 ? transformedWorkOrders : [...prev, ...transformedWorkOrders]));
-                setTotalValues(total_values);
 
             } catch (error) {
-
-                if (error.name === 'AbortError' || error.name === 'CanceledError') {
-                    return;
+                if (error.name !== 'AbortError' && error.name !== 'CanceledError') {
+                    console.error("Error en la petición:", error);
+                    setHasMore(false);
                 }
-                console.error("Error en la petición:", error);
-
             } finally {
                 if (!controller.signal.aborted) {
                     setLoading(false);
                     setIsFetching(false);
                 }
-
             }
         };
 
@@ -185,6 +160,7 @@ const WorkOrders = () => {
 
         return () => controller.abort();
     }, [page, searchTerm, selectedOption]);
+
 
     const lastOrderElementRef = useCallback(node => {
         if (loading || isFetching) return;
@@ -236,7 +212,6 @@ const WorkOrders = () => {
                         onSearchChange={handleSearchWorkOrdersWithDebounce}
                         onButtonClick={openFilterModal}
                         shouldSaveSearch={true}
-                        debounceTime={0}
                     />
 
                     {/*Lista de órdenes de trabajo */}
@@ -252,7 +227,7 @@ const WorkOrders = () => {
                                 {workOrders.map((workOrderData, index) => {
                                     const isLast = workOrders.length === index + 1;
                                     return (
-                                        <div 
+                                        <div
                                             key={`${workOrderData.id}-${index}`}
                                             className="result-work-order"
                                             onClick={() => handleShowInformationWorkOrderClick(workOrderData.id)}

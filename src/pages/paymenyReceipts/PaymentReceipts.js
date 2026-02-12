@@ -240,6 +240,9 @@ const PaymentReceipts = () => {
             Object.entries(data).filter(([_, v]) => v !== "" && v !== null && v !== undefined)
         );
 
+        const currentParams = Object.fromEntries([...searchParams]);
+        const { page: currentPg, ...currentFilters } = currentParams;
+
         const formatToStartOfDayISO = (date) => {
             if (!date) return null;
             const d = new Date(date);
@@ -255,7 +258,14 @@ const PaymentReceipts = () => {
         }
 
         if (!isRestoringFromUrl) {
-            setSearchParams({ ...cleanParams, page: 1 });
+            const isSameSearch = JSON.stringify(cleanParams) === JSON.stringify(currentFilters);
+
+            if(isSameSearch) {
+                setModalOpen(false);
+                return;
+            }
+
+            setSearchParams({ ...cleanParams, page: 1 })
             return;
         }
 
@@ -488,20 +498,34 @@ const PaymentReceipts = () => {
         }
     };
 
+    const refreshCurrentView = () => {
+        const params = Object.fromEntries([...searchParams]);
+        const pageToLoad = params.page ? parseInt(params.page) : 1;
+
+        const filters = { ...params };
+        delete filters.page;
+
+        const hasFilters = Object.keys(filters).length > 0;
+        if (hasFilters) {
+            handleConfirm(filters, true, pageToLoad, responsivePageSize);
+        } else {
+            fetchData(pageToLoad, responsivePageSize);
+        }
+    };
+
     const handleOpenPaymentModal = (receipt) => {
         setSelectedReceipt(receipt);
         setPaymentType(receipt.payment_type);
-        setAmountToPay(0); // o si deseas que esté preconfigurado con algún valor, cámbialo aquí
+        setAmountToPay(0);
         setPayAll(false);
         setPaymentModal(true);
     };
-
 
     const handleClosePaymentModal = () => {
         setPaymentModal(false);
         setPayAll(false);
         setAmountToPay(0);
-        fetchData();
+        refreshCurrentView();
     };
 
     const handleChargeReceipt = async () => {
@@ -526,7 +550,6 @@ const PaymentReceipts = () => {
                 });
 
                 handleClosePaymentModal();
-                await fetchData();
                 setLoading(false);
                 toast.success('Pago procesado con éxito.', {
                     position: toast.POSITION.TOP_RIGHT
@@ -550,13 +573,9 @@ const PaymentReceipts = () => {
     };
 
     useEffect(() => {
-        if (location.state?.fromWorkOrder) {
-            setWorkOrderData(location.state.workOrderData);
-            console.log("data payment", workOrderData)
-            setWorkOrderModalOpen(true);
-            navigate('/paymentReceipt', { replace: true });
-        }
-    }, []);
+        if (location.pathname !== '/paymentReceipt') return;
+        refreshCurrentView();
+    }, [searchParams, responsivePageSize, location.pathname]);
 
     useEffect(() => {
         console.log("Lista filtrada actualizada:", filterData);

@@ -1,7 +1,7 @@
 import "../../Supplier.css";
 import "../../Loader.css";
 import 'react-toastify/dist/ReactToastify.css';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
 import PuffLoader from "react-spinners/PuffLoader";
@@ -49,12 +49,14 @@ const Suppliers = () => {
         // resetea otros estados...
     };
 
-    const handleSearchSupplierChange = (term, filter) => {
-        setSearchTerm(term);
-        setSelectedOption(filter);
-    };
-
-    const handleSearchWithDebounce = debounce(handleSearchSupplierChange, 500);
+    const handleSearchWithDebounce = useMemo(
+        () => debounce((term) => {
+            if (term.length === 0 || term.length >= 3) {
+                setSearchTerm(term);
+            }
+        }, 500),
+        []
+    );
 
     const openFilterModal = () => {
         setIsFilterModalOpen(true);
@@ -203,17 +205,15 @@ const Suppliers = () => {
 
 
     useEffect(() => {
-        //Función que permite obtener todos los proveedores
-        //registrados cuando inicia la pantalla y los busca
-        //por nombre o código
+
+        const controller = new AbortController();
 
         const fetchData = async () => {
 
-            //Endpoint por defecto
+            setLoading(true);
             let endpoint = '/suppliers/all';
             const searchPerSupplierCode = "supplier_code";
             const searchPerName = "supplier_name";
-            //Si hay un filtro de búsqueda
 
             if (searchTerm && searchTerm.length > 0) {
                 switch (selectedOption) {
@@ -228,20 +228,28 @@ const Suppliers = () => {
                 }
             }
             try {
-                const response = await apiClient.get(endpoint);
-                console.log("valor de busqueda", searchTerm)
-                setSuppliers(response.data);
-                setLoading(false);
+                const response = await apiClient.get(endpoint, {
+                    signal: controller.signal
+                });
+                if (!controller.signal.aborted) {
+                    setSuppliers(response.data || []);
+                }
 
             } catch (error) {
-                if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                if (error.name === 'AbortError' || error.name === 'CanceledError') {
+                    return;
+                }
+                setSuppliers([]);
+                console.error('Error al cargar proveedores:', error.message);
+
+            } finally {
+                if (!controller.signal.aborted) {
+                    setLoading(false);
                 }
             }
         }
         fetchData();
+        return () => controller.abort();
     }, [searchTerm, selectedOption, lastUpdated]);
 
 

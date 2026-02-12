@@ -161,12 +161,16 @@ const Cars = () => {
         // resetea otros estados...
     };
 
-    const handleSearchCarChange = (term, filter) => {
-        setSearchTerm(term);
-        setSelectedOption(filter);
-    };
-
-    const handleSearchVehiclesWithDebounce = debounce(handleSearchCarChange, 500);
+    const handleSearchVehiclesWithDebounce = useMemo(
+        () => debounce((term) => {
+            if (term.length === 0) {
+                setSearchTerm("");
+            } else if (term.length >= 3) {
+                setSearchTerm(term);
+            }
+        }, 500),
+        [setSearchTerm]
+    );
 
     const openFilterModal = () => {
         setIsFilterModalOpen(true);
@@ -326,7 +330,7 @@ const Cars = () => {
             setShowAddVehicle(false);
             setShowButtonAddVehicle(false);
             getVehicleHistoryData(numericVehicleId);
-            navigate(`/cars/carHistory/${numericVehicleId}`); 
+            navigate(`/cars/carHistory/${numericVehicleId}`);
         } else {
             // Maneja el caso en que el vehículo no se encuentra
             console.error(`No se encontró el vehículo con ID: ${numericVehicleId}`);
@@ -537,33 +541,22 @@ const Cars = () => {
 
     };
 
-    const handleSearchClientWithDebounce = useCallback(
-        debounce(async () => {
-            let endpoint = '';
-            if (activeTab === 'cédula') {
-                endpoint = `/clients/search-by-cedula/${searchClienTerm}`;
-            } else {
-                endpoint = `/clients/search-by-name/${searchClienTerm}`;
-            }
+    const handleSearchClientWithDebounce = useMemo(
+        () => debounce(async (term, tab, signal) => {
+            if (!term) return;
+            let endpoint = tab === 'cédula'
+                ? `/clients/search-by-cedula/${term}`
+                : `/clients/search-by-name/${term}`;
 
             try {
-                const response = await apiClient.get(endpoint, {
-                    cancelToken: source.token
-                });
-
-                // Solo actualiza el estado si el componente sigue montado
-                if (isMounted.current) {
-                    setClients(response.data);
-                }
+                const response = await apiClient.get(endpoint, { signal });
+                setClients(response.data || []);
             } catch (error) {
-                if (axios.isCancel(error)) {
-
-                } else {
-
-                }
+                if (error.name === 'AbortError') return;
+                setClients([]);
             }
         }, 500),
-        [activeTab, searchClienTerm]
+        []
     );
 
     //Función para editar la información de un vehículo
@@ -658,37 +651,27 @@ const Cars = () => {
         navigate(`/workOrders/detailWorkOrder/${workOrderId}`, { state: { from: currentPage } });
     };
 
-    //Para realizar la búsqueda del cliente en el modal
     useEffect(() => {
-        // Al montar el componente
-        isMounted.current = true;
-
+        const controller = new AbortController();
         if (searchClienTerm) {
-            handleSearchClientWithDebounce();
+            handleSearchClientWithDebounce(searchClienTerm, activeTab, controller.signal);
         } else {
             setClients([]);
         }
-
-        //Cleanup al desmontar el componente o al cambiar el término de búsqueda
-        return () => {
-            isMounted.current = false;  // Indica que el componente ha sido desmontado
-            source.cancel('Search term changed or component unmounted'); // Cancela la solicitud
-        };
-    }, [searchClienTerm, handleSearchClientWithDebounce]);
+        return () => controller.abort();
+    }, [searchClienTerm, activeTab, handleSearchClientWithDebounce]);
 
     useEffect(() => {
-        //Función que permite obtener todos los vehículos 
-        //registrados cuando inicia la pantalla y busca los vehículos 
-        //por placa y nombre de titular
+
+        const controller = new AbortController();
 
         const fetchData = async () => {
 
-            //Endpoint por defecto
+            setLoading(true);
             let endpoint = '/vehicles/all';
             const searchTypePlate = "plate";
             const searchTypeClientName = "client_name";
-            //Si hay un filtro de búsqueda
-        
+
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Placa':
@@ -700,34 +683,44 @@ const Cars = () => {
                     default:
                         break;
                 }
-            } 
+            }
             try {
-                const response = await apiClient.get(endpoint);
-                if (response.data && response.data.length > 0) {
-                    const formattedVehicles = response.data.map(vehicle => {
-                        if (vehicle.plate) {
-                            vehicle.plate = formatPlate(vehicle.plate);
-                        }
-                        vehicle.iconSrc = iconsVehicles[vehicle.category]
-                        return vehicle;
-                    });
+                const response = await apiClient.get(endpoint, {
+                    signal: controller.signal
+                });
 
-                    setVehicles(formattedVehicles);
-                    setLoading(false);
-                    console.log("datos vehiculo", response.data)
-                } else {
-                    setLoading(false);
+                if (!controller.signal.aborted) {
+                    if (response.data && response.data.length > 0) {
+                        const formattedVehicles = response.data.map(vehicle => {
+                            if (vehicle.plate) {
+                                vehicle.plate = formatPlate(vehicle.plate);
+                            }
+                            vehicle.iconSrc = iconsVehicles[vehicle.category]
+                            return vehicle;
+                        });
+                        setVehicles(formattedVehicles);
+                    } else {
+                        setVehicles([]);
+                    }
+
                 }
 
             } catch (error) {
-                if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Error al cargar la información vuelva a intentarlo.', error.message);
+                if (error.name === 'AbortError' || error.name === 'CanceledError') {
+                    return;
+                }
+                console.error('Error al cargar la información:', error.message);
+                setVehicles([]);
+            } finally {
+                if (!controller.signal.aborted) {
+                    setLoading(false);
                 }
             }
-        }
+        };
         fetchData();
+
+        return () => controller.abort();
+
     }, [searchTerm, selectedOption, refreshVehicles, vehicleSuspended, iconsVehicles]);
 
     useEffect(() => {
@@ -749,14 +742,15 @@ const Cars = () => {
     }, [selectedVehicle, iconsVehicles]);
 
     useEffect(() => {
-        // Convierte vehicleId a un número
+        if (!vehicleId || vehicles.length === 0) return;
+
         const numericVehicleId = Number(vehicleId);
-    
-        if (numericVehicleId && vehicles.length > 0) {
-            // Llama a handleCarHistory con el ID numérico
+        const vehicleExists = vehicles.some(v => v.id === numericVehicleId);
+
+        if (vehicleExists && !showCarHistory) {
             handleCarHistory(numericVehicleId);
         }
-    }, [vehicleId, vehicles]); // Dependencias del useEffect
+    }, [vehicleId, vehicles.length]);
 
     return (
         <div>
@@ -807,8 +801,10 @@ const Cars = () => {
                                         <div className="third-result-car">
                                             <button className="button-eye-car">
                                                 <img src={eyeIcon} alt="Eye Icon Car" className="icon-eye-car"
-                                                    onClick={(event) => {event.stopPropagation();
-                                                    handleCarInformation(vehicleData, event)}} />
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        handleCarInformation(vehicleData, event)
+                                                    }} />
                                             </button>
                                         </div>
 

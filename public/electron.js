@@ -16,8 +16,21 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      zoomFactor: 1.0,
     }
   })
+
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.control || input.meta) {
+      if (input.key === '+' || input.key === '=' || input.key === '-') {
+        event.preventDefault();
+      }
+    }
+  });
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.setVisualZoomLevelLimits(1, 1);
+  });
 
   mainWindow.loadURL(
     isDev

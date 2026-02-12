@@ -3,7 +3,7 @@ import "../../Modal.css";
 import "../../NewClient.css";
 import 'react-toastify/dist/ReactToastify.css';
 import "../../Loader.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
@@ -113,12 +113,19 @@ const Clients = () => {
     //const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [refreshClients, setRefreshClients] = useState(false);
 
-    const handleSearchClientChange = (term, filter) => {
-        setSearchTerm(term);
-        setSelectedOption(filter);
-    };
+    const handleSearchWithDebounce = useMemo(
+        () => debounce((term) => {
+            
+            const trimmedTerm = term ? term.trim() : "";
 
-    const handleSearchWithDebounce = debounce(handleSearchClientChange, 500);
+            if (trimmedTerm.length === 0) {
+                setSearchTerm(""); 
+            } else if (trimmedTerm.length >= 3) {
+                setSearchTerm(trimmedTerm); 
+            }
+        }, 500),
+        [setSearchTerm]
+    );
 
     const openFilterModal = () => {
         setIsFilterModalOpen(true);
@@ -449,15 +456,13 @@ const Clients = () => {
     };
 
     useEffect(() => {
-        //Función que permite obtener todos los clientes 
-        //cuando recien se inicia la pantala y busca lo clientes
-        //por cédula y nombre
+
+        const controller = new AbortController();
 
         const fetchData = async () => {
+            setLoading(true);
+            let endpoint = '/clients/all';
 
-            let endpoint = '/clients/all'; //Endpoint por defecto
-
-            //Si hay un filtro de búsqueda
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Cédula':
@@ -469,26 +474,29 @@ const Clients = () => {
                     default:
                         break;
                 }
-
             }
             try {
-                const response = await apiClient.get(endpoint);
-                if (response.data && response.data.length > 0) {
-                    setClients(response.data);
-                    setLoading(false);
-                } else {
-                    setLoading(false);
-                }
-            } catch (error) {
-                if (error.code === 'ECONNABORTED') {
-                    console.error('La solicitud ha superado el tiempo límite.');
-                } else {
-                    console.error('Error al cargar la información vuelva a intentarlo.', error.message);
+                const response = await apiClient.get(endpoint, {
+                    signal: controller.signal
+                });
+                if (!controller.signal.aborted) {
+                    setClients(response.data || []);
                 }
 
+            } catch (error) {
+                if (error.name === 'AbortError' || error.name === 'CanceledError') {
+                    return;
+                }
+                console.error('Error al cargar la información:', error.message);
+                setClients([]);
+            } finally {
+                if (!controller.signal.aborted) {
+                    setLoading(false);
+                }
             }
-        }
+        };
         fetchData();
+        return () => controller.abort();
     }, [searchTerm, selectedOption, refreshClients, clientSuspended]);
 
     //Obtención de la información del cliente para editarlo

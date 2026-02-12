@@ -5,10 +5,9 @@ import { useWorkOrderContext } from "../contexts/searchContext/WorkOrderContext"
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
-const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch, debounceTime = 300 }) => {
-    const { searchTerm, setSearchTerm } = useWorkOrderContext();
+const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch }) => {
+    const { searchTerm } = useWorkOrderContext();
     const [searchInput, setSearchInput] = useState(searchTerm || "");
-    const [debounceTimeout, setDebounceTimeout] = useState(null);
 
     const searchBoxClass = isSpecial ? "search-box-special" : "search-box";
     const buttonClass = isSpecial ? "button-filter-special" : "button-filter";
@@ -17,42 +16,16 @@ const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonCli
     let placeholderText = `Buscar por ${selectedOption}`;
 
     useEffect(() => {
-        if (shouldSaveSearch) {
+        if (shouldSaveSearch && searchTerm !== searchInput) {
             setSearchInput(searchTerm || "");
         }
-    }, [searchTerm, shouldSaveSearch]);
+    }, [searchTerm]);
 
     const handleInputChange = (e) => {
         const value = e.target.value;
-        setSearchInput(value); 
-
-        if (debounceTime === 0) {
-            if (value.length === 0) {
-                onSearchChange("");
-                setSearchTerm("");
-            } else if (value.length >= 5) {
-                onSearchChange(value, selectedOption);
-                setSearchTerm(value);
-            }
-            return;
-        }
-
-        const timeout = setTimeout(() => {
-            if (value.length === 0) {
-                onSearchChange("");
-                setSearchTerm("");
-            } else if (value.length >= 5) {
-                onSearchChange(value, selectedOption);
-                setSearchTerm(value);
-            }
-        }, debounceTime);
-
-        setDebounceTimeout(timeout);
+        setSearchInput(value);
+        onSearchChange(value)
     };
-
-    useEffect(() => {
-        setSearchInput(searchTerm);
-    }, [searchTerm]);
 
     return (
         <div>
