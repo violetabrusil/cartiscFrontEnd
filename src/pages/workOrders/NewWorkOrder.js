@@ -79,13 +79,20 @@ const NewWorkOrder = () => {
     const showToast = (message, type) => {
         toast[type](message, { position: toast.POSITION.TOP_RIGHT });
     };
+    
+    const handleSearchClientWithDebounce = useMemo(
+        () => debounce((term) => {
 
-    const handleSearchClientChange = (term, filter) => {
-        setSearchTerm(term);
-        setSelectedOption(filter);
-    };
+            const trimmedTerm = term ? term.trim() : "";
 
-    const handleSearchClientWithDebounce = debounce(handleSearchClientChange, 500);
+            if (trimmedTerm.length === 0) {
+                setSearchTerm("");
+            } else if (trimmedTerm.length >= 3) {
+                setSearchTerm(trimmedTerm);
+            }
+        }, 500),
+        [setSearchTerm]
+    );
 
     const openFilterModal = () => {
         setIsFilterModalOpen(true);
@@ -278,7 +285,7 @@ const NewWorkOrder = () => {
     };
 
     const getVehicleOfClient = async (clientId) => {
-       
+
         try {
             const response = await apiClient.get(`/vehicles/active/${clientId}`);
             if (response.data && response.data.length > 0) {
@@ -473,7 +480,7 @@ const NewWorkOrder = () => {
             setShouldUpdateClients(false);
         }
     }, [shouldUpdateClients]);
-    
+
     useEffect(() => {
         if (shouldUpdateVehicles && selectedClient) {
             getVehicleOfClient(selectedClient.id);

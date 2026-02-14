@@ -12,6 +12,8 @@ const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
 
+const DEFAULT_OPTION = { value: 'title', label: 'Título' };
+
 const SearchServicesOperationsModal = ({
     onClose,
     onCloseAndSave,
@@ -33,7 +35,8 @@ const SearchServicesOperationsModal = ({
 }) => {
 
     const [activeTab, setActiveTab] = useState('services');
-    const [selectedOption, setSelectedOption] = useState("");
+    const defaultOption = { value: 'title', label: 'Título' };
+    const [selectedOption, setSelectedOption] = useState(DEFAULT_OPTION);
     const [searchTerm, setSearchTerm] = useState("");
     const [operations, setOperations] = useState([]);
     const [operationCost, setOperationCost] = useState(initialOperationCost || {});
@@ -510,60 +513,38 @@ const SearchServicesOperationsModal = ({
     };
 
     const getServices = async () => {
-
-        //Endpoint por defecto
         let endpoint = '/services/all';
-        const searchTypeServiceCode = "service_code";
-        const searchTypeTitle = "title";
 
-        if (searchTerm) {
-            switch (selectedOption.value) {
-                case 'service_code':
-                    endpoint = `/services/search?search_type=${searchTypeServiceCode}&criteria=${searchTerm}`;
-                    break;
-                case 'title':
-                    endpoint = `/services/search?search_type=${searchTypeTitle}&criteria=${searchTerm}`;
-                    break;
-                default:
-                    break;
-            }
+        if (searchTerm && searchTerm.trim().length >= 2) {
+            const searchType = selectedOption?.value || 'title';
+            endpoint = `/services/search?search_type=${searchType}&criteria=${encodeURIComponent(searchTerm)}`;
         }
+
         try {
             const response = await apiClient.get(endpoint);
-            setServices(response.data);
+            setServices(response.data || []);
         } catch (error) {
-            toast.error('Error al obtener los datos de los servicios', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            if (error.response?.status !== 400) {
+                toast.error('Error al obtener los servicios');
+            }
         }
     };
 
     const getOperations = async () => {
-
-        //Endpoint por defecto
         let endpoint = '/operations/all';
-        const searchTypeOperationCode = "operation_code";
-        const searchTypeTitle = "title";
-        //Si hay un filtro de búsqueda
-        if (searchTerm) {
-            switch (selectedOption.value) {
-                case 'operation_code':
-                    endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchTerm}`;
-                    break;
-                case 'title':
-                    endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchTerm}`;
-                    break;
-                default:
-                    break;
-            }
+
+        if (searchTerm && searchTerm.trim().length >= 2) {
+            const searchType = selectedOption?.value || 'title';
+            endpoint = `/operations/search?search_type=${searchType}&criteria=${encodeURIComponent(searchTerm)}`;
         }
+
         try {
             const response = await apiClient.get(endpoint);
-            setOperations(response.data);
+            setOperations(response.data || []);
         } catch (error) {
-            toast.error('"Error al obtener los datos de las operaciones', {
-                position: toast.POSITION.TOP_RIGHT
-            });
+            if (error.response?.status !== 400) {
+                toast.error('Error al obtener las operaciones');
+            }
         }
     };
 
@@ -577,7 +558,7 @@ const SearchServicesOperationsModal = ({
     const addManualOperation = () => {
         //Título y costo tenga valores válidos
         if (manualOperation.title.trim() !== '' && !isNaN(manualOperation.cost)) {
-            const updateOperations = [...selectedOperations, {...manualOperation, operation_code:`.OPM-${Date.now()}` }];
+            const updateOperations = [...selectedOperations, { ...manualOperation, operation_code: `.OPM-${Date.now()}` }];
             onOperationUpdated(updateOperations);
             //Reinicia la fila del ingreso manual
             setManualOperation({
@@ -593,8 +574,24 @@ const SearchServicesOperationsModal = ({
     };
 
     useEffect(() => {
-        getOperations();
-    }, [searchTerm, selectedOption]);
+        if (!searchTerm) {
+            getOperations();
+            getServices();
+            return;
+        }
+
+        if (searchTerm.trim().length < 2) return;
+
+        const delayDebounceFn = setTimeout(() => {
+            if (activeTab === 'operations') {
+                getOperations();
+            } else {
+                getServices();
+            }
+        }, 400);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm, selectedOption, activeTab]); // Añadimos activeTab para que busque según la pestaña
 
     useEffect(() => {
         selectedServicesListRef.current = selectedServicesList;
@@ -607,10 +604,6 @@ const SearchServicesOperationsModal = ({
     useEffect(() => {
         selectedOperationsRef.current = selectedOperations;
     }, [selectedOperations]);
-
-    useEffect(() => {
-        getServices();
-    }, [searchTerm, selectedOption]);
 
     useEffect(() => {
     }, [selectedOperations]);
@@ -688,7 +681,7 @@ const SearchServicesOperationsModal = ({
                             </Carousel>
                         )}
 
-                        <SearchBar onFilter={handleFilter} customSelectStyles={customSelectServicesModalStyles} customClasses="div-search-modal" options={options_Services} placeholderText="Buscar Servicios" />
+                        <SearchBar onFilter={handleFilter} customSelectStyles={customSelectServicesModalStyles} customClasses="div-search-modal" options={options_Services} placeholderText="Buscar Servicios" value={selectedOption} />
 
                         {
                             <div className="products-modal-content">
@@ -729,7 +722,7 @@ const SearchServicesOperationsModal = ({
                                     initialPageSize={responsivePageSizeOperationsSelect} />
                             </div>
                         )}
-                        <SearchBar onFilter={handleFilter} customSelectStyles={customSelectOperationsModalStyles} customClasses="div-search-modal" options={options_Operations} placeholderText="Buscar Operaciones" />
+                        <SearchBar onFilter={handleFilter} customSelectStyles={customSelectOperationsModalStyles} customClasses="div-search-modal" options={options_Operations} placeholderText="Buscar Operaciones" value={selectedOption} />
                         {
 
                             <div className="products-modal-content">

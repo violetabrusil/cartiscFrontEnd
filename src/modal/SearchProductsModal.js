@@ -29,7 +29,7 @@ export function SearchProductsModal({ onClose,
 }) {
 
     const [allProducts, setAllProducts] = useState([]);
-    const [selectedOption, setSelectedOption] = useState("");
+    const [selectedOption, setSelectedOption] = useState({ value: 'title', label: 'Título' });
     const [searchTerm, setSearchTerm] = useState("");
     const [productPrices, setProductPrices] = useState(initialProductPrices || {});
     const [productQuantities, setProductQuantities] = useState(initialProductQuantities || {});
@@ -456,51 +456,31 @@ export function SearchProductsModal({ onClose,
     }
 
     const fetchData = async () => {
+        // 1. Evitar búsqueda si el término es muy corto (ej. menos de 2 letras)
+        // Esto suele ser la causa del 400 en muchos backends
+        if (searchTerm && searchTerm.trim().length < 2) {
+            return;
+        }
+
         setLoading(true);
-        //Endpoint por defecto
         let endpoint = '/products/all';
-        const searchPerSku = "sku";
-        const searchPerSupplier = "supplier_name";
-        const searchPerTitle = "title";
-        const searchPerCategory = "category";
-        const searchPerBrand = "brand";
 
         if (searchTerm) {
-            switch (selectedOption.value) {
-
-                case 'sku':
-                    endpoint = `/products/search?search_type=${searchPerSku}&criteria=${searchTerm}`;
-
-                    break;
-                case 'supplier_name':
-                    endpoint = `/products/search?search_type=${searchPerSupplier}&criteria=${searchTerm}`;
-                    break;
-                case 'title':
-                    endpoint = `/products/search?search_type=${searchPerTitle}&criteria=${searchTerm}`;
-                    break;
-                case 'category':
-                    endpoint = `/products/search?search_type=${searchPerCategory}&criteria=${searchTerm}`;
-                    break;
-                case 'brand':
-                    endpoint = `/products/search?search_type=${searchPerBrand}&criteria=${searchTerm}`;
-                    break;
-                default:
-                    break;
-            }
+            const type = selectedOption?.value || 'title';
+            endpoint = `/products/search?search_type=${type}&criteria=${encodeURIComponent(searchTerm)}`;
         }
+
         try {
             const response = await apiClient.get(endpoint);
-            /* const data = response.data.map(product => ({
-                 ...product,
-                 price: parseFloat(product.price),
-             }));*/
             setAllProducts(response.data);
         } catch (error) {
-            toast.error('Error al obtener los datos de los productos.', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+            if (error.response?.status !== 400) {
+                toast.error('Error al obtener los productos');
+            }
+            console.error("Error en búsqueda:", error.response?.data);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleManualProductChange = (field, value) => {
@@ -530,8 +510,14 @@ export function SearchProductsModal({ onClose,
     };
 
     useEffect(() => {
-        fetchData();
-    }, [selectedOption, searchTerm]);
+        const delayDebounceFn = setTimeout(() => {
+            if (searchTerm || selectedOption) {
+                fetchData();
+            }
+        }, 300); 
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm, selectedOption]);
 
     useEffect(() => {
     }, [selectedProducts]);
