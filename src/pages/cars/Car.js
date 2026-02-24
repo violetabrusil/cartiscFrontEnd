@@ -158,7 +158,8 @@ const Cars = () => {
         setShowCarInformation(false);
         setShowCarHistory(false);
         setShowButtonAddVehicle(true);
-        // resetea otros estados...
+        setSearchTerm("");
+        setSelectedOption("Nombre Titular");
     };
 
     const handleSearchVehiclesWithDebounce = useMemo(

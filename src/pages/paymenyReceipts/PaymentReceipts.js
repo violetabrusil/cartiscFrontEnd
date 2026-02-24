@@ -622,7 +622,7 @@ const PaymentReceipts = () => {
 
                 <div style={{ display: 'flex' }}>
                     <CustomTitleSection
-                        title="Comprobantes de pagos" />
+                        title="Comprobantes de ventas" />
 
                     <button className="button-payments-filter" onClick={handleOpenModal}>
                         <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
