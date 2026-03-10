@@ -1,118 +1,118 @@
 .search-bar-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
     margin-left: 38px;
-    margin-top: 48px;
-    max-width: 50%;
-    gap: 30px;
+    margin-top: 40px;
     max-width: 100%;
 }
 
 .search-products-box {
-    display: flex; /* Esto asegurará que los elementos internos se alineen en fila */
-    align-items: center; 
-    flex: 1;
-    gap: 1px;
+    display: flex;
     align-items: center;
+    flex: 1;
+    gap: 8px;
     width: 45vw;
-    /* o cualquier otro porcentaje que funcione para ti */
-    padding: 5px;
-    border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
+    padding: 0 14px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    background: #ffffff;
     margin-right: 50px;
-    transition: width 0.3s ease-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-products-box:focus-within {
+    border-color: rgba(0, 0, 0, 0.35);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
 }
 
 .input-search-products {
     border: none;
     outline: none;
     background: transparent;
-    margin-left: 8px;
-
+    font-size: 13.5px;
+    color: #1a1a18;
+    width: 100%;
+    letter-spacing: 0.01em;
 }
 
 .input-search-products::placeholder {
-    font-weight: bold;
-}
-
-.input-search-products::-moz-placeholder {
-    font-weight: bold;
-}
-
-.input-search-products::-moz-placeholder {
-    font-weight: bold;
-}
-
-.input-search-products::-ms-input-placeholder {
-    font-weight: bold;
-}
-
-.input-search-products::-ms-input-placeholder {
-    font-weight: bold;
-}
-
-.input-search-products::-webkit-input-placeholder {
-    font-weight: bold;
+    font-weight: 500;
+    color: #b0acaa;
+    font-size: 13px;
 }
 
 .search-products-icon {
-    width: 25px;
-    height: 25px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.38;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+    filter: brightness(0) saturate(100%) invert(5%) sepia(5%) saturate(200%) hue-rotate(10deg) brightness(100%) contrast(90%);
 }
 
-.custom-select-option-product {
-    background-color: transparent;
-}
-
-.custom-select-option-product--selected {
-    background-color: #ddd;
-}
-
-.custom-select-option-product--hover {
-    background-color: #f5f5f5;
+.search-products-box:focus-within .search-products-icon {
+    opacity: 0.65;
+    filter: brightness(0) saturate(100%) invert(45%) sepia(5%) saturate(200%) hue-rotate(10deg) brightness(95%) contrast(95%);
 }
 
 .search-products-box-user {
     display: flex;
     align-items: center;
+    gap: 8px;
     width: 66%;
-    padding: 5px;
-    border-radius: 6px;
-    border: 2px solid rgba(134, 134, 134, 0.31);
-    background: rgba(128, 128, 128, 0.26);
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    background: #ffffff;
     margin-left: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-products-box-inventory {
+    border: 1.5px solid rgba(0, 0, 0, 0.35);
+}
+
+.search-products-box-user:focus-within {
+    border-color: rgba(0, 0, 0, 0.35);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-select-option-product {
+    background-color: transparent;
+    font-size: 13.5px;
+}
+
+.custom-select-option-product--selected {
+    background-color: #f0ede8;
+    color: #1a1a18;
+}
+
+.custom-select-option-product--hover,
+.custom-select-option-product:hover {
+    background-color: #faf9f7;
 }
 
 @media screen and (max-width: 768px) {
     .search-bar-container {
-        /* Esto apila los elementos en vertical */
-        align-items: center;
+        flex-wrap: wrap;
+        margin-left: 16px;
+        margin-top: 24px;
+        gap: 8px;
     }
 
     .search-products-box {
         width: 100%;
-        /* Ocupa todo el ancho disponible */
-        margin-top: 10px;
-        /* Agrega un margen superior para separar de otros elementos */
+        margin-right: 16px;
     }
 
     .search-products-box-user {
-        width: 50%;
-        margin-top: 1px;
+        width: 100%;
+        margin-left: 0;
+        margin-top: 4px;
     }
 }
-
-@media screen and (max-width: 1200px) {
-    /* Ajustes para pantallas <= 1200px */
-}
-
-@media screen and (max-width: 1000px) {
-    /* Ajustes adicionales para pantallas <= 1000px */
-}
-
-@media screen and (max-width: 800px) {
-    /* Ajustes adicionales para pantallas <= 800px */
-}
-

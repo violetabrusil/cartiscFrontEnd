@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
 
-const PaymentReceiptContext = createContext();
+const SalesContext = createContext();
 
-export const PaymentReceiptProvider = ({ children }) => {
+export const SalesProvider = ({ children }) => {
 
     const [orderCode, setOrderCode] = useState(null);
     const [vehiclePlate, setVehiclePlate] = useState(null);
@@ -41,7 +41,7 @@ export const PaymentReceiptProvider = ({ children }) => {
     };
 
     return (
-        <PaymentReceiptContext.Provider
+        <SalesContext.Provider
             value={{
                 orderCode,
                 setOrderCode,
@@ -67,8 +67,8 @@ export const PaymentReceiptProvider = ({ children }) => {
                 resetAllFilters
             }}>
             {children}
-        </PaymentReceiptContext.Provider>
+        </SalesContext.Provider>
     )
 };
 
-export const usePaymentReceipt = () => useContext(PaymentReceiptContext);
+export const useSales = () => useContext(SalesContext);

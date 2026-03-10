@@ -6,6 +6,7 @@ const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 
 const SearchBar = ({ 
     onFilter, 
+    value,
     placeholderText = "Buscar Productos", 
     customSelectStyles, 
     customClasses = "",
@@ -18,13 +19,13 @@ const SearchBar = ({
         { value: 'branch', label: 'Marca' }
     ] }) => {
 
-    const [selectedOption, setSelectedOption] = useState(options[2]);
+    const [selectedOption, setSelectedOption] = useState(value ?? options[2]);
     const [searchTerm, setSearchTerm] = useState("");
 
     const handleOptionsChange = (selectedOption) => {
         setSelectedOption(selectedOption);
         setSearchTerm("");
-        onFilter(selectedOption, searchTerm);
+        onFilter(selectedOption, "");
 
     };
 

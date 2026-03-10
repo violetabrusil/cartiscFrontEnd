@@ -7,10 +7,24 @@ import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { ProductForm } from "./ProductForm";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import { selectStyles } from "../../styles/selectStyles";
 
 const addProductIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
+
+const customStyles = {
+    ...selectStyles,
+    control: (base, state) => ({
+        ...selectStyles.control(base, state),
+        width: '300px',
+        border: '1.5px solid rgba(0,0,0,0.35)'
+    }),
+    menu: (base, state) => ({
+        ...selectStyles.menu(base, state),
+        width: '300px'
+    })
+};
 
 const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }) => {
 
@@ -76,13 +90,13 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                         {value !== 'NULL' ? `$ ${parseFloat(value).toFixed(2)}` : '-'}
                     </div>
                 )
-            },            
+            },
             {
                 Header: "Stock",
                 accessor: "stock",
                 Cell: ({ value }) =>
                     <div style={{ fontSize: "16px" }}>
-                      {value !== 'NULL' ? value : '-'}
+                        {value !== 'NULL' ? value : '-'}
                     </div>
 
             },
@@ -91,7 +105,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                 accessor: "column",
                 Cell: ({ value }) =>
                     <div style={{ fontSize: "16px" }}>
-                       {value !== 'NULL' ? value : '-'}
+                        {value !== 'NULL' ? value : '-'}
                     </div>
             },
             {
@@ -222,14 +236,14 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                         </button>
                     </div>
 
-                    <SearchBar onFilter={handleFilter} />
+                    <SearchBar onFilter={handleFilter} customSelectStyles={customStyles} classNameSuffix="inventory"/>
                     {loading ? (
                         <div className="spinner-container-products">
                             <PuffLoader color="#316EA8" loading={loading} size={60} />
                         </div>
 
                     ) : (
-                        <DataTable data={allProducts} columns={columns} highlightRows={false} initialPageSize={responsivePageSize}  />
+                        <DataTable data={allProducts} columns={columns} highlightRows={false} initialPageSize={responsivePageSize} />
                     )
                     }
 
@@ -237,7 +251,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
             )}
 
             {viewMode === 'add' && (
-                <ProductForm mode="add" onSubmit={handleNewProduct} onBack={() => setViewMode('general')} onProductChange={fetchData}   />
+                <ProductForm mode="add" onSubmit={handleNewProduct} onBack={() => setViewMode('general')} onProductChange={fetchData} />
             )}
 
             {viewMode === 'edit' && selectedProduct && (

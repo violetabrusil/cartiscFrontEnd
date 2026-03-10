@@ -7,6 +7,7 @@ import './Home.css';
 import './Menu.css';
 import './Modal.css';
 import './NewClient.css';
+import './pages/payments/Payments.css';
 
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import PuffLoader from "react-spinners/PuffLoader";
@@ -21,9 +22,10 @@ import Operation from './pages/operations/Operation';
 import Inventory from './pages/inventory/Inventory';
 import WorkOrders from './pages/workOrders/WorkOrders';
 import NewWorkOrder from './pages/workOrders/NewWorkOrder';
-import PaymentReceipts from './pages/paymenyReceipts/PaymentReceipts';
 import Suppliers from './pages/supplier/Supplier';
 import Settings from './pages/settings/Settings';
+import Payments from './pages/payments/Payments';
+import Sales from './pages/sales/Sales';
 import React, { useContext } from 'react';
 import { AuthContext } from './contexts/AuthContext';
 import InformationWorkOrder from './pages/workOrders/InformationWorkOrder';
@@ -31,11 +33,12 @@ import ChangePassword from './pages/welcome/changePassword';
 import ChangePIN from './pages/welcome/changePIN';
 import ClientProvider from './provider/ClientProvider';
 import { WorkOrderProvider } from './contexts/searchContext/WorkOrderContext';
-import { PaymentReceiptProvider } from './contexts/searchContext/PaymentReceiptContext';
+import { SalesProvider } from './contexts/searchContext/SalesContext';
 import Proforma from './pages/proforma/Proforma';
 import { ProformaProvider } from './contexts/searchContext/ProformaContext';
 import NewProforma from './pages/proforma/NewProforma';
 import { CarProvider } from './contexts/searchContext/CarContext';
+
 
 function App() {
 
@@ -57,7 +60,7 @@ function App() {
       <ClientProvider>
         <CarProvider initialSelectedOptionCar={carInitialOption}>
           <WorkOrderProvider initialSelectedOptionWorkOrder={workOrdersInitialOption} >
-            <PaymentReceiptProvider>
+            <SalesProvider>
               <ProformaProvider initialSelectedOptionProforma={workOrdersInitialOption}>
                 <div>
                   <Routes>
@@ -79,13 +82,14 @@ function App() {
                     <Route path="/workOrders" element={<WorkOrders />} />
                     <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
                     <Route path="/workOrders/detailWorkOrder/:workOrderId" element={<InformationWorkOrder />} />
-                    <Route path="/paymentReceipt" element={<PaymentReceipts />} />
+                    <Route path="/sales" element={<Sales />} />
                     <Route path="/proformas" element={<Proforma />} />
                     <Route path='/proforma/newProforma' element={<NewProforma />} />
+                    <Route path='/payments' element={<Payments />}/>
                   </Routes>
                 </div>
               </ProformaProvider>
-            </PaymentReceiptProvider>
+            </SalesProvider>
           </WorkOrderProvider>
         </CarProvider>
       </ClientProvider>

@@ -89,7 +89,6 @@ const InformationWorkOrder = () => {
     const [total, setTotal] = useState(0);
     const [vat, setVat] = useState(0);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [fetchingData, setFetchingData] = useState(true);
     const [isEditingWorkOrder, setIsEditingWorkOrder] = useState(false);
     const [showButton, setShowButton] = useState(true);
 
@@ -709,22 +708,36 @@ const InformationWorkOrder = () => {
     };
 
     const handleOpenModalPayment = async () => {
-        setWorkOrderModalOpen(true);
-        setFetchingData(true);
-        console.log("entro al modal", fetchingData)
+        try {
+            const response = await apiClient.get(`/work-orders/${workOrderId}`);
+
+            const newWorkOrderData = {
+                id: workOrderId,
+                workOrderCode: response.data.work_order_code,
+                clientName: response.data.client.name,
+                plate: formatPlate(response.data.vehicle.plate),
+                subtotal: totalValue,
+                clientId: response.data.client.id
+            };
+
+            setWorkOrderData(newWorkOrderData);
+            setWorkOrderModalOpen(true);
+        } catch (error) {
+            toast.error('Error al cargar datos de la orden');
+        }
     };
 
     const closeModalPayment = () => {
         setWorkOrderModalOpen(false);
     };
 
-    const handleWorkOrderConfirm = async () => {
+    const handleWorkOrderConfirm = async ({ registerPayment }) => {
 
         const selectedDateAdjusted = new Date(selectedDate);
         selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
 
         try {
-            // Construir el payload
+
             const payload = {
                 client_id: workOrderDetail.client.id,
                 work_order_id: parseInt(workOrderDetail.id, 10),
@@ -738,7 +751,6 @@ const InformationWorkOrder = () => {
 
             console.log("datos a enviasr", payload)
 
-            // Llamada a la API
             const response = await apiClient.post('/sales-receipts/create', payload);
 
             if (response.status === 201) {
@@ -746,7 +758,13 @@ const InformationWorkOrder = () => {
                     position: toast.POSITION.TOP_RIGHT
                 });
                 setLastAddedReceiptId(response.data.id);
-                navigate('/paymentReceipt');
+
+                if (registerPayment) {
+                    navigate('/payments');
+                } else {
+                    navigate('/sales');
+                }
+
             }
 
             setWorkOrderModalOpen(false);
@@ -840,31 +858,6 @@ const InformationWorkOrder = () => {
             setTotalValue(oldTotalValue);
         }
     }, [selectedProducts, selectedOperations, servicesWithOperations, isModalOpenProducts]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getWorkOrderDetailById();
-                console.log("datos  orden de trabajo", workOrderDetail)
-                const newWorkOrderData = {
-                    id: workOrderId,
-                    workOrderCode: workOrderDetail.work_order_code,
-                    clientName: workOrderDetail.client.name,
-                    plate: formatPlate(workOrderDetail.vehicle.plate),
-                    subtotal: totalValue,
-                    clientId: workOrderDetail.client.id
-                };
-                setWorkOrderData(newWorkOrderData);
-                setFetchingData(false); // Se ha completado la obtención de datos
-            } catch (error) {
-
-            }
-        };
-
-        if (workOrderDetail !== null && fetchingData) {
-            fetchData();
-        }
-    }, [workOrderDetail, fetchingData]);
 
     return (
         <div>
@@ -1023,7 +1016,7 @@ const InformationWorkOrder = () => {
                                                             checked={isTaxFree}
                                                             onChange={(e) => setIsTaxFree(e.target.checked)}
                                                         />
-                                                        <label htmlFor="iva-toggle" style={{ fontSize: '11px', cursor: 'pointer', color: '#000000ff', whiteSpace: 'nowrap'  }}>
+                                                        <label htmlFor="iva-toggle" style={{ fontSize: '11px', cursor: 'pointer', color: '#000000ff', whiteSpace: 'nowrap' }}>
                                                             Aplicar IVA 0%
                                                         </label>
                                                     </div>

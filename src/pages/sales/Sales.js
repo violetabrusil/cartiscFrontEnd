@@ -1,4 +1,4 @@
-import "../../PaymentReceipts.css";
+import "../../Sales.css";
 import "../../Modal.css"
 import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,28 +7,26 @@ import PuffLoader from "react-spinners/PuffLoader";
 import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import DataTable from "../../dataTable/DataTable";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import apiClient from "../../services/apiClient";
-import { SearchModalPayment } from "../../modal/SearchModalPayment";
+import { SearchModalSales } from "../../modal/SearchModalSales";
 import { invoiceTypeMaping } from "../../constants/invoiceTypeConstants";
 import { paymentTypeMaping } from "../../constants/paymentTypeConstants";
-import { paymentStatusMaping } from "../../constants/paymentReceiptsStatusConstants";
+import { salesStatusMaping } from "../../constants/salesStatusConstants";
 import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
-import { usePaymentReceipt } from "../../contexts/searchContext/PaymentReceiptContext";
+import { useSales } from "../../contexts/searchContext/SalesContext";
 import DataTablePagination from "../../dataTable/DataTablePagination";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
 const emailIcon = process.env.PUBLIC_URL + "/images/icons/email-icon.png";
-const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const paymentIcon = process.env.PUBLIC_URL + "/images/icons/payment-icon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
-const PaymentReceipts = () => {
+const Sales = () => {
 
-    const [paymentReceipts, setPaymentReceipts] = useState([]);
+    const [sales, setSales] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
     const [isWorkOrderModalOpen, setWorkOrderModalOpen] = useState(false);
     const [workOrderData, setWorkOrderData] = useState(null);
@@ -36,16 +34,11 @@ const PaymentReceipts = () => {
     const [vat, setVat] = useState(0);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [lastAddedReceiptId, setLastAddedReceiptId] = useState(null);
-    const [paymentModal, setPaymentModal] = useState(false);
-    const [selectedReceipt, setSelectedReceipt] = useState(null);
-    const [payAll, setPayAll] = useState(false);
-    const [amountToPay, setAmountToPay] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [paymentType, setPaymentType] = useState(null);
     const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [sendingEmail, setSendingEmail] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(7, 5);
-    const { filterData, setFilterData, resetAllFilters } = usePaymentReceipt();
+    const { filterData, setFilterData, resetAllFilters } = useSales();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalValues, setTotalValues] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -79,7 +72,7 @@ const PaymentReceipts = () => {
 
     const navigateToDetail = (workOrderId) => {
         navigate(`/workOrders/detailWorkOrder/${workOrderId}`, {
-            state: { currentPage: 'paymentReceipt' }
+            state: { currentPage: 'sales' }
         });
     };
 
@@ -100,7 +93,7 @@ const PaymentReceipts = () => {
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '100%', // puedes ajustar el ancho del menú aquí
+            width: '100%', 
         }),
     };
 
@@ -185,8 +178,8 @@ const PaymentReceipts = () => {
                 Header: "",
                 accessor: "work_order.id",
                 Cell: ({ value }) => (
-                    <button className="button-eye-workorder-payment" onClick={() => navigateToDetail(value)}>
-                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-payment" />
+                    <button className="button-eye-workorder-sales" onClick={() => navigateToDetail(value)}>
+                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-sales" />
                     </button>
                 ),
                 className: "small-row"
@@ -194,18 +187,18 @@ const PaymentReceipts = () => {
             {
                 Header: "",
                 Cell: ({ row }) => {
-                    const payment = row.original;
+                    const sales = row.original;
                     return (
                         <>
-                            {payment.sales_receipt_status !== "Cobrado" && (
-                                <button className="button-payment-receipt" onClick={() => handleOpenPaymentModal(payment)}>
+                            {sales.sales_receipt_status !== "Cobrado" && (
+                                <button className="button-payment-receipt" onClick={() => handleOpenPayment(sales)}>
                                     <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
                                 </button>
                             )}
-                            <button className="button-download-payment-receipt" onClick={() => downloadPDF(payment.id)}>
-                                <img src={pdfIcon} alt="Download Payment Receipt Icon" className="download-payment-receipt-icon" />
+                            <button className="button-download-sales-receipt" onClick={() => downloadPDF(sales.id)}>
+                                <img src={pdfIcon} alt="Download Payment Receipt Icon" className="download-sales-receipt-icon" />
                             </button>
-                            <button className="button-email" onClick={() => sendEmail(payment.id)}>
+                            <button className="button-email" onClick={() => sendEmail(sales.id)}>
                                 <img src={emailIcon} alt="Email Icon" className="email-icon" />
                             </button>
                         </>
@@ -260,7 +253,7 @@ const PaymentReceipts = () => {
         if (!isRestoringFromUrl) {
             const isSameSearch = JSON.stringify(cleanParams) === JSON.stringify(currentFilters);
 
-            if(isSameSearch) {
+            if (isSameSearch) {
                 setModalOpen(false);
                 return;
             }
@@ -281,7 +274,7 @@ const PaymentReceipts = () => {
             const response = await apiClient.post(`/sales-receipts/search/${page}/${pageSize}`, cleanParams);
 
             if (!response.data || !response.data.values) {
-                setPaymentReceipts([]);
+                setSales([]);
                 setTotalPages(0);
                 setTotalValues(0);
                 setLoading(false);
@@ -291,20 +284,20 @@ const PaymentReceipts = () => {
 
             const { values, total_pages, total_values } = response.data;
 
-            const transformed = values.map(payment => {
-                let translatedStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
-                if (payment.paid === payment.total) translatedStatus = "Cobrado";
+            const transformed = values.map(sales => {
+                let translatedStatus = salesStatusMaping[sales.sales_receipt_status] || sales.sales_receipt_status;
+                if (sales.paid === sales.total) translatedStatus = "Cobrado";
 
                 return {
-                    ...payment,
-                    created_at: formatDate(payment.created_at),
-                    invoice_type: invoiceTypeMaping[payment.invoice_type] || payment.invoice_type,
-                    payment_type: paymentTypeMaping[payment.payment_type] || payment.payment_type,
+                    ...sales,
+                    created_at: formatDate(sales.created_at),
+                    invoice_type: invoiceTypeMaping[sales.invoice_type] || sales.invoice_type,
+                    payment_type: paymentTypeMaping[sales.payment_type] || sales.payment_type,
                     sales_receipt_status: translatedStatus
                 };
             });
 
-            setPaymentReceipts(transformed);
+            setSales(transformed);
             setFilterData(transformed);
             setTotalPages(total_pages);
             setTotalValues(total_values);
@@ -324,7 +317,7 @@ const PaymentReceipts = () => {
     //por número de serie, categoría o título
     const fetchData = async (page = 1, pageSize = responsivePageSize) => {
 
-        if (paymentReceipts.length === 0) {
+        if (sales.length === 0) {
             setLoading(true)
         }
 
@@ -341,24 +334,24 @@ const PaymentReceipts = () => {
 
             const { total_pages, values, total_values } = response.data;
 
-            const transformedPaymentReceipts = values.map(payment => {
-                const newDateStart = formatDate(payment.created_at);
-                const translatedInvoiceType = invoiceTypeMaping[payment.invoice_type] || payment.invoice_type;
-                let translatedPaymentStatus = paymentStatusMaping[payment.sales_receipt_status] || payment.sales_receipt_status;
+            const transformedSales = values.map(sales => {
+                const newDateStart = formatDate(sales.created_at);
+                const translatedInvoiceType = invoiceTypeMaping[sales.invoice_type] || sales.invoice_type;
+                let translatedSalesStatus = salesStatusMaping[sales.sales_receipt_status] || sales.sales_receipt_status;
 
-                if (payment.paid === payment.total) {
-                    translatedPaymentStatus = "Cobrado";
+                if (sales.paid === sales.total) {
+                    translatedSalesStatus = "Cobrado";
                 }
 
                 return {
-                    ...payment,
+                    ...sales,
                     created_at: newDateStart,
                     invoice_type: translatedInvoiceType,
-                    sales_receipt_status: translatedPaymentStatus,
+                    sales_receipt_status: translatedSalesStatus,
                 };
             });
 
-            setPaymentReceipts(transformedPaymentReceipts);
+            setSales(transformedSales);
             setLoading(false);
             setTotalPages(total_pages);
             setTotalValues(total_values);
@@ -392,11 +385,11 @@ const PaymentReceipts = () => {
         if (currentPage > 1) handlePageChange(currentPage - 1);
     };
 
-    const downloadPDF = async (paymentId) => {
+    const downloadPDF = async (salesId) => {
 
         try {
             setDownloadingPdf(true);
-            const response = await apiClient.get(`/sales-receipts/generate-pdf/${paymentId}`, { responseType: 'blob' });
+            const response = await apiClient.get(`/sales-receipts/generate-pdf/${salesId}`, { responseType: 'blob' });
 
             const header = response.headers['content-disposition'];
             const fileName = header.split('filename=')[1].replace(/['"]/g, '');
@@ -425,10 +418,10 @@ const PaymentReceipts = () => {
         setDownloadingPdf(false);
     };
 
-    const sendEmail = async (paymentId) => {
+    const sendEmail = async (salesId) => {
         try {
             setSendingEmail(true);
-            const response = await apiClient.get(`/sales-receipts/send-email/${paymentId}`);
+            const response = await apiClient.get(`/sales-receipts/send-email/${salesId}`);
             if (response.status === 200) {
                 setSendingEmail(false);
                 toast.success('Email enviado', {
@@ -452,7 +445,7 @@ const PaymentReceipts = () => {
         }
     };
 
-    const handleWorkOrderConfirm = async () => {
+    const handleWorkOrderConfirm = async ({ registerPayment }) => {
 
         setLoading(true);
 
@@ -513,59 +506,10 @@ const PaymentReceipts = () => {
         }
     };
 
-    const handleOpenPaymentModal = (receipt) => {
-        setSelectedReceipt(receipt);
-        setPaymentType(receipt.payment_type);
-        setAmountToPay(0);
-        setPayAll(false);
-        setPaymentModal(true);
-    };
-
-    const handleClosePaymentModal = () => {
-        setPaymentModal(false);
-        setPayAll(false);
-        setAmountToPay(0);
-        refreshCurrentView();
-    };
-
-    const handleChargeReceipt = async () => {
-
-        setLoading(true);
-
-        if (paymentType === 'pending') {
-
-            toast.error('Seleccione una forma de pago para continuar.', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-
-        } else {
-            try {
-                const id = selectedReceipt.id;
-
-                const response = await apiClient.put(`/sales-receipts/charge/${id}`, null, {
-                    params: {
-                        payment_type: paymentType,
-                        paid: amountToPay
-                    }
-                });
-
-                handleClosePaymentModal();
-                setLoading(false);
-                toast.success('Pago procesado con éxito.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
-
-            } catch (error) {
-                console.log("Error en paga comprobante", error)
-
-                toast.error('Error al procesar el pago.', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-
-            }
-        }
-
+    const handleOpenPayment = () => {
+        navigate(`/payments/`, {
+         
+        });
     };
 
     const closeModal = () => {
@@ -573,7 +517,7 @@ const PaymentReceipts = () => {
     };
 
     useEffect(() => {
-        if (location.pathname !== '/paymentReceipt') return;
+        if (location.pathname !== '/sales') return;
         refreshCurrentView();
     }, [searchParams, responsivePageSize, location.pathname]);
 
@@ -582,7 +526,7 @@ const PaymentReceipts = () => {
     }, [filterData]);
 
     useEffect(() => {
-        if (location.pathname !== '/paymentReceipt') return;
+        if (location.pathname !== '/sales') return;
 
         const params = Object.fromEntries([...searchParams]);
         const pageToLoad = params.page ? parseInt(params.page) : 1;
@@ -618,15 +562,15 @@ const PaymentReceipts = () => {
 
             <ToastContainer />
 
-            <div className="container-payment-receipts">
+            <div className="container-sales">
 
                 <div style={{ display: 'flex' }}>
                     <CustomTitleSection
-                        title="Comprobantes de ventas" />
+                        title="Ventas Totales" />
 
-                    <button className="button-payments-filter" onClick={handleOpenModal}>
+                    <button className="button-sales-filter" onClick={handleOpenModal}>
                         <img src={filterIcon} alt="Filter Icon" className="filter-icon" />
-                        <span className="button-payment-text-filter">Filtro</span>
+                        <span className="button-sales-text-filter">Filtro</span>
                     </button>
 
                     <div className="total-work-orders">
@@ -636,7 +580,7 @@ const PaymentReceipts = () => {
                     </div>
                 </div>
 
-                {loading && paymentReceipts.length === 0 ? (
+                {loading && sales.length === 0 ? (
                     <div className="loader-container">
                         <PuffLoader color="#316EA8" loading={loading} size={60} />
                     </div>
@@ -666,9 +610,9 @@ const PaymentReceipts = () => {
                             transition: 'none',
                             pointerEvents: isTableLoading ? 'none' : 'auto'
                         }}>
-                            {paymentReceipts.length > 0 ? (
+                            {sales.length > 0 ? (
                                 <DataTablePagination
-                                    data={paymentReceipts}
+                                    data={sales}
                                     columns={columns}
                                     goToNextPage={goToNextPage}
                                     goToPreviousPage={goToPreviousPage}
@@ -691,7 +635,7 @@ const PaymentReceipts = () => {
             </div>
 
             {isModalOpen && (
-                <SearchModalPayment
+                <SearchModalSales
                     isOpen={handleOpenModal}
                     onClose={handleCloseModal}
                     onConfirm={handleConfirm}
@@ -715,107 +659,8 @@ const PaymentReceipts = () => {
 
             )}
 
-            {paymentModal && (
-                <div className="filter-modal-overlay">
-                    <ToastContainer />
-                    <div className="modal-content">
-                        <div className="title-modal-history">
-                            <h4>Nuevo Pago</h4>
-                            <div style={{ flex: "1", marginTop: '18px' }}>
-                                <button className="button-close" onClick={handleClosePaymentModal}  >
-                                    <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="container-label" style={{ marginTop: '20px' }}>
-
-                            <label>Total a pagar:
-                                <span style={{ marginLeft: '94px' }}>{selectedReceipt?.total ? parseFloat(selectedReceipt.total).toFixed(2) : '0.00'}</span>
-                            </label>
-
-                            <label>Total pagado:
-                                <span style={{ marginLeft: '94px' }} >{selectedReceipt?.paid ? parseFloat(selectedReceipt.paid).toFixed(2) : '0.00'}</span>
-                            </label>
-
-                            <label>Pendiente por pagar:
-                                <span>
-                                    {
-                                        selectedReceipt
-                                            ? parseFloat(selectedReceipt.total - (selectedReceipt.paid || 0)).toFixed(2)
-                                            : '0.00'
-                                    }
-                                </span>
-
-                            </label>
-
-                            <div className="flex-container">
-                                <label>Forma de pago:</label>
-                                <Select
-                                    isSearchable={false}
-                                    styles={selectTypePaymentStyles}
-                                    options={paymentTypeOptions}
-                                    onChange={selectedOption => setPaymentType(selectedOption.value)}
-                                    value={paymentTypeOptions.find(option => option.value === paymentType)}
-                                    placeholder="Seleccione"
-                                />
-
-                            </div>
-
-                            <div>
-                                <label>
-                                    Valor a pagar:
-                                    <input
-                                        type="text"
-                                        className="paid-input"
-                                        value={amountToPay}
-                                        onChange={(e) => {
-                                            const value = e.target.value.trim();
-                                            const sanitizedValue = value.replace(/,/g, '.'); // Reemplazar comas por puntos
-                                            if (/^[-]?\d*\.?\d{0,2}$/.test(sanitizedValue) || sanitizedValue === "") {
-                                                setAmountToPay(sanitizedValue);
-                                                if (payAll) {
-                                                    setPayAll(false);
-                                                }
-                                            }
-                                        }}
-
-                                    />
-                                </label>
-                            </div>
-
-                            <div>
-                                <input
-                                    style={{ marginLeft: '5px' }}
-                                    type="checkbox"
-                                    checked={payAll}
-                                    onChange={(e) => {
-                                        setPayAll(e.target.checked);
-                                        if (e.target.checked && selectedReceipt) {
-                                            setAmountToPay((parseFloat(selectedReceipt.total - selectedReceipt.paid).toFixed(2)));
-                                        } else {
-                                            setAmountToPay('0.00'); // O cualquier valor predeterminado con dos decimales.
-                                        }
-                                    }}
-                                />
-                                <label style={{ marginLeft: '10px' }}> Pagar todo</label>
-                            </div>
-
-
-
-                        </div>
-
-                        <div className="button-options" style={{ justifyContent: 'center' }}>
-                            <button className="accept-button-modal" onClick={handleChargeReceipt}>Cobrar</button>
-                        </div>
-
-                    </div>
-
-                </div>
-            )}
-
         </div>
     )
 };
 
-export default PaymentReceipts;
+export default Sales;

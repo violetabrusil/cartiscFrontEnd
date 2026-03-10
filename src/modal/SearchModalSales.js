@@ -3,16 +3,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
-import { usePaymentReceipt } from "../contexts/searchContext/PaymentReceiptContext";
+import { useSales } from "../contexts/searchContext/SalesContext";
 import { useSearchParams } from "react-router-dom";
 
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
-export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
+export function SearchModalSales({ isOpen, onClose, onConfirm }) {
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const { resetAllFilters } = usePaymentReceipt();
+    const { resetAllFilters } = useSales();
 
     const {
         orderCode,
@@ -34,7 +34,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
         endDate,
         setEndDate,
         saveFormValues
-    } = usePaymentReceipt();
+    } = useSales();
 
     const selectPaymentStyles = {
         control: (provided, state) => ({
@@ -53,7 +53,7 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
         }),
     };
 
-    const paymentStatus = [
+    const salesStatus = [
         { value: 'receivable', label: 'Por cobrar' },
         { value: 'charged', label: 'Cobrado' },
     ];
@@ -184,8 +184,8 @@ export function SearchModalPayment({ isOpen, onClose, onConfirm }) {
                     <Select
                         isSearchable={false}
                         styles={selectPaymentStyles}
-                        options={paymentStatus}
-                        value={paymentStatus.find(option => option.value === status) || null}
+                        options={salesStatus}
+                        value={salesStatus.find(option => option.value === status) || null}
                         onChange={selectedOption => setStatus(selectedOption.value)}
                         placeholder="Seleccione"
                     />

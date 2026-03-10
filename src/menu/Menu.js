@@ -2,7 +2,7 @@ import "../Menu.css";
 import React, { useState, useEffect, useMemo, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
-import { usePaymentReceipt } from "../contexts/searchContext/PaymentReceiptContext";
+import { useSales } from "../contexts/searchContext/SalesContext";
 
 const menuButton = process.env.PUBLIC_URL + "/images/icons/menu-button.png";
 const logo = process.env.PUBLIC_URL + "/images/cartics-black.png";
@@ -34,7 +34,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(null);
     const [manualToggle, setManualToggle] = useState(false);
-    const { resetAllFilters } = usePaymentReceipt();
+    const { resetAllFilters } = useSales();
 
     const { user } = useContext(AuthContext);
 
@@ -59,7 +59,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
             { path: "/suppliers", icon: supplierIconGray, iconSelected: supplierIconBlue, label: "Proveedores", labelStyle: { marginTop: "12px" } },
             { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Productos", labelStyle: { marginTop: "10px" }, },
             { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo", labelStyle: { marginTop: "12px" } },
-            { path: "/paymentReceipt", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Comprobantes de ventas", labelStyle: { marginTop: "12px" } },
+            { path: "/sales", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Ventas", labelStyle: { marginTop: "12px" } },
             //{ path: '/proformas', icon: proformaIconGray, iconSelected: proformaIconBlue, label: "Proformas", labelStyle: { marginTop: "10px" } }
         ];
 

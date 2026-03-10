@@ -7,8 +7,22 @@ import SearchBar from "../../searchBar/SearchBar";
 import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import { selectStyles } from "../../styles/selectStyles";
 
 const productIcon = process.env.PUBLIC_URL + "/images/icons/productImageEmpty.png";
+
+const customStyles = {
+    ...selectStyles,
+    control: (base, state) => ({
+        ...selectStyles.control(base, state),
+        width: '300px',
+        border: '1.5px solid rgba(0,0,0,0.35)'
+    }),
+    menu: (base, state) => ({
+        ...selectStyles.menu(base, state),
+        width: '300px'
+    })
+};
 
 const Location = () => {
 
@@ -192,7 +206,7 @@ const Location = () => {
         <div className="location-container">
             <ToastContainer />
             <div className="content-location-wrapper">
-                <SearchBar onFilter={handleFilter} />
+                <SearchBar onFilter={handleFilter} customSelectStyles={customStyles} classNameSuffix="inventory"/>
                 {loading ? (
                     <div className="spinner-container-products ">
                         <PuffLoader color="#316EA8" loading={loading} size={60} />
