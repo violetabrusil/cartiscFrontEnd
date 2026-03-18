@@ -464,7 +464,7 @@ tr:not(.row-voided):hover td {
     display: flex;
     align-items: center;
     justify-content: center; 
-    
+
     z-index: 100;
     backdrop-filter: blur(3px);
 }
@@ -490,7 +490,6 @@ tr:not(.row-voided):hover td {
 }
 
 .modal__title {
-    font-family: 'DM Serif Display', serif;
     font-size: 22px;
 }
 

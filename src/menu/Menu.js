@@ -34,20 +34,21 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(null);
     const [manualToggle, setManualToggle] = useState(false);
+    const [openSubmenuIndex, setOpenSubmenuIndex] = useState(null);
     const { resetAllFilters } = useSales();
 
     const { user } = useContext(AuthContext);
 
     const toggleMenu = () => {
-        setManualToggle(true);
-        setIsOpen(prevIsOpen => !prevIsOpen);
+        setManualToggle(prev => !prev);
+        setIsOpen(prev => !prev);
     };
 
     const handleImageClick = () => {
         setManualToggle(true);
         setIsOpen(false);
+        setOpenSubmenuIndex(null);
     };
-
 
     const menuOptions = useMemo(() => {
 
@@ -59,7 +60,13 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
             { path: "/suppliers", icon: supplierIconGray, iconSelected: supplierIconBlue, label: "Proveedores", labelStyle: { marginTop: "12px" } },
             { path: "/inventory", icon: inventoryIconGray, iconSelected: inventoryIconBlue, label: "Productos", labelStyle: { marginTop: "10px" }, },
             { path: "/workOrders", icon: workOrderIconGray, iconSelected: workOrderIconBlue, label: "Órdenes de trabajo", labelStyle: { marginTop: "12px" } },
-            { path: "/sales", icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Ventas", labelStyle: { marginTop: "12px" } },
+            {
+                path: null, icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Ventas", labelStyle: { marginTop: "12px" },
+                submenu: [
+                    { path: "/sales", label: "Ventas totales" },
+                    { path: "/inventory", label: "Cuentas por cobrar" }
+                ]
+            },
             //{ path: '/proformas', icon: proformaIconGray, iconSelected: proformaIconBlue, label: "Proformas", labelStyle: { marginTop: "10px" } }
         ];
 
@@ -75,47 +82,133 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
 
     useEffect(() => {
         const currentPath = location.pathname;
-        const foundIndex = menuOptions.findIndex((option) => currentPath.startsWith(option.path));
+
+        const foundIndex = menuOptions.findIndex((option) => {
+            if (option.path && currentPath.startsWith(option.path)) return true;
+            if (option.submenu) {
+                return option.submenu.some(sub => currentPath.startsWith(sub.path));
+            }
+            return false;
+        });
+
         setActiveIndex(foundIndex);
+
+        const activeOption = menuOptions[foundIndex];
+        if (activeOption?.submenu) {
+            setOpenSubmenuIndex(foundIndex);
+        }
     }, [location.pathname, menuOptions]);
+
+    const handleOptionClick = (option, index) => {
+        resetAllFilters();
+
+        if (option.submenu) {
+            setOpenSubmenuIndex(prev => (prev === index ? null : index));
+            return;
+        }
+
+        setOpenSubmenuIndex(null);
+
+        if (option.path === "/inventory") {
+            if (onInventoryClick) onInventoryClick();
+        } else {
+            if (resetFunction) resetFunction();
+        }
+    };
 
     return (
         <div className="Menu">
-            <div className={`menu-lateral ${isOpen ? "open" : ""}`}
+            <div
+                className={`menu-lateral ${isOpen ? "open" : ""}`}
                 onMouseEnter={() => {
-                    if (!manualToggle) {
-                        setIsOpen(false);
-                    }
+                    if (!manualToggle) setIsOpen(false);
                 }}
                 onMouseLeave={() => {
                     if (!manualToggle) {
                         setIsOpen(true);
+                        setOpenSubmenuIndex(null);
                     }
                 }}
             >
-                {menuOptions.map((option, index) => (
-                    <Link
-                        to={option.path}
-                        key={index}
-                        className={`opcion-container ${activeIndex === index ? "active" : ""}`}
-                        onClick={() => {
-                            resetAllFilters();
-                            if (option.path === "/inventory") {
-                                if (onInventoryClick) onInventoryClick();
-                            } else {
-                                if (resetFunction) resetFunction();
-                            }
-                        }}
-                    >
-                        <span className="opcion-container">
-                            <span className="icono">
-                                <img src={activeIndex === index ? option.iconSelected : option.icon} alt="ClientIcon" />
-                            </span>
-                            <span className="texto" style={option.labelStyle}>{option.label}</span>
-                        </span>
+                {menuOptions.map((option, index) => {
 
-                    </Link>
-                ))}
+                    const isActive = activeIndex === index ||
+                        option.submenu?.some(sub => location.pathname.startsWith(sub.path));
+
+                    return (
+                        <div key={index} className="opcion-wrapper">
+
+                            {option.submenu ? (
+                                <div
+                                    className={`opcion-container ${isActive ? "active" : ""}`}
+                                    onClick={() => handleOptionClick(option, index)}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    <span className="opcion-container">
+                                        <span className="icono">
+                                            <img
+                                                src={isActive ? option.iconSelected : option.icon}
+                                                alt={option.label}
+                                            />
+                                        </span>
+                                        <span className="texto" style={option.labelStyle}>
+                                            {option.label}
+                                            <span
+                                                className="submenu-arrow"
+                                                style={{
+                                                    marginLeft: "6px",
+                                                    display: "inline-block",
+                                                    transition: "transform 0.2s ease",
+                                                    transform: openSubmenuIndex === index ? "rotate(180deg)" : "rotate(0deg)",
+                                                    fontSize: "10px",
+                                                }}
+                                            >
+                                                ▼
+                                            </span>
+                                        </span>
+                                    </span>
+                                </div>
+                            ) : (
+                                <Link
+                                    to={option.path}
+                                    className={`opcion-container ${isActive ? "active" : ""}`}
+                                    onClick={() => handleOptionClick(option, index)}
+                                >
+                                    <span className="opcion-container">
+                                        <span className="icono">
+                                            <img
+                                                src={isActive ? option.iconSelected : option.icon}
+                                                alt={option.label}
+                                            />
+                                        </span>
+                                        <span className="texto" style={option.labelStyle}>
+                                            {option.label}
+                                        </span>
+                                    </span>
+                                </Link>
+                            )}
+
+                            {option.submenu && openSubmenuIndex === index && (
+                                <div className="submenu">
+                                    {option.submenu.map((subOption, subIndex) => (
+                                        <Link
+                                            key={subIndex}
+                                            to={subOption.path}
+                                            className={`submenu-item ${location.pathname.startsWith(subOption.path) ? "active" : ""}`}
+                                            onClick={() => {
+                                                resetAllFilters();
+                                                if (resetFunction) resetFunction();
+                                            }}
+                                        >
+                                            <span className="submenu-texto">{subOption.label}</span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+
+                        </div>
+                    );
+                })}
 
                 <img
                     src={isOpen ? logoClose : logo}

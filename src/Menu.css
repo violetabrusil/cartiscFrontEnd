@@ -13,7 +13,8 @@
   align-items: flex-start;
 }
 
-.menu-lateral a {
+.menu-lateral a,
+.menu-lateral .opcion-wrapper > div.opcion-container {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 16px;
@@ -21,57 +22,153 @@
   display: block;
   transition: 0.3s;
   position: relative;
-  height: 33px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.menu-lateral a .icono {
+.menu-lateral a .icono,
+.menu-lateral .opcion-wrapper > div.opcion-container .icono {
   margin-right: 10px;
   font-size: 20px;
   display: flex;
   align-items: center;
-  max-width: auto;
-  max-height: auto;
 }
 
-.menu-lateral a .icono img {
+.menu-lateral a .icono img,
+.menu-lateral .opcion-wrapper > div.opcion-container .icono img {
   width: 30px;
   height: 28px;
   margin-left: -13px;
   margin-top: 10px;
 }
 
-.menu-lateral a .texto {
-  transition: 0s;
+.menu-lateral a .texto,
+.menu-lateral .opcion-wrapper > div.opcion-container .texto {
+  transition: opacity 0.4s ease;
   white-space: nowrap;
-  /* Evita el salto de línea */
   overflow: hidden;
-  /* Oculta el texto que excede el ancho */
   text-overflow: ellipsis;
-  /* Agrega puntos suspensivos (...) al final del texto */
+  display: flex;
+  align-items: center;
 }
 
-.menu-lateral a .opcion-container {
+.menu-lateral a .opcion-container,
+.menu-lateral .opcion-wrapper > div .opcion-container {
   display: flex;
   align-items: center;
   margin-top: 5px;
-  /* Ajusta el margen superior según sea necesario */
 }
 
-.menu-lateral a.active {
+.menu-lateral a.active,
+.menu-lateral .opcion-wrapper > div.opcion-container.active {
   color: #316EA8;
   font-weight: bold;
 }
 
-.menu-lateral a.active::before {
+.menu-lateral a.active:not(.submenu-item)::before,
+.menu-lateral .opcion-wrapper > div.opcion-container.active::before {
   content: '';
   position: absolute;
-  top: 73%;
-  right: -20px;
+  top: 61%;
   transform: translate(0, -50%);
   height: 60%;
   width: 9px;
   left: 0;
   background-color: #316EA8;
+}
+
+.opcion-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 10px 8px 10px;
+  animation: submenuFadeIn 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+@keyframes submenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 7px 14px;
+  text-decoration: none;
+  color: #6E757D;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.15s ease;
+  white-space: nowrap;
+  height: auto;
+  position: relative;
+  letter-spacing: 0.01em;
+}
+
+.submenu-item::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #b0bec5;
+  margin-right: 10px;
+  flex-shrink: 0;
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+
+.submenu-item:hover {
+  background-color: rgba(49, 110, 168, 0.1);
+  color: #316EA8;
+  transform: translateX(3px);
+}
+
+.submenu-item:hover::before {
+  background-color: #316EA8;
+  transform: scale(1.3);
+}
+
+.submenu-item.active {
+  background-color: rgba(49, 110, 168, 0.15);
+  color: #316EA8;
+  font-weight: 600;
+}
+
+.menu-lateral .submenu .submenu-item.active::before {
+  background-color: #316EA8;
+  transform: scale(1.4);
+}
+
+.submenu-texto {
+  display: inline-block;
+}
+
+.menu-lateral.open .submenu {
+  display: none;
+}
+
+.menu-lateral.open .submenu-arrow {
+  display: none;
+}
+
+.menu-lateral.open a .texto,
+.menu-lateral.open .opcion-wrapper > div.opcion-container .texto {
+  opacity: 0;
 }
 
 .menu-lateral .icono-menu {
@@ -85,7 +182,6 @@
 .menu-lateral.open .icono-menu {
   right: auto;
   left: -13px;
-  /* Posiciona el icono a la izquierda */
   transform: rotate(0deg);
 }
 
@@ -98,17 +194,11 @@
   width: 60px;
 }
 
-.menu-lateral.open a .texto {
-  opacity: 0;
-  margin-left: -100px;
-}
-
 .menu-lateral .imagen-vertical {
   width: 130px;
   height: auto;
   position: absolute;
   bottom: 5px;
-  transform: rotate(0deg);
   object-fit: contain;
   transition: transform 0.3s;
   margin-top: auto;
@@ -120,7 +210,7 @@
   right: 28px;
   margin-top: 0;
   margin-left: auto;
-  margin-right: -20px
+  margin-right: -20px;
 }
 
 .menu-lateral.open .button-menu {
@@ -142,7 +232,8 @@
     padding-top: 15px;
   }
 
-  .menu-lateral a {
+  .menu-lateral a,
+  .menu-lateral .opcion-wrapper > div.opcion-container {
     font-size: 16px;
     padding: 8px 8px 8px 24px;
   }
@@ -156,7 +247,8 @@
     width: 50px;
   }
 
-  .menu-lateral a .icono img {
+  .menu-lateral a .icono img,
+  .menu-lateral .opcion-wrapper > div.opcion-container .icono img {
     max-width: 20px;
     height: auto;
     margin-left: -9px;
@@ -179,11 +271,15 @@
     left: -19px;
   }
 
-
+  .submenu-item {
+    font-size: 13px;
+    padding: 8px 10px 8px 14px;
+  }
 }
 
 @media screen and (max-width: 520px) {
-  .menu-lateral a .icono img {
+  .menu-lateral a .icono img,
+  .menu-lateral .opcion-wrapper > div.opcion-container .icono img {
     max-width: 20px;
     height: auto;
   }
@@ -206,7 +302,8 @@
 }
 
 @media screen and (max-width: 320px) {
-  .menu-lateral a {
+  .menu-lateral a,
+  .menu-lateral .opcion-wrapper > div.opcion-container {
     font-size: 12px;
     padding: 8px 8px 8px 20px;
   }
@@ -215,7 +312,8 @@
     font-size: 20px;
   }
 
-  .menu-lateral a .texto {
+  .menu-lateral a .texto,
+  .menu-lateral .opcion-wrapper > div.opcion-container .texto {
     display: none;
   }
 
@@ -239,6 +337,6 @@
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
   .menu-lateral {
-    height: 88vh; 
+    height: 88vh;
   }
 }
