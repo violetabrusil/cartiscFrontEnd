@@ -26,6 +26,7 @@ import Suppliers from './pages/supplier/Supplier';
 import Settings from './pages/settings/Settings';
 import Payments from './pages/payments/Payments';
 import Sales from './pages/sales/Sales';
+import Receivables from './pages/sales/Receivables';
 import React, { useContext } from 'react';
 import { AuthContext } from './contexts/AuthContext';
 import InformationWorkOrder from './pages/workOrders/InformationWorkOrder';
@@ -83,6 +84,7 @@ function App() {
                     <Route path="/workOrders/newWorkOrder" element={<NewWorkOrder />} />
                     <Route path="/workOrders/detailWorkOrder/:workOrderId" element={<InformationWorkOrder />} />
                     <Route path="/sales" element={<Sales />} />
+                    <Route path="/receivables" element={<Receivables />} />
                     <Route path="/proformas" element={<Proforma />} />
                     <Route path='/proforma/newProforma' element={<NewProforma />} />
                     <Route path='/payments' element={<Payments />}/>

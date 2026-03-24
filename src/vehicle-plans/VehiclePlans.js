@@ -3,25 +3,46 @@ import React, { useState, useEffect } from 'react';
 import { Stage, Layer, Image, Circle } from 'react-konva';
 import useImage from 'use-image';
 
-const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = true }) => {
+const VEHICLE_IMAGES = {
+    car: process.env.PUBLIC_URL + "/images/vehicle plans/car.webp",
+    van: process.env.PUBLIC_URL + "/images/vehicle plans/van.webp",
+    bus: process.env.PUBLIC_URL + "/images/vehicle plans/pickup_truck.webp",
+    truck: process.env.PUBLIC_URL + "/images/vehicle plans/truck.webp",
+    suv: process.env.PUBLIC_URL + "/images/vehicle plans/suv.webp",
+};
+
+const STAGE_WIDTH = 1200;
+const STAGE_HEIGHT = 600;
+
+const VehiclePlans = ({ vehicleType = 'car', updatePoints, initialPoints = [], isEditable = true }) => {
 
     const [points, setPoints] = useState(initialPoints);
+    const imgSrc = VEHICLE_IMAGES[vehicleType] ?? VEHICLE_IMAGES.car;
     const [image] = useImage(imgSrc);
-    const imageWidth = 550;
-    const imageHeight = 450;
+
+    const getImageDimensions = () => {
+        if (!image) return { w: STAGE_WIDTH, h: STAGE_HEIGHT, x: 0, y: 0 };
+
+        const ratio = Math.min(STAGE_WIDTH / image.width, STAGE_HEIGHT / image.height);
+        const w = image.width * ratio;
+        const h = image.height * ratio;
+        const x = (STAGE_WIDTH - w) / 2;
+        const y = (STAGE_HEIGHT - h) / 2;
+
+        return { w, h, x, y };
+    };
+
+    const { w, h, x, y } = getImageDimensions();
 
     const handleStageClick = (event) => {
         if (!isEditable) return;
-        // Update the points state with the new point
         const stage = event.currentTarget;
         const point = stage.getPointerPosition();
 
-        // Redondear las coordenadas
         const roundedX = Math.round(point.x);
         const roundedY = Math.round(point.y);
 
-        // Determinar el lado
-        const side = roundedX < imageWidth / 2 ? 'left' : 'right';
+        const side = roundedX < STAGE_WIDTH / 2 ? 'left' : 'right';
 
         const pointWithSide = { x: roundedX, y: roundedY, side };
 
@@ -30,17 +51,14 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
             updatePoints([...points, pointWithSide]);
         }
     };
-    
 
     const handleDragEnd = (index) => (event) => {
         const newPoints = [...points];
 
-        // Redondear las coordenadas
         const roundedX = Math.round(event.target.x());
         const roundedY = Math.round(event.target.y());
 
-        // Determinar el lado
-        const side = roundedX < imageWidth / 2 ? 'left' : 'right';
+        const side = roundedX < STAGE_WIDTH / 2 ? 'left' : 'right';
         newPoints[index] = {
             ...newPoints[index],
             x: roundedX,
@@ -55,32 +73,43 @@ const VehiclePlans = ({ imgSrc, updatePoints, initialPoints = [], isEditable = t
     };
 
     useEffect(() => {
-        setPoints(initialPoints);
-    }, []);
-
+        setPoints([]);
+        if (updatePoints) updatePoints([]);
+    }, [vehicleType]);;
 
     return (
         <div className="container-vehicle-plan">
-            <div style={{ margin: '20px' }}>
-                <Stage width={imageWidth} height={imageHeight} onClick={handleStageClick} onTouchStart={handleStageClick}>
+            <div style={{ marginBottom: '8px' }}>
+                <Stage width={STAGE_WIDTH} height={STAGE_HEIGHT} onClick={handleStageClick} onTouchStart={handleStageClick}>
                     <Layer>
-                        <Image image={image}
-                            width={imageWidth}
-                            height={imageHeight}
-                            x={(imageWidth - imageWidth) / 2}
-                            y={(imageHeight - imageHeight) / 2} />
+                        <Image image={image} width={w} height={h} x={x} y={y} />
                         {points.map((point, index) => (
-                            <Circle key={index} x={point.x} y={point.y} radius={10} fill="#ffea00"
-                                draggable={isEditable}
-                                onClick={() => handleDragEnd(index)()}
-                                onDragEnd={handleDragEnd(index)} />
+                            <React.Fragment key={index}>
+                            
+                                <Circle
+                                    x={point.x}
+                                    y={point.y}
+                                    radius={14}
+                                    fill="rgba(255,200,0,0.3)"
+                                    stroke="#FFB800"
+                                    strokeWidth={1.5}
+                                    draggable={isEditable}
+                                    onDragEnd={handleDragEnd(index)}
+                                />
+                              
+                                <Circle
+                                    x={point.x}
+                                    y={point.y}
+                                    radius={5}
+                                    fill="#FFB800"
+                                    draggable={isEditable}
+                                    onDragEnd={handleDragEnd(index)}
+                                />
+                            </React.Fragment>
                         ))}
                     </Layer>
                 </Stage>
-
             </div>
-
-
         </div>
     )
 }

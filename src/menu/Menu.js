@@ -64,7 +64,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                 path: null, icon: paymentIconGray, iconSelected: paymentIconBlue, label: "Ventas", labelStyle: { marginTop: "12px" },
                 submenu: [
                     { path: "/sales", label: "Ventas totales" },
-                    { path: "/inventory", label: "Cuentas por cobrar" }
+                    { path: "/receivables", label: "Cuentas por cobrar" }
                 ]
             },
             //{ path: '/proformas', icon: proformaIconGray, iconSelected: proformaIconBlue, label: "Proformas", labelStyle: { marginTop: "10px" } }

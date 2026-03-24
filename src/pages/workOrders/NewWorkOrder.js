@@ -79,7 +79,7 @@ const NewWorkOrder = () => {
     const showToast = (message, type) => {
         toast[type](message, { position: toast.POSITION.TOP_RIGHT });
     };
-    
+
     const handleSearchClientWithDebounce = useMemo(
         () => debounce((term) => {
 
@@ -307,6 +307,8 @@ const NewWorkOrder = () => {
         }
     };
 
+    const activeVehicle = vehicles.find(v => v.id === selectedVehicleId) ?? selectedVehicle;
+
     const handleWorkOrderCreation = () => {
         if (actualKm.trim() !== '') {
             // Si el campo de kilometraje actual no está vacío, llamar directamente a la función de crear la orden de trabajo
@@ -519,7 +521,6 @@ const NewWorkOrder = () => {
     useEffect(() => {
         if (selectedVehicle && selectedVehicle.km) {
             setActualKm(selectedVehicle.km);
-            //console.log("valor del km", selectedVehicle)
         }
     }, [selectedVehicle]);
 
@@ -912,7 +913,7 @@ const NewWorkOrder = () => {
                 </div>
 
                 <VehiclePlans
-                    imgSrc={carPlan}
+                    vehicleType={activeVehicle?.category}
                     updatePoints={(points) => setPointsOfInterest(points)}
                 />
 

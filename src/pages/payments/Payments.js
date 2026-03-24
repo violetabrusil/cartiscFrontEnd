@@ -1,24 +1,25 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import SearchBar from "../../searchBar/SearchBar";
 import { selectStyles } from "../../styles/selectStyles";
+import { PaymentService } from "../../services/mockPaymentService";
 
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const MOCK_SALE = {
     id: "VTA-1042",
     date: "14 Feb 2026",
-    client: "Ferretería El Clavo Dorado",
-    salesperson: "Luis Ramírez",
+    workOrderCode: "ORT-0003425",
+    client: "Luis Ramírez",
     status: "partial",
-    total: 48500,
-    amountPaid: 28500,
-    balance: 20000,
+    total: 800,
+    amountPaid: 200,
+    balance: 300,
     note: "El cliente acordó liquidar el saldo restante antes del cierre de mes. Pagos preferentemente por transferencia.",
 };
 
@@ -66,7 +67,7 @@ function KpiCard({ label, value, accent, progress }) {
                 {label}
             </p>
             <p style={{ fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em", color: accent ? "#f4f3ef" : "#1a1a18" }}>
-                {value}
+                $ {value}
             </p>
             {progress != null && (
                 <div style={{ marginTop: 10 }}>
@@ -167,7 +168,7 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
                         <h2 style={{ fontSize: 20, fontWeight: 600, color: '#f4f3ef', margin: 0 }}>
                             Registrar Pago
                         </h2>
-                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginTop: 10, marginBottom:  0}}>
+                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginTop: 10, marginBottom: 0 }}>
                             {payment.id} · Saldo pendiente&nbsp;
                             <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 700 }}>
                                 {fmt(payment.balance)}
@@ -348,15 +349,15 @@ function VoidPaymentModal({ payment, onClose, onConfirm }) {
                 <div style={{ padding: "24px 24px 16px", borderBottom: "1px solid #f0ede8" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                         <span style={{ fontSize: 24 }}>⚠️</span>
-                        <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 21 }}>Anular pago</h2>
+                        <h2 style={{ fontSize: 21 }}>Anular pago</h2>
                     </div>
-                    <p style={{ fontSize: 13.5, color: "#444", lineHeight: 1.65 }}>
-                        Esta a punto de anular el pago<strong>{payment.id}</strong> por{" "}
+                    <p style={{ fontSize: 13.5, color: "#444", lineHeight: 1.65, textAlign: 'justify' }}>
+                        Esta a punto de anular el pago <strong>{payment.id}</strong> por {"$"}
                         <strong>{fmt(payment.amount)}</strong> ({METHOD_LABEL[payment.method]}).
                         Esta acción se registrará en el registro de auditoría y <strong>no se puede deshacer</strong>.
                     </p>
                 </div>
-                <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column" }}>
                     <div>
                         <label className="payment-label">Motivo*</label>
                         <textarea
@@ -388,12 +389,11 @@ function VoidPaymentModal({ payment, onClose, onConfirm }) {
 
 export default function Payments() {
 
-    const [payment] = useState(MOCK_SALE);
+    const [payment, setPayment] = useState(MOCK_SALE);
     const [payments, setPayments] = useState(MOCK_PAYMENTS);
     const [showRegisterModal, setShowRM] = useState(false);
     const [voidTarget, setVoidTarget] = useState(null);
     const [filter, setFilter] = useState("");
-    const [toast, setToast] = useState(null);
     const [selectedOption, setSelectedOption] = useState(DEFAULT_OPTION);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -408,20 +408,36 @@ export default function Payments() {
 
     };
 
-    const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 3200); };
+    useEffect(() => {
+        PaymentService.getSale("VTA-1042").then(setPayment);
+    }, []);
 
-    const handleRegisterPayment = (form) => {
-        setPayments((prev) => [...prev, {
-            id: `AB-00${prev.length + 1}`,
-            date: form.date,
-            amount: parseFloat(form.amount),
-            method: form.method,
-            status: "pending",
-            reference: form.reference || null,
-            voidedAt: null, voidedBy: null, voidReason: null,
-        }]);
-        setShowRM(false);
-        showToast("Pago registrado correctamente");
+
+    const handleRegisterPayment = async (form) => {
+        try {
+            const { payment: newPayment, sale } = await PaymentService.registerPayment(
+                payment.id,
+                form
+            );
+            const confirmed = await PaymentService.confirmPayment(newPayment.id);
+            setPayments((prev) => [...prev, { ...newPayment, status: confirmed.status }]);
+
+            setPayment(sale);  
+
+            if (sale.status === "paid") {
+                toast.success("¡Venta liquidada en su totalidad!", { position: toast.POSITION.TOP_RIGHT });
+            } else {
+                toast.success("Pago registrado correctamente", { position: toast.POSITION.TOP_RIGHT });
+            }
+
+            setShowRM(false);
+        } catch (err) {
+            if (err.message === "SALE_ALREADY_PAID") {
+                toast.error("Esta venta ya fue cancelada en su totalidad. No se pueden registrar más pagos.");
+            } else {
+                toast.error("Error al registrar el pago.");
+            }
+        }
     };
 
     const handleVoidPayment = (reason) => {
@@ -432,7 +448,10 @@ export default function Payments() {
                     : p
             )
         );
-        showToast(`Pago ${voidTarget.id} anulado y registrado en el registro de auditoría.`);
+        toast.success('Pago anulado', {
+            position: toast.POSITION.TOP_RIGHT
+        });
+        //showToast(`Pago ${voidTarget.id} anulado.`, "w");
         setVoidTarget(null);
     };
 
@@ -475,13 +494,24 @@ export default function Payments() {
 
                         </div>
 
-                        <button className="btn-primary" onClick={() => setShowRM(true)}>
-                            <span style={{ fontSize: 18, lineHeight: 1 }}></span> Registrar pago
-                        </button>
+                        {payment.status !== "paid" && (
+                            <button
+                                className="btn-primary"
+                                onClick={() => {
+                                    if (payment.balance <= 0) {
+                                        toast.error("Esta venta ya fue cancelada en su totalidad.");
+                                        return;
+                                    }
+                                    setShowRM(true);
+                                }}
+                            >
+                                Registrar pago
+                            </button>
+                        )}
                     </div>
 
                 </div>
-                <p style={{ color: "#888", marginTop: '0px', marginBottom: '0px' }}>{payment.client} &nbsp;·&nbsp; {payment.date} &nbsp;·&nbsp; {payment.salesperson}</p>
+                <p style={{ color: "#888", marginTop: '0px', marginBottom: '0px' }}>{payment.date} &nbsp;·&nbsp; {payment.workOrderCode} &nbsp;·&nbsp; {payment.client}</p>
 
                 <div style={{ margin: "0 auto", padding: "28px 0px", display: "flex", flexDirection: "column", gap: 20 }}>
 
@@ -492,12 +522,10 @@ export default function Payments() {
                     </div>
 
                     {payment.note && (
-                        <div style={{ background: "#fffdf0", border: "1px solid #f0e68c", borderLeft: "3px solid #c9a800", borderRadius: 10, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
-
+                        <div style={{ background: "#fcfcf7", border: "1px solid #e7e6c1", borderRadius: 10, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
                             <p style={{ fontSize: 13.5, color: "#555", lineHeight: 1.6 }}>{payment.note}</p>
                         </div>
                     )}
-
 
                     <div className="card">
                         <div style={{ borderBottom: "1.5px solid #f0ede8", padding: "0 8px", display: "flex", alignItems: "center" }}>
@@ -517,7 +545,6 @@ export default function Payments() {
                                 <span>/span> Imprimir
                             </button>
                             */}
-
 
                         </div>
 
@@ -549,7 +576,7 @@ export default function Payments() {
                                             <td style={{ fontFamily: "monospace", fontSize: 12, color: "#888" }}>
                                                 {p.reference ?? "—"}
                                             </td>
-                                            <td><strong style={{ fontSize: 15 }}>{fmt(p.amount)}</strong></td>
+                                            <td><strong style={{ fontSize: 15 }}>$ {fmt(p.amount)}</strong></td>
                                             <td>
                                                 <div>
                                                     <span className="tag" style={{ background: PAYMENT_STATUS_STYLE[p.status]?.bg, color: PAYMENT_STATUS_STYLE[p.status]?.text }}>
@@ -567,7 +594,9 @@ export default function Payments() {
                                                     <button
                                                         className="btn-action"
                                                         disabled={isVoided}
-                                                        onClick={() => showToast(`Receipt ${p.id} downloaded`)}
+                                                        onClick={() => toast.success('Comprobante descargado', {
+                                                            position: toast.POSITION.TOP_RIGHT
+                                                        })}
                                                     >
                                                         ⬇ Comprobante
                                                     </button>
@@ -611,8 +640,6 @@ export default function Payments() {
                     />
                 )}
 
-                {/* Toast */}
-                {toast && <div className="toast">✓ {toast}</div>}
             </div>
         </div>
 

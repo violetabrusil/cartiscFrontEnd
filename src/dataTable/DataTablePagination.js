@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTable } from 'react-table';
 import "../DataTablePagination.css";
 
@@ -36,18 +35,17 @@ const DataTablePagination = ({
             }
         }
 
-        // Agregar puntos suspensivos si es necesario
         const finalNumbers = [];
         pageNumbers.forEach((number, index) => {
             if (index > 0 && number - pageNumbers[index - 1] > 1) {
-                finalNumbers.push('...'); // Puntos suspensivos
+                finalNumbers.push('...');
             }
             finalNumbers.push(number);
         });
 
         return finalNumbers.map((number, index) => {
             if (number === '...') {
-                return <span key={index} className="ellipsis">{number}</span>;
+                return <span key={`ellipsis-${index}`} className="ellipsis">{number}</span>;
             }
             return (
                 <button
@@ -68,10 +66,10 @@ const DataTablePagination = ({
         <div className="container-table-pagination">
             <table {...getTableProps()} className="data-table">
                 <thead>
-                    {headerGroups.map(headerGroup => (
-                        <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-                            {headerGroup.headers.map(column => (
-                                <th key={column.id}>
+                    {headerGroups.map((headerGroup, i) => (
+                        <tr key={`header-${i}`}>
+                            {headerGroup.headers.map((column, j) => (
+                                <th key={`col-${j}`}>
                                     {column.render('Header')}
                                 </th>
                             ))}
@@ -79,12 +77,12 @@ const DataTablePagination = ({
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {rows.map((row) => {
+                    {rows.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()} key={row.id}>
-                                {row.cells.map(cell => (
-                                    <td key={cell.column.id}>{cell.render('Cell')}</td>
+                            <tr key={`row-${i}`}>
+                                {row.cells.map((cell, j) => (
+                                    <td key={`cell-${i}-${j}`}>{cell.render('Cell')}</td>
                                 ))}
                             </tr>
                         );
