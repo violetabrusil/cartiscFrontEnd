@@ -293,7 +293,7 @@ tr:not(.row-voided):hover td {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 3px 10px;
+    padding: 3px 20px;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
@@ -420,7 +420,7 @@ tr:not(.row-voided):hover td {
 
 .payment-textarea,
 .payment-input {
-    width: 100%;
+    width: 93%;
     border: 1.5px solid #e0deda;
     border-radius: 8px;
     padding: 10px 12px;

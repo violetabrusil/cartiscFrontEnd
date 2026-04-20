@@ -1,6 +1,6 @@
 import "../../Sales.css";
 import "../../Modal.css"
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import PuffLoader from "react-spinners/PuffLoader";
@@ -10,12 +10,11 @@ import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import apiClient from "../../services/apiClient";
 import { SearchModalSales } from "../../modal/SearchModalSales";
 import { invoiceTypeMaping } from "../../constants/invoiceTypeConstants";
-import { paymentTypeMaping } from "../../constants/paymentTypeConstants";
 import { salesStatusMaping } from "../../constants/salesStatusConstants";
-import { WorkOrderInfoModal } from "../../modal/WorkOrderInfoModal";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
 import { useSales } from "../../contexts/searchContext/SalesContext";
 import DataTablePagination from "../../dataTable/DataTablePagination";
+import StatusBadge from "../../components/StatusBadge";
 
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
@@ -27,7 +26,6 @@ export default function SalesTable({ mode = "all" }) {
 
     const [sales, setSales] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
-    const [isWorkOrderModalOpen, setWorkOrderModalOpen] = useState(false);
     const [workOrderData, setWorkOrderData] = useState(null);
     const [total, setTotal] = useState(0);
     const [vat, setVat] = useState(0);
@@ -64,42 +62,44 @@ export default function SalesTable({ mode = "all" }) {
 
     const navigateToDetail = (workOrderId) => {
         navigate(`/workOrders/detailWorkOrder/${workOrderId}`, {
-            state: { currentPage: 'sales' }
+            state: { currentPage: location.pathname }
         });
     };
+
+    const handleOpenPayment = useCallback((sale) => {
+        const pageFromUrl = searchParams.get("page") ?? "1";
+
+        navigate(`/payments/${sale.payment_id}`, {
+            state: {
+                from: `${location.pathname}?page=${pageFromUrl}`,
+                fromDetail: true,
+                saleInfo: {
+                    date: sale.date?.slice(0, 10),
+                    workOrderCode: sale.work_order_code,
+                    client: sale.client_name,
+                }
+            }
+        });
+    }, [searchParams, navigate, location.pathname]);
 
     const columns = React.useMemo(
         () => [
             {
-                Header: "Código orden de trabajo",
-                accessor: "work_order.work_order_code",
-                Cell: ({ value }) => <span>{value}</span>,
+                Header: "Código de venta",
+                accessor: "order_number",
+                Cell: ({ value }) => <span className="order-number">{value}</span>,
             },
             {
                 Header: "Estado",
-                accessor: "sales_receipt_status",
-                Cell: ({ value }) => {
-                    let statusClass = '';
-                    if (value === 'Por cobrar') statusClass = 'status-por-cobrar';
-                    else if (value === 'Cobrado') statusClass = 'status-cobrado';
-                    return (
-                        <div className={`status-box ${statusClass} no-wrap-column`}>
-                            {value}
-                        </div>
-                    );
-                }
+                accessor: "sale_status",
+                Cell: ({ value }) => <StatusBadge value={value} />
             },
-            { Header: "Tipo de comprobante", accessor: "invoice_type" },
-            { Header: "Cliente", accessor: "name" },
+            { Header: "Tipo de comprobante", accessor: "sale_type" },
+            { Header: "Cliente", accessor: "client_name" },
             {
                 Header: "Placa",
-                accessor: "plate",
+                accessor: "vehicle_plate",
                 Cell: ({ value }) => <div className="no-wrap-column">{formatPlate(value)}</div>
-            },
-            {
-                Header: "Forma de pago",
-                accessor: "payment_type",
-                Cell: ({ value }) => paymentTypeMaping[value] || value
             },
             {
                 Header: "Fecha",
@@ -147,7 +147,7 @@ export default function SalesTable({ mode = "all" }) {
             },
             {
                 Header: "",
-                accessor: "work_order.id",
+                accessor: "work_order_id",
                 Cell: ({ value }) => (
                     <button className="button-eye-workorder-sales" onClick={() => navigateToDetail(value)}>
                         <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-sales" />
@@ -160,7 +160,7 @@ export default function SalesTable({ mode = "all" }) {
                 Cell: ({ row }) => {
                     const sales = row.original;
                     return (
-                        <div>
+                        <div style={{ display: "flex" }}>
                             {sales.sales_receipt_status !== "Cobrado" && (
                                 <button className="button-payment-receipt" onClick={() => handleOpenPayment(sales)}>
                                     <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
@@ -178,7 +178,7 @@ export default function SalesTable({ mode = "all" }) {
                 id: 'email-button'
             }
         ],
-        []
+        [handleOpenPayment]
     );
 
     function formatDate(isoDate) {
@@ -221,6 +221,10 @@ export default function SalesTable({ mode = "all" }) {
             cleanParams.date_finish_of_search = formatToStartOfDayISO(cleanParams.date_finish_of_search);
         }
 
+        if (mode === "receivable") {
+            cleanParams.sale_status = "receivable";
+        }
+
         if (!isRestoringFromUrl) {
             const isSameSearch = JSON.stringify(cleanParams) === JSON.stringify(currentFilters);
 
@@ -235,14 +239,14 @@ export default function SalesTable({ mode = "all" }) {
 
         setLoading(true);
         try {
-            const isEmptySearch = Object.keys(cleanParams).filter(k => k != 'page').length === 0;
+            const isEmptySearch = Object.keys(cleanParams).filter(k => k !== 'page').length === 0;
 
             if (isEmptySearch) {
                 await fetchData(page, pageSize);
                 return;
             }
 
-            const response = await apiClient.post(`/sales-receipts/search/${page}/${pageSize}`, cleanParams);
+            const response = await apiClient.post(`/sales/search/${page}/${pageSize}`, cleanParams);
 
             if (!response.data || !response.data.values) {
                 setSales([]);
@@ -262,8 +266,7 @@ export default function SalesTable({ mode = "all" }) {
                 return {
                     ...sales,
                     created_at: formatDate(sales.created_at),
-                    invoice_type: invoiceTypeMaping[sales.invoice_type] || sales.invoice_type,
-                    payment_type: paymentTypeMaping[sales.payment_type] || sales.payment_type,
+                    sale_type: invoiceTypeMaping[sales.sale_type] || sales.sale_type,
                     sales_receipt_status: translatedStatus
                 };
             });
@@ -284,17 +287,11 @@ export default function SalesTable({ mode = "all" }) {
     };
 
     const fetchData = async (page = 1, pageSize = responsivePageSize) => {
-
-        if (sales.length === 0) {
-            setLoading(true)
-        }
-
         setLoading(true);
         try {
-
             const endpoint = mode === "receivable"
-                ? `/sales-receipts/list/${page}/${pageSize}?sales_receipt_status=Por cobrar`
-                : `/sales-receipts/list/${page}/${pageSize}`;
+                ? `/sales/pending/${page}/${pageSize}`
+                : `/sales/list/${page}/${pageSize}`;
 
             const response = await apiClient.get(endpoint);
 
@@ -303,13 +300,13 @@ export default function SalesTable({ mode = "all" }) {
                 return;
             }
 
-            console.log("datos de comprobante", response.data);
-
             const { total_pages, values, total_values } = response.data;
+
+            console.log("response de sale", response.data )
 
             const transformedSales = values.map(sales => {
                 const newDateStart = formatDate(sales.created_at);
-                const translatedInvoiceType = invoiceTypeMaping[sales.invoice_type] || sales.invoice_type;
+                const translatedInvoiceType = invoiceTypeMaping[sales.sale_type] || sales.sale_type;
                 let translatedSalesStatus = salesStatusMaping[sales.sales_receipt_status] || sales.sales_receipt_status;
 
                 if (sales.paid === sales.total) {
@@ -319,24 +316,21 @@ export default function SalesTable({ mode = "all" }) {
                 return {
                     ...sales,
                     created_at: newDateStart,
-                    invoice_type: translatedInvoiceType,
+                    sale_type: translatedInvoiceType,
                     sales_receipt_status: translatedSalesStatus,
                 };
             });
 
             setSales(transformedSales);
-            setLoading(false);
             setTotalPages(total_pages);
             setTotalValues(total_values);
         } catch (error) {
-            ;
             if (error.code === 'ECONNABORTED') {
                 console.error('La solicitud ha superado el tiempo límite.');
             } else {
-                console.error('Se superó el tiempo límite inténtelo nuevamente.', error.message);
+                console.error('Error en fetchData:', error.response?.data || error.message);
             }
-        }
-        finally {
+        } finally {
             setLoading(false);
             setIsTableLoading(false);
         }
@@ -362,7 +356,7 @@ export default function SalesTable({ mode = "all" }) {
 
         try {
             setDownloadingPdf(true);
-            const response = await apiClient.get(`/sales-receipts/generate-pdf/${salesId}`, { responseType: 'blob' });
+            const response = await apiClient.get(`/sales/generate-pdf/${salesId}`, { responseType: 'blob' });
 
             const header = response.headers['content-disposition'];
             const fileName = header.split('filename=')[1].replace(/['"]/g, '');
@@ -394,7 +388,7 @@ export default function SalesTable({ mode = "all" }) {
     const sendEmail = async (salesId) => {
         try {
             setSendingEmail(true);
-            const response = await apiClient.get(`/sales-receipts/send-email/${salesId}`);
+            const response = await apiClient.get(`/sales/send-email/${salesId}`);
             if (response.status === 200) {
                 setSendingEmail(false);
                 toast.success('Email enviado', {
@@ -411,54 +405,8 @@ export default function SalesTable({ mode = "all" }) {
             toast.error('Error al enviar el email', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            setSendingEmail(false);
-            console.error('Error al enviar el email', error);
         } finally {
 
-        }
-    };
-
-    const handleWorkOrderConfirm = async ({ registerPayment }) => {
-
-        setLoading(true);
-
-        const selectedDateAdjusted = new Date(selectedDate);
-        selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
-
-        try {
-            const payload = {
-                client_id: workOrderData.clientId,
-                work_order_id: parseInt(workOrderData.id, 10),
-                invoice_type: 'sales_note',
-                subtotal: parseFloat(workOrderData.subtotal).toFixed(2),
-                discount: 0,
-                date: selectedDateAdjusted.toISOString(),
-                vat: 0,
-                total: total,
-            };
-
-            console.log("datos a enviasr", payload)
-
-            const response = await apiClient.post('/sales-receipts/create', payload);
-
-            if (response.status === 201) {
-                toast.success('Operación exitosa', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-                setLastAddedReceiptId(response.data.id);
-                await fetchData();
-
-            }
-            setLoading(false);
-            setWorkOrderModalOpen(false);
-
-
-        } catch (error) {
-            console.log("error", error)
-            toast.error('Error al procesar la orden de trabajo', {
-                position: toast.POSITION.TOP_RIGHT
-            });
-            console.error('', error);
         }
     };
 
@@ -477,45 +425,19 @@ export default function SalesTable({ mode = "all" }) {
         }
     };
 
-    const handleOpenPayment = () => {
-        navigate(`/payments/`, {
-
-        });
-    };
-
-    const closeModal = () => {
-        setWorkOrderModalOpen(false);
-    };
-
     useEffect(() => {
-        if (location.pathname !== '/sales') return;
+        if (location.pathname !== '/sales' && location.pathname !== '/receivables') return;
+
+        const params = Object.fromEntries([...searchParams]);
+        const pageToLoad = params.page ? parseInt(params.page) : 1;
+        setCurrentPage(pageToLoad);
+
         refreshCurrentView();
     }, [searchParams, responsivePageSize, location.pathname]);
 
     useEffect(() => {
         console.log("Lista filtrada actualizada:", filterData);
     }, [filterData]);
-
-    useEffect(() => {
-        if (location.pathname !== '/sales') return;
-
-        const params = Object.fromEntries([...searchParams]);
-        const pageToLoad = params.page ? parseInt(params.page) : 1;
-
-        setCurrentPage(pageToLoad);
-
-        const filters = { ...params };
-        delete filters.page;
-
-        const hasFilters = Object.keys(filters).length > 0;
-
-        if (!hasFilters) {
-            fetchData(pageToLoad, responsivePageSize);
-        } else {
-            handleConfirm(filters, true, pageToLoad, responsivePageSize);
-        }
-
-    }, [searchParams, responsivePageSize, location.pathname]);
 
     useEffect(() => {
         const hasUrlParams = searchParams.toString().length > 0;
@@ -610,24 +532,8 @@ export default function SalesTable({ mode = "all" }) {
                     isOpen={handleOpenModal}
                     onClose={handleCloseModal}
                     onConfirm={handleConfirm}
+                    mode={mode}
                 />
-            )}
-
-            {isWorkOrderModalOpen && (
-                <WorkOrderInfoModal
-                    isOpen={isWorkOrderModalOpen}
-                    onClose={closeModal}
-                    workOrderData={workOrderData}
-                    onConfirm={handleWorkOrderConfirm}
-                    total={total}
-                    setTotal={setTotal}
-                    vat={vat}
-                    setVat={setVat}
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-
-                />
-
             )}
 
         </div>

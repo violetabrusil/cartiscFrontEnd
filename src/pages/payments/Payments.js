@@ -1,45 +1,33 @@
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Select from 'react-select';
 import Header from "../../header/Header";
 import Menu from "../../menu/Menu";
 import { ToastContainer, toast } from "react-toastify";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
-import SearchBar from "../../searchBar/SearchBar";
 import { selectStyles } from "../../styles/selectStyles";
-import { PaymentService } from "../../services/mockPaymentService";
+import { PaymentService } from "../../services/paymentService";
+import { paymentMethodMaping } from "../../constants/paymentMethodConstants";
+import { PuffLoader } from "react-spinners";
 
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
-const MOCK_SALE = {
-    id: "VTA-1042",
-    date: "14 Feb 2026",
-    workOrderCode: "ORT-0003425",
-    client: "Luis Ramírez",
-    status: "partial",
-    total: 800,
-    amountPaid: 200,
-    balance: 300,
-    note: "El cliente acordó liquidar el saldo restante antes del cierre de mes. Pagos preferentemente por transferencia.",
-};
-
-const MOCK_PAYMENTS = [
-    { id: "AB-001", date: "14 Feb 2026", amount: 15000, method: "transfer", status: "confirmed", reference: "TRF-88291", voidedAt: null, voidedBy: null, voidReason: null },
-    { id: "AB-002", date: "20 Feb 2026", amount: 8500, method: "cash", status: "confirmed", reference: null, voidedAt: null, voidedBy: null, voidReason: null },
-    { id: "AB-003", date: "25 Feb 2026", amount: 5000, method: "card", status: "pending", reference: "DEB-4421", voidedAt: null, voidedBy: null, voidReason: null },
-];
-const fmt = (n) => (typeof n === "number" ? `${n.toLocaleString("ex-MX")}` : "-");
-
 const SALE_STATUS_LABEL = { paid: "Pagado", partial: "Parcial", pending: "Pendiente" };
-const PAYMENT_STATUS_LABEL = { confirmed: "Confirmado", voided: "Anulado" };
-const METHOD_LABEL = { cash: "Efectivo", transfer: "Transferencia", card: "Tarjeta" };
+const PAYMENT_STATUS_LABEL = { confirmed: "Confirmado", voided: "Anulado", reversal: "Reversado" };
+
+const REVERSAL_TYPES = [
+    { value: "reversal", label: "Corrección posterior" },
+    { value: "refund", label: "Devolución al cliente" },
+    { value: "chargeback", label: "Contracargo bancario" },
+];
 
 const paymentTypeOptions = [
-    { value: 'pending', label: 'Pendiente' },
     { value: 'cash', label: 'Efectivo' },
-    { value: 'electronic_money', label: 'Transferencia' },
-    { value: 'debit_credit_card', label: 'Tarjeta de crédito' },
-    { value: 'other', label: 'Otro' },
+    { value: 'electronic_money', label: 'Billetera digital' },
+    { value: 'debit_card', label: 'Tarjeta de débito' },
+    { value: 'credit_card', label: 'Tarjeta de crédito' },
+    { value: 'bank_transfer', label: 'Transferencia bancaria' },
+    { value: 'credit_note', label: 'Nota de crédito' }
 ];
 
 const SALE_STATUS_STYLE = {
@@ -51,14 +39,15 @@ const SALE_STATUS_STYLE = {
 const PAYMENT_STATUS_STYLE = {
     confirmed: { bg: "#e6f4ea", text: "#1e7e34" },
     voided: { bg: "#fdecea", text: "#b71c1c" },
+    reversal: { bg: "#fff3e0", text: "#e65100" },
 };
 
-const DEFAULT_OPTION = { value: 'payment_method', label: 'Método de pago' };
-
 const options_search_payment = [
-    { value: 'payment_method', label: 'Método de pago' },
-    { value: 'reference', label: 'Referencia' }
+    { value: "method", label: "Método de pago" },
+    { value: "status", label: "Estado" },
+    { value: "reference", label: "Referencia" },
 ];
+
 
 function KpiCard({ label, value, accent, progress }) {
     return (
@@ -82,7 +71,7 @@ function KpiCard({ label, value, accent, progress }) {
 }
 
 function RegisterPaymentModal({ payment, onClose, onSubmit }) {
-    const [form, setForm] = useState({ amount: "", date: new Date().toISOString().slice(0, 10), reference: "" });
+    const [form, setForm] = useState({ amount: "", date: new Date().toLocaleDateString('en-CA'), reference: "" });
     const [paymentType, setPaymentType] = useState(null);
 
     const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -150,7 +139,10 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
                 borderRadius: '16px',
                 width: '100%',
                 maxWidth: '580px',
+                minHeight: '480px',
                 boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
+                display: 'flex',
+                flexDirection: 'column',
                 overflow: 'hidden',
                 animation: 'slideUp 0.22s ease',
             }}>
@@ -171,7 +163,7 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
                         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginTop: 10, marginBottom: 0 }}>
                             {payment.id} · Saldo pendiente&nbsp;
                             <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 700 }}>
-                                {fmt(payment.balance)}
+                                $ {(payment.balance)}
                             </span>
                         </p>
                     </div>
@@ -293,8 +285,10 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
 
                 {/* Footer */}
                 <div style={{
-                    padding: '0 32px 28px',
-                    display: 'flex', gap: 10, justifyContent: 'flex-end',
+                    padding: '24px 32px 36px',
+                    display: 'flex',
+                    gap: 10,
+                    justifyContent: 'flex-end'
                 }}>
                     <button
                         onClick={onClose}
@@ -341,23 +335,89 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
 }
 
 function VoidPaymentModal({ payment, onClose, onConfirm }) {
-
     const [reason, setReason] = useState("");
+    const [reversalReason, setReversalReason] = useState("");
+
+    const isSameDay = () => {
+        if (!payment.date) return false;
+        const pDate = new Date(payment.date);
+        const paymentDateStr = pDate.toLocaleDateString('en-CA');
+        const todayStr = new Date().toLocaleDateString('en-CA');
+
+        return paymentDateStr === todayStr;
+    };
+
+    const sameDay = isSameDay();
+    const canConfirm = reason.trim() !== "" && (sameDay || reversalReason !== "");
+
+    const handleConfirm = () => {
+        onConfirm({
+            reason,
+            reversal_type: sameDay ? "void" : "reversal",
+            reversal_reason: sameDay ? null : reversalReason,
+            occurred_at: new Date().toISOString(),
+        });
+    };
+
     return (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
             <div className="modal modal-sm">
                 <div style={{ padding: "24px 24px 16px", borderBottom: "1px solid #f0ede8" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                         <span style={{ fontSize: 24 }}>⚠️</span>
-                        <h2 style={{ fontSize: 21 }}>Anular pago</h2>
+
+                        <h2 style={{ fontSize: 21 }}>{sameDay ? "Anular Pago" : "Revertir pago"}</h2>
                     </div>
-                    <p style={{ fontSize: 13.5, color: "#444", lineHeight: 1.65, textAlign: 'justify' }}>
-                        Esta a punto de anular el pago <strong>{payment.id}</strong> por {"$"}
-                        <strong>{fmt(payment.amount)}</strong> ({METHOD_LABEL[payment.method]}).
-                        Esta acción se registrará en el registro de auditoría y <strong>no se puede deshacer</strong>.
+                    <p style={{ fontSize: 13.5, color: "#444", lineHeight: 1.65, textAlign: "justify" }}>
+                        Está a punto de <strong>{sameDay ? "anular" : "revertir"}</strong> el pago <strong>{payment.id}</strong> por {"$"}
+                        <strong>{(payment.amount)}</strong> ({payment.method}).
+                        Esta acción se registrará en el registro de auditoría y{" "}
+                        <strong>no se puede deshacer</strong>.
                     </p>
                 </div>
-                <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column" }}>
+
+                <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+                    {!sameDay && (
+                        <div>
+                            <label className="payment-label">Tipo de anulación*</label>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6 }}>
+                                {REVERSAL_TYPES.map((opt) => (
+                                    <label
+                                        key={opt.value}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 10,
+                                            padding: "10px 14px",
+                                            borderRadius: 8,
+                                            border: `1.5px solid ${reversalReason === opt.value ? "#316EA8" : "#e0ddd8"}`,
+                                            background: reversalReason === opt.value ? "#f0f6fc" : "#fff",
+                                            cursor: "pointer",
+                                            fontSize: 13.5,
+                                        }}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="reversal_type"
+                                            value={opt.value}
+                                            checked={reversalReason === opt.value}
+                                            onChange={() => setReversalReason(opt.value)}
+                                            style={{ accentColor: "#316EA8" }}
+                                        />
+                                        {opt.label}
+                                    </label>
+                                ))}
+                            </div>
+                            {reversalReason === "" && (
+                                <p style={{ fontSize: 10, color: "#e57373", marginTop: 4 }}>
+                                    Seleccione un tipo de anulación para continuar
+                                </p>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Motivo libre */}
                     <div>
                         <label className="payment-label">Motivo*</label>
                         <textarea
@@ -367,18 +427,29 @@ function VoidPaymentModal({ payment, onClose, onConfirm }) {
                             onChange={(e) => setReason(e.target.value)}
                         />
                         {reason.trim() === "" && (
-                            <p style={{ fontSize: 12, color: "#e57373", marginTop: 4 }}>Se requiere un motivo para continuar</p>
+                            <p style={{ fontSize: 10, color: "#e57373", marginTop: 3 }}>
+                                Se requiere un motivo para continuar
+                            </p>
                         )}
                     </div>
+
                     <div style={{ background: "#fdecea", border: "1px solid #f5c6c6", borderRadius: 8, padding: "10px 14px" }}>
-                        <p style={{ fontSize: 12.5, color: "#c62828", lineHeight: 1.55 }}>
-                            El registro permanecerá visible con el estado <strong>Anulado</strong>. Si el monto es incorrecto, cree un nuevo pago con los datos correctos.
+                        <p style={{ fontSize: 12.5, color: "#c62828", lineHeight: 1.55, textAlign: 'justify' }}>
+                            {sameDay
+                                ? "El registro permanecerá visible con el estado Anulado."
+                                : "Este pago no fue registrado hoy. El reverso del pago quedará registrado con el tipo seleccionado."
+                            } Si el monto es incorrecto, cree un nuevo pago con los datos correctos.
                         </p>
                     </div>
                 </div>
+
                 <div style={{ padding: "0 24px 24px", display: "flex", gap: 10, justifyContent: "flex-end" }}>
-                    <button className="btn-ghost" onClick={onClose}>Cancel</button>
-                    <button className="btn-danger" onClick={() => onConfirm(reason)} disabled={!reason.trim()}>
+                    <button className="btn-ghost" onClick={onClose}>Cancelar</button>
+                    <button
+                        className="btn-danger"
+                        onClick={handleConfirm}
+                        disabled={!canConfirm}
+                    >
                         Confirmar anulación
                     </button>
                 </div>
@@ -389,85 +460,196 @@ function VoidPaymentModal({ payment, onClose, onConfirm }) {
 
 export default function Payments() {
 
-    const [payment, setPayment] = useState(MOCK_SALE);
-    const [payments, setPayments] = useState(MOCK_PAYMENTS);
+    const [payment, setPayment] = useState(null);
+    const [payments, setPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [showRegisterModal, setShowRM] = useState(false);
     const [voidTarget, setVoidTarget] = useState(null);
-    const [filter, setFilter] = useState("");
-    const [selectedOption, setSelectedOption] = useState(DEFAULT_OPTION);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [recordFilters, setRecordFilters] = useState({ searchField: "method", searchValue: "" });
+    const [recordPage, setRecordPage] = useState(1);
+    const [recordTotalPages, setRecordTotalPages] = useState(1);
+    const [recordsLoading, setRecordsLoading] = useState(false);
+    const RECORD_PAGE_SIZE = 5;
 
+    const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const fromPage = location.state?.from;
+    const saleInfo = location.state?.saleInfo;
+
+    const isToday = (dateStr) => {
+        if (!dateStr) return false;
+        const today = new Date().toLocaleDateString('en-CA');
+
+        return dateStr === today;
+    };
 
     const onBack = () => {
-        navigate(fromPage ?? "/sales", {
-            state: { restorePage: location.state?.fromPage ?? 1 }
+        const destination = location.state?.from ?? "/sales";
+        navigate(destination, {
+            state: { fromDetail: true }
         });
-
     };
 
     useEffect(() => {
-        PaymentService.getSale("VTA-1042").then(setPayment);
-    }, []);
-
+        if (!id) return;
+        setLoading(true);
+        PaymentService.getPaymentBySale(id)
+            .then((data) => {
+                setPayment({
+                    id: data.code,
+                    uuid: data.id,
+                    status: data.status,
+                    total: data.total_amount,
+                    amountPaid: data.paid_amount,
+                    balance: data.remaining,
+                    note: data.notes,
+                    date: saleInfo?.date ?? "",
+                    workOrderCode: saleInfo?.workOrderCode ?? "",
+                    client: saleInfo?.client ?? "",
+                });
+            })
+            .catch((err) => {
+                toast.error("Error al cargar los datos de la venta.");
+            })
+            .finally(() => setLoading(false));
+    }, [id]);
 
     const handleRegisterPayment = async (form) => {
         try {
-            const { payment: newPayment, sale } = await PaymentService.registerPayment(
-                payment.id,
-                form
-            );
-            const confirmed = await PaymentService.confirmPayment(newPayment.id);
-            setPayments((prev) => [...prev, { ...newPayment, status: confirmed.status }]);
+            const data = await PaymentService.registerPayment(payment.uuid, form);
 
-            setPayment(sale);  
+            setPayment((prev) => ({
+                ...prev,
+                status: data.status,
+                total: data.total_amount,
+                amountPaid: data.paid_amount,
+                balance: data.remaining,
+            }));
 
-            if (sale.status === "paid") {
+            await fetchRecords(recordFilters, 1);
+
+            if (data.status === "paid") {
                 toast.success("¡Venta liquidada en su totalidad!", { position: toast.POSITION.TOP_RIGHT });
             } else {
                 toast.success("Pago registrado correctamente", { position: toast.POSITION.TOP_RIGHT });
             }
-
             setShowRM(false);
         } catch (err) {
-            if (err.message === "SALE_ALREADY_PAID") {
-                toast.error("Esta venta ya fue cancelada en su totalidad. No se pueden registrar más pagos.");
-            } else {
-                toast.error("Error al registrar el pago.");
-            }
+            toast.error("Error al registrar el pago.");
         }
     };
 
-    const handleVoidPayment = (reason) => {
-        setPayments((prev) =>
-            prev.map((p) =>
-                p.id === voidTarget.id
-                    ? { ...p, status: "voided", voidedAt: new Date().toLocaleDateString("en-GB"), voidedBy: "Admin", voidReason: reason }
-                    : p
-            )
-        );
-        toast.success('Pago anulado', {
-            position: toast.POSITION.TOP_RIGHT
-        });
-        //showToast(`Pago ${voidTarget.id} anulado.`, "w");
-        setVoidTarget(null);
+    const handleVoidPayment = async ({ reason, reversal_type, reversal_reason, occurred_at }) => {
+        try {
+            await PaymentService.voidPayment(payment.uuid, voidTarget.uuid, {
+                reason,
+                reversal_type,
+                reversal_reason,
+                occurred_at,
+            });
+
+            const data = await PaymentService.getPaymentBySale(id);
+            setPayment((prev) => ({
+                ...prev,
+                status: data.status,
+                total: data.total_amount,
+                amountPaid: data.paid_amount,
+                balance: data.remaining,
+            }));
+
+            await fetchRecords(recordFilters, 1);
+
+            toast.success("Pago anulado correctamente", { position: toast.POSITION.TOP_RIGHT });
+            setVoidTarget(null);
+        } catch (error) {
+            toast.error("Error al anular el pago");
+            console.error(error);
+        }
     };
 
-    const filtered = payments.filter((p) =>
-        filter === "" ||
-        p.id.toLowerCase().includes(filter.toLowerCase()) ||
-        (METHOD_LABEL[p.method] ?? "").toLowerCase().includes(filter.toLowerCase()) ||
-        (PAYMENT_STATUS_LABEL[p.status] ?? "").toLowerCase().includes(filter.toLowerCase())
-    );
+    const handleDownloadRecord = async (record) => {
+        try {
+            await PaymentService.downloadRecordPdf(record.uuid);
+            toast.success('Comprobante descargado', { position: toast.POSITION.TOP_RIGHT });
+        } catch (error) {
+            toast.error('Error al generar el comprobante');
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (location.state?.openRegisterModal && payment) {
+            setShowRM(true);
+        }
+    }, [payment]);
+
+    const fetchRecords = async (filters = recordFilters, page = 1) => {
+        if (payments.length === 0)
+            setRecordsLoading(true);
+        try {
+            const queryFilters = {};
+            if (filters.searchField && filters.searchValue) {
+                queryFilters[filters.searchField] = filters.searchValue;
+            }
+            console.log("🔍 fetchRecords params:", { ...queryFilters, page, pageSize: RECORD_PAGE_SIZE });
+
+            const data = await PaymentService.getRecords(payment.uuid, {
+                ...queryFilters,
+                page,
+                pageSize: RECORD_PAGE_SIZE,
+            });
+
+            console.log("respuesta getRecords:", data);
+
+            const formatted = (data.values ?? []).map((r) => ({
+                id: r.code,
+                uuid: r.id,
+                date: r.occurred_at ? new Date(r.occurred_at).toLocaleDateString('en-CA') : "",
+                amount: r.amount,
+                method: paymentMethodMaping[r.method] ?? r.method,
+                status: r.status,
+                reference: r.reference || null,
+                voidedAt: r.voided_at ?? null,
+                voidedBy: r.voided_by ?? null,
+                voidReason: r.void_reason ?? null,
+            }));
+            setPayments(formatted);
+            setRecordTotalPages(data.page_info?.total_pages ?? 1);
+            setRecordPage(page);
+        } catch (err) {
+            toast.error("Error al buscar comprobantes");
+        } finally {
+            setRecordsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!payment?.uuid) return;
+
+        if (!recordFilters.searchValue) {
+            fetchRecords(recordFilters, 1);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            fetchRecords(recordFilters, 1);
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [recordFilters.searchValue, recordFilters.searchField, payment?.uuid]);
+
+    if (loading || !payment) {
+        return (
+            <div>
+                <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+                <Menu />
+                <div>
+                    <PuffLoader color="#316EA8" loading={loading} size={60} />
+                </div>
+            </div>
+        );
+    }
 
     const progress = Math.round((payment.amountPaid / payment.total) * 100);
-
-    const handlerFilter = useCallback((option, term) => {
-        setSelectedOption(option);
-        setSearchTerm(term);
-    }, []);
 
     return (
         <div>
@@ -516,9 +698,9 @@ export default function Payments() {
                 <div style={{ margin: "0 auto", padding: "28px 0px", display: "flex", flexDirection: "column", gap: 20 }}>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-                        <KpiCard label="Valor total" value={fmt(payment.total)} />
-                        <KpiCard label="Valor pagado" value={fmt(payment.amountPaid)} />
-                        <KpiCard label="Saldo pendiente" value={fmt(payment.balance)} accent progress={progress} />
+                        <KpiCard label="Valor total" value={(payment.total)} />
+                        <KpiCard label="Valor pagado" value={(payment.amountPaid)} />
+                        <KpiCard label="Saldo pendiente" value={(payment.balance)} accent progress={progress} />
                     </div>
 
                     {payment.note && (
@@ -532,20 +714,87 @@ export default function Payments() {
                             <button className="tab-btn active">Historial de pago</button>
                             <div style={{ flex: 1 }} />
                             <span style={{ fontSize: 12, color: "#bbb", paddingRight: 16 }}>
-                                {payments.filter((p) => p.status !== "voided").length} Act · {payments.filter((p) => p.status === "voided").length} anulados
+                                {payments.filter((p) => p.status !== "voided").length} confirmados · {payments.filter((p) => p.status === "voided").length} anulados
                             </span>
                         </div>
 
                         <div style={{ background: "#fdfcfa", marginTop: '-2rem', marginBottom: '1rem', marginLeft: '-1rem', marginRight: '-2rem' }}>
-                            <SearchBar onFilter={handlerFilter} customSelectStyles={selectStyles} options={options_search_payment} placeholderText="Buscar Comprobantes" value={selectedOption} />
-                            <div style={{ flex: 1 }} />
+                            <div style={{ display: "flex", gap: 10, marginTop: "2.5rem", marginLeft: "2.5rem", alignItems: "center" }}>
+                                <Select
+                                    isSearchable={false}
+                                    options={options_search_payment}
+                                    placeholder="Buscar por..."
+                                    value={options_search_payment.find(o => o.value === recordFilters.searchField) ?? null}
+                                    onChange={(opt) => setRecordFilters({ searchField: opt?.value ?? "", searchValue: "" })}
+                                    menuPortalTarget={document.body}
+                                    styles={{
+                                        ...selectStyles,
+                                        container: (b) => ({ ...b, minWidth: 180 }),
+                                        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+                                    }}
+                                />
 
-                            {/*
-                             <button className="btn-ghost" style={{ fontSize: 12 }} onClick={() => window.print()}>
-                                <span>/span> Imprimir
-                            </button>
-                            */}
+                                {recordFilters.searchField === "method" ? (
+                                    <Select
+                                        isSearchable={false}
+                                        isClearable
+                                        options={paymentTypeOptions}
+                                        placeholder="Seleccione método..."
+                                        value={paymentTypeOptions.find(o => o.value === recordFilters.searchValue) ?? null}
+                                        onChange={(opt) => setRecordFilters(f => ({ ...f, searchValue: opt?.value ?? "" }))}
+                                        menuPortalTarget={document.body}
+                                        styles={{
+                                            ...selectStyles,
+                                            container: (b) => ({ ...b, flex: 1 }),
+                                            menuPortal: (base) => ({ ...base, zIndex: 9999 })
+                                        }}
+                                    />
+                                ) : recordFilters.searchField === "status" ? (
+                                    <Select
+                                        isSearchable={false}
+                                        isClearable
+                                        options={[
+                                            { value: "confirmed", label: "Confirmado" },
+                                            { value: "voided", label: "Anulado" },
+                                            { value: "reversal", label: "Reversado" },
+                                        ]}
+                                        placeholder="Seleccione estado..."
+                                        value={[
+                                            { value: "confirmed", label: "Confirmado" },
+                                            { value: "voided", label: "Anulado" },
+                                            { value: "reversal", label: "Reversado" },
+                                        ].find(o => o.value === recordFilters.searchValue) ?? null}
+                                        onChange={(opt) => setRecordFilters(f => ({ ...f, searchValue: opt?.value ?? "" }))}
+                                        styles={{ ...selectStyles, container: (b) => ({ ...b, flex: 1 }) }}
+                                    />
+                                ) : (
+                                    <input
+                                        placeholder={recordFilters.searchField ? "Ingrese referencia..." : "Seleccione un campo"}
+                                        value={recordFilters.searchValue ?? ""}
+                                        disabled={!recordFilters.searchField}
+                                        onChange={(e) => setRecordFilters(f => ({ ...f, searchValue: e.target.value }))}
+                                        style={{
+                                            height: '38px', padding: '0 12px',
+                                            border: '1.5px solid rgba(0,0,0,0.12)',
+                                            borderRadius: '8px', fontSize: '13.5px',
+                                            outline: 'none', flex: 1,
+                                            background: !recordFilters.searchField ? '#f5f5f5' : '#fff',
+                                            cursor: !recordFilters.searchField ? 'not-allowed' : 'text',
+                                        }}
+                                    />
+                                )}
 
+                                {(recordFilters.searchField || recordFilters.searchValue) && (
+                                    <button
+                                        className="btn-ghost"
+                                        onClick={() => {
+                                            setRecordFilters({ searchField: "", searchValue: "" });
+                                            fetchRecords({ searchField: "", searchValue: "" }, 1);
+                                        }}
+                                    >
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         <table className="payment-table">
@@ -561,66 +810,83 @@ export default function Payments() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filtered.map((p) => {
-                                    const isVoided = p.status === "voided";
-                                    return (
-                                        <tr key={p.id} className={isVoided ? "row-voided" : ""}>
-                                            <td style={{ fontFamily: "monospace", fontSize: 13, color: "#888" }}>{p.id}</td>
-                                            <td style={{ color: "#555" }}>{p.date}</td>
-                                            <td>
-                                                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-
-                                                    <span>{METHOD_LABEL[p.method] ?? p.method}</span>
-                                                </span>
-                                            </td>
-                                            <td style={{ fontFamily: "monospace", fontSize: 12, color: "#888" }}>
-                                                {p.reference ?? "—"}
-                                            </td>
-                                            <td><strong style={{ fontSize: 15 }}>$ {fmt(p.amount)}</strong></td>
-                                            <td>
-                                                <div>
-                                                    <span className="tag" style={{ background: PAYMENT_STATUS_STYLE[p.status]?.bg, color: PAYMENT_STATUS_STYLE[p.status]?.text }}>
-                                                        {PAYMENT_STATUS_LABEL[p.status]}
-                                                    </span>
-                                                    {isVoided && p.voidReason && (
-                                                        <p style={{ fontSize: 11, color: "#b71c1c", marginTop: 3 }}>
-                                                            {p.voidedAt} · {p.voidedBy} · "{p.voidReason}"
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-                                                    <button
-                                                        className="btn-action"
-                                                        disabled={isVoided}
-                                                        onClick={() => toast.success('Comprobante descargado', {
-                                                            position: toast.POSITION.TOP_RIGHT
-                                                        })}
-                                                    >
-                                                        ⬇ Comprobante
-                                                    </button>
-                                                    <button
-                                                        className="btn-action danger"
-                                                        disabled={isVoided}
-                                                        onClick={() => setVoidTarget(p)}
-                                                    >
-                                                        ✕ Anular
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                                {filtered.length === 0 && (
+                                {recordsLoading && payments.length === 0 ? (
+                                    <tr>
+                                        <PuffLoader color="#316EA8" loading={loading} size={60} />
+                                    </tr>
+                                ) : payments.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} style={{ textAlign: "center", color: "#ccc", padding: "34px 0" }}>
-                                            {filter ? `No results for "${filter}"` : "No payments yet"}
+                                            {(recordFilters.method || recordFilters.status || recordFilters.reference)
+                                                ? "No se encontraron comprobantes con esos filtros"
+                                                : "No hay comprobantes registrados"}
                                         </td>
                                     </tr>
+                                ) : (
+                                    payments.map((p) => {
+                                        const isInactive = p.status === "voided" || p.status === "reversal";
+                                        return (
+                                            <tr key={p.id} style={{ opacity: recordsLoading ? 0.5 : 1 }} className={isInactive ? "row-voided" : ""}>
+                                                <td style={{ fontFamily: "monospace", fontSize: 13, color: "#888" }}>{p.id}</td>
+                                                <td style={{ color: "#555" }}>{p.date}</td>
+                                                <td><span style={{ display: "flex", alignItems: "center", gap: 6 }}><span>{p.method}</span></span></td>
+                                                <td style={{ fontFamily: "monospace", fontSize: 12, color: "#888" }}>{p.reference ?? "—"}</td>
+                                                <td><strong style={{ fontSize: 15 }}>$ {(p.amount)}</strong></td>
+                                                <td>
+                                                    <div>
+                                                        <span className="tag" style={{ background: PAYMENT_STATUS_STYLE[p.status]?.bg, color: PAYMENT_STATUS_STYLE[p.status]?.text }}>
+                                                            {PAYMENT_STATUS_LABEL[p.status]}
+                                                        </span>
+                                                        {isInactive && p.voidReason && (
+                                                            <p style={{ fontSize: 11, color: "#b71c1c", marginTop: 3 }}>
+                                                                {p.voidedAt} · {p.voidedBy} · "{p.voidReason}"
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                                                        <button className="btn-action" disabled={isInactive} onClick={() => handleDownloadRecord(p)}>
+                                                            ⬇ Comprobante
+                                                        </button>
+                                                        <button
+                                                            className="btn-action danger"
+                                                            disabled={isInactive}
+                                                            onClick={() => setVoidTarget(p)}
+                                                        >
+                                                            {isToday(p.date) ? "✕ Anular" : "↩ Revertir"}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
                                 )}
                             </tbody>
                         </table>
+
+                        {/* Paginación */}
+                        {recordTotalPages > 1 && (
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, padding: "12px 0 4px" }}>
+                                <button
+                                    className="btn-ghost"
+                                    disabled={recordPage <= 1}
+                                    onClick={() => fetchRecords(recordFilters, recordPage - 1)}
+                                >
+                                    ← Anterior
+                                </button>
+                                <span style={{ fontSize: 13, color: "#888" }}>
+                                    Página {recordPage} de {recordTotalPages}
+                                </span>
+                                <button
+                                    className="btn-ghost"
+                                    disabled={recordPage >= recordTotalPages}
+                                    onClick={() => fetchRecords(recordFilters, recordPage + 1)}
+                                >
+                                    Siguiente →
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -644,5 +910,7 @@ export default function Payments() {
         </div>
 
     );
+
+
 
 }

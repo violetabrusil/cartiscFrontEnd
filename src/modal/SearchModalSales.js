@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 
-export function SearchModalSales({ isOpen, onClose, onConfirm }) {
+export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const { resetAllFilters } = useSales();
@@ -25,10 +25,8 @@ export function SearchModalSales({ isOpen, onClose, onConfirm }) {
         setClientId,
         status,
         setStatus,
-        paymentType,
-        setPaymentType,
-        invoiceType,
-        setInvoiceType,
+        saleType,
+        setSaleType,
         startDate,
         setStartDate,
         endDate,
@@ -58,15 +56,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm }) {
         { value: 'charged', label: 'Cobrado' },
     ];
 
-    const paymentTypeOptions = [
-        { value: 'pending', label: 'Pendiente' },
-        { value: 'cash', label: 'Efectivo' },
-        { value: 'electronic_money', label: 'Transferencia' },
-        { value: 'debit_credit_card', label: 'Tarjeta de crédito' },
-        { value: 'other', label: 'Otro' },
-    ];
-
-    const invoiceTypeOptions = [
+    const saleTypeOptions = [
         { value: 'pro_forma', label: 'Proforma' },
         { value: 'sales_note', label: 'Nota de venta' }
     ];
@@ -80,8 +70,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm }) {
             if (params.client_name) setClientName(params.client_name);
             if (params.client_cedula) setClientId(params.client_cedula);
             if (params.sales_receipt_status) setStatus(params.sales_receipt_status);
-            if (params.payment_type) setPaymentType(params.payment_type);
-            if (params.invoice_type) setInvoiceType(params.invoice_type);
+            if (params.sale_type) setSaleType(params.sale_type);
             if (params.date_start_of_search) {
                 const date = new Date(params.date_start_of_search);
                 if (!isNaN(date)) setStartDate(date);
@@ -101,8 +90,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm }) {
             client_name: clientName,
             client_cedula: clientId,
             sales_receipt_status: status,
-            payment_type: paymentType,
-            invoice_type: invoiceType,
+            sale_type: saleType,
             date_start_of_search: startDate,
             date_finish_of_search: endDate,
             //start_total_amount
@@ -116,8 +104,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm }) {
         setClientName('');
         setClientId('');
         setStatus(null);
-        setPaymentType(null);
-        setInvoiceType(null);
+        setSaleType(null);
         setStartDate('');
         setEndDate('');
         resetAllFilters();
@@ -131,12 +118,11 @@ export function SearchModalSales({ isOpen, onClose, onConfirm }) {
             clientName,
             clientId,
             status,
-            paymentType,
-            invoiceType,
+            saleType,
             startDate,
             endDate
         });
-    }, [orderCode, vehiclePlate, clientName, clientId, status, paymentType, invoiceType, startDate, endDate, saveFormValues]);
+    }, [orderCode, vehiclePlate, clientName, clientId, status, saleType, startDate, endDate, saveFormValues]);
 
 
     if (!isOpen) return null;
@@ -178,37 +164,29 @@ export function SearchModalSales({ isOpen, onClose, onConfirm }) {
                     </div>
 
                 </div>
+                {mode !== "receivable" && (
+                    <div className="input-group-payment">
+                        <label className="label-fields-payment">Estado</label>
+                        <Select
+                            isSearchable={false}
+                            styles={selectPaymentStyles}
+                            options={salesStatus}
+                            value={salesStatus.find(option => option.value === status) || null}
+                            onChange={selectedOption => setStatus(selectedOption.value)}
+                            placeholder="Seleccione"
+                        />
+                    </div>
 
-                <div className="input-group-payment">
-                    <label className="label-fields-payment">Estado</label>
-                    <Select
-                        isSearchable={false}
-                        styles={selectPaymentStyles}
-                        options={salesStatus}
-                        value={salesStatus.find(option => option.value === status) || null}
-                        onChange={selectedOption => setStatus(selectedOption.value)}
-                        placeholder="Seleccione"
-                    />
-                </div>
-                <div className="input-group-payment">
-                    <label className="label-fields-payment">Tipo de pago</label>
-                    <Select
-                        isSearchable={false}
-                        styles={selectPaymentStyles}
-                        options={paymentTypeOptions}
-                        value={paymentTypeOptions.find(option => option.value === paymentType) || null}
-                        onChange={selectedOption => setPaymentType(selectedOption.value)}
-                        placeholder="Seleccione"
-                    />
-                </div>
+                )}
+
                 <div className="input-group-payment">
                     <label className="label-fields-payment">Tipo de comprobante</label>
                     <Select
                         isSearchable={false}
                         styles={selectPaymentStyles}
-                        options={invoiceTypeOptions}
-                        value={invoiceTypeOptions.find(option => option.value === invoiceType) || null}
-                        onChange={selectedOption => setInvoiceType(selectedOption.value)}
+                        options={saleTypeOptions}
+                        value={saleTypeOptions.find(option => option.value === saleType) || null}
+                        onChange={selectedOption => setSaleType(selectedOption.value)}
                         placeholder="Seleccione"
                     />
                 </div>

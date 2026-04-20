@@ -28,7 +28,6 @@ const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png"
 const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
-const carPlan = process.env.PUBLIC_URL + "/images/vehicle plans/Car.png";
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -60,7 +59,6 @@ const NewWorkOrder = () => {
     const [workOrderStatus, setWorkOrderStatus] = useState(WorkOrderStatusOptions[0]);
     const [createdBy, setCreatedBy] = useState(user?.username || "");
     const [isChecked, setIsChecked] = useState(false);
-    const [showConfirmationToast, setShowConfirmationToast] = useState(false);
     const [actualKm, setActualKm] = useState("");
     const [comments, setComments] = useState("");
     const [observations, setObservations] = useState('');
@@ -75,6 +73,8 @@ const NewWorkOrder = () => {
     const [toastShown, setToastShown] = useState(false);
     const [shouldUpdateClients, setShouldUpdateClients] = useState(false);
     const [shouldUpdateVehicles, setShouldUpdateVehicles] = useState(false);
+    const [isOrderSaved, setIsOrderSaved] = useState(false);
+    const [savedWorkOrderId, setSavedWorkOrderId] = useState(null);
 
     const showToast = (message, type) => {
         toast[type](message, { position: toast.POSITION.TOP_RIGHT });
@@ -310,6 +310,11 @@ const NewWorkOrder = () => {
     const activeVehicle = vehicles.find(v => v.id === selectedVehicleId) ?? selectedVehicle;
 
     const handleWorkOrderCreation = () => {
+        const error = validateForm();
+        if (error) {
+            toast.warn(error, { position: toast.POSITION.TOP_RIGHT });
+            return;
+        }
         if (actualKm.trim() !== '') {
             // Si el campo de kilometraje actual no está vacío, llamar directamente a la función de crear la orden de trabajo
             createNewWorkOrder();
@@ -324,29 +329,28 @@ const NewWorkOrder = () => {
     };
 
     const handleAccept = () => {
-        // Validar si el checkbox no está marcado y el input está vacío, mostrar el mensaje de advertencia
         if (!isChecked && !actualKm.trim()) {
             toast.warn("Es necesario ingresar el nuevo kilometraje.", {
                 position: toast.POSITION.TOP_RIGHT
             });
-
-            // No cerrar el modal en este caso
             return;
         }
 
-        // Validar si el checkbox está marcado y el valor del kilómetro no tiene un formato numérico válido
         if (isChecked && !isNumber(actualKm)) {
             toast.warn('El KM ingresado no tiene un formato numérico válido. Intente nuevamente.', {
                 position: toast.POSITION.TOP_RIGHT
             });
-
-            // No cerrar el modal en este caso
             return;
         }
-
-        // Ahora, solo si isChecked es true y actualKm no está vacío o si el formato es válido, llamamos a la función
         createNewWorkOrder();
-        setIsKmModalOpen(false); // Cerrar el modal después de llamar a la función si todo está bien
+        setIsKmModalOpen(false);
+    };
+
+    const validateForm = () => {
+        if (!selectedClient) return "Seleccione un cliente";
+        if (!selectedVehicleId && !selectedVehicle) return "Seleccione un vehículo";
+        if (!createdBy.trim()) return "El campo 'Creada por' es requerido";
+        return null;
     };
 
     const resetForm = () => {
@@ -378,12 +382,15 @@ const NewWorkOrder = () => {
 
         vehicleStatus.points_of_interest = pointsOfInterest.map(point => {
             return {
-                side: point.side, // Aquí deberías determinar el lado correcto si es necesario.
+                side: point.side,
                 x: point.x,
                 y: point.y
             }
         });
-        vehicleStatus.presented_symptoms = symptoms.join(', ');
+        console.log("symptoms antes de join:", symptoms, typeof symptoms);
+        vehicleStatus.presented_symptoms = Array.isArray(symptoms)
+            ? symptoms.join(', ')
+            : (symptoms || '');
         vehicleStatus.general_observations = observations;
 
         const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
@@ -447,7 +454,6 @@ const NewWorkOrder = () => {
 
         let endpoint = '/clients/all';
 
-        //Si hay un filtro de búsqueda
         if (searchTerm) {
             switch (selectedOption) {
                 case 'Cédula':
@@ -529,7 +535,6 @@ const NewWorkOrder = () => {
             const kmVehicleSelected = vehicles.find(vehicle => vehicle.id === selectedVehicleId);
             setActualKm(kmVehicleSelected ? kmVehicleSelected.km : '');
         } else {
-            // Si el checkbox no está marcado, restablecer a un valor vacío
             setActualKm('');
         }
     }, [isChecked, selectedVehicleId, vehicles]);
@@ -544,7 +549,6 @@ const NewWorkOrder = () => {
             <Menu />
 
             <div className="new-work-order-general-container">
-
 
                 <div className="new-work-order-title-container">
                     <button onClick={onBack} className="button-arrow-client">
@@ -605,7 +609,6 @@ const NewWorkOrder = () => {
                                             />
                                         </div>
                                     </div>
-
 
                                     {/*Lista de clientes*/}
                                     {clients.length > 0 && (
@@ -672,14 +675,8 @@ const NewWorkOrder = () => {
 
 
                                                             </div>
-
-
-
                                                         </div>
                                                     </div>
-
-
-
                                                 </div>
                                             ))}
                                         </div>
@@ -687,7 +684,6 @@ const NewWorkOrder = () => {
                                 </>
                             )
                         }
-
                     </div>
 
                     <div className="right-div-container">
@@ -729,12 +725,8 @@ const NewWorkOrder = () => {
                                             ))}
                                         </Carousel>
                                     </div>
-
-
                                 </>
-
                             )}
-
                         </div>
 
                         <div className="right-div">
@@ -793,13 +785,9 @@ const NewWorkOrder = () => {
                                         value={actualKm}
                                         onChange={e => setActualKm(e.target.value)}
                                     />
-
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
 
                 </div>
@@ -839,12 +827,10 @@ const NewWorkOrder = () => {
                                     );
                                 }
 
-                                // Caso Combustible
                                 if (currentOption === 'Combustible') {
-                                    return <label key={index}>{currentOption}</label>; // Solo renderiza el label "Combustible"
+                                    return <label key={index}>{currentOption}</label>;
                                 }
 
-                                // Caso Default (para todas las otras opciones)
                                 return (
                                     <label key={index}>
                                         {currentOption}
@@ -1009,10 +995,6 @@ const NewWorkOrder = () => {
                     </div>
                 </div>
             )}
-
-
-
-
         </div>
     );
 

@@ -82,43 +82,27 @@
     font-weight: bold;
 }
 
-.status-box {
-    border-radius: 15px;
-    padding: 5px 10px;
-    text-align: center;
-    color: #FFFFFF; 
-    font-weight: 500;
-}
-
-.status-por-cobrar {
-    background-color: #FFD966;
-    color: #0C1F31;
-    width: 100%;
-}
-
-.status-cobrado {
-    background-color: #316EA8;
-    color: white;
-    width: 100%;
-}
-
 .bold-text {
     font-weight: 600;
     width: 20px;
 }
 
 .whole-part {
-    font-size: 24px;  /* Tamaño para la parte entera */
+    font-size: 24px;
+    /* Tamaño para la parte entera */
 }
 
 .decimal-part {
-    font-size: 18px;  /* Tamaño para la parte decimal */
+    font-size: 18px;
+    /* Tamaño para la parte decimal */
 }
 
 .flex-container {
     display: flex;
-    align-items: center; /* Alinea verticalmente en el centro */
-    gap: 80px; /* Espacio entre el label y el Select */
+    align-items: center;
+    /* Alinea verticalmente en el centro */
+    gap: 80px;
+    /* Espacio entre el label y el Select */
 }
 
 .button-eye-workorder-sales {
@@ -136,47 +120,53 @@
 }
 
 .small-row {
-    width: 15px;; 
+    width: 15px;
+    ;
 }
 
 .data-table-container {
-    position: relative; 
+    position: relative;
 }
 
 .absolute-loader-container {
-    position: absolute; /* Se posiciona respecto al contenedor más cercano con posicionamiento relativo o absoluto */
+    position: absolute;
+    /* Se posiciona respecto al contenedor más cercano con posicionamiento relativo o absoluto */
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     display: flex;
-    align-items: center; /* Centrar verticalmente */
-    justify-content: center; /* Centrar horizontalmente */
-    background: rgba(255,255,255,0.7); /* Puedes agregar un fondo blanco semi-transparente si lo deseas */
-    z-index: 10; /* Asegurarse de que esté encima de otros contenidos */
+    align-items: center;
+    /* Centrar verticalmente */
+    justify-content: center;
+    /* Centrar horizontalmente */
+    background: rgba(255, 255, 255, 0.7);
+    /* Puedes agregar un fondo blanco semi-transparente si lo deseas */
+    z-index: 10;
+    /* Asegurarse de que esté encima de otros contenidos */
 }
 
 .custom-column-width {
-    width: 107px; 
-    display: inline-block; 
+    width: 107px;
+    display: inline-block;
 }
 
 .custom-column-button-width {
-    width: 10px; 
-    display: inline-block; 
+    width: 10px;
+    display: inline-block;
 }
 
 .no-wrap-column {
-    white-space: normal;  
-    overflow: visible;    
-    text-overflow: unset; 
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
     width: 100px;
 }
 
 .no-wrap-column-total {
-    white-space: normal;  
-    overflow: visible;    
-    text-overflow: unset; 
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
     width: 130px;
 }
 
@@ -188,6 +178,15 @@
     margin-top: 10px;
     font-weight: 100;
     color: rgb(49, 110, 168)
+}
+
+.order-number {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    vertical-align: middle;
 }
 
 @media screen and (max-width: 768px) {
@@ -204,7 +203,7 @@
 }
 
 @media screen and (max-width: 320px) {
-   
+
     .container-title-payment-receipts {
         flex-direction: column;
     }
@@ -227,7 +226,7 @@
     }
 
     .no-wrap-column {
-        width: 100px; 
+        width: 100px;
         margin-right: 20px;
     }
 
@@ -235,18 +234,18 @@
         width: 120px;
         margin-right: 15px;
     }
-    
+
 
 }
 
-@media (max-width: 1440px) and (max-height: 900px){
+@media (max-width: 1440px) and (max-height: 900px) {
 
     .button-eye-workorder-sales {
         margin-left: -6px;
     }
 
     .no-wrap-column {
-        width: 90px; 
+        width: 90px;
     }
 
     .no-wrap-column-total {

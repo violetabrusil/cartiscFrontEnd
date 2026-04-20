@@ -107,7 +107,7 @@ const InformationWorkOrder = () => {
     const [totalOperationsValue, setTotalOperationsValue] = useState(0);
     const [totalServicesValue, setTotalServicesValue] = useState(0);
 
-
+    const [workOrderConfirmError, setWorkOrderConfirmError] = useState(null);
 
     const [percentages, setPercentages] = useState({
         group3: [null, null, null, 0, null],
@@ -299,7 +299,7 @@ const InformationWorkOrder = () => {
                 width: isTabletLandscape ? '280%' : '200%',
                 height: '49px',
                 minHeight: '49px',
-                border: borderColor, // Aplicar el color de borde determinado
+                border: borderColor,
             };
         },
         menu: (provided, state) => ({
@@ -308,11 +308,7 @@ const InformationWorkOrder = () => {
         }),
     };
 
-
-    //Función para manejar los cambios en los porcentajes
     const handlePorcentageChange = (event) => {
-
-        // Actualiza el estado de fuelLevel con el nuevo valor
         setFuelLevel(event.target.value);
     };
 
@@ -330,9 +326,9 @@ const InformationWorkOrder = () => {
                 setModalConfig({
                     title: "Confirmación",
                     message: `Desea ${action} la orden de trabajo.?`,
-                    showNotes: nextStatus === 'completed', // Esta línea determina si se muestra el campo de notas.
-                    onConfirm: (notes) => {  // Recibe las notas como un argumento.
-                        changeOrderStatus(nextStatus, notes);  // Llama a `changeOrderStatus` con las notas.
+                    showNotes: nextStatus === 'completed',
+                    onConfirm: (notes) => {
+                        changeOrderStatus(nextStatus, notes);
                         setShowModal(false);
                     },
                     onCancel: () => {
@@ -345,9 +341,8 @@ const InformationWorkOrder = () => {
             }
 
         } else {
-            // Mostrar toast de advertencia si no es una transición válida
             toast.warn("El cambio de estado de la orden de trabajo no es válido");
-            return; // Detener la ejecución aquí
+            return;
         }
     };
 
@@ -357,7 +352,7 @@ const InformationWorkOrder = () => {
             let params = `?work_order_status=${newStatus}`;
 
             if (newStatus === 'completed' && notes) {
-                params += `&notes=${encodeURIComponent(notes)}`; // Añade las notas a la petición solo si existen.
+                params += `&notes=${encodeURIComponent(notes)}`;
             }
             const url = `${baseEndpoint}${params}`;
 
@@ -369,7 +364,7 @@ const InformationWorkOrder = () => {
                     newStatus: newStatus,
                     dateChanged: new Date().toISOString(),
                     created_by: lastHistory.created_by || 'Unknown',
-                    notes: lastHistory.notes || '' // Esto garantiza que las notas no estén undefined.
+                    notes: lastHistory.notes || ''
                 });
 
                 toast.success("El cambio de estado de la orden de trabajo es válido");
@@ -392,19 +387,15 @@ const InformationWorkOrder = () => {
         try {
 
             const response = await apiClient.get(`/work-orders/${workOrderId}`);
-            // Formatear la placa del vehículo
             if (response.data.vehicle && response.data.vehicle.plate) {
                 response.data.vehicle.plate = formatPlate(response.data.vehicle.plate);
             }
-            // Transformar la categoría del vehículo
             if (response.data.vehicle && response.data.vehicle.category) {
                 response.data.vehicle.category = getVehicleCategory(response.data.vehicle.category);
             }
-
             if (response.data && response.data.date_start) {
                 response.data.date_start = formatDate(response.data.date_start);
             }
-
             if (response.data && response.data.date_finish) {
                 response.data.date_finish = formatDate(response.data.date_finish);
             } else {
@@ -412,15 +403,15 @@ const InformationWorkOrder = () => {
             }
 
             if (response.data.work_order_status) {
-                // Encuentra el objeto correspondiente en el array WorkOrderStatusOptions
                 const matchingStatus = WorkOrderStatusOptions.find(option => option.value === response.data.work_order_status);
                 setWorkOrderStatus(matchingStatus);
             }
 
-            console.log("datos de la orden de trabaho", response.data)
+            console.log("datos de la orden de trabajo", response.data)
 
             setWorkOrderDetail(response.data);
             setNewKm(response.data.km)
+            console.log("response data de workorder detail", response.data)
             console.log("datos del km", newKm)
             const selectionFromApi = transformVehicleStatusToSelections(response.data.vehicle_status);
             setSelections(selectionFromApi);
@@ -480,11 +471,8 @@ const InformationWorkOrder = () => {
     };
 
     const handleUpdateSymptom = (index, newText) => {
-        // Crear una copia de "symptoms" para evitar la mutación directa
         const updatedSymptoms = [...symptoms];
-        // Actualizar el síntoma específico con el nuevo texto
         updatedSymptoms[index] = newText;
-        // Actualizar el estado con los nuevos valores
         setSymptoms(updatedSymptoms);
     };
 
@@ -520,7 +508,7 @@ const InformationWorkOrder = () => {
             },
             {
                 Header: "Total",
-                accessor: "total",  // Usaremos esta clave para calcular el total en el accessor
+                accessor: "total",
                 Cell: ({ row }) => {
                     const price = row.original.price || 0;
                     const quantity = row.original.quantity || 1;
@@ -566,7 +554,7 @@ const InformationWorkOrder = () => {
     };
 
     const handleServicesListUpdate = (updatedList) => {
-        setSelectedServicesList(updatedList); // Asumiendo que selectedServicesList es un estado en el padre.
+        setSelectedServicesList(updatedList);
     };
 
     const selectAllCheckboxes = () => {
@@ -600,11 +588,9 @@ const InformationWorkOrder = () => {
         vehicleStatus.id = idVehicleStatus;
         vehicleStatus.work_order_id = Number(workOrderId);
 
-        // Verificar si se ha ingresado el fuel_level
         const fuelLevelEntered = fuelLevel > 0
 
         if (!fuelLevelEntered) {
-            // Mostrar un toast de advertencia y salir de la función
             toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -614,7 +600,7 @@ const InformationWorkOrder = () => {
         Object.keys(optionsCheckBox).forEach(group => {
             optionsCheckBox[group].forEach((option, index) => {
                 const key = keyMapping[option];
-                if (key) {  // Si el mapeo existe
+                if (key) {
                     if (key !== 'fuel_level') {
                         vehicleStatus[key] = selections[group][index];
                     } else {
@@ -647,7 +633,7 @@ const InformationWorkOrder = () => {
         try {
             const response = await apiClient.put(`/work-orders/update/${workOrderId}`, payload);
 
-            if (response.status === 200) {  // Suponiendo que tu API devuelve 200 para una edición exitosa
+            if (response.status === 200) {
                 toast.success('Orden de trabajo editada exitósamente', {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -664,10 +650,8 @@ const InformationWorkOrder = () => {
 
         } catch (error) {
 
-            // Obtener el mensaje de error
             const errorMessage = error.message || 'Error al editar la orden de trabajo.';
             console.log("error", error)
-            // Mostrar el mensaje de error en el toast
             toast.error(errorMessage, {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -699,12 +683,38 @@ const InformationWorkOrder = () => {
     };
 
     const handleProductsSelected = (updatedProducts) => {
-        // Actualiza el estado o realiza acciones adicionales según sea necesario
         setSelectedProducts(updatedProducts);
     };
 
     const handleKmInputChange = (e) => {
         setNewKm(e.target.value);
+    };
+
+    const handleGeneratePDF = async () => {
+        console.log("workOrderId al generar PDF:", workOrderId);
+        try {
+            const response = await apiClient.get(
+                `/work-orders/generate-vehicle-delivery-status-pdf/${workOrderId}`,
+                { responseType: 'blob' }
+            );
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const disposition = response.headers['content-disposition'];
+            const fileName = disposition
+                ? disposition.split('filename=')[1]?.replace(/"/g, '')
+                : `OT-${workOrderId}.pdf`;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            toast.success('Estado de entrega de vehículo descargado', { position: toast.POSITION.TOP_RIGHT });
+
+        } catch (error) {
+            toast.error('Error al generar el PDF.');
+        }
     };
 
     const handleOpenModalPayment = async () => {
@@ -729,9 +739,12 @@ const InformationWorkOrder = () => {
 
     const closeModalPayment = () => {
         setWorkOrderModalOpen(false);
+        setWorkOrderConfirmError(null);
     };
 
-    const handleWorkOrderConfirm = async ({ registerPayment }) => {
+    const handleWorkOrderConfirm = async ({ note, registerPayment }) => {
+
+        setWorkOrderConfirmError(null);
 
         const selectedDateAdjusted = new Date(selectedDate);
         selectedDateAdjusted.setHours(selectedDate.getHours() - selectedDate.getTimezoneOffset() / 60);
@@ -741,7 +754,7 @@ const InformationWorkOrder = () => {
             const payload = {
                 client_id: workOrderDetail.client.id,
                 work_order_id: parseInt(workOrderDetail.id, 10),
-                invoice_type: 'sales_note',
+                sale_type: 'so',
                 subtotal: totalValue,
                 discount: 0,
                 vat: currentIvaNum,
@@ -751,29 +764,54 @@ const InformationWorkOrder = () => {
 
             console.log("datos a enviasr", payload)
 
-            const response = await apiClient.post('/sales-receipts/create', payload);
+            const response = await apiClient.post('/sales/generate', payload);
 
             if (response.status === 201) {
-                toast.success('Operación exitosa', {
-                    position: toast.POSITION.TOP_RIGHT
-                });
-                setLastAddedReceiptId(response.data.id);
+                const saleData = response.data.data;
+
+                setLastAddedReceiptId(saleData.id);
+                setWorkOrderModalOpen(false);
+                setWorkOrderConfirmError(null);
 
                 if (registerPayment) {
-                    navigate('/payments');
+                    navigate(`/payments/${saleData.payment_id}`, {
+                        state: {
+                            from: '/sales',
+                            fromDetail: true,
+                            openRegisterModal: true,
+                            saleInfo: {
+                                date: saleData.date?.slice(0, 10),
+                                workOrderCode: saleData.work_order?.work_order_code,
+                                client: saleData.name,
+                            }
+                        }
+                    });
                 } else {
-                    navigate('/sales');
+                    toast.success('Operación exitosa', {
+                        position: toast.POSITION.TOP_RIGHT,
+                        autoClose: 1500,
+                        onClose: () => navigate('/sales')
+                    });
                 }
-
             }
 
-            setWorkOrderModalOpen(false);
-
         } catch (error) {
-            console.log("error", error)
-            toast.error('Error al procesar la orden de trabajo', {
-                position: toast.POSITION.TOP_RIGHT
+            const rawMsg = error.response?.data?.message || error.response?.data?.error || null;
+            const backendMsg = rawMsg?.includes('Reason:')
+                ? rawMsg.split('Reason:')[1].trim()
+                : rawMsg;
+
+            const baseMsg = registerPayment
+                ? "No se pudo generar la venta ni el registro de pago"
+                : "No se pudo generar la venta";
+
+            setWorkOrderConfirmError(baseMsg);
+
+            toast.error(backendMsg || baseMsg, {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000,
             });
+
             console.error('', error);
         }
     };
@@ -910,34 +948,35 @@ const InformationWorkOrder = () => {
 
                             </div>
 
-                            <div className="client-search-container">                                <div className="left-div-detail">
-                                <div className="container-data-client-information">
+                            <div className="client-search-container">
+                                <div className="left-div-detail">
+                                    <div className="container-data-client-information">
 
-                                    <h2>Cliente</h2>
+                                        <h2>Cliente</h2>
 
-                                    <div className="label-container">
-                                        <label className="label-title">Nombre:</label>
-                                        <label className="label-input-detail">{workOrderDetail.client.name}</label>
-                                    </div>
-                                    <div className="label-container">
-                                        <label className="label-title">Cédula:</label>
-                                        <label className="label-input-detail">{workOrderDetail.client.cedula}</label>
-                                    </div>
-                                    <div className="label-container">
-                                        <label className="label-title">Dirección:</label>
-                                        <label className="label-input-detail">{workOrderDetail.client.address}</label>
-                                    </div>
-                                    <div className="label-container">
-                                        <label className="label-title">Teléfono:</label>
-                                        <label className="label-input-detail">{workOrderDetail.client.phone}</label>
-                                    </div>
-                                    <div className="label-container">
-                                        <label className="label-title">Correo:</label>
-                                        <label className="label-input-detail">{workOrderDetail.client.email}</label>
-                                    </div>
+                                        <div className="label-container">
+                                            <label className="label-title">Nombre:</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.name}</label>
+                                        </div>
+                                        <div className="label-container">
+                                            <label className="label-title">Cédula:</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.cedula}</label>
+                                        </div>
+                                        <div className="label-container">
+                                            <label className="label-title">Dirección:</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.address}</label>
+                                        </div>
+                                        <div className="label-container">
+                                            <label className="label-title">Teléfono:</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.phone}</label>
+                                        </div>
+                                        <div className="label-container">
+                                            <label className="label-title">Correo:</label>
+                                            <label className="label-input-detail">{workOrderDetail.client.email}</label>
+                                        </div>
 
+                                    </div>
                                 </div>
-                            </div>
 
                                 <div className="right-div-container">
                                     <div className='right-div-container-top'>
@@ -982,7 +1021,7 @@ const InformationWorkOrder = () => {
                                         </div>
 
                                         <div className="container-right-div-information-vehicle-km">
-                                            {/* FILA 1: KM y SUBTOTAL */}
+
                                             <div className="grid-cell highlight-km">
                                                 <label className="label-style">KM:</label>
                                                 <div className='vehicle-km-container'>
@@ -1003,7 +1042,6 @@ const InformationWorkOrder = () => {
                                                 </div>
                                             </div>
 
-                                            {/* FILA 2: IVA y TOTAL FINAL */}
                                             <div className="grid-cell highlight-iva">
                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                                                     <label className="label-iva-style ">IVA ({isTaxFree ? '0%' : '15%'}):</label>
@@ -1136,6 +1174,12 @@ const InformationWorkOrder = () => {
                                         }
 
                                     </div>
+                                    <div className="section-badge">
+                                        <button className="confirm-button" onClick={handleGeneratePDF}>
+                                            <span className="text-confirm-button ">Generar PDF</span>
+                                        </button>
+                                    </div>
+
 
                                     <button className="button-toggle" onClick={() => toggleComponentes('state')}>
                                         <img
@@ -1256,9 +1300,8 @@ const InformationWorkOrder = () => {
                                             <h3>Puntos de interés</h3>
                                         </div>
 
-
                                         <VehiclePlans
-                                            imgSrc={carPlan}
+                                            vehicleType={workOrderDetail.vehicle?.category || 'car'}
                                             updatePoints={(points) => setPointsOfInterest(points)}
                                             initialPoints={workOrderDetail.vehicle_status.points_of_interest}
                                             isEditable={isEditState}
@@ -1469,8 +1512,8 @@ const InformationWorkOrder = () => {
                     totalCalculated={finalTotalNum}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
+                    confirmError={workOrderConfirmError}
                 />
-
             )}
 
         </div>

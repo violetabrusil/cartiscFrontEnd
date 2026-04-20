@@ -30,23 +30,24 @@ const SimpleDatePicker = ({ selected, onChange }) => {
     );
 };
 
-export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, isTaxFree, subtotalCalculated, ivaCalculated, totalCalculated, selectedDate, setSelectedDate }) => {
+export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, isTaxFree, subtotalCalculated, ivaCalculated, totalCalculated, selectedDate, setSelectedDate, confirmError }) => {
 
     const [note, setNote] = useState("");
     const [confirmed, setConfirmed] = useState(false);
     const [registerPayment, setRegisterPayment] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     if (!isOpen) return null;
 
     const fmt = (v) => (v || 0).toFixed(2);
 
-    const handleConfirm = () => {
-        setConfirmed(true);
-        setTimeout(() => {
-            setConfirmed(false);
-            onConfirm({ note: note.trim() || null, registerPayment });
-        }, 900);
+    const handleConfirm = async () => {
+        setIsLoading(true);
+        await onConfirm({ note: note.trim() || null, registerPayment });
+        setIsLoading(false);
     };
+
+    const isConfirmed = confirmed && !confirmError;
 
     return (
 
@@ -159,26 +160,39 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, 
                             Registrar pago ahora
                         </label>
                     </div>
-                    
+
                 </div>
-
-
 
                 <div className="wo-footer">
-
-                    <button className="wo-btn-cancel" onClick={onClose}>Cancelar</button>
+                    <button className="wo-btn-cancel" onClick={onClose} disabled={isLoading}>
+                        Cancelar
+                    </button>
                     <button
-                        className={`wo-btn-confirm ${confirmed ? "confirmed" : ""}`}
+                        className={`wo-btn-confirm ${confirmed && !confirmError ? "confirmed" : ""} ${confirmError ? "error" : ""}`}
                         onClick={handleConfirm}
+                        disabled={isLoading}
                     >
                         <span className="wo-confirm-icon">
-                            {confirmed
-                                ? <img src={checkIcon} alt="Check Icon" className="wo-icon" />
-                                : <img src={receiptIcon} alt="Payment Icon" className="wo-icon" />}
+                            {isLoading
+                                ? <span className="wo-spinner" />
+                                : confirmed && !confirmError
+                                    ? <img src={checkIcon} alt="Check Icon" className="wo-icon" />
+                                    : <img src={receiptIcon} alt="Payment Icon" className="wo-icon" />
+                            }
                         </span>
-                        {confirmed ? "¡Generado!" : registerPayment ? "Generar venta y registrar pago" : "Generar venta"}
+                        {isLoading
+                            ? "Procesando..."
+                            : confirmed && !confirmError
+                                ? "¡Generado!"
+                                : confirmError
+                                    ? confirmError
+                                    : registerPayment
+                                        ? "Generar venta y registrar pago"
+                                        : "Generar venta"
+                        }
                     </button>
                 </div>
+
 
             </div>
 

@@ -87,7 +87,7 @@ function App() {
                     <Route path="/receivables" element={<Receivables />} />
                     <Route path="/proformas" element={<Proforma />} />
                     <Route path='/proforma/newProforma' element={<NewProforma />} />
-                    <Route path='/payments' element={<Payments />}/>
+                    <Route path="/payments/:id" element={<Payments />} />
                   </Routes>
                 </div>
               </ProformaProvider>

@@ -4,11 +4,11 @@ import { Stage, Layer, Image, Circle } from 'react-konva';
 import useImage from 'use-image';
 
 const VEHICLE_IMAGES = {
-    car: process.env.PUBLIC_URL + "/images/vehicle plans/car.webp",
-    van: process.env.PUBLIC_URL + "/images/vehicle plans/van.webp",
-    bus: process.env.PUBLIC_URL + "/images/vehicle plans/pickup_truck.webp",
-    truck: process.env.PUBLIC_URL + "/images/vehicle plans/truck.webp",
-    suv: process.env.PUBLIC_URL + "/images/vehicle plans/suv.webp",
+    car: process.env.PUBLIC_URL + "/images/vehicle-plans/car.webp",
+    Camioneta: process.env.PUBLIC_URL + "/images/vehicle-plans/van.webp",
+    buseta: process.env.PUBLIC_URL + "/images/vehicle-plans/pickup_truck.webp",
+    truck: process.env.PUBLIC_URL + "/images/vehicle-plans/truck.webp",
+    suv: process.env.PUBLIC_URL + "/images/vehicle-plans/suv.webp",
 };
 
 const STAGE_WIDTH = 1200;
@@ -41,41 +41,36 @@ const VehiclePlans = ({ vehicleType = 'car', updatePoints, initialPoints = [], i
 
         const roundedX = Math.round(point.x);
         const roundedY = Math.round(point.y);
-
         const side = roundedX < STAGE_WIDTH / 2 ? 'left' : 'right';
+        const newPoint = { x: roundedX, y: roundedY, side };
 
-        const pointWithSide = { x: roundedX, y: roundedY, side };
-
-        setPoints([...points, pointWithSide]);
-        if (updatePoints) {
-            updatePoints([...points, pointWithSide]);
-        }
+        setPoints([...points, newPoint]);
+        if (updatePoints) updatePoints([...points, newPoint]);
     };
 
     const handleDragEnd = (index) => (event) => {
         const newPoints = [...points];
-
         const roundedX = Math.round(event.target.x());
         const roundedY = Math.round(event.target.y());
-
         const side = roundedX < STAGE_WIDTH / 2 ? 'left' : 'right';
-        newPoints[index] = {
-            ...newPoints[index],
-            x: roundedX,
-            y: roundedY,
-            side
-        };
+        newPoints[index] = { ...newPoints[index], x: roundedX, y: roundedY, side };
 
         setPoints(newPoints);
-        if (updatePoints) {
-            updatePoints(newPoints);
-        }
+        if (updatePoints) updatePoints(newPoints);
     };
 
     useEffect(() => {
-        setPoints([]);
-        if (updatePoints) updatePoints([]);
-    }, [vehicleType]);;
+        if (initialPoints && initialPoints.length > 0) {
+            setPoints(initialPoints);
+        }
+    }, [initialPoints]);
+
+    useEffect(() => {
+        setPoints(initialPoints ?? []);
+        if (updatePoints) updatePoints(initialPoints ?? []);
+    }, [vehicleType]);
+
+    console.log("vehicle category", vehicleType)
 
     return (
         <div className="container-vehicle-plan">
@@ -85,10 +80,8 @@ const VehiclePlans = ({ vehicleType = 'car', updatePoints, initialPoints = [], i
                         <Image image={image} width={w} height={h} x={x} y={y} />
                         {points.map((point, index) => (
                             <React.Fragment key={index}>
-                            
                                 <Circle
-                                    x={point.x}
-                                    y={point.y}
+                                    x={point.x} y={point.y}
                                     radius={14}
                                     fill="rgba(255,200,0,0.3)"
                                     stroke="#FFB800"
@@ -96,10 +89,8 @@ const VehiclePlans = ({ vehicleType = 'car', updatePoints, initialPoints = [], i
                                     draggable={isEditable}
                                     onDragEnd={handleDragEnd(index)}
                                 />
-                              
                                 <Circle
-                                    x={point.x}
-                                    y={point.y}
+                                    x={point.x} y={point.y}
                                     radius={5}
                                     fill="#FFB800"
                                     draggable={isEditable}

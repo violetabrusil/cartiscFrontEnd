@@ -187,7 +187,7 @@
     max-width: 410px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    height: 85%;
+    height: auto;
     overflow-y: auto;
 }
 
@@ -1043,6 +1043,12 @@
 .wo-icon {
     width: 25px;
     height: 25px;
+}
+
+.wo-btn-confirm.error {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    animation: pop .4s ease;
+    box-shadow: 0 6px 20px rgba(220, 38, 38, .3);
 }
 
 /* Media queries para tamaños de pantalla */

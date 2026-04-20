@@ -364,6 +364,16 @@
 .title-second-section-container h3 {
     margin: 0;
 }
+.section-badge {
+    border-radius: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    margin-left: auto;
+    margin-right: 1.3rem;
+    gap: 10px;
+    padding: 0.5rem;
+}
 
 .section-total-badge {
     background-color: #e3f1ff;
