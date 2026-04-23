@@ -1,7 +1,8 @@
 export const vehicleCategory = {
     car: "Automóvil",
-    van: "Camioneta",
-    bus: "Buseta",
+    suv: "SUV",
+    van: "Buseta",
+    pickup_truck: "Camioneta",
     truck: "Camión",
 };
 

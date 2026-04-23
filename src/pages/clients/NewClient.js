@@ -195,11 +195,12 @@ const NewClient = () => {
         setIsAlertModalOpen(false);
     };
 
-    const options = [
+     const options = [
         { value: 'car', label: 'Auto' },
-        { value: 'van', label: 'Camioneta' },
-        { value: 'bus', label: 'Buseta' },
-        { value: 'truck', label: 'Camión' }
+        { value: 'suv', label: 'SUV' },
+        { value: 'pickup_truck', label: 'Camioneta' },
+        { value: 'van', label: 'Buseta' },
+        { value: 'truck', label: 'Camión' },
     ];
 
     const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;

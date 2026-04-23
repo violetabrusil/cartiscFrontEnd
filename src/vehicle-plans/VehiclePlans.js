@@ -5,10 +5,10 @@ import useImage from 'use-image';
 
 const VEHICLE_IMAGES = {
     car: process.env.PUBLIC_URL + "/images/vehicle-plans/car.webp",
-    Camioneta: process.env.PUBLIC_URL + "/images/vehicle-plans/van.webp",
-    buseta: process.env.PUBLIC_URL + "/images/vehicle-plans/pickup_truck.webp",
-    truck: process.env.PUBLIC_URL + "/images/vehicle-plans/truck.webp",
     suv: process.env.PUBLIC_URL + "/images/vehicle-plans/suv.webp",
+    van: process.env.PUBLIC_URL + "/images/vehicle-plans/van.webp",
+    pickup_truck: process.env.PUBLIC_URL + "/images/vehicle-plans/pickup_truck.webp",
+    truck: process.env.PUBLIC_URL + "/images/vehicle-plans/truck.webp",
 };
 
 const STAGE_WIDTH = 1200;

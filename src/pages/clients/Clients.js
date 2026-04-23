@@ -22,6 +22,7 @@ import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
+const suvIcon = process.env.PUBLIC_URL + "/images/icons/suvIcon.png";
 const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
 const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
 const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
@@ -115,13 +116,13 @@ const Clients = () => {
 
     const handleSearchWithDebounce = useMemo(
         () => debounce((term) => {
-            
+
             const trimmedTerm = term ? term.trim() : "";
 
             if (trimmedTerm.length === 0) {
-                setSearchTerm(""); 
+                setSearchTerm("");
             } else if (trimmedTerm.length >= 3) {
-                setSearchTerm(trimmedTerm); 
+                setSearchTerm(trimmedTerm);
             }
         }, 500),
         [setSearchTerm]
@@ -512,9 +513,10 @@ const Clients = () => {
 
     const options = [
         { value: 'car', label: 'Auto' },
-        { value: 'van', label: 'Camioneta' },
-        { value: 'bus', label: 'Buseta' },
-        { value: 'truck', label: 'Camión' }
+        { value: 'suv', label: 'SUV' },
+        { value: 'pickup_truck', label: 'Camioneta' },
+        { value: 'van', label: 'Buseta' },
+        { value: 'truck', label: 'Camión' },
     ];
 
     const resetClientState = () => {
@@ -602,9 +604,16 @@ const Clients = () => {
                                                                     </div>
                                                                 )}
 
-                                                                {clientData.vehicles_count.van > 0 && (
+                                                                {clientData.vehicles_count.suv > 0 && (
                                                                     <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.van}
+                                                                        <label className="car-number">{clientData.vehicles_count.suv}</label>
+                                                                        <img src={suvIcon} alt="Suv client" className="icon-car" />
+                                                                    </div>
+                                                                )}
+
+                                                                {clientData.vehicles_count.pickup_truck > 0 && (
+                                                                    <div className="container-car-number">
+                                                                        <label className="car-number"> {clientData.vehicles_count.pickup_truck}
                                                                         </label>
                                                                         <div className="van-container">
                                                                             <img src={camionetaIcon} alt="Van client" className="icon-van"></img>
@@ -613,9 +622,9 @@ const Clients = () => {
                                                                     </div>
                                                                 )}
 
-                                                                {clientData.vehicles_count.bus > 0 && (
+                                                                {clientData.vehicles_count.van > 0 && (
                                                                     <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.bus}
+                                                                        <label className="car-number"> {clientData.vehicles_count.van}
                                                                         </label>
                                                                         <img src={busetaIcon} alt="Bus client" className="icon-bus"></img>
                                                                     </div>
@@ -688,10 +697,13 @@ const Clients = () => {
                                         {vehicle.category === "car" && (
                                             <img src={autoIcon} alt="Auto Icon" className="auto-icon" />
                                         )}
+                                         {vehicle.category === "suv" && (
+                                            <img src={suvIcon} alt="Auto Icon" className="auto-icon" />
+                                        )}
                                         {vehicle.category === "van" && (
                                             <img src={camionetaIcon} alt="Camioneta Icon" className="camioneta-icon" />
                                         )}
-                                        {vehicle.category === "bus" && (
+                                        {vehicle.category === "pickup_truck" && (
                                             <img src={busetaIcon} alt="Buseta Icon" className="buseta-icon" />
                                         )}
                                         {vehicle.category === "truck" && (

@@ -148,30 +148,30 @@
 }
 
 .container-right-div-information-vehicle-detail {
-    width: 50%;
+    width: 53%;
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
 }
 
 .container-right-div-information-vehicle-km {
-    width: 49%;
+    flex: 1;
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
     align-items: center;
     padding-bottom: 0.5rem;
+    padding: 0.3rem;
 }
  
 .grid-cell {
     display: flex;
     flex-direction: row;
     align-items: baseline;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .label-style {
-    font-size: 13px;
+    font-size: 14px;
     color: #000000;
     font-weight: bold;
     white-space: nowrap;
@@ -205,20 +205,28 @@
     align-items: baseline;
 }
 
-.total-value {
+.subtotal-value {
     font-size: 28px;
     color: #1C4A74;
     font-weight: 600;
     margin-top: 0.5rem;
-    margin-right: 0.3rem;
+    margin-right: 0.4rem;
 }
 
 .iva-value {
-    font-size: 31px;
+    font-size: 28px;
     color: #1C4A74;
     font-weight: 600;
-    margin-top: 1rem;
-    margin-right: 0.3rem;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.final-value {
+    font-size: 28px;
+    color: #1C4A74;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
 }
 
 .iva-checkbox {
@@ -265,24 +273,21 @@
     font-size: 28px;
 }
 
-.highlight-total {
+.highlight-final-total {
     background-color: #d7e6f1;
     border-radius: 8px;
-    margin-right: 0.5rem
 }
 
 .highlight-km {
     background-color: #e3ffde;
     border-radius: 8px;
-    margin-left: 0.3rem;
-    margin-top: 0.5rem;
+    margin: 0.3rem;
 }
 
 .highlight-sub-total {
     background-color: #ecf7ff;
     border-radius: 8px;
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
+    margin: 0.3rem;
 }
 
 .highlight-iva {
@@ -467,6 +472,11 @@
     }
 
     .total-value {
+        margin-right: 10px;
+        margin-left: -10px;
+    }
+
+    .subtotal-value {
         margin-right: 10px;
         margin-left: -10px;
     }

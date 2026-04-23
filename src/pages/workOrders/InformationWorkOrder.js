@@ -108,6 +108,7 @@ const InformationWorkOrder = () => {
     const [totalServicesValue, setTotalServicesValue] = useState(0);
 
     const [workOrderConfirmError, setWorkOrderConfirmError] = useState(null);
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
 
     const [percentages, setPercentages] = useState({
         group3: [null, null, null, 0, null],
@@ -147,9 +148,9 @@ const InformationWorkOrder = () => {
         'to_start': ['assigned', 'stand_by', 'cancelled'],
         'assigned': ['assigned', 'in_development', 'stand_by', 'cancelled'],
         'in_development': ['assigned', 'stand_by', 'cancelled', 'completed'],
-        'stand_by': ['assigned'],
-        'completed': ['in_development'],
-        'cancelled': ['in_development']
+        'stand_by': ['assigned', 'in_development', 'to_start', 'cancelled'],
+        'completed': ['in_development', 'cancelled'],
+        'cancelled': [''],
     };
 
     const toggleComponentes = (sectionId) => {
@@ -323,9 +324,12 @@ const InformationWorkOrder = () => {
                 setEditingKm(true);
             } else if (nextStatus === 'cancelled' || nextStatus === 'completed') {
                 const action = nextStatus === 'cancelled' ? "cancelar" : "completar";
+                const billingWarning = nextStatus === 'cancelled' && workOrderDetail.is_billed
+                    ? "Esta orden ya tiene una venta generada. Al cancelar, la venta y sus pagos asociados serán cancelados."
+                    : "";
                 setModalConfig({
                     title: "Confirmación",
-                    message: `Desea ${action} la orden de trabajo.?`,
+                    message: `${billingWarning} ¿Desea ${action} la orden de trabajo?`,
                     showNotes: nextStatus === 'completed',
                     onConfirm: (notes) => {
                         changeOrderStatus(nextStatus, notes);
@@ -341,7 +345,7 @@ const InformationWorkOrder = () => {
             }
 
         } else {
-            toast.warn("El cambio de estado de la orden de trabajo no es válido");
+            toast.warn("El cambio de estado de la orden de trabajo no es válido.");
             return;
         }
     };
@@ -367,7 +371,7 @@ const InformationWorkOrder = () => {
                     notes: lastHistory.notes || ''
                 });
 
-                toast.success("El cambio de estado de la orden de trabajo es válido");
+                toast.success("El cambio de estado de la orden de trabajo es válido.");
                 getWorkOrderDetailById();
 
                 if (newStatus === 'completed') {
@@ -377,7 +381,12 @@ const InformationWorkOrder = () => {
                 }
             }
         } catch (error) {
-            toast.error("Error al cambiar el estado de la orden de trabajo");
+            const rawMsg = error.response?.data?.message || error.response?.data?.error || null;
+            const backendMsg = rawMsg?.includes('Reason:')
+                ? rawMsg.split('Reason:')[1].trim()
+                : rawMsg;
+
+            toast.error(backendMsg);
             console.error("Error al cambiar el estado de la orden de trabajo:", error);
         }
     };
@@ -389,9 +398,6 @@ const InformationWorkOrder = () => {
             const response = await apiClient.get(`/work-orders/${workOrderId}`);
             if (response.data.vehicle && response.data.vehicle.plate) {
                 response.data.vehicle.plate = formatPlate(response.data.vehicle.plate);
-            }
-            if (response.data.vehicle && response.data.vehicle.category) {
-                response.data.vehicle.category = getVehicleCategory(response.data.vehicle.category);
             }
             if (response.data && response.data.date_start) {
                 response.data.date_start = formatDate(response.data.date_start);
@@ -410,6 +416,7 @@ const InformationWorkOrder = () => {
             console.log("datos de la orden de trabajo", response.data)
 
             setWorkOrderDetail(response.data);
+            console.log("categoryvehicle", response.data.vehicle.category)
             setNewKm(response.data.km)
             console.log("response data de workorder detail", response.data)
             console.log("datos del km", newKm)
@@ -436,7 +443,7 @@ const InformationWorkOrder = () => {
             setLoading(false);
 
         } catch (error) {
-            toast.error('Error al obtener el detalle de la orden de trabajo', {
+            toast.error('Error al obtener el detalle de la orden de trabajo.', {
                 position: toast.POSITION.TOP_RIGHT
             });
         }
@@ -591,7 +598,7 @@ const InformationWorkOrder = () => {
         const fuelLevelEntered = fuelLevel > 0
 
         if (!fuelLevelEntered) {
-            toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo', {
+            toast.warn('Por favor, ingrese el porcentaje de gas antes de modificar la orden de trabajo.', {
                 position: toast.POSITION.TOP_RIGHT
             });
             return;
@@ -634,7 +641,7 @@ const InformationWorkOrder = () => {
             const response = await apiClient.put(`/work-orders/update/${workOrderId}`, payload);
 
             if (response.status === 200) {
-                toast.success('Orden de trabajo editada exitósamente', {
+                toast.success('Orden de trabajo editada exitósamente.', {
                     position: toast.POSITION.TOP_RIGHT
                 });
                 setIsEditingWorkOrder(false);
@@ -643,7 +650,7 @@ const InformationWorkOrder = () => {
 
             } else {
 
-                toast.error('Ha ocurrido un error al editar la orden de trabajo', {
+                toast.error('Ha ocurrido un error al editar la orden de trabajo.', {
                     position: toast.POSITION.TOP_RIGHT
                 });
             }
@@ -691,8 +698,8 @@ const InformationWorkOrder = () => {
     };
 
     const handleGeneratePDF = async () => {
-        console.log("workOrderId al generar PDF:", workOrderId);
         try {
+            setDownloadingPdf(true);
             const response = await apiClient.get(
                 `/work-orders/generate-vehicle-delivery-status-pdf/${workOrderId}`,
                 { responseType: 'blob' }
@@ -710,11 +717,12 @@ const InformationWorkOrder = () => {
             link.click();
             link.parentNode.removeChild(link);
             window.URL.revokeObjectURL(url);
-            toast.success('Estado de entrega de vehículo descargado', { position: toast.POSITION.TOP_RIGHT });
+            toast.success('Estado de entrega de vehículo descargado.', { position: toast.POSITION.TOP_RIGHT });
 
         } catch (error) {
             toast.error('Error al generar el PDF.');
         }
+        setDownloadingPdf(false);
     };
 
     const handleOpenModalPayment = async () => {
@@ -733,7 +741,7 @@ const InformationWorkOrder = () => {
             setWorkOrderData(newWorkOrderData);
             setWorkOrderModalOpen(true);
         } catch (error) {
-            toast.error('Error al cargar datos de la orden');
+            toast.error('Error al cargar datos de la orden.');
         }
     };
 
@@ -742,7 +750,7 @@ const InformationWorkOrder = () => {
         setWorkOrderConfirmError(null);
     };
 
-    const handleWorkOrderConfirm = async ({ note, registerPayment }) => {
+    const handleWorkOrderConfirm = async ({ note, registerPayment, vat, total }) => {
 
         setWorkOrderConfirmError(null);
 
@@ -755,10 +763,8 @@ const InformationWorkOrder = () => {
                 client_id: workOrderDetail.client.id,
                 work_order_id: parseInt(workOrderDetail.id, 10),
                 sale_type: 'so',
-                subtotal: totalValue,
                 discount: 0,
-                vat: currentIvaNum,
-                total: finalTotalNum,
+                vat,
                 date: selectedDateAdjusted.toISOString()
             };
 
@@ -781,13 +787,13 @@ const InformationWorkOrder = () => {
                             openRegisterModal: true,
                             saleInfo: {
                                 date: saleData.date?.slice(0, 10),
-                                workOrderCode: saleData.work_order?.work_order_code,
-                                client: saleData.name,
+                                workOrderCode: workOrderData.workOrderCode,
+                                client: workOrderData.clientName,
                             }
                         }
                     });
                 } else {
-                    toast.success('Operación exitosa', {
+                    toast.success('Venta generada existosamente.', {
                         position: toast.POSITION.TOP_RIGHT,
                         autoClose: 1500,
                         onClose: () => navigate('/sales')
@@ -802,8 +808,8 @@ const InformationWorkOrder = () => {
                 : rawMsg;
 
             const baseMsg = registerPayment
-                ? "No se pudo generar la venta ni el registro de pago"
-                : "No se pudo generar la venta";
+                ? "No se pudo generar la venta ni el registro de pago."
+                : "No se pudo generar la venta.";
 
             setWorkOrderConfirmError(baseMsg);
 
@@ -916,6 +922,11 @@ const InformationWorkOrder = () => {
                     <div>
 
                         <div className="new-work-order-general-container">
+                            {(downloadingPdf) && (
+                                <div className="absolute-loader-container">
+                                    <PuffLoader color="#316EA8" loading={true} size={60} />
+                                </div>
+                            )}
                             <div className="new-work-order-title-container">
                                 <button onClick={onBack} className="button-arrow-client">
                                     <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
@@ -997,7 +1008,7 @@ const InformationWorkOrder = () => {
                                                 <div className="div-information-vehicle-fields">
                                                     <div className="vehicle-fields">
                                                         <label className="label-vehicle">Categoría:</label>
-                                                        <label>{workOrderDetail.vehicle.category}</label>
+                                                        <label>{getVehicleCategory(workOrderDetail.vehicle.category)}</label>
                                                     </div>
                                                     <div className="vehicle-fields">
                                                         <label className="label-vehicle">Marca:</label>
@@ -1034,46 +1045,12 @@ const InformationWorkOrder = () => {
                                             </div>
 
                                             <div className="grid-cell highlight-sub-total">
-                                                <label className="label-style">SUBTOTAL:</label>
+                                                <label className="label-style">TOTAL:</label>
                                                 <div className="total-value-container">
-                                                    <span className="total-value">
-                                                        <span className="total-value">${integerPart}.<small>{decimalPart}</small></span>
-                                                    </span>
+                                                    <span className="subtotal-value">${integerPart}.<small>{decimalPart}</small></span>
                                                 </div>
                                             </div>
 
-                                            <div className="grid-cell highlight-iva">
-                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                                                    <label className="label-iva-style ">IVA ({isTaxFree ? '0%' : '15%'}):</label>
-
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0px', marginTop: '0.1rem', marginBottom: '0.3rem' }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            id="iva-toggle"
-                                                            className="iva-checkbox"
-                                                            checked={isTaxFree}
-                                                            onChange={(e) => setIsTaxFree(e.target.checked)}
-                                                        />
-                                                        <label htmlFor="iva-toggle" style={{ fontSize: '11px', cursor: 'pointer', color: '#000000ff', whiteSpace: 'nowrap' }}>
-                                                            Aplicar IVA 0%
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div className="total-value-container">
-                                                    <span className="iva-value">
-                                                        ${ivaInteger}.<small>{ivaDecimal}</small>
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className="grid-cell highlight-total">
-                                                <label className="label-style">VALOR FINAL:</label>
-                                                <div className="total-value-container">
-                                                    <span className="total-value-main">
-                                                        ${finalInteger}.<span className="decimal-part-large">{finalDecimal}</span>
-                                                    </span>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
@@ -1506,10 +1483,7 @@ const InformationWorkOrder = () => {
                     onClose={closeModalPayment}
                     workOrderData={workOrderData}
                     onConfirm={handleWorkOrderConfirm}
-                    isTaxFree={isTaxFree}
                     subtotalCalculated={subtotalNum}
-                    ivaCalculated={currentIvaNum}
-                    totalCalculated={finalTotalNum}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
                     confirmError={workOrderConfirmError}

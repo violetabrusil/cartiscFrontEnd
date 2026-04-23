@@ -23,6 +23,7 @@ import { AddNewVehicleModal } from "../../modal/AddVehicleModal";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
+const suvIcon = process.env.PUBLIC_URL + "/images/icons/suvIcon.png";
 const busetaIcon = process.env.PUBLIC_URL + "/images/icons/busIcon.png";
 const camionetaIcon = process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png";
 const camionIcon = process.env.PUBLIC_URL + "/images/icons/camionIcon.png";
@@ -144,8 +145,9 @@ const NewWorkOrder = () => {
     const iconsVehicles = useMemo(() => {
         return {
             car: process.env.PUBLIC_URL + "/images/icons/autoIcon.png",
-            van: process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png",
-            bus: process.env.PUBLIC_URL + "/images/icons/busIcon.png",
+            suv: process.env.PUBLIC_URL + "/images/icons/suvIcon.png",
+            pickup_truck: process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png",
+            van: process.env.PUBLIC_URL + "/images/icons/busIcon.png",
             truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
         };
     }, []);
@@ -161,7 +163,7 @@ const NewWorkOrder = () => {
                 }
             );
         }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
+        return plateInput;
     };
 
     const customStylesStatus = {
@@ -227,7 +229,6 @@ const NewWorkOrder = () => {
         group3: ['Llantas', 'Gata', 'Herramientas', 'Llave rueda', 'Gas']
     };
 
-    //Estado de las selecciones y porcentajes
     const [selections, setSelections] = useState({
         group1: Array(optionsCheckBox.group1.length).fill(false),
         group2: Array(optionsCheckBox.group2.length).fill(false),
@@ -238,7 +239,6 @@ const NewWorkOrder = () => {
         group3: [null, null, null, 0, null],
     });
 
-    //Función para manjenar los cambios en los checkbox
     const handleCheckboxChange = (group, index) => {
         setSelections((prev) => ({
             ...prev,
@@ -250,7 +250,6 @@ const NewWorkOrder = () => {
         }));
     };
 
-    //Función para manejar los cambios en los porcentajes
     const handlePorcentageChange = (group, index, event) => {
         setPercentages((prev) => ({
             ...prev,
@@ -350,6 +349,10 @@ const NewWorkOrder = () => {
         if (!selectedClient) return "Seleccione un cliente";
         if (!selectedVehicleId && !selectedVehicle) return "Seleccione un vehículo";
         if (!createdBy.trim()) return "El campo 'Creada por' es requerido";
+        const fuelIndex = optionsCheckBox.group3.indexOf("Gas");
+        if (fuelIndex !== -1 && (percentages.group3[fuelIndex] === null || percentages.group3[fuelIndex] === '')) {
+            return "El nivel de gasolina es requerido";
+        }
         return null;
     };
 
@@ -631,39 +634,44 @@ const NewWorkOrder = () => {
                                                                     ) : (
                                                                         <>
                                                                             {clientData.vehicles_count.car > 0 && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order">{clientData.vehicles_count.car}</label>
+                                                                                <div className="container-car-number">
+                                                                                    <label className="car-number">{clientData.vehicles_count.car}</label>
                                                                                     <img src={autoIcon} alt="Car client" className="icon-car" />
                                                                                 </div>
-
                                                                             )}
 
-                                                                            {clientData.vehicles_count.van > 0 && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.van}
+                                                                            {clientData.vehicles_count.suv > 0 && (
+                                                                                <div className="container-car-number">
+                                                                                    <label className="car-number">{clientData.vehicles_count.suv}</label>
+                                                                                    <img src={suvIcon} alt="Suv client" className="icon-car" />
+                                                                                </div>
+                                                                            )}
+
+                                                                            {clientData.vehicles_count.pickup_truck > 0 && (
+                                                                                <div className="container-car-number">
+                                                                                    <label className="car-number"> {clientData.vehicles_count.pickup_truck}
                                                                                     </label>
-                                                                                    <div className="van-container-work-order">
-                                                                                        <img src={camionetaIcon} alt="Van client" className="icon-van-work-order"></img>
+                                                                                    <div className="van-container">
+                                                                                        <img src={camionetaIcon} alt="Van client" className="icon-van"></img>
                                                                                     </div>
 
                                                                                 </div>
                                                                             )}
 
-
-                                                                            {clientData.vehicles_count.bus && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.bus}
+                                                                            {clientData.vehicles_count.van > 0 && (
+                                                                                <div className="container-car-number">
+                                                                                    <label className="car-number"> {clientData.vehicles_count.van}
                                                                                     </label>
-                                                                                    <img src={busetaIcon} alt="Bus client" className="icon-bus-work-order"></img>
+                                                                                    <img src={busetaIcon} alt="Bus client" className="icon-bus"></img>
                                                                                 </div>
 
                                                                             )}
 
-                                                                            {clientData.vehicles_count.truck && (
-                                                                                <div className="container-car-number-work-order">
-                                                                                    <label className="car-number-work-order"> {clientData.vehicles_count.truck}
+                                                                            {clientData.vehicles_count.truck > 0 && (
+                                                                                <div className="container-car-number">
+                                                                                    <label className="car-number"> {clientData.vehicles_count.truck}
                                                                                     </label>
-                                                                                    <img src={camionIcon} alt="Truck client" className="icon-car-work-order"></img>
+                                                                                    <img src={camionIcon} alt="Truck client" className="icon-car"></img>
                                                                                 </div>
 
                                                                             )}

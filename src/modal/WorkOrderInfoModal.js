@@ -30,20 +30,26 @@ const SimpleDatePicker = ({ selected, onChange }) => {
     );
 };
 
-export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, isTaxFree, subtotalCalculated, ivaCalculated, totalCalculated, selectedDate, setSelectedDate, confirmError }) => {
+export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, subtotalCalculated, selectedDate, setSelectedDate, confirmError }) => {
 
     const [note, setNote] = useState("");
     const [confirmed, setConfirmed] = useState(false);
     const [registerPayment, setRegisterPayment] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isTaxFree, setIsTaxFree] = useState(false);
 
     if (!isOpen) return null;
+
+    const taxRate = 0.15;
+    const subtotal = Number(subtotalCalculated) || 0;
+    const ivaCalculated = isTaxFree ? 0 : subtotal * taxRate;
+    const totalCalculated = subtotal + ivaCalculated;
 
     const fmt = (v) => (v || 0).toFixed(2);
 
     const handleConfirm = async () => {
         setIsLoading(true);
-        await onConfirm({ note: note.trim() || null, registerPayment });
+        await onConfirm({ note: note.trim() || null, registerPayment, vat: ivaCalculated, total: totalCalculated });
         setIsLoading(false);
     };
 
@@ -110,14 +116,27 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, 
                     <div className="wo-totals">
                         <div className="wo-total-row">
                             <span className="wo-total-label">Subtotal sin IVA</span>
-                            <span className="wo-total-value">${fmt(subtotalCalculated)}</span>
+                            <span className="wo-total-value">${fmt(subtotal)}</span>
                         </div>
                         <div className="wo-total-row tax">
-                            <span className="wo-total-label">
+                            <span className="wo-total-label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                 IVA
-                                <span className="wo-tax-pill" style={{ background: isTaxFree ? '#dcfce7' : '#fef3c7', color: isTaxFree ? '#16a34a' : '#b45309' }}>{isTaxFree ? "EXENTO" : "15%"}</span>
+                                <span className="wo-tax-pill" style={{ background: isTaxFree ? '#dcfce7' : '#fef3c7', color: isTaxFree ? '#16a34a' : '#b45309' }}>
+                                    {isTaxFree ? "0%" : "15%"}
+                                </span>
                             </span>
-                            <span className="wo-total-value">${fmt(isTaxFree ? 0 : ivaCalculated)}</span>
+                            <span className="wo-total-value">${fmt(ivaCalculated)}</span>
+                        </div>
+                        <div style={{ paddingBottom: 6 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#666', cursor: 'pointer', fontWeight: 400 }}>
+                                <input
+                                    type="checkbox"
+                                    checked={isTaxFree}
+                                    onChange={(e) => setIsTaxFree(e.target.checked)}
+                                    style={{ width: 13, height: 13, cursor: 'pointer', accentColor: '#0f3460', marginLeft: '0rem' }}
+                                />
+                                Aplicar IVA 0%
+                            </label>
                         </div>
                         <div className="wo-total-row grand">
                             <span className="wo-total-label">Total a pagar</span>
@@ -128,25 +147,6 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, 
                     </div>
 
                     <div className="wo-divider" />
-
-                    <div style={{ paddingBottom: "4px" }}>
-                        <div className="wo-note-header" style={{ marginBottom: 8 }}>
-                            <span className="wo-note-label">
-                                Nota Informativa de pago
-                                <img src={editIcon} alt="Note Icon" className="wo-icons"></img>
-                                <span className="wo-optional">— Opcional</span>
-                            </span>
-                        </div>
-                        <textarea
-                            className="wo-textarea"
-                            placeholder="Ej: El cliente pagará en dos cuotas. Preferentemente por transferencia bancaria."
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            maxLength={300}
-                            rows={3}
-                        />
-                        <p className="wo-char-count">{note.length} / 300</p>
-                    </div>
 
                     <div style={{ padding: "0 0 12px 0", display: "flex", alignItems: "center", gap: "8px" }}>
                         <input
@@ -160,6 +160,27 @@ export const WorkOrderInfoModal = ({ isOpen, workOrderData, onConfirm, onClose, 
                             Registrar pago ahora
                         </label>
                     </div>
+
+                    {registerPayment && (
+                        <div style={{ paddingBottom: "4px" }}>
+                            <div className="wo-note-header" style={{ marginBottom: 8 }}>
+                                <span className="wo-note-label">
+                                    Nota Informativa de pago
+                                    <img src={editIcon} alt="Note Icon" className="wo-icons"></img>
+                                    <span className="wo-optional">— Opcional</span>
+                                </span>
+                            </div>
+                            <textarea
+                                className="wo-textarea"
+                                placeholder="Ej: El cliente pagará en dos cuotas. Preferentemente por transferencia bancaria."
+                                value={note}
+                                onChange={(e) => setNote(e.target.value)}
+                                maxLength={300}
+                                rows={3}
+                            />
+                            <p className="wo-char-count">{note.length} / 300</p>
+                        </div>
+                    )}
 
                 </div>
 

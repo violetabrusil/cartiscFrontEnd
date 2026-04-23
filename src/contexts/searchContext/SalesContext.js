@@ -8,9 +8,10 @@ export const SalesProvider = ({ children }) => {
     const [vehiclePlate, setVehiclePlate] = useState(null);
     const [clientName, setClientName] = useState(null);
     const [clientId, setClientId] = useState(null);
+    const [workOrder, setWorkOrder] = useState(null);
     const [status, setStatus] = useState(null);
     const [paymentType, setPaymentType] = useState(null);
-    const [invoiceType, setInvoiceType] = useState(null);
+    const [saleType, setSaleType] = useState(null);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [filterData, setFilterData] = useState([]);
@@ -20,9 +21,10 @@ export const SalesProvider = ({ children }) => {
         setVehiclePlate(values.vehiclePlate);
         setClientName(values.clientName);
         setClientId(values.clientId);
+        setWorkOrder(values.workOrder);
         setStatus(values.status);
         setPaymentType(values.paymentType);
-        setInvoiceType(values.invoiceType);
+        setSaleType(values.saleType);
         setStartDate(values.startDate);
         setEndDate(values.endDate);
     };
@@ -33,8 +35,9 @@ export const SalesProvider = ({ children }) => {
         setClientName('');
         setClientId('');
         setStatus('');
+        setWorkOrder('');
         setPaymentType('');
-        setInvoiceType('');
+        setSaleType('');
         setStartDate('');
         setEndDate('');
         setFilterData([]);
@@ -51,12 +54,14 @@ export const SalesProvider = ({ children }) => {
                 setClientName,
                 clientId,
                 setClientId,
+                workOrder,
+                setWorkOrder,
                 status,
                 setStatus,
                 paymentType,
                 setPaymentType,
-                invoiceType,
-                setInvoiceType,
+                saleType,
+                setSaleType,
                 startDate,
                 setStartDate,
                 endDate,

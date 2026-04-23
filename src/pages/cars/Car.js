@@ -57,11 +57,12 @@ const Cars = () => {
     const iconsVehicles = useMemo(() => {
         return {
             car: process.env.PUBLIC_URL + "/images/icons/autoIcon.png",
-            van: process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png",
-            bus: process.env.PUBLIC_URL + "/images/icons/busIcon.png",
+            suv: process.env.PUBLIC_URL + "/images/icons/suvIcon.png",
+            pickup_truck: process.env.PUBLIC_URL + "/images/icons/camionetaIcon.png",
+            van: process.env.PUBLIC_URL + "/images/icons/busIcon.png",
             truck: process.env.PUBLIC_URL + "/images/icons/camionIcon.png"
         };
-    }, []); // No hay dependencias, ya que se trata de una inicialización única
+    }, []); 
 
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [isSearchClientModalOpen, setIsSearchClientModalOpen] = useState(false);
@@ -69,9 +70,10 @@ const Cars = () => {
     const source = axios.CancelToken.source();
     const options = [
         { value: 'car', label: 'Auto' },
-        { value: 'van', label: 'Camioneta' },
-        { value: 'bus', label: 'Buseta' },
-        { value: 'truck', label: 'Camión' }
+        { value: 'suv', label: 'SUV' },
+        { value: 'pickup_truck', label: 'Camioneta' },
+        { value: 'van', label: 'Buseta' },
+        { value: 'truck', label: 'Camión' },
     ];
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [refreshVehicles, setRefreshVehicles] = useState(false);

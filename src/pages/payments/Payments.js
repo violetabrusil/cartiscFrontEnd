@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Select from 'react-select';
 import Header from "../../header/Header";
@@ -12,8 +12,8 @@ import { PuffLoader } from "react-spinners";
 
 const arrowLeftIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
-const SALE_STATUS_LABEL = { paid: "Pagado", partial: "Parcial", pending: "Pendiente" };
-const PAYMENT_STATUS_LABEL = { confirmed: "Confirmado", voided: "Anulado", reversal: "Reversado" };
+const SALE_STATUS_LABEL = { paid: "Pagado", partial: "Parcial", pending: "Pendiente", cancelled: "Cancelada" };
+const PAYMENT_STATUS_LABEL = { confirmed: "Confirmado", voided: "Anulado", reversed: "Reversado" };
 
 const REVERSAL_TYPES = [
     { value: "reversal", label: "Corrección posterior" },
@@ -33,13 +33,14 @@ const paymentTypeOptions = [
 const SALE_STATUS_STYLE = {
     paid: { bg: "#e6f4ea", text: "#1e7e34" },
     partial: { bg: "#fff8e1", text: "#c77700" },
-    pending: { bg: "#fdecea", text: "#b71c1c" },
+    pending: { bg: "#fbfcd0", text: "#ebd300" },
+    cancelled: { bg: "#fdecea", text: "#b71c1c" }
 };
 
 const PAYMENT_STATUS_STYLE = {
     confirmed: { bg: "#e6f4ea", text: "#1e7e34" },
     voided: { bg: "#fdecea", text: "#b71c1c" },
-    reversal: { bg: "#fff3e0", text: "#e65100" },
+    reversed: { bg: "#ffc76cf1", text: "#b23e00" },
 };
 
 const options_search_payment = [
@@ -340,11 +341,8 @@ function VoidPaymentModal({ payment, onClose, onConfirm }) {
 
     const isSameDay = () => {
         if (!payment.date) return false;
-        const pDate = new Date(payment.date);
-        const paymentDateStr = pDate.toLocaleDateString('en-CA');
         const todayStr = new Date().toLocaleDateString('en-CA');
-
-        return paymentDateStr === todayStr;
+        return payment.date === todayStr;
     };
 
     const sameDay = isSameDay();
@@ -353,7 +351,7 @@ function VoidPaymentModal({ payment, onClose, onConfirm }) {
     const handleConfirm = () => {
         onConfirm({
             reason,
-            reversal_type: sameDay ? "void" : "reversal",
+            reversal_type: sameDay ? "void" : "reversed",
             reversal_reason: sameDay ? null : reversalReason,
             occurred_at: new Date().toISOString(),
         });
@@ -450,7 +448,7 @@ function VoidPaymentModal({ payment, onClose, onConfirm }) {
                         onClick={handleConfirm}
                         disabled={!canConfirm}
                     >
-                        Confirmar anulación
+                        {sameDay ? "Confirmar anulación" : "Confirmar reversión"}
                     </button>
                 </div>
             </div>
@@ -464,11 +462,13 @@ export default function Payments() {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showRegisterModal, setShowRM] = useState(false);
+    const autoOpenedRM = useRef(false);
     const [voidTarget, setVoidTarget] = useState(null);
     const [recordFilters, setRecordFilters] = useState({ searchField: "method", searchValue: "" });
     const [recordPage, setRecordPage] = useState(1);
     const [recordTotalPages, setRecordTotalPages] = useState(1);
     const [recordsLoading, setRecordsLoading] = useState(false);
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
     const RECORD_PAGE_SIZE = 5;
 
     const { id } = useParams();
@@ -529,14 +529,15 @@ export default function Payments() {
             await fetchRecords(recordFilters, 1);
 
             if (data.status === "paid") {
-                toast.success("¡Venta liquidada en su totalidad!", { position: toast.POSITION.TOP_RIGHT });
+                toast.success("¡Venta liquidada en su totalidad!.", { position: toast.POSITION.TOP_RIGHT });
             } else {
-                toast.success("Pago registrado correctamente", { position: toast.POSITION.TOP_RIGHT });
+                toast.success("Pago registrado correctamente.", { position: toast.POSITION.TOP_RIGHT });
             }
             setShowRM(false);
         } catch (err) {
             toast.error("Error al registrar el pago.");
         }
+        setShowRM(false);
     };
 
     const handleVoidPayment = async ({ reason, reversal_type, reversal_reason, occurred_at }) => {
@@ -559,26 +560,33 @@ export default function Payments() {
 
             await fetchRecords(recordFilters, 1);
 
-            toast.success("Pago anulado correctamente", { position: toast.POSITION.TOP_RIGHT });
+            const successMsg = reversal_type === "reversed"
+                ? "Pago revertido correctamente."
+                : "Pago anulado correctamente.";
+
+            toast.success(successMsg, { position: toast.POSITION.TOP_RIGHT });
             setVoidTarget(null);
         } catch (error) {
-            toast.error("Error al anular el pago");
+            toast.error("Error al anular el pago.");
             console.error(error);
         }
     };
 
     const handleDownloadRecord = async (record) => {
         try {
+            setDownloadingPdf(true);
             await PaymentService.downloadRecordPdf(record.uuid);
-            toast.success('Comprobante descargado', { position: toast.POSITION.TOP_RIGHT });
+            toast.success('Comprobante descargado.', { position: toast.POSITION.TOP_RIGHT });
         } catch (error) {
-            toast.error('Error al generar el comprobante');
+            toast.error('Error al generar el comprobante.');
             console.error(error);
         }
+        setDownloadingPdf(false)
     };
 
     useEffect(() => {
-        if (location.state?.openRegisterModal && payment) {
+        if (location.state?.openRegisterModal && payment && !autoOpenedRM.current) {
+            autoOpenedRM.current = true;
             setShowRM(true);
         }
     }, [payment]);
@@ -617,7 +625,7 @@ export default function Payments() {
             setRecordTotalPages(data.page_info?.total_pages ?? 1);
             setRecordPage(page);
         } catch (err) {
-            toast.error("Error al buscar comprobantes");
+            toast.error("Error al buscar comprobantes.");
         } finally {
             setRecordsLoading(false);
         }
@@ -660,6 +668,12 @@ export default function Payments() {
 
             <div className="container-payments">
 
+                {(downloadingPdf &&
+                    <div className="absolute-loader-container">
+                        <PuffLoader color="#316EA8" loading={true} size={60} />
+                    </div>
+                )}
+
                 <div style={{ margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -676,7 +690,7 @@ export default function Payments() {
 
                         </div>
 
-                        {payment.status !== "paid" && (
+                        {payment.status !== "paid" && payment.status != "cancelled" && (
                             <button
                                 className="btn-primary"
                                 onClick={() => {
@@ -756,13 +770,13 @@ export default function Payments() {
                                         options={[
                                             { value: "confirmed", label: "Confirmado" },
                                             { value: "voided", label: "Anulado" },
-                                            { value: "reversal", label: "Reversado" },
+                                            { value: "reversed", label: "Reversado" },
                                         ]}
                                         placeholder="Seleccione estado..."
                                         value={[
                                             { value: "confirmed", label: "Confirmado" },
                                             { value: "voided", label: "Anulado" },
-                                            { value: "reversal", label: "Reversado" },
+                                            { value: "reversed", label: "Reversado" },
                                         ].find(o => o.value === recordFilters.searchValue) ?? null}
                                         onChange={(opt) => setRecordFilters(f => ({ ...f, searchValue: opt?.value ?? "" }))}
                                         styles={{ ...selectStyles, container: (b) => ({ ...b, flex: 1 }) }}
@@ -824,7 +838,7 @@ export default function Payments() {
                                     </tr>
                                 ) : (
                                     payments.map((p) => {
-                                        const isInactive = p.status === "voided" || p.status === "reversal";
+                                        const isInactive = p.status === "voided" || p.status === "reversed";
                                         return (
                                             <tr key={p.id} style={{ opacity: recordsLoading ? 0.5 : 1 }} className={isInactive ? "row-voided" : ""}>
                                                 <td style={{ fontFamily: "monospace", fontSize: 13, color: "#888" }}>{p.id}</td>

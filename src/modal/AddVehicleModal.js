@@ -15,7 +15,7 @@ const brandIcon = process.env.PUBLIC_URL + "/images/icons/brand.png";
 const modelIcon = process.env.PUBLIC_URL + "/images/icons/model.png";
 const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
-export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientId}) => {
+export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate, selectedClientId }) => {
 
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [category, setCategory] = useState('');
@@ -58,9 +58,10 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
 
     const options = [
         { value: 'car', label: 'Auto' },
-        { value: 'van', label: 'Camioneta' },
-        { value: 'bus', label: 'Buseta' },
-        { value: 'truck', label: 'Camión' }
+        { value: 'suv', label: 'SUV' },
+        { value: 'pickup_truck', label: 'Camioneta' },
+        { value: 'van', label: 'Buseta' },
+        { value: 'truck', label: 'Camión' },
     ];
 
     const handleInputFocus = () => {
@@ -99,16 +100,16 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
     };
 
     const handleAddVehicle = async (event) => {
-        
+
         if (event) {
             event.preventDefault(); // Para evitar que el formulario recargue la página
         }
-    
+
         const client_id = selectedClientId;
         const plate = transformPlateForSaving(plateCar);
-      
+
         try {
-           
+
             await apiClient.post('/vehicles/register', { client_id, category, plate, brand, model, year, motor, km });
 
             toast.success('Vehículo registrado', {
@@ -179,7 +180,7 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate , selectedClientI
                                     value={options.find(option => option.value === category)}
                                     onChange={handleTypeCarChange}
                                     styles={customStyles}
-                                    placeholder="Seleccionar"/>
+                                    placeholder="Seleccionar" />
                             </label>
                             <label className="label-form">
                                 Kilometraje actual

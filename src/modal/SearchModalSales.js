@@ -23,6 +23,8 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
         setClientName,
         clientId,
         setClientId,
+        workOrder,
+        setWorkOrder,
         status,
         setStatus,
         saleType,
@@ -53,7 +55,8 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
 
     const salesStatus = [
         { value: 'receivable', label: 'Por cobrar' },
-        { value: 'charged', label: 'Cobrado' },
+        { value: 'charged', label: 'Cobrada' },
+        { value: 'cancelled', label: 'Cancelada' },
     ];
 
     const saleTypeOptions = [
@@ -69,6 +72,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
             if (params.vehicle_plate) setVehiclePlate(params.vehicle_plate);
             if (params.client_name) setClientName(params.client_name);
             if (params.client_cedula) setClientId(params.client_cedula);
+            if (params.work_order_code) setWorkOrder(params.work_order_code);
             if (params.sales_receipt_status) setStatus(params.sales_receipt_status);
             if (params.sale_type) setSaleType(params.sale_type);
             if (params.date_start_of_search) {
@@ -85,16 +89,15 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
     const handleConfirm = () => {
 
         onConfirm({
-            work_order_code: orderCode,
+            order_number: orderCode,
             vehicle_plate: vehiclePlate,
             client_name: clientName,
             client_cedula: clientId,
+            work_order_code: workOrder,
             sales_receipt_status: status,
             sale_type: saleType,
             date_start_of_search: startDate,
             date_finish_of_search: endDate,
-            //start_total_amount
-            //end_total_amount
         });
     };
 
@@ -103,6 +106,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
         setVehiclePlate('');
         setClientName('');
         setClientId('');
+        setWorkOrder('');
         setStatus(null);
         setSaleType(null);
         setStartDate('');
@@ -117,12 +121,13 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
             vehiclePlate,
             clientName,
             clientId,
+            workOrder,
             status,
             saleType,
             startDate,
             endDate
         });
-    }, [orderCode, vehiclePlate, clientName, clientId, status, saleType, startDate, endDate, saveFormValues]);
+    }, [orderCode, vehiclePlate, clientName, clientId, workOrder,status, saleType, startDate, endDate, saveFormValues]);
 
 
     if (!isOpen) return null;
@@ -144,13 +149,18 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
 
                 <div className="double-input-group">
                     <div>
-                        <label style={{ display: 'block' }} className="label-fields-payment">Código orden de trabajo</label>
+                        <label style={{ display: 'block' }} className="label-fields-payment">Código de venta</label>
                         <input className="input-fields-payment" onChange={e => setOrderCode(e.target.value)} value={orderCode || ''} />
                     </div>
                     <div>
                         <label style={{ display: 'block' }} className="label-fields-payment">Placa vehículo</label>
                         <input style={{ width: '91%' }} className="input-fields-payment" onChange={e => setVehiclePlate(e.target.value)} value={vehiclePlate || ''} />
                     </div>
+                </div>
+
+                <div>
+                    <label style={{ display: 'block' }} className="label-fields-payment">Código orden de trabajo</label>
+                    <input className="input-fields-payment" onChange={e => setWorkOrder(e.target.value)} value={workOrder || ''} />
                 </div>
 
                 <div className="double-input-group">

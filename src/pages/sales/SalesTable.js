@@ -77,6 +77,7 @@ export default function SalesTable({ mode = "all" }) {
                     date: sale.date?.slice(0, 10),
                     workOrderCode: sale.work_order_code,
                     client: sale.client_name,
+                    vat: sale.vat,
                 }
             }
         });
@@ -148,10 +149,13 @@ export default function SalesTable({ mode = "all" }) {
             {
                 Header: "",
                 accessor: "work_order_id",
-                Cell: ({ value }) => (
-                    <button className="button-eye-workorder-sales" onClick={() => navigateToDetail(value)}>
-                        <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-sales" />
-                    </button>
+                Cell: ({ row }) => (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <button className="button-eye-workorder-sales" onClick={() => navigateToDetail(row.original.work_order_id)}>
+                            <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-sales" />
+                        </button>
+                        <span style={{textAlign: "center", fontSize: '0.6rem'}}>{row.original.work_order_code}</span>
+                    </div>
                 ),
                 className: "small-row"
             },
@@ -161,11 +165,9 @@ export default function SalesTable({ mode = "all" }) {
                     const sales = row.original;
                     return (
                         <div style={{ display: "flex" }}>
-                            {sales.sales_receipt_status !== "Cobrado" && (
-                                <button className="button-payment-receipt" onClick={() => handleOpenPayment(sales)}>
-                                    <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
-                                </button>
-                            )}
+                            <button className="button-payment-receipt" onClick={() => handleOpenPayment(sales)}>
+                                <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
+                            </button>
                             <button className="button-download-sales-receipt" onClick={() => downloadPDF(sales.id)}>
                                 <img src={pdfIcon} alt="Download Payment Receipt Icon" className="download-sales-receipt-icon" />
                             </button>
@@ -302,7 +304,7 @@ export default function SalesTable({ mode = "all" }) {
 
             const { total_pages, values, total_values } = response.data;
 
-            console.log("response de sale", response.data )
+            console.log("response de sale", response.data)
 
             const transformedSales = values.map(sales => {
                 const newDateStart = formatDate(sales.created_at);
@@ -353,7 +355,6 @@ export default function SalesTable({ mode = "all" }) {
     };
 
     const downloadPDF = async (salesId) => {
-
         try {
             setDownloadingPdf(true);
             const response = await apiClient.get(`/sales/generate-pdf/${salesId}`, { responseType: 'blob' });
@@ -378,8 +379,6 @@ export default function SalesTable({ mode = "all" }) {
             });
 
         } catch (error) {
-            console.error('Error descargando el archivo', error);
-
             toast.error('Error al generar el PDF. Verifique los datos e intente nuevamente.');
         }
         setDownloadingPdf(false);
