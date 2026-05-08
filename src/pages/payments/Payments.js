@@ -34,7 +34,8 @@ const SALE_STATUS_STYLE = {
     paid: { bg: "#e6f4ea", text: "#1e7e34" },
     partial: { bg: "#fff8e1", text: "#c77700" },
     pending: { bg: "#fbfcd0", text: "#ebd300" },
-    cancelled: { bg: "#fdecea", text: "#b71c1c" }
+    cancelled: { bg: "#fdecea", text: "#b71c1c" },
+    avoided: { bg: "#c4c5c6", text: "#9CA3AF"},
 };
 
 const PAYMENT_STATUS_STYLE = {

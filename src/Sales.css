@@ -23,6 +23,11 @@
     background: none;
 }
 
+.button-download-sales-receipt:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .download-sales-receipt-icon {
     background: none;
     width: 49px;
@@ -37,6 +42,12 @@
     padding-top: 4px;
 }
 
+.button-email:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-image: linear-gradient(to bottom, #999 -10%, #999 11%, #666 100%);
+}
+
 .email-icon {
     background: none;
     width: 33px;
@@ -49,10 +60,23 @@
     border-radius: 10px;
 }
 
+.button-payment-check {
+    border: none;
+    background-image: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);
+    border-radius: 10px;
+}
+
 .payment-receipt-icon {
     background: none;
     width: 34px;
-    height: 37px;
+    height: 32px;
+}
+
+.payment-done {
+    background: none;
+    width: 33px;
+    height: 34px;
+    margin-top: 0.3rem;
 }
 
 .custom-select-option-payment {

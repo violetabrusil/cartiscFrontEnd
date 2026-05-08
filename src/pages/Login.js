@@ -61,6 +61,8 @@ const Login = () => {
             console.error("Error en el inicio de sesión", error);
             console.error("msg error", error.message);
             console.error("msg stack", error.stack);
+            console.error("response status", error.response?.status);
+            console.error("response data", JSON.stringify(error.response?.data, null, 2));
     
             let mensajesError = [];
             if (error.response && error.response.data && error.response.data.errors) {

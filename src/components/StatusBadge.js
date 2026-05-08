@@ -1,7 +1,7 @@
 const STATUS_CONFIG = {
-    receivable: { label: "Por Cobrar", style: { background: "#FFD966", color: "black", border: "1px solid #FFD966" } },
-    charged: { label: "Cobrada", style: { background: "#316EA8", color: "white", border: "1px solid #316EA8" } },
-    cancelled: { label: "Cancelada", style: { background: "#ff5757", color: "white", border: "1px solid #ff5757" } }
+    receivable: { label: "Por Cobrar", style: { background: "#FFD966", color: "black", border: "1px solid #c2a038" } },
+    charged: { label: "Cobrada", style: { background: "#316EA8", color: "white", border: "1px solid #295e90" } },
+    voided: { label: "Anulada", style: { background: "#9CA3AF", color: "white", border: "1px solid #807f7f" } }
 };
 
 export default function StatusBadge({ value }) {

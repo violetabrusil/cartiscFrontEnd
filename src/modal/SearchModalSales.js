@@ -68,7 +68,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
         if (isOpen) {
             const params = Object.fromEntries([...searchParams]);
 
-            if (params.work_order_code) setOrderCode(params.work_order_code);
+            if (params.order_number) setOrderCode(params.order_number);
             if (params.vehicle_plate) setVehiclePlate(params.vehicle_plate);
             if (params.client_name) setClientName(params.client_name);
             if (params.client_cedula) setClientId(params.client_cedula);
@@ -189,7 +189,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
 
                 )}
 
-                <div className="input-group-payment">
+                {/* <div className="input-group-payment">
                     <label className="label-fields-payment">Tipo de comprobante</label>
                     <Select
                         isSearchable={false}
@@ -199,7 +199,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
                         onChange={selectedOption => setSaleType(selectedOption.value)}
                         placeholder="Seleccione"
                     />
-                </div>
+                </div> */}
 
                 <div className="date-container-payment">
                     <div style={{ display: "grid" }}>

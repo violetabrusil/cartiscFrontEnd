@@ -115,12 +115,14 @@ const WorkOrders = () => {
                         'Placa': 'vehicle_plate',
                         'Código Orden de Trabajo': 'work_order_code',
                         'Nombre Titular': 'client_name',
+                        //'Estado': 'work_order_status',
                         'Asignada a': 'assigned',
                         'Entregada por': 'delivered_by',
                         'Creada por': 'created_by',
                     };
                     const payload = { [searchFieldMapping[selectedOption]]: searchTerm };
                     response = await apiClient.post(endpoint, payload, { signal: controller.signal });
+                    //console.log("endpoint", endpoint, payload )
                 } else {
                     response = await apiClient.get(endpoint, { signal: controller.signal });
                 }
@@ -141,6 +143,7 @@ const WorkOrders = () => {
 
                     setWorkOrders(prev => (page === 1 ? transformed : [...prev, ...transformed]));
                     setTotalValues(parseInt(response.data.total_values) || 0);
+                    console.log("data filter", response.data)
                 }
 
             } catch (error) {
@@ -310,7 +313,7 @@ const WorkOrders = () => {
                 <Modal
                     isOpen={isFilterModalOpen}
                     onClose={closeFilterModal}
-                    options={['Nombre Titular', 'Placa', 'Código Orden de Trabajo', 'Asignada a', 'Entregada por', 'Creada por']}
+                    options={['Nombre Titular', 'Placa', 'Código Orden de Trabajo' ,'Asignada a', 'Entregada por', 'Creada por']}
                     defaultOption={selectedOption}
                     onOptionChange={handleOptionChange}
                     onSelect={handleSelectClick}

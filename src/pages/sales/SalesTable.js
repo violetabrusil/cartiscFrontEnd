@@ -19,7 +19,8 @@ import StatusBadge from "../../components/StatusBadge";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 const pdfIcon = process.env.PUBLIC_URL + "/images/icons/pdfIcon.png";
 const emailIcon = process.env.PUBLIC_URL + "/images/icons/email-icon.png";
-const paymentIcon = process.env.PUBLIC_URL + "/images/icons/payment-icon.png";
+const paymentPendingIcon = process.env.PUBLIC_URL + "/images/icons/paymentPedingIcon.png";
+const dolarIcon = process.env.PUBLIC_URL + "/images/icons/paymentDoneIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
 export default function SalesTable({ mode = "all" }) {
@@ -154,7 +155,7 @@ export default function SalesTable({ mode = "all" }) {
                         <button className="button-eye-workorder-sales" onClick={() => navigateToDetail(row.original.work_order_id)}>
                             <img src={eyeIcon} alt="Eye Icon" className="icon-eye-workorder-sales" />
                         </button>
-                        <span style={{textAlign: "center", fontSize: '0.6rem'}}>{row.original.work_order_code}</span>
+                        <span style={{ textAlign: "center", fontSize: '0.6rem' }}>{row.original.work_order_code}</span>
                     </div>
                 ),
                 className: "small-row"
@@ -163,15 +164,21 @@ export default function SalesTable({ mode = "all" }) {
                 Header: "",
                 Cell: ({ row }) => {
                     const sales = row.original;
+                    const isPaid = sales.sale_status === "charged";
+                    const isVoided = sales.sale_status === "voided";
                     return (
                         <div style={{ display: "flex" }}>
-                            <button className="button-payment-receipt" onClick={() => handleOpenPayment(sales)}>
-                                <img src={paymentIcon} alt="Payment Receipt Icon" className="payment-receipt-icon" />
+                            <button className={ isPaid ? "button-payment-receipt" : "button-payment-check"} onClick={() => handleOpenPayment(sales)}>
+                                <img
+                                    src={isPaid ? dolarIcon : paymentPendingIcon}
+                                    alt={isPaid ? "Pago completo" : "Pago pendiente"}
+                                    className={ isPaid ? "payment-done" : "payment-receipt-icon" }
+                                />
                             </button>
-                            <button className="button-download-sales-receipt" onClick={() => downloadPDF(sales.id)}>
+                            <button className="button-download-sales-receipt" onClick={() => downloadPDF(sales.id)} disabled={isVoided}>
                                 <img src={pdfIcon} alt="Download Payment Receipt Icon" className="download-sales-receipt-icon" />
                             </button>
-                            <button className="button-email" onClick={() => sendEmail(sales.id)}>
+                            <button className="button-email" onClick={() => sendEmail(sales.id)} disabled={isVoided}>
                                 <img src={emailIcon} alt="Email Icon" className="email-icon" />
                             </button>
                         </div>
