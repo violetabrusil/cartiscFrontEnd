@@ -35,9 +35,27 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const [activeIndex, setActiveIndex] = useState(null);
     const [manualToggle, setManualToggle] = useState(false);
     const [openSubmenuIndex, setOpenSubmenuIndex] = useState(null);
+    const [isTabletLandscape, setIsTabletLandscape] = useState(
+        window.matchMedia("(min-width: 800px) and (max-width: 1340px)").matches
+    );
     const { resetAllFilters } = useSales();
 
     const { user } = useContext(AuthContext);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(min-width: 800px) and (max-width: 1340px)");
+
+        const handleMediaChange = (e) => {
+            console.log("Media query changed:", e.matches);
+            setIsTabletLandscape(e.matches);
+        };
+
+        console.log("Initial media query match:", mediaQuery.matches, `${window.innerWidth}x${window.innerHeight}`);
+        setIsTabletLandscape(mediaQuery.matches);
+        mediaQuery.addEventListener("change", handleMediaChange);
+
+        return () => mediaQuery.removeEventListener("change", handleMediaChange);
+    }, []);
 
     const toggleMenu = () => {
         setManualToggle(prev => !prev);
@@ -95,9 +113,15 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
 
         const activeOption = menuOptions[foundIndex];
         if (activeOption?.submenu) {
-            setOpenSubmenuIndex(foundIndex);
+            console.log("Active option has submenu. isTabletLandscape:", isTabletLandscape, "activeOption:", activeOption.label);
+            if (!isTabletLandscape) {
+                console.log("Opening submenu for:", activeOption.label);
+                setOpenSubmenuIndex(foundIndex);
+            } else {
+                console.log("Skipping submenu open for tablets");
+            }
         }
-    }, [location.pathname, menuOptions]);
+    }, [location.pathname, menuOptions, isTabletLandscape]);
 
     const handleOptionClick = (option, index) => {
         resetAllFilters();
@@ -196,8 +220,13 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                                             to={subOption.path}
                                             className={`submenu-item ${location.pathname.startsWith(subOption.path) ? "active" : ""}`}
                                             onClick={() => {
+                                                console.log("Submenu item clicked. isTabletLandscape:", isTabletLandscape);
                                                 resetAllFilters();
                                                 if (resetFunction) resetFunction();
+                                                if (isTabletLandscape) {
+                                                    console.log("Closing submenu");
+                                                    setOpenSubmenuIndex(null);
+                                                }
                                             }}
                                         >
                                             <span className="submenu-texto">{subOption.label}</span>

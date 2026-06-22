@@ -335,8 +335,32 @@
   }
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+@media screen and (min-width: 800px) and (max-width: 1340px) {
   .menu-lateral {
-    height: 88vh;
+    height: calc(100vh - 70px);
+    overflow: visible;
+  }
+
+  .opcion-wrapper {
+    position: relative;
+  }
+
+  .submenu {
+    position: absolute !important;
+    left: 100%;
+    top: 0;
+    margin-left: 10px;
+    flex-direction: column;
+    background-color: #E7ECEF;
+    border-radius: 8px;
+    min-width: 200px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 8px 10px;
+    z-index: 10;
+    display: flex !important;
+  }
+
+  .menu-lateral.open .submenu {
+    display: flex !important;
   }
 }

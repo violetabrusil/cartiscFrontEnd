@@ -4,5 +4,31 @@
     align-items: center;
     margin-bottom: 20px;
     border-radius: 13px;
-    border: 1px solid rgba(0, 0, 0, 0.50)
+    border: 1px solid rgba(0, 0, 0, 0.50);
+    width: 100%;
+    max-width: 98%;
+    padding: 8px;
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+}
+
+.vehicle-plan-stage {
+    display: block;
+    user-select: none;
+    width: 100% !important;
+    height: auto !important;
+}
+
+@media (max-width: 768px) {
+    .container-vehicle-plan {
+        padding: 4px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container-vehicle-plan {
+        padding: 2px;
+        margin-bottom: 10px;
+    }
 }

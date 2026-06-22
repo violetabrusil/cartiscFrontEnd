@@ -355,15 +355,16 @@
 
 .title-second-section-container {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-   padding: 8px 15px;
-    width: 100%;
+    align-items: center;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
 .title-second-section-container h3 {
     margin: 0;
 }
+
 .section-badge {
     border-radius: 4px;
     display: flex;
@@ -787,7 +788,7 @@ input[type="checkbox"] {
     height: 30px;
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+@media screen and (min-width: 800px) and (max-width: 1340px) {
 
     .input-field-right {
         width: 80%;
@@ -852,9 +853,46 @@ input[type="checkbox"] {
 
     .carousel {
         width: 85%;
-        height: 91px;
+        height: 63%;
     }
 
+    .input-plate-vehicle-new-work-order {
+        max-width: 31%;
+        height: 9px;
+        font-size: 15px;
+        margin-top: 0.9rem;
+        padding: 10px;
+        padding-top: 18px;
+
+    }
+
+    .input-plate-container-new-work-order label {
+        font-size: 10px;
+        left: 55%;
+        top: 31%;
+        transform: translateX(-50%);
+    }
+
+    .input-plate-container-new-work-order .ecuador-icon {
+        height: 10px;
+        width: 10px;
+        left: calc(50% - 30px);
+        top: 36%;
+    }
+
+    .vehicle-carousel {
+        height: 60px;
+        width: 50px;
+        margin-top: -0.8rem;
+    }
+
+    .container-carousel {
+        margin-left: 143px
+    }
+
+    .add-vehicle-container {
+        height: 60%;
+    }
 
 }
 

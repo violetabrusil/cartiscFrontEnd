@@ -7,7 +7,8 @@
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-gap: 0px;
-    height: calc(100vh - 80px); /* Altura del viewport menos 80px de la parte superior */
+    height: calc(100vh - 80px);
+    /* Altura del viewport menos 80px de la parte superior */
     overflow: hidden;
 }
 
@@ -24,12 +25,13 @@
     background-color: #d0d0d0;
     padding: 20px;
     overflow-y: auto;
-    height: 100%; /* Hace que ocupe todo el espacio disponible en .containerClients */
+    height: 100%;
+    /* Hace que ocupe todo el espacio disponible en .containerClients */
     box-sizing: border-box;
 }
 
 .container-list-work-orders {
-    flex: 1; 
+    flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 5px;
@@ -50,9 +52,12 @@
 .first-result-work-orders,
 .second-result-work-order,
 .third-result-work-order {
-    overflow: hidden; /* para evitar desbordamiento */
-    text-overflow: ellipsis; /* para mostrar puntos suspensivos si el texto es demasiado largo */
-    white-space: nowrap; /* para evitar saltos de línea */
+    overflow: hidden;
+    /* para evitar desbordamiento */
+    text-overflow: ellipsis;
+    /* para mostrar puntos suspensivos si el texto es demasiado largo */
+    white-space: nowrap;
+    /* para evitar saltos de línea */
 }
 
 .first-result-work-orders {
@@ -71,7 +76,8 @@
     text-align: center;
     font-size: 14px;
     font-weight: normal;
-    max-width: 200px; /* ajusta el valor según sea necesario */
+    max-width: 200px;
+    /* ajusta el valor según sea necesario */
     /* Añade el desbordamiento y los puntos suspensivos */
     overflow: hidden;
     white-space: nowrap;
@@ -193,7 +199,7 @@
     justify-content: center;
     padding: 20px;
     width: 100%;
-    min-height: 80px; 
+    min-height: 80px;
 }
 
 @media screen and (max-width: 768px) {
@@ -226,32 +232,79 @@
 
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+@media screen and (min-width: 768px) and (max-width: 1340px)  {
     .work-order-container {
-        height: 88vh;
-        grid-template-columns: 1.5fr 2fr;
+        height: 89vh;
+        grid-template-columns: 1.2fr 1.8fr;
     }
 
     .result-work-order {
-        grid-template-columns: 190px 140px 250px 150px;
+        grid-template-columns: 1.1fr 0.9fr 0.95fr 0.3fr;
+        min-height: 70px;
+        margin-bottom: 8px;
+    }
+
+    .first-result-work-orders {
+        margin-left: 6px;
+    }
+
+    .div-label-work-order-code {
+        font-size: 15px;
+    }
+
+    .div-label-work-order-client {
+        font-size: 12px;
+        max-width: 150px;
+    }
+
+    .div-label-status {
+        font-size: 15px;
+        width: 80px;
+    }
+
+    .div-label-date {
+        font-size: 12px;
+        width: 80px;
     }
 
     .input-plate-vehicle-work-order {
-        max-width: 33%;
-        height: 13px;
+        max-width: 38%;
+        height: 18px;
+        font-size: 15px;
+        margin-top: 0.8rem;
+        padding: 10px;
+        padding-top: 18px;
     }
 
     .input-plate-container-work-order label {
-        left: 45%;
+        font-size: 10px;
+        left: 55%;
+        top: 31%;
+        transform: translateX(-50%);
     }
-    
+
     .input-plate-container-work-order .ecuador-icon {
-        left: calc(50% - 29px);
+        height: 10px;
+        width: 10px;
+        left: calc(50% - 30px);
+        top: 36%;
     }
-  
+
+    .div-image-receipt {
+        width: 24px;
+    }
+
+    .left-section-work-order,
+    .right-section-work-order {
+        padding: 15px;
+    }
+
+    .container-list-work-orders {
+        padding-right: 3px;
+    }
 }
 
-@media (max-width: 1440px) and (max-height: 900px){
+@media (max-width: 1440px) and (max-height: 900px) {
 
     .div-label-work-order-code {
         font-size: 15px;
