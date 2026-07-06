@@ -27,6 +27,7 @@ const passwordIcon = process.env.PUBLIC_URL + "/images/icons/password.png";
 const pinIcon = process.env.PUBLIC_URL + "/images/icons/pin.png";
 const operatorIcon = process.env.PUBLIC_URL + "/images/icons/operator.png";
 const adminIcon = process.env.PUBLIC_URL + "/images/icons/admin.png";
+const backIcon = process.env.PUBLIC_URL + "/images/icons/arrowLeftIcon.png";
 
 const Users = () => {
 
@@ -49,12 +50,12 @@ const Users = () => {
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
     const [passwordError, setPasswordError] = useState("");
-    const debouncedPassword = useDebounce(password, 1000); // espera 500ms antes de validar
+    const debouncedPassword = useDebounce(password, 1000); 
     const [pinError, setPinError] = useState("");
     const debouncedPin = useDebounce(pin, 500);
     const [displayImage, setDisplayImage] = useState(null);
     const { user, setUser } = useContext(AuthContext);
-    const responsivePageSizeUsers = usePageSizeForTabletLandscape(12, 6);
+    const responsivePageSizeUsers = usePageSizeForTabletLandscape(4, 6);
 
     const statusColors = {
         "Activo": "#49A05C",
@@ -226,7 +227,7 @@ const Users = () => {
         }
     };
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px)").matches;
 
     const userSelectStyles = {
         control: (base, state) => ({
@@ -263,7 +264,7 @@ const Users = () => {
                 border: '1px solid rgb(0 0 0 / 34%)',
                 textAlign: 'left',
             };
-    
+
             // Agrega estilos específicos para tablet landscape
             if (isTabletLandscape) {
                 return {
@@ -271,7 +272,7 @@ const Users = () => {
                     width: '220px',
                 };
             }
-    
+
             // Agrega estilos específicos para desktop con max-width y max-height
             return {
                 ...baseStyles,
@@ -292,7 +293,7 @@ const Users = () => {
             textAlign: 'left',
         }),
     };
-    
+
 
     const handleShowMoreInfomation = (event, user) => {
         if (event && event.stopPropagation) {
@@ -325,7 +326,7 @@ const Users = () => {
         setUsername('');
         setPassword('');
         setPin('');
-        };
+    };
 
     const handleEditUser = () => {
         setActionType('edit');
@@ -341,6 +342,14 @@ const Users = () => {
         }
 
         setIsEditing(true);
+    };
+
+    const handleBackFromEdit = () => {
+        setActionType('view');
+        setPassword('');
+        setPin('');
+        setDisplayImage(null);
+        setImageBase64(null);
     };
 
     useEffect(() => {
@@ -490,7 +499,7 @@ const Users = () => {
     const editUser = async () => {
         // Decide qué usuario editar basado en la presencia de selectedUser
         const targetUser = selectedUser || user;
-    
+
         // Construye userData base
         const userData = {
             username: username,
@@ -499,7 +508,7 @@ const Users = () => {
             user_type: role,
             user_status: status
         };
-    
+
         // Añade profile_picture a userData solo si imageBase64 tiene valor
         if (imageBase64) {
             userData.profile_picture = imageBase64;
@@ -508,18 +517,18 @@ const Users = () => {
             // se usa esa imagen existente.
             userData.profile_picture = targetUser.profile_picture;
         }
-    
+
         try {
             const response = await apiAdmin.put(`/update-user/${targetUser.id}`, userData);
             const newUser = response.data;
-            
+
             if (selectedUser) {
                 setSelectedUser(newUser);
             } else {
-                setUser(newUser); 
+                setUser(newUser);
                 localStorage.setItem('user', JSON.stringify(newUser));
             }
-            
+
             toast.success('Usuario actualizado con éxito', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -531,7 +540,7 @@ const Users = () => {
             });
         }
     };
-    
+
     const createUser = async () => {
 
         const userData = {
@@ -620,7 +629,7 @@ const Users = () => {
     }, [selectedOption, searchTerm]);
 
     return (
-        <div style={{ marginTop: '-18px' }}>
+        <div>
             <ToastContainer />
             <div className="general-user">
                 <div className="general-user-right">
@@ -660,133 +669,148 @@ const Users = () => {
                 <div className="general-user-left">
                     <div className="container-user-information">
                         <div>
-                            <div className="container-button-edit-user">
-                                <label className="label-title-view">
-                                    {actionType === 'edit' ? 'Editar' : (actionType === 'add' ? 'Agregar usuario' : '')}
-                                </label>
+                            {/* SECCIÓN IZQUIERDA: Foto y datos */}
+                            <div className="user-info-left">
+                                <div className="container-button-edit-user">
+                                    {actionType === 'view' && (
+                                        <>
+                                            <button onClick={handleEditUser} className="button-edit-user">
+                                                <img src={editIcon} alt="Edit icon users" className="icon-edit-user" />
+                                            </button>
+                                        </>
 
-                                {actionType === 'view' && (
-                                    <>
-                                        <button onClick={handleEditUser} className="button-edit-user">
-                                            <img src={editIcon} alt="Edit icon users" className="icon-edit-user" />
-                                        </button>
-                                    </>
+                                    )}
 
-                                )}
-                            </div>
-
-                            <div className="container-profile-picture-user">
-                                <img src={determineImageToShow()} alt="Profile picture" className="profile-picture-user" />
-                                {(actionType === 'add' || actionType === 'edit') && (
-                                    <div className="div-icon-edit-profile" onClick={() => fileInputRef.current.click()}>
-                                        <img src={editIconWhite} alt="Edit profile picture" className="icon-edit-profile" />
-                                        <input type="file" style={{ display: 'none' }} onChange={handleImageChange} ref={fileInputRef} />
-                                    </div>
-
-                                )}
-                                {actionType !== 'add' && (
-                                    <label className="label-unique-code">
-                                        {selectedUser ? selectedUser.unumber : user.unumber}
+                                    {actionType === 'edit' && (
+                                        <>
+                                            <button onClick={handleBackFromEdit} className="button-edit-user">
+                                                <img src={backIcon} alt="Back icon" className="icon-edit-user" />
+                                            </button>
+                                        </>
+                                    )}
+                                    <label className="label-title-view">
+                                        {actionType === 'edit' ? 'Editar' : (actionType === 'add' ? 'Agregar usuario' : '')}
                                     </label>
-                                )}
-                                {actionType === 'view' ? (
-                                    <>
-                                        <label className="label-user-name">
-                                            {selectedUser ? selectedUser.username : user.username}
-                                        </label>
-                                        <label className="label-rol-user">
-                                            {selectedUser ? userTypeMaping[selectedUser.user_type] : userTypeMaping[user.user_type]}
-                                        </label>
-                                    </>
 
-                                ) : (
-                                    <div className="scrol-user">
-                                        <div className="label-name-user-container">
-                                            <label className="label-name-user">Nombre de usuario</label>
-                                            <div className="input-form-new-user">
-                                                <input
-                                                    className="input-name-user"
-                                                    value={username}
-                                                    onChange={(e) => {
-                                                        setUsername(e.target.value);
-                                                    }}
-                                                    readOnly={actionType === 'view'}
-                                                />
 
-                                                <img
-                                                    src={nameIcon}
-                                                    alt="Name user Icon"
-                                                    className="input-new-user-icon"
-                                                />
+                                </div>
+
+                                <div className="container-profile-picture-user">
+                                    <img src={determineImageToShow()} alt="Profile picture" className="profile-picture-user" />
+                                    {(actionType === 'add' || actionType === 'edit') && (
+                                        <div className="div-icon-edit-profile" onClick={() => fileInputRef.current.click()}>
+                                            <img src={editIconWhite} alt="Edit profile picture" className="icon-edit-profile" />
+                                            <input type="file" style={{ display: 'none' }} onChange={handleImageChange} ref={fileInputRef} />
+                                        </div>
+
+                                    )}
+                                    {actionType !== 'add' && (
+                                        <label className="label-unique-code">
+                                            {selectedUser ? selectedUser.unumber : user.unumber}
+                                        </label>
+                                    )}
+                                    {actionType === 'view' ? (
+                                        <>
+                                            <label className="label-user-name">
+                                                {selectedUser ? selectedUser.username : user.username}
+                                            </label>
+                                            <label className="label-rol-user">
+                                                {selectedUser ? userTypeMaping[selectedUser.user_type] : userTypeMaping[user.user_type]}
+                                            </label>
+                                        </>
+
+                                    ) : (
+                                        <div className="scrol-user">
+                                            <div className="label-name-user-container">
+                                                <label className="label-name-user">Nombre de usuario</label>
+                                                <div className="input-form-new-user">
+                                                    <input
+                                                        className="input-name-user"
+                                                        value={username}
+                                                        onChange={(e) => {
+                                                            setUsername(e.target.value);
+                                                        }}
+                                                        readOnly={actionType === 'view'}
+                                                    />
+
+                                                    <img
+                                                        src={nameIcon}
+                                                        alt="Name user Icon"
+                                                        className="input-new-user-icon"
+                                                    />
+                                                </div>
+
                                             </div>
+                                            <div className="label-name-user-container">
+                                                <label className="label-name-user">Rol</label>
+                                                <Select
+                                                    isSearchable={false}
+                                                    styles={selectStyles}
+                                                    options={roleOptions}
+                                                    value={roleOptions.find(option => option.value === role)}
+                                                    placeholder={<CustomPlaceholderWithLabel />}
+                                                    components={{
+                                                        SingleValue: CustomSingleValueWithLabel
+                                                    }}
+                                                    onChange={selectedOption => {
+                                                        setRole(selectedOption.value);
+                                                    }}
+                                                    isDisabled={actionType === 'view'}
+                                                />
 
-                                        </div>
-                                        <div className="label-name-user-container">
-                                            <label className="label-name-user">Rol</label>
-                                            <Select
-                                                isSearchable={false}
-                                                styles={selectStyles}
-                                                options={roleOptions}
-                                                value={roleOptions.find(option => option.value === role)}
-                                                placeholder={<CustomPlaceholderWithLabel />}
-                                                components={{
-                                                    SingleValue: CustomSingleValueWithLabel
-                                                }}
-                                                onChange={selectedOption => {
-                                                    setRole(selectedOption.value);
-                                                }}
-                                                isDisabled={actionType === 'view'}
-                                            />
+                                            </div>
+                                            <div className="label-name-user-container">
+                                                <label className="label-name-user">Estado</label>
+                                                <Select
+                                                    isSearchable={false}
+                                                    styles={selectStyles}
+                                                    options={statusOptions}
+                                                    placeholder="Seleccione"
+                                                    value={statusOptions.find(option => option.value === status)}
+                                                    onChange={selectedOption => {
+                                                        setStatus(selectedOption.value);
+                                                    }}
+                                                    isDisabled={actionType === 'add'}
+                                                />
 
+                                            </div>
                                         </div>
-                                        <div className="label-name-user-container">
-                                            <label className="label-name-user">Estado</label>
-                                            <Select
-                                                isSearchable={false}
-                                                styles={selectStyles}
-                                                options={statusOptions}
-                                                placeholder="Seleccione"
-                                                value={statusOptions.find(option => option.value === status)}
-                                                onChange={selectedOption => {
-                                                    setStatus(selectedOption.value);
-                                                }}
-                                                isDisabled={actionType === 'add'}
-                                            />
+                                    )}
+                                </div>
 
-                                        </div>
-                                    </div>
-                                )}
+                                <div className="container-status-user">
+                                    {actionType === 'view' && (
+                                        <>
+                                            <label className="label-status-user">Estado:</label>
+                                            <label className="label-status" style={{ color: statusColors[selectedUser ? userStatusMaping[selectedUser.user_status] : userStatusMaping[user.user_status]] }}>
+                                                {selectedUser ? userStatusMaping[selectedUser.user_status] : userStatusMaping[user.user_status]}
+                                            </label>
+
+                                        </>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className="container-status-user">
-                                {actionType === 'view' && (
-                                    <>
-                                        <label className="label-status-user">Estado:</label>
-                                        <label className="label-status" style={{ color: statusColors[selectedUser ? userStatusMaping[selectedUser.user_status] : userStatusMaping[user.user_status]] }}>
-                                            {selectedUser ? userStatusMaping[selectedUser.user_status] : userStatusMaping[user.user_status]}
-                                        </label>
-
-                                    </>
-                                )}
-                            </div>
-
-                            <div className="container-button-user-action">
-                                {actionType === 'view' ? (
-                                    <>
-                                        <button className="buttons-user" onClick={openModalForResetPassword}>
-                                            <span className="span-button-user">Restablecer contraseña</span>
-                                        </button>
-                                        <button className="buttons-user" onClick={openModalForResetPin}>
-                                            <span className="span-button-user">Restablecer PIN</span>
-                                        </button>
-                                    </>
-                                ) : (
-                                    <div style={{ marginTop: '-34px' }}>
-                                        <button className="buttons-user" onClick={handleSaveUser}>
-                                            <span className="span-button-user">Guardar</span>
-                                        </button>
-                                    </div>
-                                )}
+                            {/* SECCIÓN DERECHA: Botones */}
+                            <div className="user-info-right">
+                                <div>
+                                    {actionType === 'view' ? (
+                                        <div className="container-button-user-action">
+                                            <button className="buttons-user" onClick={openModalForResetPassword}>
+                                                <span className="span-button-user">Restablecer contraseña</span>
+                                            </button>
+                                            <button className="buttons-user" onClick={openModalForResetPin}>
+                                                <span className="span-button-user">Restablecer PIN</span>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="container-button-user-action-edit">
+                                            <button className="buttons-user" onClick={handleSaveUser}>
+                                                <span className="span-button-user">Guardar</span>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -804,7 +828,7 @@ const Users = () => {
                                 {modalAction === 'resetPassword' && 'Ingrese una contraseña temporal'}
                                 {modalAction === 'resetPin' && 'Ingrese un PIN temporal'}
                             </h3>
-                            <button style={{ marginTop: '16px' }} className="button-close-modal" onClick={closeModal}  >
+                            <button className="button-close-modal" onClick={closeModal}  >
                                 <img src={closeIcon} alt="Close Icon" className="modal-close-icon"></img>
                             </button>
                         </div>
@@ -819,7 +843,9 @@ const Users = () => {
                             {/* Input de contraseña para las acciones 'create' y 'resetPassword' */}
                             {(modalAction === 'create' || modalAction === 'resetPassword') && (
                                 <div>
-                                    <label>Ingrese la contraseña</label>
+                                    <label className="input-helper-text">
+                                        {modalAction === 'create' ? 'Contraseña de acceso' : 'Contraseña temporal'}
+                                    </label>
                                     <div className="input-form-new-user-modal">
                                         <img
                                             src={passwordIcon}
@@ -832,7 +858,6 @@ const Users = () => {
                                             onChange={handlePasswordChange}
                                         />
                                     </div>
-
                                 </div>
                             )}
                             {passwordError && <span style={{ color: 'red' }}>{passwordError}</span>}
@@ -840,24 +865,23 @@ const Users = () => {
                             {/* Input de PIN para las acciones 'create' y 'resetPin' */}
                             {(modalAction === 'create' || modalAction === 'resetPin') && (
                                 <div>
-                                    <label>Ingrese el pin</label>
+                                    <label className="input-helper-text">
+                                        {modalAction === 'create' ? 'PIN de acceso' : 'PIN temporal'}
+                                    </label>
                                     <div className="input-form-new-user-modal">
                                         <img
-                                            style={{ left: '73px' }}
                                             src={pinIcon}
                                             alt="Pin Icon"
                                             className="input-new-user-icon"
                                         />
                                         <input
                                             type="number"
-                                            style={{ marginLeft: '63px', width: '154px', paddingLeft: '43px' }}
                                             value={pin}
                                             onChange={handlePinChange}
                                         />
 
 
                                     </div>
-
                                 </div>
                             )}
                             {pinError && <span style={{ color: 'red' }}>{pinError}</span>}

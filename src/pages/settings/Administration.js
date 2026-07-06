@@ -16,17 +16,50 @@ const Administration = () => {
     const [columns, setColumns] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px)").matches;
+    const isTabletPortrait = window.matchMedia("(max-width: 1024px) and (orientation: portrait)").matches;
+    const isTabletLandscapeSmall = window.matchMedia("(max-width: 1024px) and (orientation: landscape)").matches;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
     const administrationSelectStyles = {
-        control: (base, state) => ({
-            ...base,
-            width: '265px',
-            height: '40px',
-            minHeight: '40px',
-            border: '1px solid rgb(0 0 0 / 34%)',
-            borderRadius: '4px',
-            padding: '1px',
-            boxSizing: 'border-box'
-        }),
+        control: (base, state) => {
+            const baseStyles = {
+                ...base,
+                height: '40px',
+                minHeight: '40px',
+                border: '1px solid rgb(0 0 0 / 34%)',
+                borderRadius: '4px',
+                padding: '1px',
+                boxSizing: 'border-box'
+            };
+
+            if (isMobile) {
+                return {
+                    ...baseStyles,
+                    width: '100%',
+                };
+            } else if (isTabletPortrait) {
+                return {
+                    ...baseStyles,
+                    width: '100%',
+                };
+            } else if (isTabletLandscapeSmall) {
+                return {
+                    ...baseStyles,
+                    width: '95%',
+                };
+            } else if (isTabletLandscape) {
+                return {
+                    ...baseStyles,
+                    width: '95%',
+                };
+            }
+
+            return {
+                ...baseStyles,
+                width: '265px',
+            };
+        },
         placeholder: (provided, state) => ({
             ...provided,
             color: '#999',
@@ -412,7 +445,7 @@ const Administration = () => {
             </div>
 
             {data.length > 0 && (
-                <div style={{ marginTop: '-60px' }}>
+                <div>
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
                             <PuffLoader color="#316EA8" loading={loading} size={60} />

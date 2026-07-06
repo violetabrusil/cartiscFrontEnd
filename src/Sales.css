@@ -2,8 +2,8 @@
     position: absolute;
     top: 85px;
     bottom: 0;
-    left: 85px;
-    right: 27px;
+    left: 5rem;
+    right: 1rem;
 }
 
 .custom-select-option-payment-receipts {
@@ -197,7 +197,6 @@
 .total-work-orders {
     text-align: left;
     margin-left: auto;
-    margin-right: 50px;
     font-size: 50px;
     margin-top: 10px;
     font-weight: 100;
@@ -238,11 +237,10 @@
     }
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+@media screen and (min-width: 800px) and (max-width: 1340px) {
 
     .data-table-container {
-        overflow-x: auto;
-        margin-right: 45px;
+        overflow-y: auto;
     }
 
     .button-eye-workorder-sales {

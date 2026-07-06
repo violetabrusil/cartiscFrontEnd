@@ -42,10 +42,13 @@
     "electron": "electron .",
     "electron-start": "concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && npm run electron\"",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:win": "react-scripts build && electron-builder --win",
+    "dist:mac": "react-scripts build && electron-builder --mac"
   },
   "build": {
     "appId": "com.cartics",
+    "productName": "Cartics",
     "files": [
       "./public/electron.js",
       "package.json",
@@ -53,11 +56,23 @@
       "node_modules/**/*"
     ],
     "mac": {
-      "category": "public.app.category.developer-tools",
-      "icon": "icons/mac/cartics-logo-only.icns"
+      "category": "public.app-category.business",
+      "icon": "icons/mac/cartics-logo-only.icns",
+      "target": [
+        "dmg"
+      ]
     },
     "win": {
-      "icon": "icons/windows/cartics-logo-only.ico"
+      "icon": "icons/windows/cartics-logo-only.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "linux": {
       "icon": "icon.png"
@@ -86,6 +101,7 @@
     "cross-env": "^7.0.3",
     "electron": "^25.4.0",
     "electron-builder": "^24.6.3",
+    "sharp": "^0.35.1",
     "wait-on": "^7.0.1"
   }
 }

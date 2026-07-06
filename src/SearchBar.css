@@ -116,3 +116,11 @@
         margin-top: 4px;
     }
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+    .search-bar-container {
+        margin-left: 0;
+        margin-top: 0.3rem;
+    }
+}

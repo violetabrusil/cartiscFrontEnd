@@ -55,3 +55,9 @@
 .empty-table {
     margin-top: 13px;
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .container-table {
+        width: 97%;
+    }
+}

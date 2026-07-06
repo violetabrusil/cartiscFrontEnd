@@ -8,7 +8,6 @@
     grid-template-columns: 1fr 2fr;
     grid-gap: 0px;
     height: calc(100vh - 80px);
-    /* Altura del viewport menos 80px de la parte superior */
     overflow: hidden;
 }
 
@@ -26,7 +25,6 @@
     padding: 20px;
     overflow-y: auto;
     height: 100%;
-    /* Hace que ocupe todo el espacio disponible en .containerClients */
     box-sizing: border-box;
 }
 
@@ -53,11 +51,8 @@
 .second-result-work-order,
 .third-result-work-order {
     overflow: hidden;
-    /* para evitar desbordamiento */
     text-overflow: ellipsis;
-    /* para mostrar puntos suspensivos si el texto es demasiado largo */
     white-space: nowrap;
-    /* para evitar saltos de línea */
 }
 
 .first-result-work-orders {
@@ -77,8 +72,6 @@
     font-size: 14px;
     font-weight: normal;
     max-width: 200px;
-    /* ajusta el valor según sea necesario */
-    /* Añade el desbordamiento y los puntos suspensivos */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -221,7 +214,6 @@
         position: static;
         display: block;
         margin-top: 160px;
-        /* Ajusta la altura del header y el menú */
         margin-left: 0;
     }
 

@@ -63,3 +63,197 @@
 .Toastify__toast-container.Toastify__toast-container--top-right {
     top: 75px;
 }
+
+@media screen and (max-width: 768px) {
+    .administration-container-title {
+        width: 100%;
+        margin-left: 1rem;
+        margin-top: 1rem;
+    }
+
+    .administration-container-title label {
+        font-size: 1.5em;
+    }
+
+    .div-select-administration {
+        flex-direction: column;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        gap: 20px;
+    }
+
+    .div-text-administration {
+        width: 100%;
+        height: auto;
+    }
+
+    .label-text-administration {
+        font-size: 14px;
+    }
+
+    .button-active-admin {
+        width: 120px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .text-button-active {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .administration-container-title label {
+        font-size: 1.2em;
+    }
+
+    .label-text-administration {
+        font-size: 12px;
+    }
+
+    .button-active-admin {
+        width: 100px;
+        height: 24px;
+    }
+
+    .text-button-active {
+        font-size: 10px;
+    }
+}
+
+@media screen and (min-width: 800px) and (max-width: 1340px) {
+    .administration-container-title {
+        width: 90%;
+        margin-left: 2rem;
+    }
+
+    .administration-container-title label {
+        font-size: 18px;
+    }
+
+    .div-select-administration {
+        flex-direction: column;
+        margin-left: 2rem;
+        margin-right: 2rem;
+        gap: 20px;
+    }
+
+    .div-select-administration > div:first-child {
+        width: 100%;
+    }
+
+    .div-text-administration {
+        width: 100%;
+        height: auto;
+    }
+
+    .label-text-administration {
+        font-size: 16px;
+    }
+
+    .button-active-admin {
+        width: 130px;
+        font-size: 14px;
+    }
+
+    .text-button-active {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .administration-container-title {
+        width: 100%;
+        margin-left: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .administration-container-title label {
+        font-size: 1.5em;
+    }
+
+    .div-select-administration {
+        flex-direction: column;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        margin-top: 1rem;
+        gap: 20px;
+    }
+
+    .div-text-administration {
+        width: 100%;
+        height: auto;
+        margin-top: 0;
+    }
+
+    .label-text-administration {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.4;
+    }
+
+    .administrationSelectStyles {
+        width: 100%;
+    }
+
+    .button-active-admin {
+        width: 120px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .text-button-active {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    .administration-container-title {
+        width: 100%;
+        margin-left: 1rem;
+        margin-top: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .administration-container-title label {
+        font-size: 1.2em;
+    }
+
+    .div-select-administration {
+        display: flex;
+        flex-direction: column;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        gap: 15px;
+    }
+
+    .div-select-administration > div:first-child {
+        width: 100%;
+    }
+
+    .div-select-administration > div:first-child > div {
+        width: 100% !important;
+    }
+
+    .div-text-administration {
+        width: 100%;
+        height: auto;
+        margin-top: 10px;
+    }
+
+    .label-text-administration {
+        font-size: 12px;
+        font-weight: 300;
+    }
+
+    .button-active-admin {
+        width: 110px;
+        height: 24px;
+        font-size: 11px;
+    }
+
+    .text-button-active {
+        font-size: 11px;
+    }
+}

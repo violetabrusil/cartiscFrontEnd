@@ -331,6 +331,8 @@
 .modal-content {
     width: 80%;
     max-width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
     background: white;
     padding: 20px;
     border-radius: 5px;
@@ -452,9 +454,9 @@
     }
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+@media screen and (min-width: 800px) and (max-width: 1340px) {
     .containerCars {
-        height: 88vh;
+        height: 89vh;
         grid-template-columns: 1.5fr 2fr;
     }
     

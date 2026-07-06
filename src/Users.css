@@ -88,7 +88,10 @@
 }
 
 .container-button-edit-user {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     margin-top: 20px;
 }
 
@@ -202,6 +205,15 @@
     align-items: center;
 }
 
+.container-button-user-action-edit {
+    display: grid;
+    margin-top: 33px;
+    margin-bottom: 20px;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
 .buttons-user {
     width: 250px;
     height: 50px;
@@ -249,26 +261,30 @@
 
 .container-modal-fields {
     margin-top: 20px;
+    margin-left: 0.5rem;
 }
 
 .container-modal-fields>div {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 10px;
 }
 
 .container-modal-fields label {
-    margin-right: 22px;
     font-weight: bold;
+    font-size: 14px;
 }
 
 .container-modal-fields input {
-    width: 160px;
-    height: 33px;
+    width: 100%;
+    max-width: 380px;
+    height: 40px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
     padding-left: 40px;
+    box-sizing: border-box;
 }
 
 .label-modal-message {
@@ -307,6 +323,31 @@
     width: 23px;
 }
 
+.input-helper-text {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.modal-button {
+    width: 100%;
+    max-width: 380px;
+    height: 44px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 24px;
+    cursor: pointer;
+    transition: background 0.3s;
+    box-sizing: border-box;
+}
+
+.modal-button:active {
+    opacity: 0.9;
+}
+
 @media screen and (max-width: 768px) {
 
     /* Tablet y dispositivos móviles */
@@ -331,16 +372,22 @@
     /* Adapta otras clases según sea necesario */
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+@media screen and (min-width: 800px) and (max-width: 1340px) {
 
     .buttons-user {
-        max-width: 75%;
+        max-width: 85%;
     }
 
     .container-button-user-action {
-        margin-left: 65px;
-        margin-top: 40px;
-        margin-bottom: 10px;
+        margin-bottom: 1rem;
+        margin-left: 2.8rem;
+
+    }
+
+    .container-button-user-action-edit {
+        margin-bottom: 1rem;
+        margin-left: 2rem;
+        margin-top: 0.8rem;
     }
 
     .span-button-user {
@@ -368,19 +415,6 @@
         margin-top: 10px
     }
 
-    .container-button-edit-user {
-        margin-top: 10px;
-    }
-
-    .container-profile-picture-user {
-        margin-top: -15px;
-    }
-
-    .container-status-user {
-        margin-top: -19px;
-        margin-bottom: 10px;
-    }
-
     .label-name-user-container {
         margin-bottom: 5px;
     }
@@ -393,13 +427,635 @@
 
 @media (max-width: 1439px) {
     .react-select-container {
-      width: 100px; /* Ajusta el ancho según tus necesidades */
+        width: 100px;
+        /* Ajusta el ancho según tus necesidades */
     }
-  }
-  
-  /* Estilos para pantallas de 1440 x 900 y mayores (computadoras de escritorio) */
-  @media (max-width: 1440px) and (max-height: 900px){
+}
+
+@media (max-width: 1440px) and (max-height: 900px) {
     .react-select-container {
-      width: 100px; /* Ajusta el ancho según tus necesidades para pantallas más grandes */
+        width: 100px;
     }
-  }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+    .user-info-left,
+    .user-info-right {
+        display: contents;
+    }
+
+    .user-info-right > div {
+        display: contents;
+    }
+
+    .general-user {
+        display: flex;
+        flex-direction: column;
+        padding: 0 10px;
+    }
+
+    .general-user-right {
+        flex: 1;
+        width: 100%;
+        margin-bottom: 20px;
+        order: 2;
+        overflow-x: auto;
+    }
+
+    .general-user-left {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        order: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .container-user-information {
+        width: 100%;
+        max-width: calc(100vw - 20px);
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .container-user-information>div {
+        display: grid;
+        grid-template-columns: auto 280px;
+        gap: 60px;
+        align-items: center;
+        justify-content: center;
+        min-height: auto;
+        position: relative;
+    }
+
+    .container-button-edit-user {
+        grid-column: 1;
+        grid-row: 1;
+        margin-top: 0;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .label-title-view {
+        font-size: 14px;
+    }
+
+    .icon-edit-user {
+        width: 20px;
+        height: 20px;
+        margin-left: 0;
+    }
+
+    .container-profile-picture-user {
+        grid-column: 1;
+        grid-row: 2;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: center;
+        text-align: center;
+        width: fit-content;
+        margin-top: -2.5rem;
+    }
+
+    .profile-picture-user {
+        width: 120px;
+        height: 120px;
+    }
+
+    .label-unique-code {
+        font-size: 20px;
+        font-weight: 500;
+        color: #000;
+        margin-top: 8px;
+    }
+
+    .label-user-name {
+        font-size: 18px;
+        color: #000;
+        font-weight: 200;
+    }
+
+    .label-rol-user {
+        font-size: 13px;
+        color: #00358B;
+        font-weight: 100;
+    }
+
+    .div-icon-edit-profile {
+        width: 34px;
+        height: 34px;
+        transform: translateX(-50%);
+        z-index: 20;
+    }
+
+    .icon-edit-profile {
+        width: 18px;
+        height: 18px;
+    }
+
+    .container-status-user {
+        grid-column: 1;
+        grid-row: 3;
+        margin-bottom: 0;
+        text-align: center;
+        width: fit-content;
+        margin-top: -3.5rem;
+        margin-left: 1rem;
+    }
+
+    .label-status-user {
+        font-size: 14px;
+        margin-right: 8px;
+        font-weight: 400;
+    }
+
+    .label-status {
+        font-size: 14px;
+        font-weight: 600;
+        color: #49A05C;
+    }
+
+    .scrol-user {
+        position: absolute;
+        left: 18.1rem;
+        top: 2rem;
+        width: 50%;
+    }
+
+    .container-button-user-action {
+        grid-column: 2;
+        grid-row: 1 / 4;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-left: 6rem;
+        margin-top: 0rem;
+        align-items: center;
+    }
+
+    .container-button-user-action-edit {
+        grid-column: 2;
+        grid-row: 1 / 4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 17.3rem;
+        margin-left: 3rem;
+        margin-bottom: 0;
+    }
+
+    .buttons-user {
+        width: 250px;
+        font-size: 13px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+
+    .span-button-user {
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .label-name-user-container {
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .label-name-user {
+        font-size: 13px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .input-name-user {
+        width: 100%;
+        height: 40px;
+        font-size: 13px;
+        border: 1px solid rgb(0 0 0 / 34%);
+        border-radius: 4px;
+        background: #fff;
+        box-sizing: border-box;
+    }
+
+    .input-form-new-user {
+        width: 92%;
+        position: relative;
+    }
+
+    .input-new-user-icon {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    /* Select responsivo */
+    .react-select-container {
+        width: 100%;
+    }
+
+    .react-select-container .react-select__control {
+        height: 40px;
+        min-height: 40px;
+        font-size: 13px;
+    }
+
+    /* Select personalizado en edición */
+    .react-select-container {
+        width: 100%;
+    }
+
+    /* Tabla responsiva */
+    .users-container-title {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        gap: 20px;
+    }
+
+    .users-container-title label {
+        font-size: 1.5em;
+    }
+
+    .users-container-title span {
+        font-size: 18px;
+    }
+
+    .add-user-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .filter-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .filter-modal {
+        width: 90%;
+        max-width: 450px;
+        background: white;
+        border-radius: 12px;
+        padding: 25px 20px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .filter-modal h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: #000;
+        font-weight: 700;
+    }
+
+    .button-close-modal {
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -1rem;
+    }
+
+    .modal-close-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .container-modal-fields {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .container-modal-fields>div {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .container-modal-fields label {
+        margin-right: 0;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .container-modal-fields input {
+        width: 100%;
+        max-width: 430px;
+        height: 40px;
+        border: 1px solid rgb(0 0 0 / 34%);
+        background: #fff;
+        border-radius: 6px;
+        font-size: 14px;
+        margin-right: auto;
+        display: block;
+        box-sizing: border-box;
+    }
+
+    .input-form-new-user-modal {
+        width: 100%;
+        position: relative;
+        min-height: 40px;
+    }
+
+    .input-form-new-user-modal .input-new-user-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    .label-modal-message {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+    .modal-button {
+        width: 100%;
+        max-width: 380px;
+        height: 44px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 24px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        cursor: pointer;
+        transition: background 0.3s;
+        box-sizing: border-box;
+    }
+
+    .modal-button:active {
+        opacity: 0.9;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    .general-user {
+        display: flex;
+        flex-direction: column;
+        padding: 0 10px;
+        height: 100vh;
+    }
+
+    .general-user-left {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        order: 1;
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .container-user-information {
+        width: 100%;
+        max-width: calc(100vw - 20px);
+        padding: 8px 8px 8px 8px;
+        border-radius: 10px;
+    }
+
+    .container-user-information>div {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        position: relative;
+    }
+
+    .user-info-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+    }
+
+    .user-info-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        flex: 1;
+    }
+
+    .container-button-edit-user {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 0;
+    }
+
+    .icon-edit-user {
+        width: 18px;
+        height: 18px;
+        margin-left: 0;
+    }
+
+    .container-profile-picture-user {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+    }
+
+    .profile-picture-user {
+        width: 70px;
+        height: 70px;
+    }
+
+    .label-unique-code {
+        font-size: 13px;
+        font-weight: 600;
+        color: #000;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .label-user-name {
+        font-size: 12px;
+        color: #000;
+        font-weight: 400;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .label-rol-user {
+        font-size: 10px;
+        color: #00358B;
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .div-icon-edit-profile {
+        width: 26px;
+        height: 26px;
+        margin-top: -30px;
+        margin-left: 45px;
+        z-index: 20;
+    }
+
+    .icon-edit-profile {
+        width: 14px;
+        height: 14px;
+    }
+
+    .container-status-user {
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .label-status-user {
+        font-size: 11px;
+        margin-right: 5px;
+        font-weight: 400;
+        color: #3E3E3E;
+    }
+
+    .label-status {
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    /* Botones de acción */
+    .container-button-user-action {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin: 0;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .container-button-user-action-edit {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin: 0;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .buttons-user {
+        width: 120px;
+        height: 32px;
+        font-size: 9px;
+        border-radius: 6px;
+        white-space: nowrap;
+        padding: 0;
+    }
+
+    .span-button-user {
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    /* Campos en modo edición */
+    .scrol-user {
+        position: static;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .label-name-user-container {
+        margin-bottom: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .label-name-user {
+        font-size: 11px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .input-name-user {
+        width: 100%;
+        height: 28px;
+        font-size: 11px;
+        border: 1px solid rgb(0 0 0 / 34%);
+        border-radius: 4px;
+        background: #fff;
+        padding-left: 30px;
+    }
+
+    .input-form-new-user {
+        width: 100%;
+        position: relative;
+    }
+
+    .input-new-user-icon {
+        width: 16px;
+        left: 8px;
+    }
+
+    /* TABLA ABAJO */
+    .general-user-right {
+        flex: 1;
+        width: 100%;
+        margin-bottom: 0;
+        order: 2;
+        overflow-x: auto;
+        overflow-y: auto;
+        padding: 0 5px;
+    }
+
+    .users-container-title {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        gap: 12px;
+    }
+
+    .users-container-title label {
+        font-size: 1.2em;
+    }
+
+    .users-container-title span {
+        font-size: 13px;
+    }
+
+    .add-user-icon {
+        width: 16px;
+        height: 16px;
+    }
+}

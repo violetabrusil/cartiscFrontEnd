@@ -802,9 +802,6 @@ const NewWorkOrder = () => {
 
                 <div className="title-second-section-container">
                     <h3>Estado entrega de vehículo</h3>
-                </div>
-
-                <div style={{ textAlign: "right", marginBottom: '10px' }}>
                     <button
                         className="btn-select-all"
                         onClick={selectAllCheckboxes}>
@@ -909,6 +906,7 @@ const NewWorkOrder = () => {
                 <VehiclePlans
                     vehicleType={activeVehicle?.category}
                     updatePoints={(points) => setPointsOfInterest(points)}
+                    isEditable={false}
                 />
 
             </div>

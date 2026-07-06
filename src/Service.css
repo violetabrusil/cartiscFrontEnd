@@ -375,9 +375,9 @@ td {
 
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+@media screen and (min-width: 800px) and (max-width: 1340px) {
     .container-services  {
-        height: 88vh;
+        height: 89vh;
         grid-template-columns: 1.5fr 2fr;
     }
     

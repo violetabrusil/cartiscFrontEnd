@@ -10,7 +10,8 @@
 }
 
 .react-tabs-settings {
-    width: 100%;  /* Asegura que el componente de tabs ocupa todo el ancho disponible */
+    width: 100%;
+    /* Asegura que el componente de tabs ocupa todo el ancho disponible */
 }
 
 /* Estilo para los tabs en general */
@@ -30,7 +31,8 @@
     margin: 10px;
     cursor: pointer;
     text-align: center;
-    flex-grow: 1;  /* Asegura que los tabs crezcan para ocupar el espacio disponible */
+    flex-grow: 1;
+    /* Asegura que los tabs crezcan para ocupar el espacio disponible */
     position: relative;
     font-size: 20px;
     font-weight: bold;
@@ -54,11 +56,26 @@
     bottom: -10px;
     height: 4px;
     background: #316EA8;
-    width: calc(100% - 20px); /* Ajustamos el ancho para excluir el margen */
-    left: 10px; /* Centramos el pseudo-elemento */
+    width: calc(100% - 20px);
+    /* Ajustamos el ancho para excluir el margen */
+    left: 10px;
+    /* Centramos el pseudo-elemento */
 }
 
 .react-tabs-settings__tab-panel {
-    padding-left: 20px; /* Ajusta este valor para cambiar la cantidad de espacio a la izquierda del contenido */
+    padding-left: 20px;
+    /* Ajusta este valor para cambiar la cantidad de espacio a la izquierda del contenido */
     padding-right: 20px;
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+    .container-settings {
+        left: 3rem;
+    }
+
+    .react-tabs__tab-panel {
+        padding-left: 10px;
+        padding-right: 8px;
+    }
 }
