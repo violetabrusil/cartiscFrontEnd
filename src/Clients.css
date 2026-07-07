@@ -8,7 +8,6 @@
     grid-template-columns: 1fr 2fr;
     grid-gap: 0px;
     height: calc(100vh - 80px);
-    /* Altura del viewport menos 80px de la parte superior */
     overflow: hidden;
 }
 
@@ -311,4 +310,284 @@
         width: 250px;
     }
 
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .containerClients {
+        display: flex;
+        flex-direction: column;
+        left: 4rem;
+        padding: 0;
+    }
+
+    .left-section, .right-section {
+        display: contents;
+    }
+
+    .container-custom-button {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 15px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        z-index: 10 !important;
+        background-color: none !important;
+    }
+
+    .container-title {
+        order: 2;
+        width: 100%;
+        margin-top: 80px !important;
+    }
+
+    .search-box,
+    .search-box-special {
+        order: 3;
+    }
+
+    .container-list-client {
+        order: 4;
+        flex: 1;
+        overflow-y: auto;
+        margin-right: 1rem;
+        max-height: 81%;
+    }
+
+    .vehicle-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: auto;
+        overflow-y: auto;
+        grid-column: 1;
+        grid-row: 5;
+        padding: 0 15px 15px 15px;
+        background-color: #f8f8f8;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .vehicle {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 5px;
+    }
+
+    .container-data-client-form {
+        grid-column: 1;
+        grid-row: 5;
+        padding: 15px;
+        background-color: #f8f8f8;
+        margin: 0;
+        overflow-y: auto;
+    }
+
+    .container-add-car-form {
+        grid-column: 1;
+        grid-row: 5;
+        padding: 15px;
+        background-color: #f8f8f8;
+        margin: 0;
+        overflow-y: auto;
+    }
+
+    .result-client {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-gap: 10px;
+        align-items: center;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 8px;
+        padding: 10px;
+        background: #fff;
+        border: 1px solid #D4D4D4;
+        border-radius: 5px;
+    }
+
+    .first-result {
+        max-width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .second-result {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin: 0;
+        padding: 0;
+    }
+
+    .button-eye {
+        width: auto;
+        height: auto;
+        padding: 5px;
+    }
+
+    .container-button-edit-product {
+        position: static;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        margin: 10px 0;
+        justify-content: center;
+    }
+
+    .button-edit-data-client {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .name-client {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .icon-client {
+        width: 35px;
+        height: 35px;
+    }
+
+    .icon-eye {
+        width: 25px;
+        height: 25px;
+    }
+
+    .vehicle-content {
+        margin-top: 10px;
+    }
+
+    .auto-icon,
+    .buseta-icon,
+    .camioneta-icon,
+    .camion-icon {
+        width: 80px;
+        height: 80px;
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+
+    .vehicle-plate {
+        margin-top: 8px;
+        font-size: 14px;
+    }
+
+    .custom-button {
+        width: 100%;
+        max-width: 250px;
+        height: 50px;
+        font-size: 15px;
+    }
+
+    .span-custom-button {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    .containerClients {
+        position: absolute;
+        top: 80px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 0px;
+        height: calc(100vh - 80px);
+        overflow: hidden;
+    }
+
+    .left-section {
+        width: 100%;
+        padding: 10px;
+        overflow-y: auto;
+        height: 100%;
+    }
+
+    .right-section {
+        width: 100%;
+        padding: 10px;
+        overflow-y: auto;
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    .container-list-client {
+        flex: 1;
+        overflow-y: auto;
+        max-height: 90%;
+        overflow-x: hidden;
+    }
+
+    .vehicle-info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        height: auto;
+        overflow-y: auto;
+        max-height: 100%;
+    }
+
+    .vehicle {
+        width: 180px;
+        height: 180px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .result-client {
+        max-width: 100%;
+        height: auto;
+        grid-template-columns: 1fr;
+        margin-bottom: 8px;
+    }
+
+    .container-data-client-form {
+        margin-bottom: 10px;
+        margin-left: 0;
+    }
+
+    .container-button-edit-product {
+        position: fixed;
+        bottom: 5px;
+        left: 0;
+        right: auto;
+        padding: 5px;
+    }
+
+    .button-edit-data-client {
+        width: 140px;
+        font-size: 14px;
+    }
+
+    .icon-client {
+        width: 30px;
+        height: 30px;
+    }
+
+    .auto-icon,
+    .buseta-icon,
+    .camioneta-icon,
+    .camion-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .name-client {
+        width: 150px;
+    }
 }
