@@ -155,7 +155,7 @@ const Services = () => {
             setCurrentSection('addService');
             setLastActiveSection(prevState => ({
                 ...prevState,
-                operaciones: 'addService'
+                servicios: 'addService'
             }));
 
         } catch (error) {
@@ -274,7 +274,6 @@ const Services = () => {
                     <span className="cost-cell">
                         $ {parseFloat(value).toFixed(2)}
                     </span>
-                    // Agrega un signo de dólar antes del valor y lo transforma float
                 )
             }
         ],
@@ -396,6 +395,7 @@ const Services = () => {
 
     const handleGoBackToButtons = () => {
         setCurrentSection(null);
+        setLastActiveSection(prevState => ({ ...prevState, [activeTab]: null }));
         resetForm();
     };
 
@@ -609,12 +609,15 @@ const Services = () => {
         }
     }, [mode, currentSection]);
 
+    // Espeja la condición inversa a la que renderiza el botón "AGREGAR SERVICIO"/"AGREGAR OPERACIÓN".
+    const isServiceButtonHidden = !showButtons;
+
     return (
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetServiceState} />
 
-            <div className="container-services">
+            <div className={`container-services ${isServiceButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section-service">
                     {/*Título del contenedor con buscador */}
                     <div className="tabs-service-operation">
@@ -634,14 +637,13 @@ const Services = () => {
                         </button>
                     </div>
 
-                    <div style={{ marginTop: "-10px" }}>
-                        <TitleAndSearchBox
-                            selectedOption={selectedOption}
-                            title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} // Convertir a mayúscula inicial
-                            onSearchChange={handleMainSearchDebounce}
-                            onButtonClick={openFilterModal}
-                        />
-                    </div>
+                    <TitleAndSearchBox
+                        selectedOption={selectedOption}
+                        title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} // Convertir a mayúscula inicial
+                        onSearchChange={handleMainSearchDebounce}
+                        onButtonClick={openFilterModal}
+                        wrapperClassName="title-search-wrapper-service"
+                    />
 
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
@@ -673,16 +675,7 @@ const Services = () => {
 
                                 </div>
                             }
-                        </>
 
-                    )}
-
-                    {loading ? (
-                        <div className="loader-container" style={{ marginLeft: '-93px' }}>
-                            <PuffLoader color="#316EA8" loading={loading} size={60} />
-                        </div>
-                    ) : (
-                        <>
                             {activeTab === 'operaciones' &&
                                 <div className="search-results-operations">
                                     {operations.map(operationData => (
@@ -706,6 +699,7 @@ const Services = () => {
                                 </div>
                             }
                         </>
+
                     )}
 
                 </div>

@@ -276,3 +276,20 @@
     }
 
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+    /* CustomTitleSection es compartido con otras páginas que sí quieren el
+       reflow de tablet vertical (order/width/margin-top). En Sales el título
+       vive en una fila junto al filtro y el total, así que aquí se revierte
+       a su comportamiento normal en vez de heredar ese reflow. */
+    .container-sales .container-custom-title {
+        order: initial;
+        width: auto;
+        margin-top: 0;
+    }
+
+    .container-sales .container-custom-title h2 {
+        margin: 0;
+    }
+}

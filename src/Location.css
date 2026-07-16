@@ -90,3 +90,32 @@
     }
 
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+    .input-location-container {
+        gap: 24px;
+        bottom: 16px;
+        margin-left: 1.5rem;
+    }
+
+    .label-input-location-container {
+        gap: 12px;
+    }
+
+    .label-input-location-container label {
+        font-size: 18px;
+    }
+
+    .label-input-location-container input {
+        width: 80px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .location-button {
+        width: 110px;
+        height: 42px;
+        font-size: 14px;
+    }
+}

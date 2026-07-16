@@ -4,9 +4,68 @@
     bottom: 0;
     left: 85px;
     right: 27px;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
-/* ─── Top bar ────────────────────────────────────────────────────────────────── */
+.payments-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.payments-title-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.payments-filters-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 2.5rem;
+    margin-left: 2.5rem;
+    align-items: center;
+}
+
+@media (max-width: 1024px) and (orientation: portrait),
+       (max-width: 1024px) and (orientation: landscape) {
+    .container-payments {
+        left: 4.5rem;
+        right: 1rem;
+    }
+
+    .payments-title-row {
+        flex-wrap: wrap;
+        row-gap: 10px;
+        margin-top: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .payments-title-left {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .container-payments .container-custom-title {
+        order: initial;
+        width: auto;
+        margin-top: 0;
+    }
+
+    .container-payments .container-custom-title h2 {
+        margin: 0;
+    }
+
+    .sdp-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .payments-filters-row {
+        flex-wrap: wrap;
+        row-gap: 8px;
+    }
+}
 
 .sdp-topbar {
     background: #1a1a18;
@@ -236,8 +295,14 @@
 
 /* ─── Table ──────────────────────────────────────────────────────────────────── */
 
+.payment-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .payment-table {
     width: 100%;
+    min-width: 700px;
     border-collapse: collapse;
 }
 

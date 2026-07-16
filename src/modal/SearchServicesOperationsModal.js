@@ -6,7 +6,7 @@ import SearchBar from "../searchBar/SearchBar";
 import DataTable from "../dataTable/DataTable";
 import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
-import { EmptyTable } from "../dataTable/EmptyTable";
+import { SelectedItemsTable } from "../dataTable/SelectedItemsTable";
 
 const closeIcon = process.env.PUBLIC_URL + "/images/icons/closeIcon.png";
 const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
@@ -136,20 +136,18 @@ const SearchServicesOperationsModal = ({
         []
     );
 
-    const columnsOperations = [
-        { Header: "Código", accessor: "sku", id: "sku", className: "column-code" },
-        { Header: "Título", accessor: "title", id: "title", className: "column-title-operation" },
-        { Header: "Costo", accessor: "cost", id: "cost", className: "column-cost" },
-        { Header: "", accessor: "action", id: "action", className: "column-action" },
-    ];
-
-    const columnsOperationSelected = React.useMemo(
+    // Una sola definición de columnas para encabezado y filas de datos, para que
+    // ambos vivan en la misma tabla (SelectedItemsTable) y queden alineados siempre.
+    const columnsOperationsUnified = React.useMemo(
         () => [
-            { accessor: "operation_code", width: 50 },
-            { accessor: "title", width: 120 },
+            { Header: "Código", accessor: "operation_code", id: "operation_code", className: "column-code" },
+            { Header: "Título", accessor: "title", id: "title", className: "column-title-operation" },
             {
-                accessor: "cost", width: 120,
-                Cell: ({ value, row }) => {
+                Header: "Costo",
+                accessor: "cost",
+                id: "cost",
+                className: "column-cost",
+                Cell: ({ row, value }) => {
                     const operation_code = row.original.operation_code;
                     const currentCost = operationCost[operation_code] !== undefined ? operationCost[operation_code] : value;
                     const handleBlur = (e) => {
@@ -157,7 +155,7 @@ const SearchServicesOperationsModal = ({
                     }
 
                     return (
-                        <div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
                                 type="text"
@@ -172,16 +170,15 @@ const SearchServicesOperationsModal = ({
 
             },
             {
-                width: 20,
-                Cell: ({ row }) => {
-                    const operation = row.original;
-                    return (
-                        <button className="button-add-product-modal" onClick={() => removeOperation(operation)}>
-                            <img src={deleteIcon} alt="Add Product Icon" className="add-product-modal-icon " />
-                        </button>
-                    );
-                },
-                id: 'delete-operation-button'
+                Header: "",
+                accessor: "action",
+                id: "action",
+                className: "column-action",
+                Cell: ({ row }) => (
+                    <button className="button-add-product-modal" onClick={() => removeOperation(row.original)}>
+                        <img src={deleteIcon} alt="Add Product Icon" className="add-product-modal-icon " />
+                    </button>
+                ),
             },
         ],
         [operationCost]
@@ -703,25 +700,16 @@ const SearchServicesOperationsModal = ({
 
                         <h4 style={{ marginLeft: '10px', marginBottom: '0px' }}>Operaciones seleccionadas</h4>
 
-                        <EmptyTable
-                            columns={columnsOperations}
+                        <SelectedItemsTable
+                            columns={columnsOperationsUnified}
+                            data={selectedOperations}
+                            manualRowCells={getManualOperationRowCells({
+                                manualOperation,
+                                onManualOperationChange: handleManualOperationChange,
+                                onAddManualOperation: addManualOperation,
+                            })}
+                            initialPageSize={responsivePageSizeOperationsSelect}
                         />
-
-                        <ManualOperationRow
-                            manualOperation={manualOperation}
-                            onManualOperationChange={handleManualOperationChange}
-                            onAddManualOperation={addManualOperation}
-                        />
-                        {selectedOperations.length > 0 && (
-                            <div className="products-modal-content">
-
-                                <DataTable
-                                    data={selectedOperations}
-                                    columns={columnsOperationSelected}
-                                    highlightRows={false}
-                                    initialPageSize={responsivePageSizeOperationsSelect} />
-                            </div>
-                        )}
                         <SearchBar onFilter={handleFilter} customSelectStyles={customSelectOperationsModalStyles} customClasses="div-search-modal" options={options_Operations} placeholderText="Buscar Operaciones" value={selectedOption} />
                         {
 
@@ -744,35 +732,35 @@ const SearchServicesOperationsModal = ({
 
 };
 
-// Componente para la fila de ingreso manual
-const ManualOperationRow = ({ manualOperation, onManualOperationChange, onAddManualOperation }) => {
-
-    return (
-        <div className="manual-operation-row">
-            {/* Campos para ingresar manualmente */}
-
+// Construye las celdas de la fila de ingreso manual, una por columna de SelectedItemsTable,
+// para que se alineen exactamente bajo cada encabezado (misma tabla, mismas columnas).
+const getManualOperationRowCells = ({ manualOperation, onManualOperationChange, onAddManualOperation }) => {
+    return {
+        title: (
             <input
                 type="text"
                 value={manualOperation.title}
                 onChange={(e) => onManualOperationChange('title', e.target.value.toUpperCase())}
-                className="manual-operation-row-title"
+                className="manual-row-input"
             />
-            <div className="dollar-sign-input-operation">
+        ),
+        cost: (
+            <div className="dollar-sign-input">
                 <span className="dollar-sign-price">$</span>
                 <input
                     type="number"
                     value={manualOperation.cost}
                     onChange={(e) => onManualOperationChange('cost', parseFloat(e.target.value))}
-                    className="manual-operation-row-cost"
+                    className="manual-row-input"
                 />
             </div>
-
-            {/* Botón de acción */}
-            <button className="button-add-product-modal manual-operation-row-button" onClick={onAddManualOperation} >
+        ),
+        action: (
+            <button className="button-add-product-modal" onClick={onAddManualOperation}>
                 <img src={addIcon} alt="Add Product Icon" className="add-product-modal-icon " />
             </button>
-        </div>
-    );
+        ),
+    };
 };
 
 export default SearchServicesOperationsModal;

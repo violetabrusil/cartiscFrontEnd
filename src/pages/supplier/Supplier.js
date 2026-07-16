@@ -253,12 +253,15 @@ const Suppliers = () => {
     }, [searchTerm, selectedOption, lastUpdated]);
 
 
+    // Espeja la condición inversa a la que renderiza el botón "AGREGAR PROVEEDOR".
+    const isAddSupplierButtonHidden = showAddSupplier;
+
     return (
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetSupplierState} />
 
-            <div className="container-suppliers">
+            <div className={`container-suppliers ${isAddSupplierButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section-supplier">
                     {/*Título del contenedor con buscador */}
                     <TitleAndSearchBox
@@ -266,6 +269,7 @@ const Suppliers = () => {
                         title="Proveedores"// Convertir a mayúscula inicial
                         onSearchChange={handleSearchWithDebounce}
                         onButtonClick={openFilterModal}
+                        wrapperClassName="title-search-wrapper"
                     />
 
                     {loading ? (

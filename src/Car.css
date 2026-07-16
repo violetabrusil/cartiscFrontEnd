@@ -7,7 +7,7 @@
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-gap: 0px;
-    height: calc(100vh - 80px); /* Altura del viewport menos 80px de la parte superior */
+    height: calc(100vh - 80px); 
     overflow: hidden;
 }
 
@@ -24,7 +24,7 @@
     background-color: #d0d0d0;
     padding: 20px;
     overflow-y: auto;
-    height: 100%; /* Hace que ocupe todo el espacio disponible en .containerClients */
+    height: 100%;
     box-sizing: border-box;
 }
 
@@ -34,7 +34,7 @@
     background: #FFF;
     border: 1px solid #D4D4D4;
     display: grid;
-    grid-template-columns: minmax(100px, 1fr) 2fr minmax(92px, 0fr);
+    grid-template-columns: minmax(100px, 2fr) 2fr minmax(92px, 0fr);
     gap: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
@@ -57,7 +57,7 @@
 }
 
 .second-result-car {
-    max-width: calc(100% - 20px); /* 120px es el espacio que quieres reservar para el botón del ojo */
+    max-width: calc(100% - 20px); 
     overflow: hidden;
 }
 
@@ -68,11 +68,11 @@
 .div-label {
     margin-top: 13px;
     text-align: left;
-    width: 100%; /* Ajusta según necesidad, pero para este ejemplo lo pongo al 100% */
+    width: 100%; 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: block; /* Asegúrate de que es un contenedor de bloque */
+    display: block; 
 }
 
 .div-icon-vehicle {
@@ -96,9 +96,9 @@
     margin-top: 3px;
     background: none;
     position: absolute;
-    right: 10px; /* Ajusta esto según tu diseño */
+    right: 10px; 
     top: 50%;
-    transform: translateY(-50%); /* Centrar verticalmente */ 
+    transform: translateY(-50%); 
 }
 
 .icon-eye-car {
@@ -422,18 +422,6 @@
     font-size: 17px;
 }
 
-.label-plate-vehicle {
-    position: absolute;
-    top: 23%;
-    left: 10%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease-out, font-size 0.3s ease-out;
-    pointer-events: none;
-    color: black;
-    font-size: 20px;
-    font-weight: 700;
-}
-
 .label-history-work-order {
     margin-right: 52%;
     max-width: 100%;
@@ -516,4 +504,149 @@
     }
 
 
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+    .containerCars {
+        display: flex;
+        flex-direction: column;
+        left: 4.5rem;
+        padding: 0;
+    }
+
+    .left-section-cars, .right-section-cars {
+        display: contents;
+    }
+
+    .containerCars .container-custom-button {
+        order: 1;
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        background-color: transparent;
+        margin-top: 0.3rem;
+    }
+
+    .title-search-wrapper {
+        order: 2;
+        width: 100%;
+    }
+
+    .containerCars.compact-header-mobile .title-search-wrapper {
+        display: none;
+    }
+
+    .container-maintenance-filter {
+        order: 3;
+        width: 100%;
+        margin-left: 0;
+        padding-right: 15px;
+        box-sizing: border-box;
+        margin-top: 1.6rem;
+    }
+
+    .containerCars .containerNewClientTitle {
+        order: 3;
+        margin-left: 1rem;
+        margin-top: 1rem;
+    }
+
+    .car-history-section {
+        order: 4;
+        flex: 0 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0 15px;
+        box-sizing: border-box;
+        margin-left: -0.5rem;
+    }
+
+    .container-maintenance-options {
+        order: 4;
+        flex: 0 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0 15px;
+        box-sizing: border-box;
+    }
+
+    .container-list-vehicle {
+        order: 5;
+        flex: 1;
+        overflow-y: auto;
+        margin-right: 1rem;
+        max-height: 81%;
+    }
+
+    .containerCars .loader-container {
+        order: 5;
+        height: auto;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .containerCars.hide-list-mobile .container-list-vehicle {
+        display: none;
+    }
+
+    .result-car {
+        display: grid;
+        grid-template-columns: minmax(90px, auto) 1fr minmax(50px, 0fr);
+        gap: 2px;
+        align-items: center;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 8px;
+        padding: 8px;
+        background: #fff;
+        border: 1px solid #D4D4D4;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .first-result-car {
+        width: auto;
+    }
+
+    .second-result-car {
+        max-width: 100%;
+        margin-left: -6rem;
+    }
+
+    .button-eye-car {
+        width: 40px;
+    }
+
+    .right-section-cars .container-custom-title {
+        order: 10;
+        margin-top: 1rem;
+    }
+
+    .right-section-cars .container-add-car-form {
+        order: 11;
+    }
+
+    .right-section-cars .container-button-next {
+        order: 12;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin-top: 0;
+        margin-right: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .right-section-cars .button-next {
+        height: 50px;
+    }
 }

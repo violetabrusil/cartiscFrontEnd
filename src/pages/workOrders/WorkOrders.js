@@ -122,7 +122,6 @@ const WorkOrders = () => {
                     };
                     const payload = { [searchFieldMapping[selectedOption]]: searchTerm };
                     response = await apiClient.post(endpoint, payload, { signal: controller.signal });
-                    //console.log("endpoint", endpoint, payload )
                 } else {
                     response = await apiClient.get(endpoint, { signal: controller.signal });
                 }
@@ -215,6 +214,7 @@ const WorkOrders = () => {
                         onSearchChange={handleSearchWorkOrdersWithDebounce}
                         onButtonClick={openFilterModal}
                         shouldSaveSearch={true}
+                        wrapperClassName="title-search-wrapper"
                     />
 
                     {/*Lista de órdenes de trabajo */}

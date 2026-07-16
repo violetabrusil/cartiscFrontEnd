@@ -33,7 +33,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     const [searchTerm, setSearchTerm] = useState("");
     const [refreshCount, setRefreshCount] = useState(0);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 5);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 5, 13);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -147,7 +147,6 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     };
 
     const handleNewProduct = () => {
-        // Luego, redirige a tu pantalla principal (por ejemplo, ocultando el formulario y mostrando la tabla):
         fetchData();
         setViewMode('general');
         setRefreshCount(refreshCount + 1);
@@ -167,13 +166,9 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
 
     };
 
-    //Función que permite obtener todos los productos
-    //cuando inicia la pantalla y las busca por
-    //por número de serie, categoría o título
     const fetchData = async () => {
         setLoading(true);
 
-        //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
         const searchPerSupplier = "supplier_name";

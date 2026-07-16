@@ -7,7 +7,7 @@ import DataTable from "../dataTable/DataTable";
 import SearchBar from "../searchBar/SearchBar";
 import apiClient from "../services/apiClient";
 import { usePageSizeForTabletLandscape } from "../pagination/UsePageSize";
-import { EmptyTable } from "../dataTable/EmptyTable";
+import { SelectedItemsTable } from "../dataTable/SelectedItemsTable";
 import { values } from "lodash";
 import { PuffLoader } from "react-spinners";
 
@@ -157,15 +157,6 @@ export function SearchProductsModal({ onClose,
         []
     );
 
-    const columnsProducts = [
-        { Header: "Número de serie", accessor: "sku", id: "sku", className: "column-sku" },
-        { Header: "Título", accessor: "title", id: "title", className: "column-title" },
-        { Header: "Precio (P.U.)", accessor: "price", id: "price", className: "column-price" },
-        { Header: "Cantidad", accessor: "quantity", id: "quantity", className: "column-quantity" },
-        { Header: "Total", accessor: "total", id: "total", className: "column-total" },
-        { Header: "", accessor: "action", id: "action", className: "column-action" },
-    ];
-
     const handleTitleEdit = (e) => {
         const sku = e.target.dataset.sku; // Obtener el SKU del atributo de datos
         const newValue = e.target.value;
@@ -179,41 +170,37 @@ export function SearchProductsModal({ onClose,
         }));
     }
 
-    const columnSelectProducts = React.useMemo(
+    const columnsProductsUnified = React.useMemo(
         () => [
-            { accessor: "sku", width: '23%' },
+            { Header: "Número de serie", accessor: "sku", id: "sku", className: "column-sku" },
             {
+                Header: "Título",
                 accessor: "title",
-                width: '24%',
-                Cell: ({ value, row }) => {
-                    const currentTitle = row.original.title;
-
-                    return (
-                        <div>
-                            <input
-                                type="text"
-                                defaultValue={currentTitle}
-                                onBlur={(e) => {
-                                    handleTitleEdit(e); // Llamar a handleTitleEdit solo en onBlur
-                                }}
-                                data-sku={row.original.sku}
-                            />
-                        </div>
-
-                    );
-                },
+                id: "title",
+                className: "column-title",
+                Cell: ({ row }) => (
+                    <input
+                        type="text"
+                        defaultValue={row.original.title}
+                        onBlur={handleTitleEdit}
+                        data-sku={row.original.sku}
+                        style={{ width: '100%', boxSizing: 'border-box', textAlign: 'center' }}
+                    />
+                ),
             },
             {
+                Header: "Precio (P.U.)",
                 accessor: "price",
-                width: '28%',
-                Cell: ({ value, row }) => {
+                id: "price",
+                className: "column-price",
+                Cell: ({ row }) => {
                     const currentPrice = row.original.price; // Usa el precio original del producto
                     const handleBlur = (e) => {
                         handleCostChange(row.original.sku, parseFloat(e.target.value.trim()));
                     };
 
                     return (
-                        <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '47px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <span style={{ margin: '0 5px' }}>$</span>
                             <input
                                 type="text"
@@ -226,9 +213,11 @@ export function SearchProductsModal({ onClose,
                 },
             },
             {
+                Header: "Cantidad",
                 accessor: "quantity",
-                width: '6%',
-                Cell: ({ value, row }) => {
+                id: "quantity",
+                className: "column-quantity",
+                Cell: ({ row }) => {
                     const [localQuantity, setLocalQuantity] = useState('1');
                     const sku = row.original.sku;
                     const currentQuantity = productQuantities[sku] || '1';
@@ -268,15 +257,17 @@ export function SearchProductsModal({ onClose,
                 },
             },
             {
+                Header: "Total",
                 accessor: "total",
-                width: '14%',
+                id: "total",
+                className: "column-total",
                 Cell: ({ row }) => {
                     const { sku, quantity } = row.original;
                     const currentPrice = productPrices[sku] !== undefined ? productPrices[sku] : row.original.price;
                     const total = parseFloat(currentPrice) * parseInt(quantity, 10);
 
                     return (
-                        <div style={{ display: 'flex', alignItems: 'center', padding: '2px', marginLeft: '45px' }} className="column-total-products">
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="column-total-products">
                             <span style={{ margin: '0 5px' }}>$</span>
                             {parseFloat(total).toFixed(2)}
                         </div>
@@ -284,16 +275,15 @@ export function SearchProductsModal({ onClose,
                 },
             },
             {
-                width: '20%',
-                Cell: ({ row }) => {
-                    const product = row.original;
-                    return (
-                        <button className="button-add-product-modal" onClick={() => removeProduct(product)}>
-                            <img src={deleteIcon} alt="Add Product Icon" className="add-product-modal-icon " />
-                        </button>
-                    );
-                },
-                id: 'delete-product-button',
+                Header: "",
+                accessor: "action",
+                id: "action",
+                className: "column-action",
+                Cell: ({ row }) => (
+                    <button className="button-add-product-modal" onClick={() => removeProduct(row.original)}>
+                        <img src={deleteIcon} alt="Add Product Icon" className="add-product-modal-icon " />
+                    </button>
+                ),
             },
         ],
         [productQuantities, productPrices]
@@ -567,31 +557,18 @@ export function SearchProductsModal({ onClose,
                 <div>
                     <h4 style={{ marginLeft: '10px', marginBottom: '0px' }}>Productos seleccionados</h4>
 
-                    <EmptyTable
-                        columns={columnsProducts}
+                    <SelectedItemsTable
+                        columns={columnsProductsUnified}
+                        data={calculatedProducts}
+                        manualRowCells={getManualProductRowCells({
+                            manualProduct,
+                            onManualProductChange: handleManualProductChange,
+                            onAddManualProduct: addManualProduct,
+                        })}
+                        initialPageSize={responsivePageSize}
                     />
 
-                    <ManualProductRow
-                        manualProduct={manualProduct}
-                        onManualProductChange={handleManualProductChange}
-                        onAddManualProduct={addManualProduct}
-                    />
-
-
-                    {selectedProducts.length > 0 && (
-                        <div className="products-modal-content">
-
-                            <DataTable
-                                data={calculatedProducts}
-                                columns={columnSelectProducts}
-                                highlightRows={false}
-                                initialPageSize={responsivePageSize} />
-                        </div>
-                    )}
-
-
-
-                    <div style={{ marginTop: '20px' }}>
+                    <div>
                         <SearchBar onFilter={handleFilter} customSelectStyles={customSelectModalStyles} customClasses="div-search-modal" />
                         {loading ? (
                             <div className="spinner-container-products">
@@ -625,58 +602,60 @@ export function SearchProductsModal({ onClose,
     )
 };
 
-// Componente para la fila de ingreso manual
-const ManualProductRow = ({ manualProduct, onManualProductChange, onAddManualProduct }) => {
+// Construye las celdas de la fila de ingreso manual, una por columna de SelectedItemsTable,
+// para que se alineen exactamente bajo cada encabezado (misma tabla, mismas columnas).
+const getManualProductRowCells = ({ manualProduct, onManualProductChange, onAddManualProduct }) => {
 
     const handleQuantityChange = (e) => {
         const newQuantity = e.target.value === "" ? "" : parseInt(e.target.value, 10) || 0;
-        const newPrice = parseFloat(manualProduct.price) || 0;
-        const totalPrice = newQuantity * newPrice;
-        onManualProductChange('quantity', newQuantity, totalPrice);
+        onManualProductChange('quantity', newQuantity);
     };
 
     const handlePriceChange = (e) => {
         const newPrice = e.target.value === "" ? "" : parseFloat(e.target.value) || 0;
-        const newQuantity = parseInt(manualProduct.quantity, 10) || 0;
-        const totalPrice = newQuantity * newPrice;
-        onManualProductChange('price', newPrice, totalPrice);
+        onManualProductChange('price', newPrice);
     };
 
-    return (
-        <div className="manual-product-row">
-            {/* Campos para ingresar manualmente */}
+    return {
+        title: (
             <input
                 type="text"
                 value={manualProduct.title}
                 onChange={(e) => onManualProductChange('title', e.target.value.toUpperCase())}
-                className="manual-product-row-title"
+                className="manual-row-input"
             />
+        ),
+        price: (
             <div className="dollar-sign-input">
                 <span className="dollar-sign-price">$</span>
                 <input
                     type="number"
                     value={manualProduct.price === 0 ? "" : manualProduct.price}
                     onChange={handlePriceChange}
-                    className="manual-product-row-price"
+                    className="manual-row-input"
                 />
             </div>
+        ),
+        quantity: (
             <input
                 type="number"
                 value={manualProduct.quantity === 0 ? "" : manualProduct.quantity}
                 onChange={handleQuantityChange}
-                className="manual-product-row-quantity"
+                className="manual-row-input manual-row-input-quantity"
             />
-            <div className="manual-product-row-subtotal">
+        ),
+        total: (
+            <div className="manual-row-total">
                 <span className="dollar-sign-price">$</span>
-                {/* Nueva columna para mostrar el valor total sin editar */}
                 {parseFloat(manualProduct.price * manualProduct.quantity).toFixed(2)}
             </div>
-            {/* Botón de acción */}
-            <button className="button-add-product-modal manual-product-row-button " onClick={onAddManualProduct}>
+        ),
+        action: (
+            <button className="button-add-product-modal" onClick={onAddManualProduct}>
                 <img src={addIcon} alt="Add Product Icon" className="add-product-modal-icon " />
             </button>
-        </div>
-    );
+        ),
+    };
 };
 
 

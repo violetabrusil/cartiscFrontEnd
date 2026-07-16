@@ -5,6 +5,7 @@ import "react-multi-carousel/lib/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
 import Carousel from "react-multi-carousel";
+import PuffLoader from "react-spinners/PuffLoader";
 import { debounce } from 'lodash';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
@@ -20,6 +21,7 @@ import apiClient from "../../services/apiClient";
 import ClientContext from "../../contexts/ClientContext";
 import { AddNewClientModal } from "../../modal/AddClientModal";
 import { AddNewVehicleModal } from "../../modal/AddVehicleModal";
+import { useMediaQuery } from "../../useMediaQuery";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const autoIcon = process.env.PUBLIC_URL + "/images/icons/autoIcon.png";
@@ -52,6 +54,7 @@ const NewWorkOrder = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [clients, setClients] = useState([]);
+    const [loadingClients, setLoadingClients] = useState(false);
     const { selectedClient, setSelectedClient } = useContext(ClientContext);
     const { selectedVehicle } = useContext(ClientContext);
     const [selectedVehicleId, setSelectedVehicleId] = useState(null);
@@ -133,6 +136,21 @@ const NewWorkOrder = () => {
 
     const handleClientSelect = async (client) => {
         setSelectedClient(client);
+        setSelectedVehicleId(null);
+        setComments("");
+        setObservations("");
+        setActualKm("");
+        setSymptoms([]);
+        setPlaceholder("Describa los síntomas");
+        setIsChecked(false);
+        setSelections({
+            group1: Array(optionsCheckBox.group1.length).fill(false),
+            group2: Array(optionsCheckBox.group2.length).fill(false),
+            group3: Array(optionsCheckBox.group3.length).fill(false),
+        });
+        setPercentages({
+            group3: [null, null, null, 0, null],
+        });
         await getVehicleOfClient(client.id);
     };
 
@@ -169,8 +187,10 @@ const NewWorkOrder = () => {
     const customStylesStatus = {
         control: (provided, state) => ({
             ...provided,
-            height: '33px',
-            minHeight: '33px',
+            width: '100%',
+            height: '40px',
+            minHeight: '40px',
+            boxSizing: 'border-box',
             border: '1px solid rgb(0 0 0 / 34%)'
         }),
         placeholder: (provided, state) => ({
@@ -366,6 +386,13 @@ const NewWorkOrder = () => {
         setPointsOfInterest([]);
     };
 
+    // Limpia el cliente seleccionado (y el resto del formulario) cada vez que se
+    // entra a esta pantalla, para que no quede el cliente de una visita anterior.
+    useEffect(() => {
+        resetForm();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const isNumber = (value) => !isNaN(Number(value));
 
     const createNewWorkOrder = async () => {
@@ -469,6 +496,7 @@ const NewWorkOrder = () => {
                     break;
             }
         }
+        setLoadingClients(true);
         try {
             const response = await apiClient.get(endpoint);
             setClients(response.data);
@@ -478,6 +506,8 @@ const NewWorkOrder = () => {
                 position: toast.POSITION.TOP_RIGHT
             });
 
+        } finally {
+            setLoadingClients(false);
         }
     };
 
@@ -542,6 +572,10 @@ const NewWorkOrder = () => {
         }
     }, [isChecked, selectedVehicleId, vehicles]);
 
+    // Reordena/fusiona "Control puerta", "Gas" y "Combustible" solo en tablet
+    // vertical; en escritorio y tablet horizontal el orden se mantiene igual.
+    const isPortraitTablet = useMediaQuery("(max-width: 1024px) and (orientation: portrait)");
+
     return (
 
         <div>
@@ -566,7 +600,7 @@ const NewWorkOrder = () => {
                 <div className="client-search-container">
                     <div className="left-div">
                         {selectedClient ? (
-                            <div style={{ marginLeft: '30px', marginRight: '30px', marginTop: '10px' }}>
+                            <div className="client-detail-card">
                                 <div style={{ display: 'flex' }}>
                                     <button onClick={handleDeselectClient} className="button-arrow-client">
                                         <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
@@ -601,20 +635,23 @@ const NewWorkOrder = () => {
                                 <>
                                     <div>
                                         {/*Título del contenedor y cuadro de búsqueda */}
-                                        <div style={{ marginTop: "10px" }}>
-                                            <TitleAndSearchBox
-                                                selectedOption={selectedOption}
-                                                onSearchChange={handleSearchClientWithDebounce}
-                                                onButtonClick={openFilterModal}
-                                                isSpecial={true}
-                                                showAddButton={true}
-                                                onAddClient={openAddClientModal}
-                                            />
-                                        </div>
+                                        <TitleAndSearchBox
+                                            selectedOption={selectedOption}
+                                            onSearchChange={handleSearchClientWithDebounce}
+                                            onButtonClick={openFilterModal}
+                                            isSpecial={true}
+                                            showAddButton={true}
+                                            onAddClient={openAddClientModal}
+                                            wrapperClassName="title-search-wrapper-new-work-order"
+                                        />
                                     </div>
 
                                     {/*Lista de clientes*/}
-                                    {clients.length > 0 && (
+                                    {loadingClients ? (
+                                        <div className="loader-container-client-search">
+                                            <PuffLoader color="#316EA8" loading={loadingClients} size={50} />
+                                        </div>
+                                    ) : clients.length > 0 && (
                                         <div>
                                             {clients.map(clientData => (
                                                 <div className="result-client-container" key={clientData.client.id} onClick={() => handleClientSelect(clientData.client)}>
@@ -696,10 +733,10 @@ const NewWorkOrder = () => {
 
                     <div className="right-div-container">
 
+                        {selectedClient && (
+                            <>
                         <div className="right-div">
                             {/* Contenido del segundo div derecho */}
-                            {selectedClient && (
-                                <>
                                     <div className="add-vehicle-container" onClick={openAddVehicleModal}>
                                         <img src={addIcon} alt="Add Vehicle" className="add-vehicle-icon" />
                                         <button className="add-new-vehicle-carousel" >Agregar Vehículo</button>
@@ -733,8 +770,6 @@ const NewWorkOrder = () => {
                                             ))}
                                         </Carousel>
                                     </div>
-                                </>
-                            )}
                         </div>
 
                         <div className="right-div">
@@ -796,6 +831,8 @@ const NewWorkOrder = () => {
                                 </div>
                             </div>
                         </div>
+                            </>
+                        )}
                     </div>
 
                 </div>
@@ -815,8 +852,15 @@ const NewWorkOrder = () => {
                             {selections[group].map((isChecked, index) => {
                                 const currentOption = optionsCheckBox[group][index];
 
-                                // Caso Gas
-                                if (currentOption === 'Gas') {
+                                // En tablet vertical, "Control puerta", "Gas" y "Combustible"
+                                // se reordenan/fusionan más abajo (ver bloques después del
+                                // .map de arriba y el bloque de Combustible al final). En
+                                // escritorio / tablet horizontal se mantiene el orden original.
+                                if (isPortraitTablet && (currentOption === 'Control puerta' || currentOption === 'Gas' || currentOption === 'Combustible')) {
+                                    return null;
+                                }
+
+                                if (!isPortraitTablet && currentOption === 'Gas') {
                                     return (
                                         <div key={index}>
                                             <img src={fuelIcon} alt="Fuel Icon" className="fuel-icon" />
@@ -832,23 +876,56 @@ const NewWorkOrder = () => {
                                     );
                                 }
 
-                                if (currentOption === 'Combustible') {
+                                if (!isPortraitTablet && currentOption === 'Combustible') {
                                     return <label key={index}>{currentOption}</label>;
                                 }
 
                                 return (
-                                    <label key={index}>
-                                        {currentOption}
-                                        <input
-                                            type="checkbox"
-                                            checked={isChecked}
-                                            onChange={() => handleCheckboxChange(group, index)}
-                                        />
-                                    </label>
+                                    <React.Fragment key={index}>
+                                        <label>
+                                            {currentOption}
+                                            <input
+                                                type="checkbox"
+                                                checked={isChecked}
+                                                onChange={() => handleCheckboxChange(group, index)}
+                                            />
+                                        </label>
+                                        {/* Solo en tablet vertical: "Control puerta" se inserta
+                                            aquí, justo después de "Herramientas". */}
+                                        {isPortraitTablet && group === 'group3' && currentOption === 'Herramientas' && (
+                                            <label>
+                                                Control puerta
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selections.group1[optionsCheckBox.group1.indexOf('Control puerta')]}
+                                                    onChange={() => handleCheckboxChange('group1', optionsCheckBox.group1.indexOf('Control puerta'))}
+                                                />
+                                            </label>
+                                        )}
+                                    </React.Fragment>
                                 );
                             })}
                         </div>
                     ))}
+
+                    {/* Solo en tablet vertical: "Combustible" (con el ícono y el
+                        porcentaje que antes usaba "Gas") se muestra al final. */}
+                    {isPortraitTablet && (
+                        <div className="fuel-group">
+                            <label>Combustible</label>
+                            <div className="fuel-group-control">
+                                <img src={fuelIcon} alt="Fuel Icon" className="fuel-icon" />
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={percentages.group3[optionsCheckBox.group3.indexOf('Gas')] || ''}
+                                    onChange={(event) => handlePorcentageChange('group3', optionsCheckBox.group3.indexOf('Gas'), event)}
+                                />
+                                {' %'}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="second-container">

@@ -18,6 +18,9 @@
     border-radius: 20px;
     max-width: 400px;
     width: 80%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -129,6 +132,11 @@
     align-items: center;
 }
 
+.title-modal-search.title-centered h3 {
+    flex: 1;
+    text-align: center;
+}
+
 .button-close-modal {
     background: none;
     border: none;
@@ -188,12 +196,15 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     height: auto;
+    max-height: 85vh;
     overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .date-container-payment {
     display: flex;
     justify-content: space-between;
+    gap: 9px;
 
 }
 
@@ -214,25 +225,32 @@
 }
 
 .input-fields-payment {
-    width: 96%;
-    height: 25px;
+    width: 100%;
+    height: 40px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
     padding: 8px;
     margin-bottom: 13px;
     margin-top: 10px;
+    box-sizing: border-box;
 }
 
 .input-date-payment {
-    width: 91%;
-    height: 25px;
+    width: 100%;
+    height: 40px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
     padding: 8px;
     margin-bottom: 13px;
     margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.date-picker-wrapper-payment {
+    display: block;
+    width: 100%;
 }
 
 .input-fields-payment::placeholder {
@@ -250,6 +268,12 @@
     justify-content: space-between;
     gap: 10px;
     /* Espacio entre los dos grupos */
+}
+
+.double-input-group > div,
+.date-container-payment > div {
+    flex: 1;
+    min-width: 0;
 }
 
 .entry {
@@ -351,10 +375,33 @@
     border-top: 1px solid black;
 }
 
+.selected-items-table {
+    background-color: white;
+    width: 100%;
+    padding-top: 10px;
+    box-sizing: border-box;
+}
+
+.empty-table th {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.empty-table-data-row td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 6px;
+    box-sizing: border-box;
+    border-top: 1px solid black;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
 .tabs-modal {
     display: flex;
     justify-content: space-around;
     margin-bottom: 20px;
+    margin-top: 0.5rem
 }
 
 .button-tab-modal {
@@ -388,7 +435,9 @@
 }
 
 .carousel-services {
-    width: 850px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     margin-right: 15px;
     display: flex;
     flex-direction: column;
@@ -467,97 +516,58 @@
     top: 75px;
 }
 
-.manual-product-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: -35px;
+.empty-table-manual-row td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px 6px;
+    box-sizing: border-box;
 }
 
-.manual-product-row-title {
-    margin-left: 210px;
-}
-
-.manual-product-row-price {
-    width: 28%;
+.manual-row-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     text-align: center;
 }
 
-.manual-product-row-quantity {
-    width: 4%;
-    margin-left: -50px;
-    text-align: center;
+.manual-row-input-quantity {
+    width: 55px;
 }
 
-.manual-product-row-subtotal {
-    margin-left: 48px;
+.manual-row-total {
     color: #1C4A74;
     font-weight: bold;
     font-size: 15px;
 }
 
-.manual-product-row-button {
-    margin-left: 20px;
-}
-
-
-.manual-product-row input {
-    margin-right: 10px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    height: 10px;
-    ;
-}
-
-.manual-operation-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: -20px;
-}
-
-.manual-operation-row input {
-    margin-right: 10px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.manual-operation-row-title {
-    margin-left: 203px;
-    width: 26%;
-}
-
-.manual-operation-row-cost {
-    width: 23%;
-    text-align: center;
-}
-
 .column-sku {
-    width: 29%;
+    width: 21%;
     background-color: white;
     font-size: 12px;
 }
 
 .column-title {
-    width: 19%;
+    width: 33%;
     background-color: white;
     font-size: 12px;
 }
 
 .column-price {
-    width: 28%;
+    width: 15%;
     background-color: white;
     font-size: 12px;
 }
 
 .column-quantity {
-    width: 4%;
+    width: 10%;
     background-color: white;
     font-size: 12px;
 }
 
 .column-total {
-    width: 19%;
+    width: 14%;
     background-color: white;
     font-size: 12px;
 }
@@ -569,37 +579,27 @@
 }
 
 .column-code {
-    width: 13%;
-    background-color: white;
-    font-size: 12px;
-}
-
-.column-title-operation {
-    width: 14%;
-    background-color: white;
-    font-size: 12px;
-}
-
-.column-cost {
     width: 20%;
     background-color: white;
     font-size: 12px;
 }
 
-.manual-operation-row-button {
-    margin-left: -7px;
+.column-title-operation {
+    width: 21%;
+    background-color: white;
+    font-size: 12px;
+}
+
+.column-cost {
+    width: 10%;
+    background-color: white;
+    font-size: 12px;
 }
 
 .dollar-sign-input {
     display: flex;
     align-items: center;
-    margin-left: 31px;
-}
-
-.dollar-sign-input-operation {
-    display: flex;
-    align-items: center;
-    margin-left: 106px;
+    justify-content: center;
 }
 
 .dollar-sign-price {
@@ -669,9 +669,12 @@
     border-radius: 20px;
     width: 100%;
     max-width: 480px;
+    max-height: 90vh;
     box-shadow: 0 32px 80px rgba(0, 0, 0, .22), 0 0 0 1px rgba(0, 0, 0, .05);
     animation: slideUp .28s cubic-bezier(.22, 1, .36, 1);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .wo-header {
@@ -782,6 +785,9 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .wo-grid {
@@ -1051,115 +1057,28 @@
     box-shadow: 0 6px 20px rgba(220, 38, 38, .3);
 }
 
-/* Media queries para tamaños de pantalla */
 
-@media screen and (max-width: 768px) {
+@media (max-width: 1024px) and (orientation: portrait) {
+
     .filter-modal {
-        /* Estilos para tamaños de pantalla medianos */
-        width: 80%;
-        max-width: 400px;
-    }
-
-    .filter-modal-overlay {
-        /* Estilos para tamaños de pantalla medianos */
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .filter-modal {
-        /* Estilos para tamaños de pantalla pequeños */
         width: 90%;
-        max-width: 300px;
-        padding: 10px;
     }
 
-    .filter-modal-overlay {
-        /* Estilos para tamaños de pantalla pequeños */
+    .modal-payment {
+        width: 92%;
     }
 
-    .container {
-        flex-direction: column;
+    .title-modal-history {
+        flex-wrap: wrap;
+        row-gap: 6px;
     }
 
-    .half {
-        margin-bottom: 20px;
+    .clean-button  {
+        margin-left: 2rem;
+        font-size: small;
+    }
+    
+    .modal-payment h2 {
+        font-size: 1.2rem;
     }
 }
-
-@media screen and (min-width: 800px) and (max-width: 1340px) {
-    .manual-product-row-title {
-        margin-left: 280px;
-        width: 25%;
-    }
-
-    .manual-product-row-button {
-        margin-right: 40px;
-    }
-
-    .manual-product-row-price {
-        width: 29%;
-    }
-
-    .dollar-sign-input {
-        margin-right: 25px;
-    }
-
-    .column-sku {
-        width: 35%;
-    }
-
-    .column-title {
-        width: 20%;
-    }
-
-    .column-price {
-        width: 26%;
-    }
-
-    .column-quantity {
-        width: 19%;
-    }
-
-    .column-action {
-        width: 30%;
-    }
-
-    .column-code {
-        width: 17%;
-    }
-
-    .column-title-operation {
-        width: 38%;
-    }
-
-    .column-cost {
-        width: 35%;
-    }
-
-    .manual-operation-row-title {
-        margin-left: 200px;
-        width: 30%;
-    }
-
-    .dollar-sign-input-operation {
-        margin-left: 14%;
-    }
-
-    .manual-operation-row-cost {
-        width: 25%;
-    }
-
-    .manual-operation-row-button {
-        margin-right: 55px;
-    }
-
-
-
-
-}
-
-
-
-
-
-/* Agrega los estilos específicos para cada tamaño de pantalla según sea necesario */

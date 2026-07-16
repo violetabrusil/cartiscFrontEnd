@@ -113,7 +113,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
 
     return (
-        <div>
+        <>
             <ToastContainer />
 
             {selectedOperation ? (
@@ -233,7 +233,7 @@ const OperationRightSection = ({ localOperations, selectedOperation, onOperation
 
             )}
 
-        </div>
+        </>
     );
 };
 

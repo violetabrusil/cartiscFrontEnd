@@ -5,7 +5,7 @@ import { useWorkOrderContext } from "../contexts/searchContext/WorkOrderContext"
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
-const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch }) => {
+const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch, wrapperClassName }) => {
     const { searchTerm } = useWorkOrderContext();
     const [searchInput, setSearchInput] = useState(searchTerm || "");
 
@@ -28,7 +28,7 @@ const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonCli
     };
 
     return (
-        <div>
+        <div className={wrapperClassName}>
             <div className="container-title">
                 <h2>{title}</h2>
                 {(subtitle !== undefined && subtitle !== null) && (

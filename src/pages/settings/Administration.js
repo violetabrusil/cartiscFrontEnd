@@ -8,6 +8,7 @@ import DataTable from "../../dataTable/DataTable";
 import apiClient from "../../services/apiClient";
 import { userStatusMaping } from "../../constants/userStatusConstants";
 import { vehicleCategory } from "../../constants/vehicleCategoryConstants";
+import { useMediaQuery } from "../../useMediaQuery";
 
 const Administration = () => {
 
@@ -16,10 +17,10 @@ const Administration = () => {
     const [columns, setColumns] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px)").matches;
-    const isTabletPortrait = window.matchMedia("(max-width: 1024px) and (orientation: portrait)").matches;
-    const isTabletLandscapeSmall = window.matchMedia("(max-width: 1024px) and (orientation: landscape)").matches;
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const isTabletLandscape = useMediaQuery("(min-width: 800px) and (max-width: 1340px)");
+    const isTabletPortrait = useMediaQuery("(max-width: 1024px) and (orientation: portrait)");
+    const isTabletLandscapeSmall = useMediaQuery("(max-width: 1024px) and (orientation: landscape)");
+    const isMobile = useMediaQuery("(max-width: 768px)");
 
     const administrationSelectStyles = {
         control: (base, state) => {

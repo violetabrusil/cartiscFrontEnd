@@ -56,9 +56,9 @@
 }
 
 .input-form {
-    width: 88%;
-    max-width: 95%;
-    height: 30px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
@@ -69,9 +69,9 @@
 }
 
 .input-form-detail {
-    width: 94%;
-    max-width: 95%;
-    height: 30px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
@@ -82,9 +82,9 @@
 }
 
 .input-form-add-vehicle {
-    width: 94%;
-    max-width: 94%;
-    height: 30px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
@@ -95,9 +95,9 @@
 }
 
 .input-form-add-vehicle-modal {
-    width: 82%;
-    max-width: 94%;
-    height: 30px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
@@ -130,26 +130,27 @@
 }
 
 .input-plate {
-    width: 25%;
-    height: 68px;
-    border: 5px solid #000;
-    background: #fff;
-    border-radius: 10px;
-    padding: 8px;
-    margin-bottom: 20px;
-    margin-top: 8px;
+    box-sizing: border-box;
+    grid-row: 2;
+    grid-column: 1 / span 2;
+    width: 100%;
+    height: auto;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 4px 0 0 0;
+    margin: 0;
     font-weight: bold;
-    font-size: 50px;
+    font-size: 60px;
+    line-height: 1.1;
     text-align: center;
-    padding-top: 18px;
-    padding-block-start: 23px;
-    box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
-
+    box-shadow: none;
 }
 
 .input-plate-modal {
+    box-sizing: border-box;
     width: 65%;
-    height: 68px;
+    height: 96px;
     border: 5px solid #000;
     background: #fff;
     border-radius: 10px;
@@ -159,8 +160,7 @@
     font-weight: bold;
     font-size: 50px;
     text-align: center;
-    padding-top: 18px;
-    padding-block-start: 23px;
+    padding-top: 36px;
     box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
     margin-right: 10px;
 }
@@ -173,6 +173,25 @@
     align-items: center;
 }
 
+.input-container:has(.input-plate) {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    column-gap: 8px;
+    row-gap: 2px;
+    width: min(90%, 380px);
+    margin: 10px auto 20px auto;
+    padding: 8px 18px 6px 18px;
+    border: 5px solid #000;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 3px #fff;
+    box-sizing: border-box;
+    height: 130px;
+}
+
 .input-container-modal {
     position: relative;
     margin-top: 10px;
@@ -182,45 +201,37 @@
     justify-content: center;
 }
 
-
-.label-new-plate-vehicle {
-    position: absolute;
-    top: 23%;
-    left: 10%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease-out, font-size 0.3s ease-out;
-    pointer-events: none;
+.label-new-plate-vehicle,
+.input-container .label-flag,
+.input-container .label-plate-vehicle {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: start;
+    margin: 0;
     color: black;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 700;
-
 }
 
 .input-container .flag-icon {
-    height: 23px;
-    width: 26px;
-    position: absolute;
-    top: 24%;
-    left: calc(51% - 486px);
-    transform: translateY(-50%);
+    grid-row: 1;
+    grid-column: 1;
+    justify-self: end;
+    height: 22px;
+    width: 22px;
 }
-
-.input-container.active label {
-    top: 23%;
-}
-
 
 .input-container-modal .flag-icon {
     height: 23px;
     width: 26px;
     position: absolute;
-    top: 23%;
-    left: 60%;
+    top: 36px;
+    left: 32%;
     transform: translateY(-50%);
 }
 
 .input-container-modal .active label {
-    top: 23%;
+    top: 36px;
 }
 
 .label-form {
@@ -238,7 +249,6 @@
 }
 
 .container-add-car-modal {
-    margin-left: 16px;
     height: 600px;
 }
 
@@ -306,8 +316,8 @@
 
 .label-plate-vehicle-modal {
     position: absolute;
-    top: 23%;
-    left: 31%;
+    top: 36px;
+    left: 45%;
     transform: translateY(-50%);
     transition: transform 0.3s ease-out, font-size 0.3s ease-out;
     pointer-events: none;
@@ -319,74 +329,6 @@
 .form-scroll-vehicle-modal {
     max-height: 96%;
     overflow-y: auto;
-}
-
-@media screen and (max-width: 768px) {
-    .containerNewClient {
-        position: absolute;
-        display: block;
-        left: 0;
-    }
-
-    .left-section-new-client,
-    .right-section-new-client {
-        width: 100%;
-    }
-
-    .containerNewClientTitle {
-        flex-direction: column;
-    }
-
-    .containerNewClientTitle h2 {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .right-section-new-client .input-plate {
-        width: 70%;
-    }
-}
-
-@media screen and (max-width: 320px) {
-    .containerNewClientClients {
-        position: static;
-        display: block;
-        margin-top: 160px;
-        margin-left: 0;
-    }
-
-    .left-section-new-client,
-    .right-section-new-client {
-        width: 100%;
-    }
-
-    .containerNewClientTitle {
-        flex-direction: column;
-    }
-
-    .containerNewClientTitle h2 {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .right-section-new-client .input-plate {
-        width: 70%;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .search-box {
-        width: 100%;
-        max-width: 300px;
-    }
-
-    .input-form {
-        margin-bottom: 10px;
-    }
-
-    .right-section-new-client .input-plate {
-        width: 70%;
-    }
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
@@ -436,29 +378,113 @@
 
 }
 
-@media (max-width: 1440px) and (max-height: 900px) and (orientation: landscape) {
+@media (max-width: 1024px) and (orientation: portrait) {
+    .containerNewClient {
+        display: flex;
+        flex-direction: column;
+        left: 4rem;
+        bottom: auto;
+        height: auto;
+        padding: 0;
+    }
+
+    .left-section-new-client,
+    .right-section-new-client {
+        display: contents;
+    }
+
+    .containerNewClientTitle {
+        margin-left: 1rem;
+        margin-top: 1rem;
+    }
+
+    .left-section-new-client .containerNewClientTitle {
+        order: 1;
+    }
+
+    .containerNewClient-form {
+        width: 98%;
+        margin: 0;
+        padding: 15px;
+        padding-bottom: 15px;
+        background-color: #f0f0f0;
+        border-radius: 20px;
+        box-sizing: border-box;
+    }
+
+    .left-section-new-client .containerNewClient-form {
+        order: 2;
+    }
+
+    .left-section-new-client .container-button-next {
+        order: 3;
+        position: static;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .right-section-new-client .containerNewClientTitle {
+        order: 4;
+    }
+
+    .container-add-car-form {
+        width: 98%;
+        order: 5;
+        flex: 0 1 auto;
+        min-height: 0;
+        padding: 15px;
+        padding-bottom: 90px;
+        background-color: #f0f0f0;
+        margin: 0;
+        overflow-y: visible;
+        box-sizing: border-box;
+        border-radius: 20px;
+        margin-top: 1rem;
+    }
+
+    .form-scroll {
+        max-height: none;
+        overflow-y: visible;
+    }
 
     .input-plate {
-        width: 38%;
+        font-size: 40px;
     }
 
-    .input-container .flag-icon {
-        left: calc(10% - -10px);
+    .input-container:has(.input-plate) {
+        width: min(85%, 320px);
+        row-gap: 6px;
     }
 
-    .label-flag {
-        margin-left: -24%;
-        margin-bottom: 11%;
-        color: black;
-        font-size: 20px;
-        font-weight: 700;
+    .label-form {
+        margin-left: 0.3rem;
     }
 
-    .label-new-plate-vehicle {
-        margin-left: 3%;
+    .right-section-new-client .container-button-next {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        order: 6;
+        margin-top: 0;
+        margin-right: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 
+    .containerNewClient .button-next {
+        height: 50px;
+    }
 
+    .filter-modal .container-button-next {
+        margin-top: 1.3rem;
+    }
 
+    .form-scroll-vehicle-modal {
+        max-height: 99%;
+    }
 
 }

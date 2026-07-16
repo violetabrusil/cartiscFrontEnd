@@ -37,7 +37,7 @@ const Location = () => {
     const [columnUpdate, setColumnUpdate] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 5);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 5, 13);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -45,12 +45,10 @@ const Location = () => {
     }, []);
 
     const handleRowProductClick = (row, index) => {
-        // Se obtiene la fila y la columna de  producto seleccionado y se lo actualiza 
         setSelectedProductId(row.original.id);
         setSelectedProductRow(row.original.row);
         setSelectedProductColumn(row.original.column);
         setSelectedRowIndex(index);
-        // Restablecer los valores de edición
         setRowUpdate(null);
         setColumnUpdate(null);
     };

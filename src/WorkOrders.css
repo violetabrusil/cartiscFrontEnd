@@ -109,15 +109,16 @@
 }
 
 .input-plate-vehicle-work-order {
-    max-width: 40%;
+    width: 95px;
+    box-sizing: border-box;
     height: 13px;
     border: 2px solid #000;
     background: #fff;
     border-radius: 10px;
-    padding: 8px;
+    padding: 11px;
     margin-bottom: 10px;
     margin-top: 11px;
-    padding-top: 16px;
+    padding-top: 23px;
     font-weight: bold;
     font-size: 15px;
     text-align: center;
@@ -130,7 +131,8 @@
 }
 
 .fourth-result-work-order {
-    width: 30%;
+    width: 100%;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -180,9 +182,12 @@
 .div-image-receipt {
     background-image: linear-gradient(to bottom, #1C4A74 -10%, #316EA8 11%, #0C1F31 100%);
     width: 30px;
+    height: 30px;
     border-radius: 3px;
-    text-align: center;
-    padding-top: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .infinite-scroll-loader {
@@ -260,7 +265,7 @@
     }
 
     .input-plate-vehicle-work-order {
-        max-width: 38%;
+        width: 90px;
         height: 18px;
         font-size: 15px;
         margin-top: 0.8rem;
@@ -284,6 +289,7 @@
 
     .div-image-receipt {
         width: 24px;
+        height: 24px;
     }
 
     .left-section-work-order,
@@ -312,6 +318,105 @@
 
     .div-image-receipt {
         width: 23px;
+        height: 23px;
+    }
+
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .work-order-container {
+        display: flex;
+        flex-direction: column;
+        left: 4.5rem;
+        padding: 0;
+    }
+
+    .left-section-work-order, .right-section-work-order {
+        display: contents;
+    }
+
+    .work-order-container .container-custom-button {
+        order: 1;
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        background-color: transparent;
+        margin-top: 0.3rem;
+    }
+
+    .title-search-wrapper {
+        order: 2;
+        width: 100%;
+    }
+
+    .container-list-work-orders {
+        order: 5;
+        flex: 1;
+        overflow-y: auto;
+        margin-right: 1rem;
+        max-height: 81%;
+    }
+
+    .work-order-container .loader-container {
+        order: 5;
+        height: auto;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .result-work-order {
+        grid-template-columns: 1.3fr 0.9fr 1fr 0.3fr;
+        min-height: 60px;
+        margin-bottom: 8px;
+    }
+
+    .first-result-work-orders {
+        margin-left: 6px;
+    }
+
+    .div-label-work-order-code {
+        font-size: 15px;
+    }
+
+    .div-label-work-order-client {
+        font-size: 12px;
+        max-width: 100%;
+    }
+
+    .div-label-status {
+        font-size: 15px;
+        width: auto;
+    }
+
+    .div-label-date {
+        font-size: 12px;
+        width: auto;
+    }
+
+    .input-plate-vehicle-work-order {
+        width: 100px;
+        height: 40px;
+        font-size: 13px;
+        padding: 1px;
+        padding-top: 14px;
+    }
+
+    .input-plate-container-work-order label {
+        font-size: 10px;
+    }
+
+    .input-plate-container-work-order .ecuador-icon {
+        height: 15px;
+        width: 15pxx;
+    }
+
+    .div-image-receipt {
+        width: 18px;
+        height: 18px;
     }
 
 }

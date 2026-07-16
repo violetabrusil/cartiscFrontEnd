@@ -1,16 +1,24 @@
 .menu-lateral {
-  height: calc(100% - 80px);
+  height: calc(100vh - 80px);
+  height: calc(100svh - 80px);
   width: 280px;
-  position: absolute;
+  position: fixed;
   z-index: 1;
   top: 80px;
   left: 0;
   background-color: #E7ECEF;
   transition: width 0.5s;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.menu-lateral::-webkit-scrollbar {
+  display: none;
 }
 
 .menu-lateral a,
@@ -69,7 +77,7 @@
 .menu-lateral .opcion-wrapper > div.opcion-container.active::before {
   content: '';
   position: absolute;
-  top: 61%;
+  top: 52%;
   transform: translate(0, -50%);
   height: 60%;
   width: 9px;
@@ -197,20 +205,16 @@
 .menu-lateral .imagen-vertical {
   width: 130px;
   height: auto;
-  position: absolute;
-  bottom: 5px;
   object-fit: contain;
   transition: transform 0.3s;
   margin-top: auto;
-  margin-left: 55px;
+  margin-bottom: 10px;
+  align-self: center;
+  flex-shrink: 0;
 }
 
 .menu-lateral.open .imagen-vertical {
   width: 45px;
-  right: 28px;
-  margin-top: 0;
-  margin-left: auto;
-  margin-right: -20px;
 }
 
 .menu-lateral.open .button-menu {
@@ -227,140 +231,30 @@
   margin-bottom: 50px;
 }
 
-@media screen and (max-width: 768px) {
-  .menu-lateral {
-    padding-top: 15px;
-  }
-
-  .menu-lateral a,
-  .menu-lateral .opcion-wrapper > div.opcion-container {
-    font-size: 16px;
-    padding: 8px 8px 8px 24px;
-  }
-
-  .menu-lateral .icono-menu {
-    bottom: -5px;
-    margin-right: 16px;
-  }
-
-  .menu-lateral.open {
-    width: 50px;
-  }
-
-  .menu-lateral a .icono img,
-  .menu-lateral .opcion-wrapper > div.opcion-container .icono img {
-    max-width: 20px;
-    height: auto;
-    margin-left: -9px;
-  }
-
-  .menu-lateral .imagen-vertical {
-    bottom: 20px;
-    right: 60px;
-    max-width: 50%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
-
-  .menu-lateral.open .imagen-vertical {
-    right: 23px;
-    margin-top: 10px;
-  }
-
-  .menu-lateral.open .icono-menu {
-    left: -19px;
-  }
-
-  .submenu-item {
-    font-size: 13px;
-    padding: 8px 10px 8px 14px;
-  }
+.menu-lateral.open a .icono img,
+.menu-lateral.open .opcion-wrapper > div.opcion-container .icono img {
+  width: 22px;
+  height: 20px;
+  margin-top: 2px;
 }
 
-@media screen and (max-width: 520px) {
-  .menu-lateral a .icono img,
-  .menu-lateral .opcion-wrapper > div.opcion-container .icono img {
-    max-width: 20px;
-    height: auto;
-  }
-
-  .menu-lateral .imagen-vertical {
-    bottom: 23px;
-    right: 60px;
-    max-width: 62%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
-
-  .menu-lateral.open .imagen-vertical {
-    bottom: 60px;
-    left: -50px;
-    max-width: 300%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
+.menu-lateral.open a .opcion-container,
+.menu-lateral.open .opcion-wrapper > div .opcion-container {
+  margin-top: 2px;
 }
 
-@media screen and (max-width: 320px) {
-  .menu-lateral a,
-  .menu-lateral .opcion-wrapper > div.opcion-container {
-    font-size: 12px;
-    padding: 8px 8px 8px 20px;
-  }
-
-  .menu-lateral .icono-menu {
-    font-size: 20px;
-  }
-
-  .menu-lateral a .texto,
-  .menu-lateral .opcion-wrapper > div.opcion-container .texto {
-    display: none;
-  }
-
-  .menu-lateral .imagen-vertical {
-    bottom: 23px;
-    right: 60px;
-    max-width: 62%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-  }
-
-  .menu-lateral.open .imagen-vertical {
-    bottom: 104px;
-    left: -50px;
-    max-width: 300%;
-    object-fit: contain;
-    max-height: calc(100% - 80px);
-    margin-top: auto;
-  }
+.menu-lateral.open .imagen-vertical {
+  width: 32px;
+  margin-bottom: 4px;
 }
 
-@media screen and (min-width: 800px) and (max-width: 1340px) {
-  .menu-lateral {
-    height: calc(100vh - 70px);
-    overflow: visible;
-  }
-
-  .opcion-wrapper {
-    position: relative;
-  }
-
-  .submenu {
-    position: absolute !important;
-    left: 100%;
-    top: 0;
-    margin-left: 10px;
-    flex-direction: column;
-    background-color: #E7ECEF;
-    border-radius: 8px;
-    min-width: 200px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    padding: 8px 10px;
-    z-index: 10;
-    display: flex !important;
-  }
-
-  .menu-lateral.open .submenu {
-    display: flex !important;
-  }
+.submenu-flyout {
+  position: fixed;
+  flex-direction: column;
+  background-color: #E7ECEF;
+  border-radius: 8px;
+  min-width: 200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px 10px;
+  z-index: 1000;
 }

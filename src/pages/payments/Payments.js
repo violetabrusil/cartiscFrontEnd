@@ -677,8 +677,8 @@ export default function Payments() {
 
                 <div style={{ margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
 
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div className="payments-title-row">
+                        <div className="payments-title-left">
                             <button onClick={onBack} className="button-arrow-client">
                                 <img src={arrowLeftIcon} className="arrow-icon-client" alt="Arrow Icon" />
                             </button>
@@ -710,9 +710,9 @@ export default function Payments() {
                 </div>
                 <p style={{ color: "#888", marginTop: '0px', marginBottom: '0px' }}>{payment.date} &nbsp;·&nbsp; {payment.workOrderCode} &nbsp;·&nbsp; {payment.client}</p>
 
-                <div style={{ margin: "0 auto", padding: "28px 0px", display: "flex", flexDirection: "column", gap: 20 }}>
+                <div style={{ margin: "0 auto", padding: "18px 0px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+                    <div className="sdp-kpi-grid">
                         <KpiCard label="Valor total" value={(payment.total)} />
                         <KpiCard label="Valor pagado" value={(payment.amountPaid)} />
                         <KpiCard label="Saldo pendiente" value={(payment.balance)} accent progress={progress} />
@@ -734,7 +734,7 @@ export default function Payments() {
                         </div>
 
                         <div style={{ background: "#fdfcfa", marginTop: '-2rem', marginBottom: '1rem', marginLeft: '-1rem', marginRight: '-2rem' }}>
-                            <div style={{ display: "flex", gap: 10, marginTop: "2.5rem", marginLeft: "2.5rem", alignItems: "center" }}>
+                            <div className="payments-filters-row">
                                 <Select
                                     isSearchable={false}
                                     options={options_search_payment}
@@ -812,6 +812,7 @@ export default function Payments() {
                             </div>
                         </div>
 
+                        <div className="payment-table-wrapper">
                         <table className="payment-table">
                             <thead>
                                 <tr>
@@ -879,6 +880,7 @@ export default function Payments() {
                                 )}
                             </tbody>
                         </table>
+                        </div>
 
                         {/* Paginación */}
                         {recordTotalPages > 1 && (

@@ -55,13 +55,11 @@ export const AddNewClientModal = ({ isOpen, onClose, OnUpdate }) => {
         <div className="filter-modal-overlay">
             <ToastContainer />
             <div className="filter-modal">
-                <div style={{ display: 'flex' }}>
-                    <h3 style={{ flex: '13', textAlign: 'center' }}>Información Cliente</h3>
-                    <div style={{ flex: "1", marginTop: '13px' }}>
-                        <button className="button-close" onClick={onClose}  >
-                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                        </button>
-                    </div>
+                <div className="title-modal-search title-centered">
+                    <h3>Información Cliente</h3>
+                    <button className="button-close-modal" onClick={onClose}>
+                        <img src={closeIcon} alt="Close Icon" className="modal-close-icon"></img>
+                    </button>
                 </div>
 
                 <div className="containerNewClient-form">

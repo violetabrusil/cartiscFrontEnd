@@ -114,37 +114,34 @@ const Cars = () => {
         return plateWithDash.replace(/-/g, '');
     };
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
-
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: isTabletLandscape ? '95%' : '99%',
-            height: '50px', // Estilo personalizado para la altura
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
+            width: '100%',
+            height: '44px', 
+            border: '1px solid rgb(0 0 0 / 34%)',
+            borderRadius: '4px',
             padding: '8px',
             marginBottom: '20px',
-            marginTop: '8px'
+            marginTop: '8px',
+            boxSizing: 'border-box'
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: '#999', 
         }),
         option: (provided, state) => ({
             ...provided,
             className: 'custom-select-option',
-            // otros estilos personalizados si los necesitas
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '100%', // puedes ajustar el ancho del menú aquí
+            width: '100%', 
         }),
 
     };
 
-    // Función para restablecer el formulario
     const resetForm = () => {
         setPlateCar("");
         setYear("");
@@ -188,9 +185,7 @@ const Cars = () => {
     };
 
     const handleSelectClick = (option) => {
-        // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -268,9 +263,9 @@ const Cars = () => {
 
     function formatDate(isoDate) {
         const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
-        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
+        const day = String(date.getUTCDate()).padStart(2, '0'); 
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+        const year = date.getUTCFullYear();  
 
         return `${day}/${month}/${year}`;
     };
@@ -313,20 +308,16 @@ const Cars = () => {
     };
 
     const handleCarHistory = (vehicleId, event) => {
-        // Si se proporciona un evento, detiene la propagación
         if (event) {
             event.stopPropagation();
         }
 
-        // Guarda el ID del vehículo en el estado para usarlo después
-        // setSelectedVehicleId(vehicleId);
         const numericVehicleId = Number(vehicleId);
-        // Encuentra el vehículo en el array de vehículos
         const vehiclePlate = vehicles.find(vehicle => vehicle.id === numericVehicleId);
 
-        // Asegúrate de que el vehículo fue encontrado antes de continuar
         if (vehiclePlate) {
             setSelectedPlateVehicle(vehiclePlate.plate);
+            setWorkOrders([]);
             setShowCarHistory(true);
             setShowCarInformation(false);
             setShowMaintenance(false);
@@ -335,9 +326,7 @@ const Cars = () => {
             getVehicleHistoryData(numericVehicleId);
             navigate(`/cars/carHistory/${numericVehicleId}`);
         } else {
-            // Maneja el caso en que el vehículo no se encuentra
             console.error(`No se encontró el vehículo con ID: ${numericVehicleId}`);
-            // Aquí puedes decidir qué hacer si no se encuentra el vehículo
         }
     };
 
@@ -352,7 +341,6 @@ const Cars = () => {
     const handleSearhWorkOrder = async (searchData) => {
 
         const plate = selectedPlateVehicle.replace(/-/g, "");
-        // Transformar las claves del objeto searchData
         const transformedSearchData = {
             work_order_code: searchData.WorkOrderCode || null,
             work_order_status: searchData.WorkOrderStatus || null,
@@ -447,7 +435,7 @@ const Cars = () => {
                 }
             );
         }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
+        return plateInput; 
     };
 
     const handleInputFocus = () => {
@@ -504,17 +492,14 @@ const Cars = () => {
         const { name, checked } = event.target;
         setSelectedOptions(prev => {
             if (checked) {
-                // Si el checkbox está seleccionado, agrega la opción a la lista de seleccionados
                 return [...prev, name];
             } else {
-                // Si el checkbox está deseleccionado, quita la opción de la lista de seleccionados
                 return prev.filter(option => option !== name);
             }
         });
     };
 
     const handleAddVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
         const client_id = selectedClientId;
         const plate = transformPlateForSaving(plateCar);
         event.preventDefault();
@@ -532,8 +517,6 @@ const Cars = () => {
                 openWorkOrderModal();
             }, 3000);
             setShowButtonAddVehicle(true);
-
-            // Restablecer el estado del formulario de agregar auto
             resetForm();
 
         } catch (error) {
@@ -562,9 +545,7 @@ const Cars = () => {
         []
     );
 
-    //Función para editar la información de un vehículo
     const handleEditVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
         event.preventDefault();
         const plate = transformPlateForSaving(plateCar);
 
@@ -590,7 +571,7 @@ const Cars = () => {
                 setRefreshVehicles(prev => !prev);
                 toast.success('Información actualizada correctamente.', {
                     position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 5000 // duración de 5 segundos
+                    autoClose: 5000 
                 });
                 setShowCarInformation(false);
                 setShowButtonAddVehicle(true);
@@ -608,9 +589,7 @@ const Cars = () => {
         }
     };
 
-    //Función para suspender un cliente
     const handleUnavailableVehicle = async (event) => {
-        //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertVechicleSuspend(false);
 
@@ -731,7 +710,6 @@ const Cars = () => {
     }, [selectedOption, searchTerm]);
 
 
-    //Obtención de la información del vehículo para editarlo
     useEffect(() => {
         if (selectedVehicle) {
             setPlateCar(selectedVehicle.plate);
@@ -755,12 +733,14 @@ const Cars = () => {
         }
     }, [vehicleId, vehicles.length]);
 
+    const isAddVehicleButtonHidden = showAddVehicle || showCarHistory || showCarInformation || showMaintenance;
+
     return (
         <div>
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetVehicleState} />
 
-            <div className="containerCars">
+            <div className={`containerCars ${isAddVehicleButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section-cars">
                     {/*Título del contenedor y cuadro de búsqueda */}
                     <TitleAndSearchBoxSpecial
@@ -769,6 +749,7 @@ const Cars = () => {
                         onSearchChange={handleSearchVehiclesWithDebounce}
                         onButtonClick={openFilterModal}
                         shouldSaveSearch={true}
+                        wrapperClassName="title-search-wrapper"
                     />
 
                     {loading ? (
@@ -842,7 +823,8 @@ const Cars = () => {
                                     <form>
                                         <div className={`input-container ${isInputFocused ? "active" : ""}`}>
                                             <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
-                                                onFocus={handleInputFocus} onBlur={handleInputBlur} />
+                                                onFocus={handleInputFocus} onBlur={handleInputBlur}
+                                                autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck="false" />
                                             <img src={flagIcon} alt="Flag" className="flag-icon" />
                                             <label className="label-plate-vehicle">ECUADOR</label>
                                             {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
@@ -972,7 +954,7 @@ const Cars = () => {
                     )}
 
                     {showCarHistory && !showAddVehicle && !showButtonAddVehicle && !showCarInformation && !showMaintenance && (
-                        <div>
+                        <>
                             {/*
                             <div className="containerTitle-car-maintenance">
                                 <label className="label-maintenance"></label>
@@ -1002,11 +984,11 @@ const Cars = () => {
                                 />
                             </div>
 
-                        </div>
+                        </>
                     )}
 
                     {showCarInformation && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showMaintenance && (
-                        <div>
+                        <>
                             <CustomTitleSection
                                 onBack={handleGoBackButton}
                                 title="Información del vehículo"
@@ -1028,6 +1010,10 @@ const Cars = () => {
                                                 onBlur={handleInputBlur}
                                                 onChange={handleCarPlateChange}
                                                 readOnly={!isEditMode}
+                                                autoComplete="off"
+                                                autoCorrect="off"
+                                                autoCapitalize="characters"
+                                                spellCheck="false"
                                             />
                                             <img src={flagIcon} alt="Flag" className="flag-icon" />
                                             <label className="label-plate-vehicle">ECUADOR</label>
@@ -1161,11 +1147,11 @@ const Cars = () => {
                                 }
                             </div>
 
-                        </div>
+                        </>
                     )}
 
                     {showMaintenance && !showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && (
-                        <div>
+                        <>
 
                             <div className="containerNewClientTitle">
                                 <button className="button-sort" onClick={handleCarHistory}>
@@ -1174,7 +1160,7 @@ const Cars = () => {
                                 <h2 style={{ marginLeft: "8px" }}>Mantenimiento</h2>
                             </div>
 
-                            <div>
+                            <div className="container-maintenance-options">
                                 {options.map((option, index) => (
                                     <div
                                         key={index}
@@ -1201,7 +1187,7 @@ const Cars = () => {
 
                             </div>
 
-                        </div>
+                        </>
                     )}
 
                 </div>

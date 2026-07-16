@@ -10,6 +10,7 @@ import Select from 'react-select';
 import apiClient from "../../services/apiClient";
 import ModalNewClient from "../../modal/ModalNewClient";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
+import { useMediaQuery } from "../../useMediaQuery";
 import ClientContext from "../../contexts/ClientContext";
 
 const alertIcon = process.env.PUBLIC_URL + "/images/icons/alertIcon.png";
@@ -203,7 +204,7 @@ const NewClient = () => {
         { value: 'truck', label: 'Camión' },
     ];
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+    const isTabletLandscape = useMediaQuery("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)");
 
     const customStyles = {
         control: (provided, state) => ({
@@ -375,6 +376,10 @@ const NewClient = () => {
                                             onChange={handleCarPlateChange}
                                             onFocus={handleInputFocus}
                                             onBlur={handleInputBlur}
+                                            autoComplete="off"
+                                            autoCorrect="off"
+                                            autoCapitalize="characters"
+                                            spellCheck="false"
                                         />
                                         <img src={flagIcon} alt="Flag" className="flag-icon" />
                                         <label className="label-new-plate-vehicle">ECUADOR</label>

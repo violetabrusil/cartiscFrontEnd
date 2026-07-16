@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
-const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, onAddClient, showAddButton }) => {
+const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOption, isSpecial, onAddClient, showAddButton, wrapperClassName }) => {
 
     const [localValue, setLocalValue] = useState("");
 
@@ -25,7 +25,7 @@ const TitleAndSearchBox = ({ title, onSearchChange, onButtonClick, selectedOptio
     }, [selectedOption]);
 
     return (
-        <div>
+        <div className={wrapperClassName}>
             <div className="container-title">
                 {showAddButton && (
                     <button className="add-new-client" onClick={onAddClient}>

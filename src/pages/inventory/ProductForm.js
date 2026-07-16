@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import apiClient from "../../services/apiClient";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { CustomSingleValueProduct } from "../../customSingleValue/CustomSingleValueProduct";
+import { useMediaQuery } from "../../useMediaQuery";
 
 const letterIcon = process.env.PUBLIC_URL + "/images/icons/name.png";
 const categoryIcon = process.env.PUBLIC_URL + "/images/icons/category.png";
@@ -69,13 +70,13 @@ export function ProductForm({
         ...suppliers
     ];
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+    const isTabletPortrait = useMediaQuery("(max-width: 1024px) and (orientation: portrait)");
 
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control-supplier',
-            width: isTabletLandscape ? '80%' : '74%',
+            width: isTabletPortrait ? '100%' : '85%',
             height: '50px', // Estilo personalizado para la altura
             minHeight: '50px',
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
@@ -93,7 +94,7 @@ export function ProductForm({
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '74%', // puedes ajustar el ancho del menú aquí
+            width: isTabletPortrait ? '100%' : '85%', // puedes ajustar el ancho del menú aquí
         }),
         menuList: (provided, state) => ({
             ...provided,

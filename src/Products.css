@@ -103,6 +103,7 @@
     margin-top: 20px;
     margin-left: 20px;
     max-height: 20vh;
+    order: 2;
 }
 
 .left-side label {
@@ -117,6 +118,7 @@
     margin-top: 20px;
     margin-right: 20px;
     text-align: center;
+    order: 1;
 }
 
 .label-input-pair {
@@ -137,8 +139,9 @@
 }
 
 .input-title-product {
-    width: 64%;
-    height: 30px;
+    width: 85%;
+    height: 40px;
+    box-sizing: border-box;
     border: 1px solid rgb(0 0 0 / 34%);
     background: #fff;
     border-radius: 4px;
@@ -335,4 +338,71 @@
         height: 95%;
     }
 
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+
+    .product-container-image {
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        box-sizing: border-box;
+        top: 5rem;
+        left: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .right-side {
+        margin: 0;
+        width: 100%;
+        position: relative;
+    }
+
+    .right-side .image-container-product {
+        margin-left: 0;
+        margin: 0 auto 16px;
+    }
+
+    .container-button-save-product {
+        position: absolute;
+        top: 1rem;
+        right: 0;
+        width: auto;
+        margin: 0;
+        justify-content: center;
+        z-index: 2;
+    }
+
+    .left-side {
+        margin: 0;
+        max-height: none;
+        width: 100%;
+    }
+
+    .form-container-products {
+        flex-wrap: nowrap;
+    }
+
+    .input-group {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        margin-bottom: 14px;
+    }
+
+    .label-form-product {
+        margin-right: 0 !important;
+        margin-bottom: 6px;
+    }
+
+    .input-form-new-product {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .input-title-product {
+        width: 100%;
+        box-sizing: border-box;
+        height: 45px;
+    }
 }

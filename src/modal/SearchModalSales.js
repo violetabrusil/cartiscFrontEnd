@@ -39,9 +39,9 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
     const selectPaymentStyles = {
         control: (provided, state) => ({
             ...provided,
-            width: '410px',
-            height: '45px',
-            minHeight: '45px',
+            width: '100%',
+            height: '40px',
+            minHeight: '40px',
             marginTop: '10px',
             marginBottom: '10px',
             border: '1px solid rgb(0 0 0 / 34%)'
@@ -136,10 +136,10 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
 
         <div className='filter-modal-overlay'>
             <div className="modal-payment">
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <h2>Filtros de búsqueda</h2>
                     <button onClick={handleClearForm} className="clean-button">Limpiar campos</button>
-                    <div style={{ flex: "1", marginTop: '18px' }}>
+                    <div style={{ flex: "1" }}>
                         <button className="button-close" onClick={onClose}  >
                             <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
                         </button>
@@ -154,7 +154,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
                     </div>
                     <div>
                         <label style={{ display: 'block' }} className="label-fields-payment">Placa vehículo</label>
-                        <input style={{ width: '91%' }} className="input-fields-payment" onChange={e => setVehiclePlate(e.target.value)} value={vehiclePlate || ''} />
+                        <input className="input-fields-payment" onChange={e => setVehiclePlate(e.target.value)} value={vehiclePlate || ''} />
                     </div>
                 </div>
 
@@ -166,11 +166,11 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
                 <div className="double-input-group">
                     <div>
                         <label className="label-fields-payment">Nombre cliente</label>
-                        <input style={{ width: '92%' }} className="input-fields-payment" onChange={e => setClientName(e.target.value)} value={clientName || ''} />
+                        <input className="input-fields-payment" onChange={e => setClientName(e.target.value)} value={clientName || ''} />
                     </div>
-                    <div style={{ marginRight: '28px' }}>
+                    <div>
                         <label className="label-fields-payment">Cédula</label>
-                        <input style={{ width: '107%' }} className="input-fields-payment" onChange={e => setClientId(e.target.value)} value={clientId || ''} />
+                        <input className="input-fields-payment" onChange={e => setClientId(e.target.value)} value={clientId || ''} />
                     </div>
 
                 </div>
@@ -206,6 +206,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
                         <label className="label-fields-payment">Fecha de inicio</label>
                         <DatePicker
                             className="input-date-payment"
+                            wrapperClassName="date-picker-wrapper-payment"
                             selected={startDate}
                             onChange={date => setStartDate(date)}
                             placeholderText="Seleccione" />
@@ -214,6 +215,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
                         <label className="label-fields-payment">Fecha fin</label>
                         <DatePicker
                             className="input-date-payment"
+                            wrapperClassName="date-picker-wrapper-payment"
                             selected={endDate}
                             onChange={date => setEndDate(date)}
                             placeholderText="Seleccione " />

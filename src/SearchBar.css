@@ -2,8 +2,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-left: 38px;
-    margin-top: 40px;
+    margin-left: 2rem;
+    margin-top: 1rem;
     max-width: 100%;
 }
 
@@ -18,7 +18,7 @@
     border-radius: 8px;
     border: 1.5px solid rgba(0, 0, 0, 0.12);
     background: #ffffff;
-    margin-right: 50px;
+    margin-right: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -95,32 +95,4 @@
 .custom-select-option-product--hover,
 .custom-select-option-product:hover {
     background-color: #faf9f7;
-}
-
-@media screen and (max-width: 768px) {
-    .search-bar-container {
-        flex-wrap: wrap;
-        margin-left: 16px;
-        margin-top: 24px;
-        gap: 8px;
-    }
-
-    .search-products-box {
-        width: 100%;
-        margin-right: 16px;
-    }
-
-    .search-products-box-user {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 4px;
-    }
-}
-
-@media (max-width: 1024px) and (orientation: portrait) {
-
-    .search-bar-container {
-        margin-left: 0;
-        margin-top: 0.3rem;
-    }
 }

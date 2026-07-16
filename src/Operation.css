@@ -225,3 +225,53 @@
     }
 
 }
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .container-general-operation {
+        order: 4;
+        flex: 0 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0 15px 90px 15px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .container-general-operation .container-custom-title {
+        order: 0;
+    }
+
+    .container-new-operation {
+        margin-left: 0;
+    }
+
+    .row-operation {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .row-operation label {
+        margin-right: 0;
+    }
+
+    .row-operation .input-container {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .dollar-sign {
+        left: 10px;
+    }
+
+    .input-cost-operation {
+        padding-left: 28px !important;
+    }
+
+    .container-new-operation input {
+        width: 100% !important;
+        max-width: 100%;
+        margin-left: 0;
+        box-sizing: border-box;
+    }
+}

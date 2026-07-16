@@ -1,8 +1,10 @@
 import "../Menu.css";
-import React, { useState, useEffect, useMemo, useContext } from "react";
+import React, { useState, useEffect, useMemo, useContext, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { useSales } from "../contexts/searchContext/SalesContext";
+import { useMediaQuery } from "../useMediaQuery";
 
 const menuButton = process.env.PUBLIC_URL + "/images/icons/menu-button.png";
 const logo = process.env.PUBLIC_URL + "/images/cartics-black.png";
@@ -35,27 +37,12 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
     const [activeIndex, setActiveIndex] = useState(null);
     const [manualToggle, setManualToggle] = useState(false);
     const [openSubmenuIndex, setOpenSubmenuIndex] = useState(null);
-    const [isTabletLandscape, setIsTabletLandscape] = useState(
-        window.matchMedia("(min-width: 800px) and (max-width: 1340px)").matches
-    );
+    const [flyoutPosition, setFlyoutPosition] = useState({ top: 0, left: 0 });
+    const optionRefs = useRef({});
+    const isTouchDevice = useMediaQuery("(hover: none)");
     const { resetAllFilters } = useSales();
 
     const { user } = useContext(AuthContext);
-
-    useEffect(() => {
-        const mediaQuery = window.matchMedia("(min-width: 800px) and (max-width: 1340px)");
-
-        const handleMediaChange = (e) => {
-            console.log("Media query changed:", e.matches);
-            setIsTabletLandscape(e.matches);
-        };
-
-        console.log("Initial media query match:", mediaQuery.matches, `${window.innerWidth}x${window.innerHeight}`);
-        setIsTabletLandscape(mediaQuery.matches);
-        mediaQuery.addEventListener("change", handleMediaChange);
-
-        return () => mediaQuery.removeEventListener("change", handleMediaChange);
-    }, []);
 
     const toggleMenu = () => {
         setManualToggle(prev => !prev);
@@ -112,22 +99,39 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
         setActiveIndex(foundIndex);
 
         const activeOption = menuOptions[foundIndex];
-        if (activeOption?.submenu) {
-            console.log("Active option has submenu. isTabletLandscape:", isTabletLandscape, "activeOption:", activeOption.label);
-            if (!isTabletLandscape) {
-                console.log("Opening submenu for:", activeOption.label);
-                setOpenSubmenuIndex(foundIndex);
-            } else {
-                console.log("Skipping submenu open for tablets");
-            }
+        if (activeOption?.submenu && !isTouchDevice) {
+            setOpenSubmenuIndex(foundIndex);
         }
-    }, [location.pathname, menuOptions, isTabletLandscape]);
+    }, [location.pathname, menuOptions, isTouchDevice]);
+
+    // El flyout táctil se porta a document.body, así que un tap fuera de él
+    // (o fuera del ícono que lo abrió) debe cerrarlo, como cualquier dropdown.
+    useEffect(() => {
+        if (!isTouchDevice || openSubmenuIndex === null) return;
+
+        const handleOutsideClick = (event) => {
+            const trigger = optionRefs.current[openSubmenuIndex];
+            if (trigger && trigger.contains(event.target)) return;
+            if (event.target.closest('.submenu-flyout')) return;
+            setOpenSubmenuIndex(null);
+        };
+
+        document.addEventListener('pointerdown', handleOutsideClick);
+        return () => document.removeEventListener('pointerdown', handleOutsideClick);
+    }, [isTouchDevice, openSubmenuIndex]);
 
     const handleOptionClick = (option, index) => {
         resetAllFilters();
 
         if (option.submenu) {
-            setOpenSubmenuIndex(prev => (prev === index ? null : index));
+            setOpenSubmenuIndex(prev => {
+                const next = prev === index ? null : index;
+                if (next !== null && isTouchDevice && optionRefs.current[index]) {
+                    const rect = optionRefs.current[index].getBoundingClientRect();
+                    setFlyoutPosition({ top: rect.top, left: rect.right + 10 });
+                }
+                return next;
+            });
             return;
         }
 
@@ -145,10 +149,10 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
             <div
                 className={`menu-lateral ${isOpen ? "open" : ""}`}
                 onMouseEnter={() => {
-                    if (!manualToggle) setIsOpen(false);
+                    if (!isTouchDevice && !manualToggle) setIsOpen(false);
                 }}
                 onMouseLeave={() => {
-                    if (!manualToggle) {
+                    if (!isTouchDevice && !manualToggle) {
                         setIsOpen(true);
                         setOpenSubmenuIndex(null);
                     }
@@ -164,6 +168,7 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
 
                             {option.submenu ? (
                                 <div
+                                    ref={(el) => { optionRefs.current[index] = el; }}
                                     className={`opcion-container ${isActive ? "active" : ""}`}
                                     onClick={() => handleOptionClick(option, index)}
                                     style={{ cursor: "pointer" }}
@@ -212,28 +217,35 @@ const Menu = ({ resetFunction, onInventoryClick }) => {
                                 </Link>
                             )}
 
-                            {option.submenu && openSubmenuIndex === index && (
-                                <div className="submenu">
-                                    {option.submenu.map((subOption, subIndex) => (
-                                        <Link
-                                            key={subIndex}
-                                            to={subOption.path}
-                                            className={`submenu-item ${location.pathname.startsWith(subOption.path) ? "active" : ""}`}
-                                            onClick={() => {
-                                                console.log("Submenu item clicked. isTabletLandscape:", isTabletLandscape);
-                                                resetAllFilters();
-                                                if (resetFunction) resetFunction();
-                                                if (isTabletLandscape) {
-                                                    console.log("Closing submenu");
-                                                    setOpenSubmenuIndex(null);
-                                                }
-                                            }}
-                                        >
-                                            <span className="submenu-texto">{subOption.label}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
+                            {option.submenu && openSubmenuIndex === index && (() => {
+                                const submenuContent = (
+                                    <div
+                                        className={isTouchDevice ? "submenu submenu-flyout" : "submenu"}
+                                        style={isTouchDevice ? { top: flyoutPosition.top, left: flyoutPosition.left } : undefined}
+                                    >
+                                        {option.submenu.map((subOption, subIndex) => (
+                                            <Link
+                                                key={subIndex}
+                                                to={subOption.path}
+                                                className={`submenu-item ${location.pathname.startsWith(subOption.path) ? "active" : ""}`}
+                                                onClick={() => {
+                                                    resetAllFilters();
+                                                    if (resetFunction) resetFunction();
+                                                    if (isTouchDevice) {
+                                                        setOpenSubmenuIndex(null);
+                                                    }
+                                                }}
+                                            >
+                                                <span className="submenu-texto">{subOption.label}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                );
+
+                                // En táctil el submenú se porta a document.body: así no queda
+                                // recortado por el scroll interno del riel de íconos.
+                                return isTouchDevice ? createPortal(submenuContent, document.body) : submenuContent;
+                            })()}
 
                         </div>
                     );

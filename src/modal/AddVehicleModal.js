@@ -26,17 +26,17 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate, selectedClientId
     const [motor, setMotor] = useState('');
     const [km, setKm] = useState('');
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
-
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: isTabletLandscape ? '90%' : '97%',
-            height: '50px', // Estilo personalizado para la altura
+            width: '100%',
+            height: '44px', // Estilo personalizado para la altura
+            minHeight: '44px',
+            boxSizing: 'border-box',
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
-            padding: '8px',
+            padding: '0 8px',
             marginBottom: '20px',
             marginTop: '8px'
         }),
@@ -133,13 +133,11 @@ export const AddNewVehicleModal = ({ isOpen, onClose, OnUpdate, selectedClientId
         <div className="filter-modal-overlay">
             <ToastContainer />
             <div className="filter-modal">
-                <div style={{ display: 'flex' }}>
-                    <h3 style={{ flex: '13', textAlign: 'center' }}>Información Vehículo</h3>
-                    <div style={{ flex: "1", marginTop: '13px' }}>
-                        <button className="button-close" onClick={onClose}  >
-                            <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
-                        </button>
-                    </div>
+                <div className="title-modal-search title-centered">
+                    <h3>Información Vehículo</h3>
+                    <button className="button-close-modal" onClick={onClose}>
+                        <img src={closeIcon} alt="Close Icon" className="modal-close-icon"></img>
+                    </button>
                 </div>
 
                 <div className="container-add-car-modal">

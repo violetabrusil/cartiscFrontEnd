@@ -21,6 +21,7 @@ import SearchServicesOperationsModal from '../../modal/SearchServicesOperationsM
 import { AssignModal } from '../../modal/AssignModal';
 import { ConfirmationModal } from '../../modal/ConfirmationModal';
 import { WorkOrderInfoModal } from '../../modal/WorkOrderInfoModal';
+import { useMediaQuery } from '../../useMediaQuery';
 
 const arrowIcon = process.env.PUBLIC_URL + "/images/icons/arrowIcon.png";
 const fuelIcon = process.env.PUBLIC_URL + "/images/icons/fuelIcon.png";
@@ -276,7 +277,8 @@ const InformationWorkOrder = () => {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+    const isTabletLandscape = useMediaQuery("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)");
+    const isPortraitTablet = useMediaQuery("(max-width: 1024px) and (orientation: portrait)");
 
     const customStylesStatusWorkOrder = {
         control: (provided, state) => {
@@ -297,15 +299,16 @@ const InformationWorkOrder = () => {
             }
             return {
                 ...provided,
-                width: isTabletLandscape ? '280%' : '200%',
-                height: '49px',
-                minHeight: '49px',
+                width: isPortraitTablet ? '100%' : (isTabletLandscape ? '280%' : '200%'),
+                height: isPortraitTablet ? '40px' : '49px',
+                minHeight: isPortraitTablet ? '40px' : '49px',
+                boxSizing: 'border-box',
                 border: borderColor,
             };
         },
         menu: (provided, state) => ({
             ...provided,
-            width: isTabletLandscape ? '190px' : '185px',
+            width: isPortraitTablet ? '140px' : (isTabletLandscape ? '190px' : '185px'),
         }),
     };
 
@@ -961,29 +964,30 @@ const InformationWorkOrder = () => {
 
                             <div className="client-search-container">
                                 <div className="left-div-detail">
-                                    <div className="container-data-client-information">
-
-                                        <h2>Cliente</h2>
+                                    <div className="client-detail-card">
+                                        <div>
+                                            <h2>Cliente</h2>
+                                        </div>
 
                                         <div className="label-container">
                                             <label className="label-title">Nombre:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.name}</label>
+                                            <label className="label-input">{workOrderDetail.client.name}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Cédula:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.cedula}</label>
+                                            <label className="label-input">{workOrderDetail.client.cedula}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Dirección:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.address}</label>
+                                            <label className="label-input">{workOrderDetail.client.address}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Teléfono:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.phone}</label>
+                                            <label className="label-input">{workOrderDetail.client.phone}</label>
                                         </div>
                                         <div className="label-container">
                                             <label className="label-title">Correo:</label>
-                                            <label className="label-input-detail">{workOrderDetail.client.email}</label>
+                                            <label className="label-input">{workOrderDetail.client.email}</label>
                                         </div>
 
                                     </div>
@@ -992,9 +996,8 @@ const InformationWorkOrder = () => {
                                 <div className="right-div-container">
                                     <div className='right-div-container-top'>
                                         <div className="container-right-div-information-vehicle-detail">
-                                            <div className='div-information-vehicle'>
-
-                                                <div style={{ marginTop: '-32px', display: 'flex' }}>
+                                            <div className="div-information-vehicle">
+                                                <div className="vehicle-detail-title-row">
                                                     <h2>Vehículo</h2>
                                                     <div className="input-plate-container-work-order-detail">
                                                         <input
@@ -1005,29 +1008,22 @@ const InformationWorkOrder = () => {
                                                     </div>
                                                 </div>
 
-                                                <div className="div-information-vehicle-fields">
-                                                    <div className="vehicle-fields">
-                                                        <label className="label-vehicle">Categoría:</label>
-                                                        <label>{getVehicleCategory(workOrderDetail.vehicle.category)}</label>
-                                                    </div>
-                                                    <div className="vehicle-fields">
-                                                        <label className="label-vehicle">Marca:</label>
-                                                        <label style={{ marginLeft: '40px' }}>{workOrderDetail.vehicle.brand}</label>
-                                                    </div>
+                                                <div className="label-container">
+                                                    <label className="label-title">Categoría:</label>
+                                                    <label className="label-input">{getVehicleCategory(workOrderDetail.vehicle.category)}</label>
                                                 </div>
-
-                                                <div style={{ marginTop: '20px' }} className="div-information-vehicle-fields">
-                                                    <div className="vehicle-fields">
-                                                        <label className="label-vehicle">Modelo:</label>
-                                                        <label style={{ marginLeft: '15px' }}>{workOrderDetail.vehicle.model}</label>
-                                                    </div>
-                                                    <div className="vehicle-fields">
-                                                        <label className="label-vehicle">Año:</label>
-                                                        <label style={{ marginLeft: '56px' }}>{workOrderDetail.vehicle.year}</label>
-                                                    </div>
+                                                <div className="label-container">
+                                                    <label className="label-title">Marca:</label>
+                                                    <label className="label-input">{workOrderDetail.vehicle.brand}</label>
                                                 </div>
-
-
+                                                <div className="label-container">
+                                                    <label className="label-title">Modelo:</label>
+                                                    <label className="label-input">{workOrderDetail.vehicle.model}</label>
+                                                </div>
+                                                <div className="label-container">
+                                                    <label className="label-title">Año:</label>
+                                                    <label className="label-input">{workOrderDetail.vehicle.year}</label>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -1055,58 +1051,50 @@ const InformationWorkOrder = () => {
                                     </div>
 
                                     <div className="container-right-div-information-vehicle">
-                                        <div className="container-fields-new-work-order-vehicle">
-                                            <div className="work-order-detail-fields">
-                                                <label className="label-work-order">Fecha de inicio:</label>
-                                                <label className="label-start-date">{workOrderDetail.date_start}</label>
-                                            </div>
-
-                                            <div className="work-order-detail-fields">
-                                                <label className="label-vehicle-created">Creada por:</label>
-                                                <label className="label-created">{workOrderDetail.created_by}</label>
-                                            </div>
-
-                                            <div className="work-order-detail-fields">
-                                                <label className="label-asigned">Asignada a:</label>
-                                                <label>{workOrderDetail.assigned}</label>
-                                            </div>
-
-                                        </div>
-                                        <div className="container-fields-new-work-order-vehicle-second">
-                                            <div className="work-order-detail-fields">
-                                                <label className="label-work-order">Fecha de fin:</label>
-                                                <label className="label-start-date">{workOrderDetail.date_finish}</label>
-                                            </div>
-
-                                            <div className="work-order-detail-fields">
-                                                <label className="label-vehicle-delivery">Entregada por:</label>
-                                                <label>{workOrderDetail.delivered_by}</label>
-                                            </div>
-
-                                            <div className="work-order-detail-fields">
-                                                <label className="label-billed">Comprobante:</label>
-                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                    <label style={{ marginLeft: '-12px' }}>{workOrderDetail.is_billed ? 'Generado' : 'No Generado'}</label>
-                                                    {!workOrderDetail.is_billed && workOrderDetail.work_order_status === 'completed' && (
-                                                        <button
-                                                            className="button-payment-receipt"
-                                                            style={{
-                                                                height: '40px',
-                                                                marginTop: '-3px',
-                                                                marginRight: '13px'
-                                                            }}
-                                                            onClick={handleOpenModalPayment}
-                                                        >
-                                                            <img src={receiptIcon} alt="Receipt Icon" className="payment-receipt-icon" style={{ width: '25px', height: '25px' }} />
-                                                        </button>
-
-                                                    )}
-
-
+                                        <div className="client-detail-card date-detail-card">
+                                            <div className="container-fields-date-detail">
+                                                <div className="label-container">
+                                                    <label className="label-title">Fecha de inicio:</label>
+                                                    <label className="label-input">{workOrderDetail.date_start}</label>
                                                 </div>
 
+                                                <div className="label-container">
+                                                    <label className="label-title">Creada por:</label>
+                                                    <label className="label-input">{workOrderDetail.created_by}</label>
+                                                </div>
+
+                                                <div className="label-container">
+                                                    <label className="label-title">Asignada a:</label>
+                                                    <label className="label-input">{workOrderDetail.assigned}</label>
+                                                </div>
                                             </div>
 
+                                            <div className="container-fields-date-detail-second">
+                                                <div className="label-container">
+                                                    <label className="label-title">Fecha de fin:</label>
+                                                    <label className="label-input">{workOrderDetail.date_finish}</label>
+                                                </div>
+
+                                                <div className="label-container">
+                                                    <label className="label-title">Entregada por:</label>
+                                                    <label className="label-input">{workOrderDetail.delivered_by}</label>
+                                                </div>
+
+                                                <div className="label-container">
+                                                    <label className="label-title">Comprobante:</label>
+                                                    <div className="label-input comprobante-value">
+                                                        <span>{workOrderDetail.is_billed ? 'Generado' : 'No Generado'}</span>
+                                                        {!workOrderDetail.is_billed && workOrderDetail.work_order_status === 'completed' && (
+                                                            <button
+                                                                className="button-payment-receipt"
+                                                                onClick={handleOpenModalPayment}
+                                                            >
+                                                                <img src={receiptIcon} alt="Receipt Icon" className="payment-receipt-icon" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

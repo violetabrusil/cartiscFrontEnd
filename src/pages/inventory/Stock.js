@@ -34,14 +34,10 @@ const Stock = () => {
     const [stockToUpdate, setStockToUpdate] = useState(null);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 5);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 5, 13);
 
-    //Función que permite obtener todos los productos
-    //cuando inicia la pantalla y las busca por
-    //por número de serie, categoría o título
     const fetchData = async () => {
         setLoading(true);
-        //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
         const searchPerSupplier = "supplier_name";

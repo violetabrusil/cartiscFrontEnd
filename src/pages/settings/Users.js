@@ -15,6 +15,7 @@ import { useDebounce } from "../../useDebounce";
 import { CustomPlaceholderWithLabel } from "../../customPlaceholder/CustomPlaceholderWithLabel";
 import { CustomSingleValueWithLabel } from "../../customSingleValue/CustomSingleValueWithLabel";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import { useMediaQuery } from "../../useMediaQuery";
 
 const addUserIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -55,7 +56,7 @@ const Users = () => {
     const debouncedPin = useDebounce(pin, 500);
     const [displayImage, setDisplayImage] = useState(null);
     const { user, setUser } = useContext(AuthContext);
-    const responsivePageSizeUsers = usePageSizeForTabletLandscape(4, 6);
+    const responsivePageSizeUsers = usePageSizeForTabletLandscape(4, 6, 7);
 
     const statusColors = {
         "Activo": "#49A05C",
@@ -227,7 +228,7 @@ const Users = () => {
         }
     };
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px)").matches;
+    const isTabletLandscape = useMediaQuery("(min-width: 800px) and (max-width: 1340px)");
 
     const userSelectStyles = {
         control: (base, state) => ({

@@ -449,6 +449,20 @@ const Clients = () => {
         resetForm();
     };
 
+    const handleGoBackFromAddVehicle = () => {
+        const isTabletPortrait = window.matchMedia("(max-width: 1024px) and (orientation: portrait)").matches;
+
+        if (isTabletPortrait) {
+            setShowAddVehicle(false);
+            setShowClientCarInformation(true);
+            setShowClientInformation(false);
+            setShowTitle(true);
+            resetForm();
+        } else {
+            handleGoBackToButtons();
+        }
+    };
+
     const handleGoBack = () => {
         setShowClientCarInformation(true);
         setSelectedVehicle(false);
@@ -524,19 +538,21 @@ const Clients = () => {
         // resetea otros estados...
     };
 
-    const isTabletLandscape = window.matchMedia("(min-width: 800px) and (max-width: 1340px) and (orientation: landscape)").matches;
+    // Espeja la condición inversa a la que renderiza el botón "AGREGAR CLIENTE".
+    const isAddClientButtonHidden = showClientCarInformation || showClientInformation || showAddVehicle || selectedVehicle;
 
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: isTabletLandscape ? '96%' : '93%', // Estilo personalizado para el ancho
-            height: '50px', // Estilo personalizado para la altura
+            width: '100%', // Estilo personalizado para el ancho
+            height: '44px', // Estilo personalizado para la altura
             border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
             borderRadius: '4px', // Estilo personalizado para el borde redondeado
             padding: '8px',
             marginBottom: '20px',
-            marginTop: '8px'
+            marginTop: '8px',
+            boxSizing: 'border-box'
         }),
         placeholder: (provided, state) => ({
             ...provided,
@@ -549,7 +565,7 @@ const Clients = () => {
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: isTabletLandscape ? '96%' : '93%', // puedes ajustar el ancho del menú aquí
+            width: '100%', // puedes ajustar el ancho del menú aquí
             marginTop: '-17px'
         }),
 
@@ -560,7 +576,7 @@ const Clients = () => {
             <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
             <Menu resetFunction={resetClientState} />
 
-            <div className="containerClients">
+            <div className={`containerClients ${isAddClientButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section">
                     {/*Título del contenedor con el botón para filtrar búsqueda */}
                     <TitleAndSearchBox
@@ -568,6 +584,7 @@ const Clients = () => {
                         title="Clientes"
                         onSearchChange={handleSearchWithDebounce}
                         onButtonClick={openFilterModal}
+                        wrapperClassName="title-search-wrapper"
                     />
 
                     {/*Lista de clientes*/}
@@ -720,7 +737,7 @@ const Clients = () => {
                     {/*Información del cliente */}
                     <ToastContainer />
                     {showClientInformation && !showClientCarInformation && !showAddVehicle && (
-                        <div>
+                        <>
                             <CustomTitleSection
                                 title="Información del cliente"
                                 onBack={handleGoBackToButtons}
@@ -839,7 +856,7 @@ const Clients = () => {
                                 </form>
                             </div>
 
-                        </div>
+                        </>
                     )}
 
                     {/*Información del vehículo del cliente */}
@@ -980,7 +997,7 @@ const Clients = () => {
                     {showAddVehicle && (
                         <CustomTitleSection
                             title="Agregar vehículo"
-                            onBack={handleGoBackToButtons}
+                            onBack={handleGoBackFromAddVehicle}
                         />
                     )}
 
@@ -992,7 +1009,8 @@ const Clients = () => {
                                 <form>
                                     <div className={`input-container ${isInputFocused ? "active" : ""}`}>
                                         <input className="input-plate" type="text" value={plateCar} onChange={handleCarPlateChange}
-                                            onFocus={handleInputFocus} onBlur={handleInputBlur} />
+                                            onFocus={handleInputFocus} onBlur={handleInputBlur}
+                                            autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck="false" />
                                         <img src={flagIcon} alt="Flag" className="flag-icon" />
                                         <label className="label-new-plate-vehicle">ECUADOR</label>
                                         {/*<button className="button-alert" type="button" onClick={handleAlertClick}>
