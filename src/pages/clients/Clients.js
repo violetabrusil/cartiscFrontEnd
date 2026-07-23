@@ -18,6 +18,7 @@ import { getVehicleCategory } from "../../constants/vehicleCategoryConstants";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import { CustomPlaceholder } from "../../customPlaceholder/CustomPlaceholder";
+import { useScrollRestoration } from "../../hooks/useScrollRestoration";
 
 const clientIcon = process.env.PUBLIC_URL + "/images/icons/userIcon-gray.png";
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
@@ -44,7 +45,6 @@ const Clients = () => {
 
     const navigate = useNavigate();
 
-    //Variables para la sección de clientes
     const [clients, setClients] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOption, setSelectedOption] = useState('Nombre');
@@ -59,8 +59,6 @@ const Clients = () => {
     const [address, setAddress] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-
-    //Variables para la sección de autos
 
     const [clientVehicles, setClientVehicles] = useState([]);
     const [vehicleData, setVehicleData] = useState(null);
@@ -103,8 +101,6 @@ const Clients = () => {
         setCategory(selectedOptionCategoryCar.value);
     };
 
-    //constantes para ver informacion del cliente y del vehiculo respectivamente
-    //y modales
     const [showClientInformation, setShowClientInformation] = useState(false);
     const [showClientCarInformation, setShowClientCarInformation] = useState(false);
     const [showTitle, setShowTitle] = useState(false);
@@ -142,12 +138,10 @@ const Clients = () => {
 
     const handleSelectClick = (option) => {
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
     const handleAddClient = () => {
-        // Redirige a la página deseada
         navigate("/clients/newClient");
     };
 
@@ -159,7 +153,7 @@ const Clients = () => {
         setShowClientCarInformation(false);
         setShowTitle(false);
         setSelectedVehicle(null);
-        // Ahora, establece los estados relacionados con la visualización de la información del cliente
+       
         const clientdata = clients.find(client => client.client.id === clientId);
         setSelectedClientData(clientdata);
         setShowClientInformation(true);
@@ -199,7 +193,6 @@ const Clients = () => {
     };
 
     const handleAddVehicle = async (event) => {
-        // Para evitar que el formulario recargue la página
         const client_id = selectedClientData.client.id;
         const plate = transformPlateForSaving(plateCar);
         event.preventDefault();
@@ -218,7 +211,6 @@ const Clients = () => {
                 position: toast.POSITION.TOP_RIGHT
             });
             setShowClientCarInformation(true);
-            // Restablecer el estado del formulario de agregar auto
             resetForm();
 
         } catch (error) {
@@ -229,7 +221,6 @@ const Clients = () => {
 
     };
 
-    // Función para restablecer el formulario
     const resetForm = () => {
         setPlateCar("");
         setYear("");
@@ -289,12 +280,11 @@ const Clients = () => {
                 }
             );
         }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
+        return plateInput; 
     };
 
-    //Función para suspender un cliente
+
     const handleUnavailableClient = async (event) => {
-        //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertClientSuspend(false);
         try {
@@ -324,9 +314,7 @@ const Clients = () => {
         }
     };
 
-    //Función para editar la información de un cliente
     const handleEditClient = async (event) => {
-        // Para evitar que el formulario recargue la página
         event.preventDefault();
 
         try {
@@ -349,7 +337,7 @@ const Clients = () => {
                 setRefreshClients(prev => !prev);
                 toast.success('Información actualizada correctamente.', {
                     position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 5000 // duración de 5 segundos
+                    autoClose: 5000 
                 });
                 setShowClientInformation(false);
             } else {
@@ -362,13 +350,10 @@ const Clients = () => {
             toast.error('Error al guardar los cambios. Por favor, inténtalo de nuevo..', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            // Extrae todos los mensajes de error del objeto de respuesta
             let mensajesError = [];
             if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
                 mensajesError = error.response.data.errors.map(err => err.message);
             }
-
-            // Une todos los mensajes en uno solo
             const mensajeFinal = mensajesError.join(" / ");
 
             toast.error(mensajeFinal || "Hubo un error desconocido", {
@@ -377,7 +362,6 @@ const Clients = () => {
         }
     };
 
-    //Función para obtener los vehículos de un cliente
     const fetchVehicleInfoByClientId = async (clientId) => {
         try {
             const response = await apiClient.get(`/vehicles/active/${clientId}`);
@@ -391,16 +375,15 @@ const Clients = () => {
 
                 setClientVehicles(formattedVehicles);
             } else {
-                setClientVehicles([]); // O lo que desees hacer si no hay vehículos
+                setClientVehicles([]); 
             }
         } catch (error) {
             console.error("Error al obtener los datos del vehículo:", error);
         }
     };
 
-    //Función para suspender el vehículo de un cliente
+    
     const handleUnavailableVehicle = async (event) => {
-        //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertVehicleSuspend(false);
 
@@ -426,13 +409,11 @@ const Clients = () => {
                 position: toast.POSITION.TOP_RIGHT
             });
 
-            // Extrae todos los mensajes de error del objeto de respuesta
             let mensajesError = [];
             if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.length > 0) {
                 mensajesError = error.response.data.errors.map(err => err.message);
             }
 
-            // Une todos los mensajes en uno solo
             const mensajeFinal = mensajesError.join(" / ");
 
             toast.error(mensajeFinal || "Hubo un error desconocido", {
@@ -514,7 +495,6 @@ const Clients = () => {
         return () => controller.abort();
     }, [searchTerm, selectedOption, refreshClients, clientSuspended]);
 
-    //Obtención de la información del cliente para editarlo
     useEffect(() => {
         if (selectedClient) {
             setCedula(selectedClient.client.cedula);
@@ -535,20 +515,21 @@ const Clients = () => {
 
     const resetClientState = () => {
         setShowClientCarInformation(false);
-        // resetea otros estados...
+   
     };
 
-    // Espeja la condición inversa a la que renderiza el botón "AGREGAR CLIENTE".
+  
     const isAddClientButtonHidden = showClientCarInformation || showClientInformation || showAddVehicle || selectedVehicle;
+    const clientListScrollRef = useScrollRestoration('clients:list', !loading && !isAddClientButtonHidden);
 
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             className: 'custom-select-control',
-            width: '100%', // Estilo personalizado para el ancho
-            height: '44px', // Estilo personalizado para la altura
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
+            width: '100%', 
+            height: '44px', 
+            border: '1px solid rgb(0 0 0 / 34%)', 
+            borderRadius: '4px', 
             padding: '8px',
             marginBottom: '20px',
             marginTop: '8px',
@@ -556,16 +537,15 @@ const Clients = () => {
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: '#999', 
         }),
         option: (provided, state) => ({
             ...provided,
             className: 'custom-select-option',
-            // otros estilos personalizados si los necesitas
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '100%', // puedes ajustar el ancho del menú aquí
+            width: '100%', 
             marginTop: '-17px'
         }),
 
@@ -578,7 +558,6 @@ const Clients = () => {
 
             <div className={`containerClients ${isAddClientButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section">
-                    {/*Título del contenedor con el botón para filtrar búsqueda */}
                     <TitleAndSearchBox
                         selectedOption={selectedOption}
                         title="Clientes"
@@ -587,14 +566,13 @@ const Clients = () => {
                         wrapperClassName="title-search-wrapper"
                     />
 
-                    {/*Lista de clientes*/}
                     {loading ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
                             <PuffLoader color="#316EA8" loading={loading} size={60} />
                         </div>
                     ) : (
                         <>
-                            <div className="container-list-client">
+                            <div className="container-list-client" ref={clientListScrollRef}>
                                 {clients.map(clientData => (
                                     <div className="result-client" onClick={(event) => handleClientCarInformation(clientData.client.id, event)} key={clientData.client.id}>
                                         <div className="first-result">
@@ -696,14 +674,13 @@ const Clients = () => {
                         />
                     )}
 
-                    {/* Aquí colocamos los componentes para la sección derecha */}
+            
                     {!showClientCarInformation && !showClientInformation && !showAddVehicle && (
                         <CustomButtonContainer>
                             <CustomButton title="AGREGAR CLIENTE" onClick={handleAddClient} />
                         </CustomButtonContainer>
                     )}
 
-                    {/*Información del o los vehículos del cliente */}
 
                     {!selectedVehicle && showClientCarInformation && !showClientInformation && !showAddVehicle && (
 
@@ -734,7 +711,7 @@ const Clients = () => {
 
                     )}
 
-                    {/*Información del cliente */}
+                
                     <ToastContainer />
                     {showClientInformation && !showClientCarInformation && !showAddVehicle && (
                         <>
@@ -859,7 +836,7 @@ const Clients = () => {
                         </>
                     )}
 
-                    {/*Información del vehículo del cliente */}
+
 
                     {selectedVehicle && (
                         <CustomTitleSection

@@ -43,7 +43,6 @@ const Users = () => {
     const [modalAction, setModalAction] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    //Variables para creación y edición de usuarios
     const [imageBase64, setImageBase64] = useState(null);
     const fileInputRef = useRef(null);
     const [role, setRole] = useState(null);
@@ -132,9 +131,9 @@ const Users = () => {
 
     function formatDate(isoDate) {
         const date = new Date(isoDate);
-        const day = String(date.getUTCDate()).padStart(2, '0');  // Usamos getUTCDate en lugar de getDate
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Usamos getUTCMonth en lugar de getMonth
-        const year = date.getUTCFullYear();  // Usamos getUTCFullYear en lugar de getFullYear
+        const day = String(date.getUTCDate()).padStart(2, '0');  
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+        const year = date.getUTCFullYear();  
 
         return `${day}/${month}/${year}`;
     };
@@ -142,12 +141,11 @@ const Users = () => {
     const determineImageToShow = () => {
         const base64Prefix = 'data:image/jpeg;base64,';
 
-        // Para 'add'
+
         if (actionType === 'add') {
             return displayImage || userIcon;
         }
 
-        // Para 'view'
         if (actionType === 'view') {
             let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
             if (userImage && !userImage.startsWith(base64Prefix)) {
@@ -155,14 +153,10 @@ const Users = () => {
             }
             return userImage || userIcon;
         }
-
-        // Para 'edit'
         if (actionType === 'edit') {
-            // Si tienes una nueva imagen seleccionada para cargar, úsala
             if (displayImage) {
                 return displayImage;
             } else {
-                // Si no hay una nueva imagen, muestra la del usuario seleccionado
                 let userImage = selectedUser ? selectedUser.profile_picture : user.profile_picture;
                 if (userImage && !userImage.startsWith(base64Prefix)) {
                     userImage = base64Prefix + userImage;
@@ -180,12 +174,16 @@ const Users = () => {
     };
 
 
-    //Función que permite obtener todos los usuarios
-    //cuando inicia la pantalla y las busca por
-    //por número de serie, categoría o título
+    const canManageTargetUser = (targetUser) => {
+        if (!targetUser || targetUser.user_type !== 'admin') return true;
+        return user && user.user_type === 'admin';
+    };
+
+
+
     const fetchData = async () => {
 
-        //Endpoint por defecto
+
         let endpoint = '/all-users';
         const searchPerUniqueCode = "unumber";
         const searchPerUserName = "username";
@@ -229,6 +227,7 @@ const Users = () => {
     };
 
     const isTabletLandscape = useMediaQuery("(min-width: 800px) and (max-width: 1340px)");
+    const isTabletPortrait = useMediaQuery("(max-width: 1024px) and (orientation: portrait)");
 
     const userSelectStyles = {
         control: (base, state) => ({
@@ -266,7 +265,6 @@ const Users = () => {
                 textAlign: 'left',
             };
 
-            // Agrega estilos específicos para tablet landscape
             if (isTabletLandscape) {
                 return {
                     ...baseStyles,
@@ -274,7 +272,6 @@ const Users = () => {
                 };
             }
 
-            // Agrega estilos específicos para desktop con max-width y max-height
             return {
                 ...baseStyles,
                 width: '287px',
@@ -324,6 +321,15 @@ const Users = () => {
     const handleShowAddNewUser = () => {
         setActionType('add');
         setDisplayImage(null)
+        setUsername('');
+        setPassword('');
+        setPin('');
+    };
+
+    const handleBackFromAdd = () => {
+        setActionType('view');
+        setDisplayImage(null);
+        setImageBase64(null);
         setUsername('');
         setPassword('');
         setPin('');
@@ -424,7 +430,7 @@ const Users = () => {
     };
 
     const validatePin = (pin) => {
-        // De 4 a 6 dígitos.
+
         const regex = /^\d{4,6}$/;
 
         return regex.test(pin);
@@ -438,7 +444,7 @@ const Users = () => {
                 setPasswordError("");
             }
         } else {
-            // Si el campo password está vacío o no cumple con la validación, elimina el mensaje de error.
+           
             setPasswordError("");
         }
     }, [debouncedPassword]);
@@ -456,7 +462,6 @@ const Users = () => {
                 setPinError("");
             }
         } else {
-            // Si el campo pin está vacío o no cumple con la validación, elimina el mensaje de error.
             setPinError("");
         }
     }, [debouncedPin]);
@@ -483,10 +488,8 @@ const Users = () => {
         reader.onloadend = () => {
             let base64String = reader.result;
 
-            // Set the full image for display
             setDisplayImage(base64String);
 
-            // Remove the prefix "data:image/png;base64,"
             base64String = base64String.split(',')[1];
 
             setImageBase64(base64String);
@@ -498,10 +501,16 @@ const Users = () => {
     };
 
     const editUser = async () => {
-        // Decide qué usuario editar basado en la presencia de selectedUser
         const targetUser = selectedUser || user;
 
-        // Construye userData base
+        if (!canManageTargetUser(targetUser)) {
+            toast.error('No tienes permisos para modificar un usuario administrador', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            return;
+        }
+
+
         const userData = {
             username: username,
             pin: pin,
@@ -510,12 +519,10 @@ const Users = () => {
             user_status: status
         };
 
-        // Añade profile_picture a userData solo si imageBase64 tiene valor
+
         if (imageBase64) {
             userData.profile_picture = imageBase64;
         } else if (targetUser && targetUser.profile_picture) {
-            // Si no se ha seleccionado una nueva imagen, pero targetUser tiene una imagen,
-            // se usa esa imagen existente.
             userData.profile_picture = targetUser.profile_picture;
         }
 
@@ -573,7 +580,16 @@ const Users = () => {
 
     const resetPassword = async () => {
 
-        const userId = (selectedUser && selectedUser.id) || (user && user.id);
+        const targetUser = selectedUser || user;
+
+        if (!canManageTargetUser(targetUser)) {
+            toast.error('No tienes permisos para modificar un usuario administrador', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            return;
+        }
+
+        const userId = targetUser && targetUser.id;
 
         const userData = {
             new_password: password,
@@ -600,7 +616,16 @@ const Users = () => {
 
     const resetPIN = async () => {
 
-        const userId = (selectedUser && selectedUser.id) || (user && user.id);
+        const targetUser = selectedUser || user;
+
+        if (!canManageTargetUser(targetUser)) {
+            toast.error('No tienes permisos para modificar un usuario administrador', {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            return;
+        }
+
+        const userId = targetUser && targetUser.id;
 
         const userData = {
             new_pin: pin,
@@ -670,10 +695,10 @@ const Users = () => {
                 <div className="general-user-left">
                     <div className="container-user-information">
                         <div>
-                            {/* SECCIÓN IZQUIERDA: Foto y datos */}
+                         
                             <div className="user-info-left">
                                 <div className="container-button-edit-user">
-                                    {actionType === 'view' && (
+                                    {actionType === 'view' && canManageTargetUser(selectedUser || user) && (
                                         <>
                                             <button onClick={handleEditUser} className="button-edit-user">
                                                 <img src={editIcon} alt="Edit icon users" className="icon-edit-user" />
@@ -685,6 +710,14 @@ const Users = () => {
                                     {actionType === 'edit' && (
                                         <>
                                             <button onClick={handleBackFromEdit} className="button-edit-user">
+                                                <img src={backIcon} alt="Back icon" className="icon-edit-user" />
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {actionType === 'add' && isTabletPortrait && (
+                                        <>
+                                            <button onClick={handleBackFromAdd} className="button-edit-user">
                                                 <img src={backIcon} alt="Back icon" className="icon-edit-user" />
                                             </button>
                                         </>
@@ -792,18 +825,19 @@ const Users = () => {
                                 </div>
                             </div>
 
-                            {/* SECCIÓN DERECHA: Botones */}
                             <div className="user-info-right">
                                 <div>
                                     {actionType === 'view' ? (
-                                        <div className="container-button-user-action">
-                                            <button className="buttons-user" onClick={openModalForResetPassword}>
-                                                <span className="span-button-user">Restablecer contraseña</span>
-                                            </button>
-                                            <button className="buttons-user" onClick={openModalForResetPin}>
-                                                <span className="span-button-user">Restablecer PIN</span>
-                                            </button>
-                                        </div>
+                                        canManageTargetUser(selectedUser || user) && (
+                                            <div className="container-button-user-action">
+                                                <button className="buttons-user" onClick={openModalForResetPassword}>
+                                                    <span className="span-button-user">Restablecer contraseña</span>
+                                                </button>
+                                                <button className="buttons-user" onClick={openModalForResetPin}>
+                                                    <span className="span-button-user">Restablecer PIN</span>
+                                                </button>
+                                            </div>
+                                        )
                                     ) : (
                                         <div className="container-button-user-action-edit">
                                             <button className="buttons-user" onClick={handleSaveUser}>
@@ -841,7 +875,6 @@ const Users = () => {
                             </label>
                         )}
                         <div className="container-modal-fields">
-                            {/* Input de contraseña para las acciones 'create' y 'resetPassword' */}
                             {(modalAction === 'create' || modalAction === 'resetPassword') && (
                                 <div>
                                     <label className="input-helper-text">
@@ -863,7 +896,7 @@ const Users = () => {
                             )}
                             {passwordError && <span style={{ color: 'red' }}>{passwordError}</span>}
 
-                            {/* Input de PIN para las acciones 'create' y 'resetPin' */}
+       
                             {(modalAction === 'create' || modalAction === 'resetPin') && (
                                 <div>
                                     <label className="input-helper-text">

@@ -77,7 +77,7 @@ const ChangePIN = () => {
             toast.success('PIN actualizado', {
                 position: toast.POSITION.TOP_RIGHT
             });
-            navigate("/login"); // O redirige a donde corresponda después de cambiar el PIN
+            navigate("/loginExpress");
 
         } catch (error) {
             toast.error('Error al cambiar el PIN. Inténtalo de nuevo.', {

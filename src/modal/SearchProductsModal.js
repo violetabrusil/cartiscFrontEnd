@@ -35,7 +35,7 @@ export function SearchProductsModal({ onClose,
     const [productQuantities, setProductQuantities] = useState(initialProductQuantities || {});
     const [isEditing, setIsEditing] = useState(false);
     const responsivePageSize = usePageSizeForTabletLandscape(5, 3);
-    const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 4);
+    const responsivePageSizeProducts = usePageSizeForTabletLandscape(6, 3);
     const [editableTitleProduct, setEditableTitleProduct] = useState('');
     const [editedProducts, setEditedProducts] = useState({});
     const [loading, setLoading] = useState(false);
@@ -54,9 +54,9 @@ export function SearchProductsModal({ onClose,
     const customSelectModalStyles = {
         control: (base, state) => ({
             ...base,
-            width: '400px',  // Aquí estableces el ancho
-            height: '40px',  // Y aquí la altura
-            minHeight: '40px', // Establece la altura mínima igual a la altura para evitar que cambie
+            width: '400px',
+            height: '40px', 
+            minHeight: '40px', 
             border: '1px solid rgb(0 0 0 / 34%)',
             borderRadius: '4px',
             padding: '1px',
@@ -66,16 +66,15 @@ export function SearchProductsModal({ onClose,
         }),
         placeholder: (provided, state) => ({
             ...provided,
-            color: '#999', // Color del texto del placeholder
+            color: '#999', 
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: '400px', // puedes ajustar el ancho del menú aquí
+            width: '400px', 
         }),
 
     };
 
-    // Función para manejar cambios en la cantidad
     const handleQuantityChange = useCallback((sku, newQuantity) => {
         const product = allProducts.find(p => p.sku === sku) || selectedProducts.find(p => p.sku === sku);
 
@@ -158,12 +157,11 @@ export function SearchProductsModal({ onClose,
     );
 
     const handleTitleEdit = (e) => {
-        const sku = e.target.dataset.sku; // Obtener el SKU del atributo de datos
+        const sku = e.target.dataset.sku; 
         const newValue = e.target.value;
         setEditableTitleProduct(newValue);
         console.log("cambio", newValue)
 
-        // Marcar el producto como editado
         setEditedProducts((prevEditedProducts) => ({
             ...prevEditedProducts,
             [sku]: newValue,
@@ -194,7 +192,7 @@ export function SearchProductsModal({ onClose,
                 id: "price",
                 className: "column-price",
                 Cell: ({ row }) => {
-                    const currentPrice = row.original.price; // Usa el precio original del producto
+                    const currentPrice = row.original.price; 
                     const handleBlur = (e) => {
                         handleCostChange(row.original.sku, parseFloat(e.target.value.trim()));
                     };
@@ -302,9 +300,7 @@ export function SearchProductsModal({ onClose,
     };
 
     const addProduct = (productToAdd) => {
-        // Verificar si el stock es diferente de cero
         if (productToAdd.stock === 0) {
-            // Mostrar un toast de advertencia y salir de la función
             toast.warn('No se puede agregar el producto porque no cuenta con stock.', {
                 position: toast.POSITION.TOP_RIGHT
             });
@@ -313,7 +309,7 @@ export function SearchProductsModal({ onClose,
 
         onProductsSelected((prevProducts) => {
             if (prevProducts.some((p) => p.sku === productToAdd.sku)) {
-                return prevProducts; // retornar el mismo array si el producto ya está presente
+                return prevProducts; 
             }
             return [...prevProducts, productToAdd];
         });
@@ -354,7 +350,7 @@ export function SearchProductsModal({ onClose,
             onProductsUpdated(updatedProducts);
             onProductPricesUpdated(productPrices);
             onProductQuantitiesUpdated(productQuantities);
-            resolve(updatedProducts); // Resuelve la promesa con los productos actualizados
+            resolve(updatedProducts); 
         });
     };
 
@@ -383,18 +379,17 @@ export function SearchProductsModal({ onClose,
     };
 
     const handleSave = async () => {
-        const updatedProducts = await handleConfirmChanges(); // Espera a que handleConfirmChanges se complete
-        // Agrega el producto manual si hay uno
+        const updatedProducts = await handleConfirmChanges();
+    
         if (manualProduct.title.trim() !== '') {
             updatedProducts.push(manualProduct);
         }
 
         try {
-            await saveProducts(updatedProducts); // Guarda los productos
-            onCloseAndSave(); // Cierra el modal y actualiza los datos de inmediato
+            await saveProducts(updatedProducts);
+            onCloseAndSave(); 
         } catch (error) {
             console.error("Error al guardar los productos:", error);
-            // En caso de error, podrías mostrar un mensaje de error aquí
         }
     };
 
@@ -425,29 +420,24 @@ export function SearchProductsModal({ onClose,
     };
 
     const handleUpdate = async () => {
-        const updatedProducts = await handleConfirmChanges(); // Espera a que handleConfirmChanges se complete
+        const updatedProducts = await handleConfirmChanges();
         try {
-            await updateProducts(updatedProducts); // Luego, guarda los productos
-            onCloseAndSave(); // Cierra el modal y actualiza los datos de inmediato
+            await updateProducts(updatedProducts); 
+            onCloseAndSave();
         } catch (error) {
             console.error("Error al guardar los productos:", error);
-            // En caso de error, podrías mostrar un mensaje de error aquí
         }
     };
 
     const handleSaveUpdateProducts = () => {
         if (isEditing) {
-            // Llama a la función para editar los productos
             handleUpdate();
         } else {
-            // Llama a la función para guardar los productos
             handleSave();
         }
     }
 
     const fetchData = async () => {
-        // 1. Evitar búsqueda si el término es muy corto (ej. menos de 2 letras)
-        // Esto suele ser la causa del 400 en muchos backends
         if (searchTerm && searchTerm.trim().length < 2) {
             return;
         }
@@ -481,18 +471,18 @@ export function SearchProductsModal({ onClose,
     };
 
     const addManualProduct = () => {
-        //Título, precio y cantidad tengan valores válidos
+    
         if (manualProduct.title.trim() !== '' && !isNaN(manualProduct.price) && manualProduct.quantity > 0) {
             const updatedProducts = [...selectedProducts, { ...manualProduct, sku: `.MA-${Date.now()}` }];
             onProductsSelected(updatedProducts);
-            // Reinicia la fila de ingreso manual
+          
             setManualProduct({
                 title: '',
                 price: 0,
                 quantity: 1,
             });
         } else {
-            // Muestra un mensaje de advertencia si no ingresa valores válidos
+
             toast.warn('Ingrese valores válidos.', {
                 position: toast.POSITION.TOP_RIGHT,
             });
@@ -602,8 +592,7 @@ export function SearchProductsModal({ onClose,
     )
 };
 
-// Construye las celdas de la fila de ingreso manual, una por columna de SelectedItemsTable,
-// para que se alineen exactamente bajo cada encabezado (misma tabla, mismas columnas).
+
 const getManualProductRowCells = ({ manualProduct, onManualProductChange, onAddManualProduct }) => {
 
     const handleQuantityChange = (e) => {

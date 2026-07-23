@@ -1,6 +1,5 @@
 .new-work-order-general-container {
     position: absolute;
-    height: 90vh;
     top: 97px;
     bottom: 0;
     left: 60px;
@@ -315,11 +314,8 @@
     justify-content: space-between;
     align-items: center;
     border: 1px solid gray;
-    /* Cambia el color del borde según tu preferencia */
     padding: 5px;
-    /* Ajusta el padding según tu diseño */
     width: 200px;
-    /* Ajusta el ancho según tu diseño */
     background-color: white;
     border-radius: 6px;
     height: 35px;
@@ -327,7 +323,6 @@
 
 .date-picker-text {
     color: black;
-    /* Cambia el color del texto según tu preferencia */
 }
 
 .date-picker-icon {
@@ -553,10 +548,8 @@
 
 .content-new-work-order {
     height: 33vh;
-    /* Esto hace que los divs ocupen la totalidad de la altura de la pantalla */
     border-radius: 13px;
     border: 1px solid rgba(0, 0, 0, 0.50);
-    /* Esto es opcional, solo para visualizar los divs */
 }
 
 .editable-container {
@@ -568,12 +561,10 @@
 
 .editable-container.placeholder {
     color: #a9a9a9;
-    /* Este es un color gris claro */
 }
 
 .editable-container:focus {
     outline: 2px solid #316EA8;
-    /* Cambia esto al color que prefieras */
 }
 
 .list-sypmtoms-container {
@@ -603,7 +594,6 @@
 
 .textarea-class::placeholder {
     color: #a9a9a9;
-    /* Este es un color gris claro */
 }
 
 .input-search-client .search-box {
@@ -623,7 +613,6 @@
 .vehicle-count-container-work-order {
     display: flex;
     align-items: center;
-    /* Si deseas que los ítems estén centrados verticalmente */
 }
 
 .container-car-number-work-order {
@@ -867,7 +856,6 @@ input[type="checkbox"] {
     text-align: center;
     cursor: pointer;
     line-height: 1.2;
-    /* Ajusta la altura de la línea para el texto */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -984,10 +972,6 @@ input[type="checkbox"] {
         margin-right: 1rem;
     }
 
-    .new-work-order-general-container {
-        height: 85vh;
-    }
-
     .carousel {
         width: 85%;
         height: 80%;
@@ -1032,7 +1016,6 @@ input[type="checkbox"] {
 
     .new-work-order-general-container {
         top: 80px;
-        height: calc(100vh - 80px);
         overflow-y: auto;
     }
 
@@ -1096,7 +1079,6 @@ input[type="checkbox"] {
         left: 3.5rem;
         top: 80px;
         bottom: 0;
-        height: calc(100vh - 80px);
         overflow-y: auto;
         padding: 0 15px 30px 15px;
     }

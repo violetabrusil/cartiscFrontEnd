@@ -6,7 +6,7 @@ import apiLogin from '../services/api';
 
 const logoutIcon = process.env.PUBLIC_URL + "/images/icons/logout1Icon.png";
 const logo = process.env.PUBLIC_URL + "/images/ingenieria-mecatronica.png";
-const carticsLogo = process.env.PUBLIC_URL + "/images/cartics-icon.png";
+const carticsLogo = process.env.PUBLIC_URL + "/images/cartics-white.png";
 const userIcon = process.env.PUBLIC_URL + "/images/user.png";
 
 function Header({ showIcon, showCarticsLogo, showPhoto, showUser, showRol, showLogoutButton }) {

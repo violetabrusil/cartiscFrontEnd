@@ -12,6 +12,7 @@ import apiClient from "../../services/apiClient";
 import TitleAndSearchBox from "../../titleAndSearchBox/TitleAndSearchBox";
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
+import { useScrollRestoration } from "../../hooks/useScrollRestoration";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 
@@ -36,7 +37,7 @@ const Suppliers = () => {
     const [phone, setPhone] = useState('');
     const [contact_details, setContactDetails] = useState('');
 
-    // Función para restablecer el formulario
+
     const resetForm = () => {
         setName("");
         setPhone("");
@@ -46,7 +47,6 @@ const Suppliers = () => {
     const resetSupplierState = () => {
         setShowSupplierInformation(false);
         setShowButtonAddSupplier(true);
-        // resetea otros estados...
     };
 
     const handleSearchWithDebounce = useMemo(
@@ -72,7 +72,6 @@ const Suppliers = () => {
 
     const handleSelectClick = (option) => {
         setSelectedOption(option);
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -112,9 +111,7 @@ const Suppliers = () => {
         setIsAlertSupplierSuspended(false);
     };
 
-    //Función para suspender un proveedor
     const handleUnavailableSupplier = async (event) => {
-        //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertSupplierSuspended(false);
         const suspend = "suspended";
@@ -150,7 +147,6 @@ const Suppliers = () => {
     };
 
     const handleSaveOrUpdateSupplier = async (event) => {
-        // Para evitar que el formulario recargue la página
         event.preventDefault();
 
         if (mode === 'add') {
@@ -166,7 +162,7 @@ const Suppliers = () => {
 
             } catch (error) {
                 if (error.response && error.response.status === 400 && error.response.data.errors) {
-                    // Muestra los errores en toasts
+
                     error.response.data.errors.forEach(err => {
                         toast.error(`${err.field}: ${err.message}`, {
                             position: toast.POSITION.TOP_RIGHT
@@ -253,8 +249,8 @@ const Suppliers = () => {
     }, [searchTerm, selectedOption, lastUpdated]);
 
 
-    // Espeja la condición inversa a la que renderiza el botón "AGREGAR PROVEEDOR".
     const isAddSupplierButtonHidden = showAddSupplier;
+    const supplierListScrollRef = useScrollRestoration('suppliers:list', !loading && !isAddSupplierButtonHidden);
 
     return (
         <div>
@@ -263,10 +259,9 @@ const Suppliers = () => {
 
             <div className={`container-suppliers ${isAddSupplierButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section-supplier">
-                    {/*Título del contenedor con buscador */}
                     <TitleAndSearchBox
                         selectedOption={selectedOption}
-                        title="Proveedores"// Convertir a mayúscula inicial
+                        title="Proveedores"
                         onSearchChange={handleSearchWithDebounce}
                         onButtonClick={openFilterModal}
                         wrapperClassName="title-search-wrapper"
@@ -278,7 +273,7 @@ const Suppliers = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="search-results-suppliers">
+                            <div className="search-results-suppliers" ref={supplierListScrollRef}>
                                 {Array.isArray(suppliers) && suppliers.map(supplierData => (
                                     <div key={`suppliers-${supplierData.id}`} className="result-suppliers">
                                         <div className="supplier-code-section">
@@ -379,7 +374,6 @@ const Suppliers = () => {
 
             </div>
 
-            {/*Modal del filtro de búsqueda*/}
 
             {isFilterModalOpen && (
                 <Modal

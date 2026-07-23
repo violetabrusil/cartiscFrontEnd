@@ -7,7 +7,6 @@
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-gap: 0px;
-    height: calc(100vh - 80px);
     overflow: hidden;
 }
 
@@ -18,6 +17,7 @@
     flex-direction: column;
     overflow-y: auto;
     height: 100%;
+    box-sizing: border-box;
 }
 
 .right-section {
@@ -507,7 +507,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-gap: 0px;
-        height: calc(100vh - 80px);
         overflow: hidden;
     }
 

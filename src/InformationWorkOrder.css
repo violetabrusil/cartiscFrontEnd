@@ -396,12 +396,13 @@
 }
 
 .div-container-select {
-    max-width: 7%;
-    margin-right: 145px;
+    width: 220px;
+    flex-shrink: 0;
+    margin-right: 20px;
 }
 
 .div-container-hidden {
-    margin-right: 102px;
+    margin-right: 0;
 }
 
 .div-table-products {
@@ -457,7 +458,7 @@
     }
 
     .div-container-select {
-        margin-right: 9rem;
+        width: 180px;
     }
 
     .div-section-information {
@@ -483,7 +484,6 @@
     .clock-icon {
         width: 26px;
         height: 26px;
-        margin-right: 1rem;
         flex-shrink: 0;
     }
 
@@ -499,15 +499,19 @@
         padding-bottom: 5px;
     }
 
+    .new-work-order-title-container-h2 {
+        font-size: 15px;
+    }
+
     .div-container-select {
         max-width: none;
-        width: 140px;
+        width: 165px;
         margin-right: 10px;
         flex-shrink: 0;
     }
 
     .div-container-hidden {
-        margin-right: 0.3rem;
+        margin-right: 0;
     }
 
     .client-search-container:has(.container-right-div-information-vehicle) {

@@ -45,12 +45,11 @@ export function ProductForm({
     const [suppliers, setSuppliers] = useState([]);
     const [selectedOptionSupplier, setSelectedOptionSupplier] = useState("");
     const [searchTermSupplier, setSearchTermSupplier] = useState("");
-    const [searchType, setSearchType] = useState('Código');  // Por defecto buscará por código
+    const [searchType, setSearchType] = useState('Código'); 
     const [isEditable, setIsEditable] = useState(mode === "add");
     const [isAlertProductSuspend, setIsAlertProductSuspend] = useState(false);
 
 
-    //Variables para guardar los datos de entrada de producto
     const [productId, setProductId] = useState(productData.id);
     const [titleProduct, setTitleProduct] = useState(productData.title);
     const [imageBase64, setImageBase64] = useState(productData.product_picture);
@@ -77,15 +76,15 @@ export function ProductForm({
             ...provided,
             className: 'custom-select-control-supplier',
             width: isTabletPortrait ? '100%' : '85%',
-            height: '50px', // Estilo personalizado para la altura
+            height: '50px', 
             minHeight: '50px',
-            border: '1px solid rgb(0 0 0 / 34%)', // Estilo personalizado para el borde con el color deseado
-            borderRadius: '4px', // Estilo personalizado para el borde redondeado
+            border: '1px solid rgb(0 0 0 / 34%)', 
+            borderRadius: '4px', 
             padding: '4px',
         }),
         valueContainer: (provided, state) => ({
             ...provided,
-            padding: '4px', // Ajusta según sea necesario
+            padding: '4px', 
         }),
         singleValue: (provided, state) => ({
             ...provided,
@@ -94,29 +93,28 @@ export function ProductForm({
         }),
         menu: (provided, state) => ({
             ...provided,
-            width: isTabletPortrait ? '100%' : '85%', // puedes ajustar el ancho del menú aquí
+            width: isTabletPortrait ? '100%' : '85%', 
         }),
         menuList: (provided, state) => ({
             ...provided,
-            maxHeight: '200px', // puedes ajustar la altura máxima del menú desplegable aquí
+            maxHeight: '200px', 
         }),
         option: (provided, state) => ({
             ...provided,
             className: 'custom-select-option-supplier',
-            height: '40px',  // ajusta la altura de cada opción aquí
-            lineHeight: '40px', // alinea el texto verticalmente en el medio de la opción
-            fontSize: '16px', // ajusta el tamaño de la fuente de cada opción aquí
-            // otros estilos personalizados si los necesitas
+            height: '40px', 
+            lineHeight: '40px', 
+            fontSize: '16px',
         }),
         input: (provided) => ({
             ...provided,
-            paddingLeft: '50px' // Ajusta según tus necesidades
+            paddingLeft: '50px'
         }),
 
     };
 
     const getSuppliers = async (event) => {
-        //Endpoint por defecto
+   
         let endpoint = '/suppliers/all';
         const searchPerSupplierCode = "supplier_code";
         const searchPerName = "name";
@@ -152,7 +150,6 @@ export function ProductForm({
 
     const handleStockChange = (e) => {
         const value = e.target.value;
-        // Usar una regex para verificar si el valor es un número o una cadena vacía.
         if (/^\d*$/.test(value)) {
             setStock(value);
         }
@@ -245,9 +242,7 @@ export function ProductForm({
         setIsAlertProductSuspend(false);
     };
 
-    //Función para suspender un producto
     const handleUnavailableProduct = async (event) => {
-        //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertProductSuspend(false);
 
@@ -550,7 +545,7 @@ export function ProductForm({
                     </div>
 
                     <div className="right-side">
-                        <label className="label-form-product">Imagen</label>
+                        <label className="label-title-product">Imagen</label>
                         <div className="image-container-product">
                             {imageBase64 ? (
                                 <img src={`data:image/png;base64,${imageBase64}`} alt="Actual" className="product-image" />

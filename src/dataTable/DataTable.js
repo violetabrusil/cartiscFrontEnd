@@ -1,5 +1,5 @@
 import "../DataTable.css"
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTable, usePagination } from 'react-table';
 
 
@@ -15,7 +15,10 @@ const DataTable = ({
     onAddOperation,
     onRemoveOperation,
     addIconSrc,
-    deleteIconSrc
+    deleteIconSrc,
+    initialPageIndex = 0,
+    onPageChange,
+    resetPageToken
 }) => {
 
     const {
@@ -28,15 +31,36 @@ const DataTable = ({
         canNextPage,
         nextPage,
         previousPage,
+        gotoPage,
+        setPageSize,
         state: { pageIndex, pageSize },
     } = useTable(
         {
             columns,
             data,
-            initialState: { pageIndex: 0, pageSize: initialPageSize },
+            initialState: { pageIndex: initialPageIndex, pageSize: initialPageSize },
+            autoResetPage: !onPageChange,
         },
         usePagination
     );
+
+    useEffect(() => {
+        if (onPageChange) onPageChange(pageIndex);
+    }, [pageIndex, onPageChange]);
+
+    useEffect(() => {
+        setPageSize(initialPageSize);
+    }, [initialPageSize, setPageSize]);
+
+    const isFirstResetToken = useRef(true);
+    useEffect(() => {
+        if (resetPageToken === undefined) return;
+        if (isFirstResetToken.current) {
+            isFirstResetToken.current = false;
+            return;
+        }
+        gotoPage(0);
+    }, [resetPageToken, gotoPage]);
 
     return (
         <div className="container-table">
@@ -56,11 +80,10 @@ const DataTable = ({
 
                         let isHighlighted = false;
 
-                        // Si el selectedRowId se ha proporcionado, usarlo para determinar el resaltado
                         if (selectedRowId !== undefined) {
                             isHighlighted = row.original.id === selectedRowId;
                         }
-                        // De lo contrario, usar el selectedRowIndex
+                 
                         else if (selectedRowIndex !== undefined) {
                             isHighlighted = index === selectedRowIndex;
                         }

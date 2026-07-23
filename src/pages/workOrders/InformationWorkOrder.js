@@ -204,14 +204,12 @@ const InformationWorkOrder = () => {
         setIsModalOpenServices(false);
     };
 
-    //Opciones para el estado de entrega del vehículo
     const optionsCheckBox = {
         group1: ['Antena', 'Radio', 'Plumas', 'Extintor', 'Control puerta'],
         group2: ['Encendedor', 'Maqueta', 'Espejos', 'Triángulos', 'Combustible'],
         group3: ['Llantas', 'Gata', 'Herramientas', 'Llave rueda', 'Gas']
     };
 
-    //Estado de las selecciones y porcentajes
     const [selections, setSelections] = useState({
         group1: Array(optionsCheckBox.group1.length).fill(false),
         group2: Array(optionsCheckBox.group2.length).fill(false),
@@ -260,7 +258,7 @@ const InformationWorkOrder = () => {
                 }
             );
         }
-        return plateInput; // Devuelve la placa sin cambios si no cumple con el formato esperado.
+        return plateInput; 
     };
 
     function formatDate(isoDate) {
@@ -283,7 +281,7 @@ const InformationWorkOrder = () => {
     const customStylesStatusWorkOrder = {
         control: (provided, state) => {
 
-            let borderColor = '1px solid rgb(0 0 0 / 34%)'; // Color de borde predeterminado
+            let borderColor = '1px solid rgb(0 0 0 / 34%)'; 
             if (state.selectProps.value.value === 'to_start') {
                 borderColor = '2px solid #316EA8';
             } if (state.selectProps.value.value === 'assigned') {
@@ -299,7 +297,7 @@ const InformationWorkOrder = () => {
             }
             return {
                 ...provided,
-                width: isPortraitTablet ? '100%' : (isTabletLandscape ? '280%' : '200%'),
+                width: '100%',
                 height: isPortraitTablet ? '40px' : '49px',
                 minHeight: isPortraitTablet ? '40px' : '49px',
                 boxSizing: 'border-box',
@@ -1119,7 +1117,7 @@ const InformationWorkOrder = () => {
                                     </button>
                                 </div>
 
-                                {/* Renderización condicional para mostrar/ocultar la sección de comentarios */}
+                            
                                 {visibleSections['comments'] && (
                                     <div className="comments-section">
                                         <textarea
@@ -1170,11 +1168,11 @@ const InformationWorkOrder = () => {
                                             {Object.keys(optionsCheckBox).map((group) => (
                                                 <div key={group} className="checkbox-group">
                                                     {optionsCheckBox[group].map((labelName, index) => {
-                                                        // Si es "Combustible", solo mostrar la etiqueta
+                                                       
                                                         if (labelName === 'Combustible') {
                                                             return <label key={index}>{labelName}</label>;
                                                         }
-                                                        // Si es "Gas", mostrar el ícono (y el valor en porcentaje si es necesario)
+                                                     
                                                         else if (labelName === 'Gas') {
                                                             return (
                                                                 <div key={index}>
@@ -1193,8 +1191,8 @@ const InformationWorkOrder = () => {
                                                                 </div>
                                                             );
                                                         }
-                                                        // Para los demás casos, mostrar el checkbox
-                                                        else if (selections[group] && selections[group][index] !== undefined) { // Asegurarse de que exista una selección correspondiente
+                                                       
+                                                        else if (selections[group] && selections[group][index] !== undefined) { 
                                                             return (
                                                                 <label key={index}>
                                                                     {labelName}
@@ -1207,7 +1205,7 @@ const InformationWorkOrder = () => {
                                                                 </label>
                                                             );
                                                         }
-                                                        return null;  // Si no hay condiciones que cumplan, simplemente no renderizar nada.
+                                                        return null;  
                                                     })}
                                                 </div>
                                             ))}

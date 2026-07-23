@@ -125,87 +125,37 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
     };
 
     return (
-        <div
-            onClick={(e) => e.target === e.currentTarget && onClose()}
-            style={{
-                position: 'fixed', inset: 0,
-                background: 'rgba(10, 18, 28, 0.45)',
-                backdropFilter: 'blur(4px)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                zIndex: 1000,
-                animation: 'fadeIn 0.18s ease',
-            }}
-        >
-            <div style={{
-                background: '#ffffff',
-                borderRadius: '16px',
-                width: '100%',
-                maxWidth: '580px',
-                minHeight: '480px',
-                boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-                animation: 'slideUp 0.22s ease',
-            }}>
+        <div className="rpm-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+            <div className="rpm-modal">
 
-                {/* Header */}
-                <div style={{
-                    padding: '28px 32px 22px',
-                    borderBottom: '1px solid #f0ede8',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    background: '#0C1F31',
-                }}>
+        
+                <div className="rpm-header">
                     <div>
-                        <h2 style={{ fontSize: 20, fontWeight: 600, color: '#f4f3ef', margin: 0 }}>
+                        <h2 className="rpm-title">
                             Registrar Pago
                         </h2>
-                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginTop: 10, marginBottom: 0 }}>
+                        <p className="rpm-subtitle">
                             {payment.id} · Saldo pendiente&nbsp;
-                            <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 700 }}>
+                            <span className="rpm-subtitle-balance">
                                 $ {(payment.balance)}
                             </span>
                         </p>
                     </div>
-                    <button
-                        onClick={onClose}
-                        style={{
-                            background: 'rgba(255,255,255,0.08)',
-                            border: '1px solid rgba(255,255,255,0.12)',
-                            borderRadius: '8px',
-                            width: 32, height: 32,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 18, color: 'rgba(255,255,255,0.6)',
-                            cursor: 'pointer',
-                            transition: 'background 0.15s',
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                    >
+                    <button onClick={onClose} className="rpm-close-btn">
                         ×
                     </button>
                 </div>
 
-                {/* Body */}
-                <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+      
+                <div className="rpm-body">
 
-                    {/* Valor */}
+                
                     <div>
-                        <label style={{ fontSize: 12, fontWeight: 600, color: '#807777', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                        <label className="rpm-label">
                             Valor *
                         </label>
-                        <div style={{
-                            display: 'flex', alignItems: 'center',
-                            border: '1.5px solid rgba(0,0,0,0.12)',
-                            borderRadius: '8px', overflow: 'hidden',
-                            transition: 'border-color 0.2s, box-shadow 0.2s',
-                        }}
-                            onFocusCapture={e => { e.currentTarget.style.borderColor = '#0C1F31'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(12,31,49,0.08)'; }}
-                            onBlurCapture={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
-                        >
-                            <span style={{ padding: '0 12px', fontSize: 14, color: '#9e9b97', background: '#faf9f7', height: '42px', display: 'flex', alignItems: 'center', borderRight: '1.5px solid rgba(0,0,0,0.08)' }}>
+                        <div className="rpm-amount-group">
+                            <span className="rpm-amount-prefix">
                                 $
                             </span>
                             <input
@@ -213,20 +163,15 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
                                 placeholder="0.00"
                                 value={form.amount}
                                 onChange={(e) => set("amount", e.target.value)}
-                                style={{
-                                    border: 'none', outline: 'none',
-                                    padding: '0 14px', height: '42px',
-                                    fontSize: '14px', color: '#1a1a18',
-                                    background: 'transparent', width: '100%',
-                                }}
+                                className="rpm-amount-input"
                             />
                         </div>
                     </div>
 
-                    {/* Forma de pago + Fecha */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+   
+                    <div className="rpm-grid-2">
                         <div>
-                            <label style={{ fontSize: 12, fontWeight: 600, color: '#807777', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                            <label className="rpm-label">
                                 Forma de pago *
                             </label>
                             <Select
@@ -239,99 +184,46 @@ function RegisterPaymentModal({ payment, onClose, onSubmit }) {
                             />
                         </div>
                         <div>
-                            <label style={{ fontSize: 12, fontWeight: 600, color: '#807777', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                            <label className="rpm-label">
                                 Fecha
                             </label>
                             <input
                                 type="date"
                                 value={form.date}
                                 onChange={(e) => set("date", e.target.value)}
-                                style={{
-                                    height: '42px', width: '100%',
-                                    border: '1.5px solid rgba(0,0,0,0.12)',
-                                    borderRadius: '8px', padding: '0 12px',
-                                    fontSize: '13.5px', color: '#1a1a18',
-                                    outline: 'none', boxSizing: 'border-box',
-                                    background: '#fff',
-                                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                                }}
-                                onFocus={e => { e.target.style.borderColor = '#0C1F31'; e.target.style.boxShadow = '0 0 0 3px rgba(12,31,49,0.08)'; }}
-                                onBlur={e => { e.target.style.borderColor = 'rgba(0,0,0,0.12)'; e.target.style.boxShadow = 'none'; }}
+                                className="rpm-input"
                             />
                         </div>
                     </div>
 
-                    {/* Referencia */}
+            
                     <div>
-                        <label style={{ fontSize: 12, fontWeight: 600, color: '#807777', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                        <label className="rpm-label">
                             Referencia / Folio
                         </label>
                         <input
                             placeholder="Opcional"
                             value={form.reference}
                             onChange={(e) => set("reference", e.target.value)}
-                            style={{
-                                height: '42px', width: '100%',
-                                border: '1.5px solid rgba(0,0,0,0.12)',
-                                borderRadius: '8px', padding: '0 14px',
-                                fontSize: '13.5px', color: '#1a1a18',
-                                outline: 'none', boxSizing: 'border-box',
-                                background: '#fff',
-                                transition: 'border-color 0.2s, box-shadow 0.2s',
-                            }}
-                            onFocus={e => { e.target.style.borderColor = '#0C1F31'; e.target.style.boxShadow = '0 0 0 3px rgba(12,31,49,0.08)'; }}
-                            onBlur={e => { e.target.style.borderColor = 'rgba(0,0,0,0.12)'; e.target.style.boxShadow = 'none'; }}
+                            className="rpm-input rpm-input--reference"
                         />
                     </div>
                 </div>
 
-                {/* Footer */}
-                <div style={{
-                    padding: '24px 32px 36px',
-                    display: 'flex',
-                    gap: 10,
-                    justifyContent: 'flex-end'
-                }}>
-                    <button
-                        onClick={onClose}
-                        style={{
-                            height: '40px', padding: '0 20px',
-                            border: '1.5px solid rgba(0,0,0,0.12)',
-                            borderRadius: '8px', background: '#fff',
-                            fontSize: '13.5px', color: '#555',
-                            cursor: 'pointer', fontWeight: 500,
-                            transition: 'border-color 0.15s, background 0.15s',
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#faf9f7'}
-                        onMouseLeave={e => e.currentTarget.style.background = '#fff'}
-                    >
+             
+                <div className="rpm-footer">
+                    <button onClick={onClose} className="rpm-btn-cancel">
                         Cancelar
                     </button>
                     <button
                         onClick={() => canSubmit && onSubmit({ ...form, method: paymentType, amount: parseFloat(form.amount) })}
                         disabled={!canSubmit}
-                        style={{
-                            height: '40px', padding: '0 22px',
-                            border: 'none', borderRadius: '8px',
-                            background: canSubmit ? '#0C1F31' : '#e0deda',
-                            color: canSubmit ? '#f4f3ef' : '#aaa',
-                            fontSize: '13.5px', fontWeight: 600,
-                            cursor: canSubmit ? 'pointer' : 'not-allowed',
-                            transition: 'background 0.2s, transform 0.1s',
-                        }}
-                        onMouseEnter={e => canSubmit && (e.currentTarget.style.background = '#16304a')}
-                        onMouseLeave={e => canSubmit && (e.currentTarget.style.background = '#0C1F31')}
+                        className={`rpm-btn-submit ${canSubmit ? 'rpm-btn-submit--active' : ''}`}
                     >
                         Guardar pago
                     </button>
                 </div>
             </div>
-
-            {/* Animaciones */}
-            <style>{`
-                @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-                @keyframes slideUp { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
-            `}</style>
         </div>
     );
 }

@@ -137,7 +137,7 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
         <div className='filter-modal-overlay'>
             <div className="modal-payment">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <h2>Filtros de búsqueda</h2>
+                    <h2 style={{fontSize: '18px'}}>Filtros de búsqueda</h2>
                     <button onClick={handleClearForm} className="clean-button">Limpiar campos</button>
                     <div style={{ flex: "1" }}>
                         <button className="button-close" onClick={onClose}  >
@@ -158,9 +158,24 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
                     </div>
                 </div>
 
-                <div>
-                    <label style={{ display: 'block' }} className="label-fields-payment">Código orden de trabajo</label>
-                    <input className="input-fields-payment" onChange={e => setWorkOrder(e.target.value)} value={workOrder || ''} />
+                <div className="double-input-group">
+                    <div>
+                        <label style={{ display: 'block' }} className="label-fields-payment">Código orden de trabajo</label>
+                        <input className="input-fields-payment" onChange={e => setWorkOrder(e.target.value)} value={workOrder || ''} />
+                    </div>
+                    {mode !== "receivable" && (
+                        <div>
+                            <label className="label-fields-payment">Estado</label>
+                            <Select
+                                isSearchable={false}
+                                styles={selectPaymentStyles}
+                                options={salesStatus}
+                                value={salesStatus.find(option => option.value === status) || null}
+                                onChange={selectedOption => setStatus(selectedOption.value)}
+                                placeholder="Seleccione"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div className="double-input-group">
@@ -174,20 +189,6 @@ export function SearchModalSales({ isOpen, onClose, onConfirm, mode }) {
                     </div>
 
                 </div>
-                {mode !== "receivable" && (
-                    <div className="input-group-payment">
-                        <label className="label-fields-payment">Estado</label>
-                        <Select
-                            isSearchable={false}
-                            styles={selectPaymentStyles}
-                            options={salesStatus}
-                            value={salesStatus.find(option => option.value === status) || null}
-                            onChange={selectedOption => setStatus(selectedOption.value)}
-                            placeholder="Seleccione"
-                        />
-                    </div>
-
-                )}
 
                 {/* <div className="input-group-payment">
                     <label className="label-fields-payment">Tipo de comprobante</label>

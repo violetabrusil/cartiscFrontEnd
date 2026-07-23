@@ -33,7 +33,9 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     const [searchTerm, setSearchTerm] = useState("");
     const [refreshCount, setRefreshCount] = useState(0);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 5, 13);
+    const [tablePage, setTablePage] = useState(0);
+    const [resetPageToken, setResetPageToken] = useState(0);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 4, 13);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -217,6 +219,10 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
         fetchData();
     }, [selectedOption, searchTerm, refreshCount]);
 
+    useEffect(() => {
+        setResetPageToken(prev => prev + 1);
+    }, [selectedOption, searchTerm]);
+
     return (
         <div style={{ marginTop: '-18px' }}>
             <ToastContainer />
@@ -238,7 +244,15 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
                         </div>
 
                     ) : (
-                        <DataTable data={allProducts} columns={columns} highlightRows={false} initialPageSize={responsivePageSize} />
+                        <DataTable
+                            data={allProducts}
+                            columns={columns}
+                            highlightRows={false}
+                            initialPageSize={responsivePageSize}
+                            initialPageIndex={tablePage}
+                            onPageChange={setTablePage}
+                            resetPageToken={resetPageToken}
+                        />
                     )
                     }
 

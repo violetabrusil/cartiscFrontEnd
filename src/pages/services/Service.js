@@ -18,6 +18,7 @@ import { CustomButtonContainer, CustomButton } from "../../customButton/CustomBu
 import CustomTitleSection from "../../customTitleSection/CustomTitleSection";
 import DataTable from "../../dataTable/DataTable";
 import { usePageSizeForTabletLandscape } from "../../pagination/UsePageSize";
+import { useScrollRestoration } from "../../hooks/useScrollRestoration";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const deleteIcon = process.env.PUBLIC_URL + "/images/icons/deleteIcon.png";
@@ -27,26 +28,23 @@ const addIcon = process.env.PUBLIC_URL + "/images/icons/addIcon.png";
 
 const Services = () => {
 
-    //Variables para controlar el tab de servicios y operaciones
     const [activeTab, setActiveTab] = useState('servicios');
     const [loading, setLoading] = useState(true);
     const [currentSection, setCurrentSection] = useState(null);
     const showButtons = currentSection === null;
     const [lastActiveSection, setLastActiveSection] = useState({
-        servicios: null,  // o 'default' si hay una sección predeterminada
+        servicios: null,  
         operaciones: null
     });
 
-    //Variables para la búsqueda de servicios y operaciones
     const [selectedOption, setSelectedOption] = useState('Título');
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-    //Variables para las operaciones y controlar el estado de sus secciones
+   
     const [operations, setOperations] = useState([]);
     const [selectedOperation, setSelectedOperation] = useState(null);
 
-    //Variables para los servicios y controlar el estado de sus secciones
     const [services, setServices] = useState([]);
     const [lastUpdated, setLastUpdated] = useState(Date.now());
     const [title, setTitle] = useState('');
@@ -62,7 +60,7 @@ const Services = () => {
     const [operation, setOperation] = useState([]);
     const [selectedOperations, setSelectedOperations] = useState([]);
 
-    {/* Decidir cuál arreglo de operaciones usar basado en el modo */ }
+
     const operationsToShow = mode === 'edit' ? selectedService.operations : selectedOperations;
 
     const responsivePageSizeOperationsSelected = usePageSizeForTabletLandscape(6, 3);
@@ -71,8 +69,8 @@ const Services = () => {
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
 
-        if (tabName === 'operaciones') { // Asumiendo que el nombre del tab de operaciones es 'operaciones'
-            setCurrentSection(null);  // Muestra la sección de botones
+        if (tabName === 'operaciones') { 
+            setCurrentSection(null);  
         } else {
             const lastSectionForTab = lastActiveSection[tabName];
 
@@ -126,10 +124,8 @@ const Services = () => {
     };
 
     const handleSelectClick = (option) => {
-        // Aquí se puede manejar la opción seleccionada.
         setSelectedOption(option);
 
-        // Cerrar el modal después de seleccionar.
         closeFilterModal();
     };
 
@@ -138,17 +134,15 @@ const Services = () => {
         setActiveTab('servicios');
         setCurrentSection('addService');
         setLastActiveSection(prevState => ({ ...prevState, servicios: 'addService' }));
-        // setShowButtons(false);
+
     };
 
     const handleShowServiceInformation = async (serviceId, event) => {
         event.stopPropagation();
         const selectedServ = services.find(serv => serv.id === serviceId);
         try {
-            // Hacer una petición al backend para obtener la información del servicio
             const response = await apiClient.get(`/services/${selectedServ.id}`);
 
-            // Aquí 'response.data' es la respuesta del servidor que debería contener la información del servicio.
             setSelectedService(response.data);
             setTitle(response.data.service_title);
             setMode('edit');
@@ -160,7 +154,6 @@ const Services = () => {
 
         } catch (error) {
             console.error("Error fetching service information:", error);
-            // Aquí puedes manejar los errores, por ejemplo mostrar un mensaje al usuario.
         }
     };
 
@@ -191,12 +184,10 @@ const Services = () => {
 
     const handleSearchOperationsWithDebounce = useCallback(
         debounce(async () => {
-            // Define los tipos de búsqueda
             const searchTypeOperationCode = "operation_code";
             const searchTypeTitle = "title";
             let endpoint = '';
 
-            // Si hay un término de búsqueda, decide el endpoint basado en la pestaña activa
             if (searchOperationTerm) {
                 if (activeTabOperation === 'código') {
                     endpoint = `/operations/search?search_type=${searchTypeOperationCode}&criteria=${searchOperationTerm}`;
@@ -204,7 +195,6 @@ const Services = () => {
                     endpoint = `/operations/search?search_type=${searchTypeTitle}&criteria=${searchOperationTerm}`;
                 }
             } else {
-                // Si no hay término de búsqueda, carga todas las operaciones
                 endpoint = `/operations/all`;
             }
 
@@ -213,52 +203,41 @@ const Services = () => {
                     cancelToken: source.token
                 });
 
-                // Solo actualiza el estado si el componente sigue montado
                 if (isMounted.current) {
                     setOperation(response.data);
                 }
             } catch (error) {
                 if (axios.isCancel(error)) {
-                    // Maneja la cancelación aquí si es necesario
-                } else {
-                    // Maneja otros errores aquí si es necesario
-                }
+                } 
             }
         }, 500),
-        [activeTabOperation, searchOperationTerm] // Actualiza esta dependencia
+        [activeTabOperation, searchOperationTerm] 
     );
 
     const handleAddOperationModal = (operationToAdd) => {
-        // Decide a qué conjunto de operaciones agregar dependiendo del modo
         const operationsToModify = mode === 'edit' ? selectedService.operations : selectedOperations;
 
-        // Verifica si la operación ya está en la lista
         if (operationsToModify.some(op => op.id === operationToAdd.id)) {
-            // Si ya fue agregada, termina la función
             return;
         }
 
-        // Si estás en modo edit, modifica las operaciones de selectedService
         if (mode === 'edit') {
             setSelectedService(prevState => ({
                 ...prevState,
                 operations: [...prevState.operations, operationToAdd]
             }));
         } else {
-            // Si no, modifica las operaciones seleccionadas normales
             setSelectedOperations(prev => [...prev, operationToAdd]);
         }
     };
 
     const handleRemoveOperation = (operationIdToRemove) => {
-        // Si estás en modo edit, elimina de selectedService.Operations
         if (mode === 'edit') {
             setSelectedService(prevState => ({
                 ...prevState,
                 operations: prevState.operations.filter(op => op.id !== operationIdToRemove)
             }));
         } else {
-            // Si estás en modo add, elimina de selectedOperations
             setSelectedOperations(prevOperations => prevOperations.filter(op => op.id !== operationIdToRemove));
         }
     };
@@ -362,11 +341,9 @@ const Services = () => {
                 const operationIndex = operations.findIndex(op => op.id === updatedOperation.id);
 
                 if (operationIndex !== -1) {
-                    // Si la operación ya existe, reemplázala
                     newOperations = [...operations];
                     newOperations[operationIndex] = updatedOperation;
                 } else {
-                    // Si es una nueva operación, añádela a la lista
                     newOperations = [...operations, updatedOperation];
                 }
                 break;
@@ -399,8 +376,6 @@ const Services = () => {
         resetForm();
     };
 
-    //Calcular el total del costo del servicio mediante el valor
-    //de cada operación seleccionada
     let operationsData = mode === 'edit' ? selectedService.operations : selectedOperations;
 
     let totalCost = operationsData.reduce((sum, operation) => {
@@ -408,14 +383,13 @@ const Services = () => {
 
         if (isNaN(cost)) {
             console.error('Valor inválido:', operation.cost);
-            return sum;  // Retorna la suma acumulada hasta ahora sin cambiarla
+            return sum; 
         }
 
-        return sum + cost;  // Retorna la suma acumulada más el nuevo costo
+        return sum + cost;  
     }, 0);
 
 
-    //Función para crear un nuevo servicio 
     const handleSaveOrUpdateService = async (event) => {
         event.preventDefault();
         const id_operations = selectedOperations.map(operation => operation.id);
@@ -457,10 +431,7 @@ const Services = () => {
             }
         }
     };
-
-    //Función para eliminar un servicio
     const handleDeleteService = async (event) => {
-        //Para evitar que el formulario recargue la página
         event.preventDefault();
         setIsAlertServiceSuspend(false);
 
@@ -585,20 +556,17 @@ const Services = () => {
         return () => controller.abort();
     }, [searchTerm, selectedOption, lastUpdated, activeTab]);
 
-    //Para realizar la búsqueda de las operaciones en el modal
     useEffect(() => {
-        // Al montar el componente
         isMounted.current = true;
 
-        // Inicia la búsqueda o carga todas las operaciones según el término de búsqueda
         handleSearchOperationsWithDebounce();
 
-        // Cleanup al desmontar el componente o al cambiar el término de búsqueda o la pestaña activa
+      
         return () => {
-            isMounted.current = false;  // Indica que el componente ha sido desmontado
-            source.cancel('Search term changed or component unmounted'); // Cancela la solicitud pendiente
+            isMounted.current = false;  
+            source.cancel('Search term changed or component unmounted'); 
         };
-    }, [searchOperationTerm, activeTabOperation, handleSearchOperationsWithDebounce]); // Asegúrate de incluir activeTabOperation aquí
+    }, [searchOperationTerm, activeTabOperation, handleSearchOperationsWithDebounce]); 
 
 
     React.useEffect(() => {
@@ -609,8 +577,9 @@ const Services = () => {
         }
     }, [mode, currentSection]);
 
-    // Espeja la condición inversa a la que renderiza el botón "AGREGAR SERVICIO"/"AGREGAR OPERACIÓN".
+  
     const isServiceButtonHidden = !showButtons;
+    const serviceListScrollRef = useScrollRestoration(`services:${activeTab}`, !loading && !isServiceButtonHidden);
 
     return (
         <div>
@@ -619,7 +588,6 @@ const Services = () => {
 
             <div className={`container-services ${isServiceButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section-service">
-                    {/*Título del contenedor con buscador */}
                     <div className="tabs-service-operation">
                         <button
                             className={`button-tab-service ${activeTab === 'servicios' ? 'active' : ''}`}
@@ -652,7 +620,7 @@ const Services = () => {
                     ) : (
                         <>
                             {activeTab === 'servicios' &&
-                                <div className="search-results-operations">
+                                <div className="search-results-operations" ref={serviceListScrollRef}>
                                     {Array.isArray(services) && services.map(serviceData => (
                                         <div key={`service-${serviceData.id}`} className="result-operations">
                                             <div className="operation-code-section">
@@ -677,7 +645,7 @@ const Services = () => {
                             }
 
                             {activeTab === 'operaciones' &&
-                                <div className="search-results-operations">
+                                <div className="search-results-operations" ref={serviceListScrollRef}>
                                     {operations.map(operationData => (
                                         <div key={`operation-${operationData.id}`} className="result-operations">
                                             <div className="operation-code-section">
@@ -712,8 +680,6 @@ const Services = () => {
                             <CustomButton title="AGREGAR OPERACIÓN" onClick={handleAddOperation} buttonClassName="button-add-op" />
                         </CustomButtonContainer>
                     )}
-
-                    {/*Contenedor para agregar servicio */}
 
                     {currentSection === 'addService' && (
                         <div className="container-general">
@@ -820,8 +786,6 @@ const Services = () => {
 
                     )}
 
-                    {/*Contenedor para agregar operaciones */}
-
                     {currentSection === 'addOperation' && (
                         <OperationRightSection
                             onOperationChange={handleOperationChange}
@@ -830,7 +794,6 @@ const Services = () => {
                         />
                     )}
 
-                    {/*Contenedor para editar operaciones*/}
 
                     {currentSection === 'editOperation' && (
                         <OperationRightSection
@@ -845,7 +808,6 @@ const Services = () => {
                 </div>
             </div>
 
-            {/*Modal del filtro de búsqueda*/}
 
             {
                 isFilterModalOpen && (

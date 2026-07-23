@@ -17,9 +17,8 @@
     position: sticky;
     top: 0;
     height: 0;
-    z-index: 1;  /* Esto asegura que el pseudo-elemento está por encima de otros contenidos del modal */
+    z-index: 1;  
 }
-
 .filter-modal-new-client {
     position: relative;
     background-color: #fff;
@@ -27,9 +26,12 @@
     border-radius: 20px;
     max-width: 400px;
     width: 80%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
 
 }
 
@@ -69,7 +71,6 @@
     font-size: 16px;
     font-weight: bold;
     margin-top: 20px;
-    /* Ajusta el espacio entre el último elemento y el botón */
     align-self: center;
     width: 160px;
     height: 40px;
@@ -89,7 +90,6 @@
     font-size: 16px;
     font-weight: bold;
     margin-top: 20px;
-    /* Ajusta el espacio entre el último elemento y el botón */
     align-self: center;
     width: 160px;
     height: 40px;
@@ -101,38 +101,27 @@
 
 .modal-icon {
     position: absolute;
-    top: -45px;  /* La mitad del alto del icono para centrarlo con respecto al borde superior */
+    top: -45px; 
     left: 50%;
     transform: translate(-50%, 0);
     width: 80px;
     height: 80px;
-    z-index: 10001; /* Asegurando que esté por encima de otros contenidos */
+    z-index: 10001;
 }
 
-/* Media queries para tamaños de pantalla */
 
 @media screen and (max-width: 768px) {
     .filter-modal-new-client {
-        /* Estilos para tamaños de pantalla medianos */
         width: 80%;
         max-width: 400px;
-    }
-
-    .filter-modal-new-client-overlay {
-        /* Estilos para tamaños de pantalla medianos */
     }
 }
 
 @media screen and (max-width: 480px) {
     .filter-modal-new-client {
-        /* Estilos para tamaños de pantalla pequeños */
         width: 90%;
         max-width: 300px;
         padding: 10px;
-    }
-
-    .filter-modal-new-client-overlay {
-        /* Estilos para tamaños de pantalla pequeños */
     }
 
     .container-modal-new-client {
@@ -144,4 +133,3 @@
     }
 }
 
-/* Agrega los estilos específicos para cada tamaño de pantalla según sea necesario */

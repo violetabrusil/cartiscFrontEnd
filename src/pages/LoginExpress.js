@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { AuthContext } from '../contexts/AuthContext';
 import apiLogin from '../services/api';
+import { userTypeMaping } from '../constants/userRoleConstants';
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 
@@ -18,7 +19,7 @@ const LoginExpress = () => {
 
     const [pin, setPin] = useState('');
     const [physicalPin, setPhysicalPin] = useState('');
-    const { user } = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleNumberClick = (number) => {
@@ -37,25 +38,48 @@ const LoginExpress = () => {
             const response = await apiLogin.post('/login-express', { unumber, pin });
             const token = response.data.token;
 
-            if (response.data.user) {
-                // Guarda todos los datos del usuario en localStorage
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-            }
-
+            localStorage.setItem('token', token);
             document.cookie = `jwt=${token}; path=/; samesite=none`;
 
-            if (user.user_type === "admin") {
-                navigate("/settings");
-            } else {
-                navigate("/home");
+            const loggedUser = response.data.user;
+
+            if (loggedUser) {
+                const translatedUserType = userTypeMaping[loggedUser.user_type] || loggedUser.user_type;
+                const modifiedUser = {
+                    ...loggedUser,
+                    translated_user_type: translatedUserType,
+                };
+
+                setUser(modifiedUser);
+                localStorage.setItem('user', JSON.stringify(modifiedUser));
+
+                if (modifiedUser.change_password) {
+                    navigate("/changePassword");
+                    return;
+                }
+
+                if (modifiedUser.change_pin) {
+                    navigate("/changePIN");
+                    return;
+                }
+
+                if (modifiedUser.user_type === "admin") {
+                    navigate("/settings");
+                } else {
+                    navigate("/home");
+                }
             }
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data.errors) {
-                // Muestra los errores en toasts
+
                 error.response.data.errors.forEach(err => {
                     toast.error(`${err.field}: ${err.message}`, {
                         position: toast.POSITION.TOP_RIGHT
                     });
+                });
+            } else if (error.response && error.response.status === 401) {
+                toast.error('PIN incorrecto', {
+                    position: toast.POSITION.TOP_RIGHT
                 });
             }
         }
@@ -63,7 +87,7 @@ const LoginExpress = () => {
 
 
     const handleDeleteClick = () => {
-        setPin(prevPin => prevPin.slice(0, -1));  // Esta línea elimina el último carácter del PIN.
+        setPin(prevPin => prevPin.slice(0, -1));  
     };
 
     const handleLoginOtherAccount = () => {

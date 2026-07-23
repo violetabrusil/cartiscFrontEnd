@@ -14,26 +14,36 @@ import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxS
 import { CustomButtonContainer, CustomButton } from "../../customButton/CustomButton";
 import { workOrderStatus } from "../../constants/workOrderConstants";
 import { useWorkOrderContext } from "../../contexts/searchContext/WorkOrderContext";
+import { useScrollRestoration, enteringModule } from "../../hooks/useScrollRestoration";
 
 const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 const receiptIcon = process.env.PUBLIC_URL + "/images/icons/receipt.png";
 
 const WorkOrders = () => {
 
-    const { selectedOption = 'Nombre Titular', setSelectedOption, searchTerm, setSearchTerm } = useWorkOrderContext();
+    const {
+        selectedOption = 'Nombre Titular', setSelectedOption,
+        searchTerm, setSearchTerm,
+        workOrders, setWorkOrders,
+        page, setPage,
+        hasMore, setHasMore,
+        totalValues, setTotalValues
+    } = useWorkOrderContext();
     const navigate = useNavigate();
 
-    const [workOrders, setWorkOrders] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalValues, setTotalValues] = useState("");
     const PAGE_SIZE = 10;
 
-    const [loading, setLoading] = useState(true);
+   
+    const [isFreshModuleEntry] = useState(() => enteringModule('workOrders'));
+
+    const [loading, setLoading] = useState(isFreshModuleEntry || workOrders.length === 0);
     const [isFetching, setIsFetching] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
     const observer = useRef();
+    const isFirstFilterRun = useRef(true);
+    const isFirstFetchRun = useRef(true);
+    const workOrdersListRef = useScrollRestoration('workOrders:list', !loading);
 
     const formatDate = (isoDate) => {
         if (!isoDate) return "--/--/--";
@@ -81,8 +91,15 @@ const WorkOrders = () => {
     );
 
     useEffect(() => {
+        if (isFirstFilterRun.current) {
+            isFirstFilterRun.current = false;
+            return;
+        }
         setPage(1);
         setHasMore(true);
+        if (workOrdersListRef.current) {
+            workOrdersListRef.current.scrollTop = 0;
+        }
     }, [searchTerm, selectedOption]);
 
     const handleOptionChange = (option) => {
@@ -96,6 +113,24 @@ const WorkOrders = () => {
 
     useEffect(() => {
         const controller = new AbortController();
+
+        if (isFirstFetchRun.current) {
+            isFirstFetchRun.current = false;
+
+            if (isFreshModuleEntry) {
+                const needsPageReset = page !== 1;
+                const needsSearchReset = Boolean(searchTerm);
+                setHasMore(true);
+                if (needsPageReset) setPage(1);
+                if (needsSearchReset) setSearchTerm("");
+                if (needsPageReset || needsSearchReset) {
+                    return () => controller.abort();
+                }
+            } else if (workOrders.length > 0) {
+                setLoading(false);
+                return () => controller.abort();
+            }
+        }
 
         const fetchData = async () => {
 
@@ -115,7 +150,6 @@ const WorkOrders = () => {
                         'Placa': 'vehicle_plate',
                         'Código Orden de Trabajo': 'work_order_code',
                         'Nombre Titular': 'client_name',
-                        //'Estado': 'work_order_status',
                         'Asignada a': 'assigned',
                         'Entregada por': 'delivered_by',
                         'Creada por': 'created_by',
@@ -206,9 +240,9 @@ const WorkOrders = () => {
             <div className="work-order-container">
                 <div className="left-section-work-order">
 
-                    {/*Título del contenedor y cuadro de búsqueda */}
                     <TitleAndSearchBoxSpecial
                         selectedOption={selectedOption}
+                        searchTerm={searchTerm}
                         title="Órdenes de Trabajo"
                         subtitle={totalValues}
                         onSearchChange={handleSearchWorkOrdersWithDebounce}
@@ -217,7 +251,6 @@ const WorkOrders = () => {
                         wrapperClassName="title-search-wrapper"
                     />
 
-                    {/*Lista de órdenes de trabajo */}
 
                     {loading && page === 1 ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
@@ -225,7 +258,7 @@ const WorkOrders = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="container-list-work-orders">
+                            <div className="container-list-work-orders" ref={workOrdersListRef}>
 
                                 {workOrders.map((workOrderData, index) => {
                                     const isLast = workOrders.length === index + 1;
@@ -307,7 +340,6 @@ const WorkOrders = () => {
                 </div>
             </div>
 
-            {/*Modal del filtro de búsqueda*/}
 
             {isFilterModalOpen && (
                 <Modal

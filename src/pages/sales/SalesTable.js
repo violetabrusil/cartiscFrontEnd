@@ -68,11 +68,9 @@ export default function SalesTable({ mode = "all" }) {
     };
 
     const handleOpenPayment = useCallback((sale) => {
-        const pageFromUrl = searchParams.get("page") ?? "1";
-
         navigate(`/payments/${sale.payment_id}`, {
             state: {
-                from: `${location.pathname}?page=${pageFromUrl}`,
+                from: `${location.pathname}${location.search}`,
                 fromDetail: true,
                 saleInfo: {
                     date: sale.date?.slice(0, 10),
@@ -82,7 +80,7 @@ export default function SalesTable({ mode = "all" }) {
                 }
             }
         });
-    }, [searchParams, navigate, location.pathname]);
+    }, [navigate, location.pathname, location.search]);
 
     const columns = React.useMemo(
         () => [

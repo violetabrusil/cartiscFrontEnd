@@ -7,7 +7,6 @@
     display: grid;
     grid-template-columns: 1fr 2fr;
     grid-gap: 0px;
-    height: calc(100vh - 80px); /* Altura del viewport menos 80px de la parte superior */
     overflow: hidden;
 }
 
@@ -21,9 +20,9 @@
 }
 
 .container-list-proformas {
-    flex: 1; /* Esto hará que ocupe todo el espacio no utilizado en .left-section */
+    flex: 1; 
     overflow-y: auto;
-    max-height: 82%; /* Esto asegura que no exceda el espacio de su contenedor padre */
+    max-height: 82%;
     overflow-x: hidden;
 }
 
@@ -42,9 +41,9 @@
 .first-result-proforma,
 .second-result-proforma,
 .third-result-proforma {
-    overflow: hidden; /* para evitar desbordamiento */
-    text-overflow: ellipsis; /* para mostrar puntos suspensivos si el texto es demasiado largo */
-    white-space: nowrap; /* para evitar saltos de línea */
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    white-space: nowrap; 
 }
 
 .first-result-proforma {
@@ -64,8 +63,7 @@
     text-align: center;
     font-size: 14px;
     font-weight: normal;
-    max-width: 200px; /* ajusta el valor según sea necesario */
-    /* Añade el desbordamiento y los puntos suspensivos */
+    max-width: 200px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -144,6 +142,6 @@
     background-color: #d0d0d0;
     padding: 20px;
     overflow-y: auto;
-    height: 100%; /* Hace que ocupe todo el espacio disponible en .containerClients */
+    height: 100%; 
     box-sizing: border-box;
 }

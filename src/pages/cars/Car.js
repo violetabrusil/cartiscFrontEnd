@@ -25,6 +25,7 @@ import { CustomSingleValue } from "../../customSingleValue/CustomSingleValue";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCarContext } from "../../contexts/searchContext/CarContext";
 import TitleAndSearchBoxSpecial from "../../titleAndSearchBox/TitleAndSearchBoxSpecial";
+import { useScrollRestoration } from "../../hooks/useScrollRestoration";
 
 const eyeIcon = process.env.PUBLIC_URL + "/images/icons/eyeIcon.png";
 const iconAlertWhite = process.env.PUBLIC_URL + "/images/icons/alerIconWhite.png";
@@ -43,7 +44,6 @@ const motorIcon = process.env.PUBLIC_URL + "/images/icons/engine.png";
 
 const Cars = () => {
 
-    //Variable para el filtro y la búsqueda de vehículos y clientes
     const { selectedOption = "Nombre Titular", setSelectedOption, searchTerm, setSearchTerm } = useCarContext();
     const [activeTab, setActiveTab] = useState('cédula');
     const [searchClienTerm, setSearchClientTerm] = useState('');
@@ -52,7 +52,6 @@ const Cars = () => {
     const [nameClient, setNameClient] = useState('');
     const [loading, setLoading] = useState(true);
 
-    //Varibales para el manejo de los vehículos
     const [vehicles, setVehicles] = useState([]);
     const iconsVehicles = useMemo(() => {
         return {
@@ -85,7 +84,6 @@ const Cars = () => {
     const [isSearchWorkOrderModalOpen, setIsSearchWorkOrderModalOpen] = useState(false);
     const [selectedPlateVehicle, setSelectedPlateVehicle] = useState(null);
 
-    //Variables para guardar a un vehículo
     const [category, setCategory] = useState('');
     const [plateCar, setPlateCar] = useState('');
     const [brand, setBrand] = useState('');
@@ -93,8 +91,6 @@ const Cars = () => {
     const [year, setYear] = useState('');
     const [motor, setMotor] = useState('');
     const [km, setKm] = useState('');
-
-    //Variables para de modales y secciones
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
     const [showCarInformation, setShowCarInformation] = useState(false);
@@ -237,7 +233,7 @@ const Cars = () => {
                 return (
                     <button
                         className="button-eye-car-work-order"
-                        onClick={() => handleShowInformationWorkOrderClick(workOrder.id)}
+                        onClick={() => handleShowInformationWorkOrderClick(workOrder.id, `/cars/carHistory/${vehicleId}`)}
                     >
 
                         <img src={eyeIcon} alt="Eye Icon Work Order" className="icon-eye-car-work-order"
@@ -734,6 +730,21 @@ const Cars = () => {
     }, [vehicleId, vehicles.length]);
 
     const isAddVehicleButtonHidden = showAddVehicle || showCarHistory || showCarInformation || showMaintenance;
+    const vehicleListScrollRef = useScrollRestoration('cars:list', !loading && !isAddVehicleButtonHidden);
+
+    const isResolvingVehicleFromUrl = Boolean(vehicleId) && !showCarHistory;
+
+    if (isResolvingVehicleFromUrl) {
+        return (
+            <div>
+                <Header showIcon={true} showPhoto={true} showUser={true} showRol={true} showLogoutButton={true} />
+                <Menu resetFunction={resetVehicleState} />
+                <div className="loader-container" style={{ marginLeft: '-93px' }}>
+                    <PuffLoader color="#316EA8" loading={true} size={60} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -742,9 +753,9 @@ const Cars = () => {
 
             <div className={`containerCars ${isAddVehicleButtonHidden ? "hide-list-mobile compact-header-mobile" : ""}`}>
                 <div className="left-section-cars">
-                    {/*Título del contenedor y cuadro de búsqueda */}
                     <TitleAndSearchBoxSpecial
                         selectedOption={selectedOption}
+                        searchTerm={searchTerm}
                         title="Vehículos"
                         onSearchChange={handleSearchVehiclesWithDebounce}
                         onButtonClick={openFilterModal}
@@ -759,8 +770,8 @@ const Cars = () => {
                     ) : (
 
                         <>
-                            {/*Lista de vehículos */}
-                            <div className="container-list-vehicle">
+                       
+                            <div className="container-list-vehicle" ref={vehicleListScrollRef}>
                                 {vehicles.map(vehicleData => (
                                     <div key={vehicleData.id} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)}>
                                         <div className="first-result-car">
@@ -803,14 +814,12 @@ const Cars = () => {
 
                 <div className="right-section-cars">
                     <ToastContainer />
-                    {/*Sección para mostrar el botón de agregar vehículo */}
                     {showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
                         <CustomButtonContainer>
                             <CustomButton title="AGREGAR VEHÍCULO" onClick={handleOpenModalSearchClient} />
                         </CustomButtonContainer>
                     )}
 
-                    {/*Sección para mostrar el formulario para agregar un vehículo*/}
                     {showAddVehicle && !showButtonAddVehicle && !showCarHistory && !showCarInformation && !showMaintenance && (
                         <>
                             <CustomTitleSection
@@ -1235,6 +1244,9 @@ const Cars = () => {
                             <button className="button-close" onClick={handleCloseModalSearchClient}  >
                                 <img src={closeIcon} alt="Close Icon" className="close-icon"></img>
                             </button>
+                            <p className="search-client-instruction">
+                                Para agregar un vehículo, primero busca al cliente por cédula o nombre y selecciónalo de los resultados.
+                            </p>
                             <div className="tabs">
                                 <button className={`button-tab ${activeTab === 'cédula' ? 'active' : ''}`}
                                     onClick={() => handleTabChange('cédula')}>

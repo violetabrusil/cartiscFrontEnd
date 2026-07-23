@@ -7,7 +7,6 @@
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8));
     display: flex;
     align-items: center;
-    /* Alinear verticalmente en el centro */
     justify-content: center;
     z-index: 9999;
 }
@@ -23,7 +22,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
 
 }
 
@@ -43,7 +42,6 @@
 
 .filter-options input[type="radio"] {
     margin-right: 10px;
-    /* Ajusta el valor según el espacio deseado */
 }
 
 .button-options {
@@ -68,8 +66,16 @@
     font-size: 16px;
     font-weight: bold;
     margin-top: 20px;
-    /* Ajusta el espacio entre el último elemento y el botón */
     align-self: center;
+}
+
+.modal-button-row {
+    display: flex;
+    justify-content: center;
+}
+
+.modal-button-row .modal-button {
+    align-self: auto;
 }
 
 .clean-button {
@@ -96,7 +102,6 @@
     font-size: 16px;
     font-weight: bold;
     margin-top: 20px;
-    /* Ajusta el espacio entre el último elemento y el botón */
     align-self: center;
     width: 160px;
     height: 40px;
@@ -116,7 +121,6 @@
     font-size: 16px;
     font-weight: bold;
     margin-top: 20px;
-    /* Ajusta el espacio entre el último elemento y el botón */
     align-self: center;
     width: 160px;
     height: 40px;
@@ -173,6 +177,27 @@
 .input-fields::placeholder {
     color: rgb(0 0 0 / 34%);
     font-weight: 600;
+}
+
+.date-range-fields {
+    display: flex;
+    gap: 12px;
+}
+
+.date-range-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.date-range-field .react-datepicker-wrapper {
+    display: block;
+    width: 100%;
+}
+
+.input-fields-date {
+    width: 100%;
+    height: 43px;
+    box-sizing: border-box;
 }
 
 .select-field {
@@ -267,7 +292,6 @@
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    /* Espacio entre los dos grupos */
 }
 
 .double-input-group > div,
@@ -279,7 +303,6 @@
 .entry {
     position: relative;
     padding-left: 30px;
-    /* Espacio para la línea y el círculo */
 }
 
 .entry-color:before,
@@ -344,6 +367,10 @@
     border-bottom: 1px solid #b9b9b9;
 }
 
+.title-modal-history .label-history-work-order {
+    margin-right: 0;
+}
+
 .div-container-history {
     margin-top: 20px;
     overflow-y: auto;
@@ -366,7 +393,7 @@
     width: 100%;
     max-width: 98%;
     box-sizing: border-box;
-    /* Esto asegura que el padding y el border están incluidos en el ancho total */
+   
 }
 
 .products-modal-content .products-table td {
@@ -468,7 +495,6 @@
 .accept-button-modal.disabled {
     background-color: #6E757D;
     cursor: not-allowed;
-    /* Cambia el cursor para indicar que el botón está desactivado */
 }
 
 .modal-message {
@@ -1058,10 +1084,102 @@
 }
 
 
+@media (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
+
+    .filter-modal {
+        max-height: 88vh;
+        padding: 16px;
+    }
+
+    .filter-modal h3 {
+        font-size: 16px;
+        margin-bottom: 1rem;
+    }
+
+    .filter-modal-work-order-history {
+        width: 75%;
+        max-width: 580px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        column-gap: 16px;
+    }
+
+    .filter-modal-work-order-history > h3,
+    .filter-modal-work-order-history .title-modal-search,
+    .filter-modal-work-order-history .date-range-fields,
+    .filter-modal-work-order-history .button-options,
+    .filter-modal-work-order-history .select-field {
+        flex-basis: 100%;
+        width: 100%;
+    }
+
+    .filter-modal-work-order-history .modal-button-row {
+        flex-basis: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .filter-modal-work-order-history .modal-button-row .modal-button {
+        margin-top: 0;
+    }
+
+    .filter-modal-work-order-history .container-fields-modal-search {
+        display: block;
+        flex: 1 1 45%;
+        min-width: 220px;
+    }
+
+    .filter-modal-work-order-history .container-fields-modal-search .label-fields {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .filter-modal-work-order-history .date-range-fields {
+        gap: 16px;
+    }
+
+    .filter-modal-work-order-history .date-range-field {
+        flex: 1 1 45%;
+        min-width: 220px;
+        max-width: none;
+    }
+
+    .filter-modal-work-order-history .container-fields-modal-search .input-fields,
+    .filter-modal-work-order-history .input-fields-date {
+        width: 100%;
+        height: 40px;
+        box-sizing: border-box;
+    }
+
+    .modal-payment {
+        width: 80%;
+        max-width: 650px;
+        max-height: 90vh;
+    }
+
+    .clean-button {
+        margin-left: 18rem;
+
+    }
+}
+
 @media (max-width: 1024px) and (orientation: portrait) {
 
     .filter-modal {
         width: 90%;
+    }
+
+    .date-range-fields {
+        gap: 12px;
+    }
+
+    .input-fields-date {
+        font-size: 13px;
+        padding-left: 4px;
+        padding-right: 4px;
     }
 
     .modal-payment {

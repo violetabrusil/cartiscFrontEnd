@@ -1,12 +1,10 @@
 import "../TitleAndSearchBox.css";
 import React, { useState, useEffect } from "react";
-import { useWorkOrderContext } from "../contexts/searchContext/WorkOrderContext";
 
 const searchIcon = process.env.PUBLIC_URL + "/images/icons/searchIcon.png";
 const filterIcon = process.env.PUBLIC_URL + "/images/icons/filterIcon.png";
 
-const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch, wrapperClassName }) => {
-    const { searchTerm } = useWorkOrderContext();
+const TitleAndSearchBoxSpecial = ({ title, subtitle, onSearchChange, onButtonClick, selectedOption, isSpecial, shouldSaveSearch, searchTerm, wrapperClassName }) => {
     const [searchInput, setSearchInput] = useState(searchTerm || "");
 
     const searchBoxClass = isSpecial ? "search-box-special" : "search-box";

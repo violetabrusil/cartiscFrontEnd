@@ -19,7 +19,7 @@ const flagIcon = process.env.PUBLIC_URL + "/images/icons/flagEcuador.png";
 
 const Proforma = () => {
 
-    const { selectedOption, setSelectedOption, searcTerm, setSearchTerm } = useProformaContext();
+    const { selectedOption, setSelectedOption, searchTerm, setSearchTerm } = useProformaContext();
     const [proformas, setProformas] = useState();
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -89,7 +89,7 @@ const Proforma = () => {
         const fetchData = async () => {
             let endpoint = 'proformas/all';
 
-            if (searcTerm) {
+            if (searchTerm) {
                 endpoint = '/proformas/search';
 
                 const searchFieldMapping = {
@@ -99,7 +99,7 @@ const Proforma = () => {
                     'Creada por': 'created_by'
                 };
 
-                const searchField = searchFieldMapping(selectedOption);
+                const searchField = searchFieldMapping[selectedOption];
 
                 if (!searchField) {
                     console.error('Campo de búsqueda no válido', selectedOption);
@@ -107,7 +107,7 @@ const Proforma = () => {
                 }
 
                 const payload = {
-                    [searchField]: searcTerm,
+                    [searchField]: searchTerm,
                 };
 
                 try {
@@ -170,7 +170,7 @@ const Proforma = () => {
             }
         };
         fetchData();
-    }, [searcTerm, selectedOption]);
+    }, [searchTerm, selectedOption]);
 
     return (
         <>
@@ -185,6 +185,7 @@ const Proforma = () => {
 
                     <TitleAndSearchBoxSpecial
                         selectedOption={selectedOption}
+                        searchTerm={searchTerm}
                         title="Proformas"
                         onSearchChange={handleSearchProformaWithDebounce}
                         onButtonClick={openFilterModal}

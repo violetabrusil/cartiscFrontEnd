@@ -37,7 +37,9 @@ const Location = () => {
     const [columnUpdate, setColumnUpdate] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 5, 13);
+    const [tablePage, setTablePage] = useState(0);
+    const [resetPageToken, setResetPageToken] = useState(0);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 4, 13);
 
     const handleFilter = useCallback((option, term) => {
         setSelectedOption(option);
@@ -59,17 +61,17 @@ const Location = () => {
         if (isEditing) {
             const formData = new FormData();
     
-            // Añadir a formData solo si hay cambios
+         
             if (rowUpdate !== null) {
                 formData.append('row', rowUpdate);
             } else {
-                formData.append('row', selectedProductRow); // Mantener el valor actual
+                formData.append('row', selectedProductRow); 
             }
     
             if (columnUpdate !== null) {
                 formData.append('column', columnUpdate);
             } else {
-                formData.append('column', selectedProductColumn); // Mantener el valor actual
+                formData.append('column', selectedProductColumn); 
             }
     
             console.log("datos a enviar", rowUpdate, columnUpdate);
@@ -86,7 +88,7 @@ const Location = () => {
                         position: toast.POSITION.TOP_RIGHT
                     });
     
-                    // Actualizar solo los valores editados
+            
                     if (rowUpdate !== null) {
                         setSelectedProductRow(rowUpdate);
                     }
@@ -109,7 +111,6 @@ const Location = () => {
                 });
             }
     
-            // Restablecer los valores de edición
             setRowUpdate(null);
             setColumnUpdate(null);
         }
@@ -145,13 +146,10 @@ const Location = () => {
         []
     );
 
-    //Función que permite obtener todos los productos
-    //cuando inicia la pantalla y las busca por
-    //por número de serie, categoría o título
+
 
     const fetchData = async () => {
         setLoading(true);
-        //Endpoint por defecto
         let endpoint = '/products/all';
         const searchPerSku = "sku";
         const searchPerSupplier = "supplier_name";
@@ -199,6 +197,10 @@ const Location = () => {
         fetchData();
     }, [selectedOption, searchTerm]);
 
+    useEffect(() => {
+        setResetPageToken(prev => prev + 1);
+    }, [selectedOption, searchTerm]);
+
     return (
 
         <div className="location-container">
@@ -217,7 +219,10 @@ const Location = () => {
                         onRowClick={handleRowProductClick}
                         highlightRows={true}
                         selectedRowIndex={selectedRowIndex}
-                        initialPageSize={responsivePageSize} />
+                        initialPageSize={responsivePageSize}
+                        initialPageIndex={tablePage}
+                        onPageChange={setTablePage}
+                        resetPageToken={resetPageToken} />
                 )
                 }
 

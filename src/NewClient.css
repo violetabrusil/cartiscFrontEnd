@@ -249,7 +249,7 @@
 }
 
 .container-add-car-modal {
-    height: 600px;
+    height: auto;
 }
 
 .form-scroll {
@@ -327,14 +327,13 @@
 }
 
 .form-scroll-vehicle-modal {
-    max-height: 96%;
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
 }
 
 @media screen and (min-width: 800px) and (max-width: 1340px) and (orientation: landscape) {
 
     .containerNewClient {
-        height: 88vh;
         grid-template-columns: 1.5fr 2fr;
         overflow-y: auto;
     }
@@ -370,10 +369,6 @@
 
     .form-scroll {
         height: 550px;
-    }
-
-    .container-add-car-modal {
-        height: 480px;
     }
 
 }
@@ -481,10 +476,6 @@
 
     .filter-modal .container-button-next {
         margin-top: 1.3rem;
-    }
-
-    .form-scroll-vehicle-modal {
-        max-height: 99%;
     }
 
 }

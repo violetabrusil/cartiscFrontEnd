@@ -34,7 +34,9 @@ const Stock = () => {
     const [stockToUpdate, setStockToUpdate] = useState(null);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [loading, setLoading] = useState(false);
-    const responsivePageSize = usePageSizeForTabletLandscape(8, 5, 13);
+    const [tablePage, setTablePage] = useState(0);
+    const [resetPageToken, setResetPageToken] = useState(0);
+    const responsivePageSize = usePageSizeForTabletLandscape(8, 4, 13);
 
     const fetchData = async () => {
         setLoading(true);
@@ -87,7 +89,6 @@ const Stock = () => {
     }, []);
 
     const handleRowClick = (row, index) => {
-        // Aquí obtienes el stock del producto seleccionado y lo actualizas en el estado
         setSelectedProductStock(row.original.stock);
         setSelectedProductId(row.original.id);
         setSelectedRowIndex(index);
@@ -160,6 +161,9 @@ const Stock = () => {
         fetchData();
     }, [selectedOption, searchTerm]);
 
+    useEffect(() => {
+        setResetPageToken(prev => prev + 1);
+    }, [selectedOption, searchTerm]);
 
     return (
 
@@ -180,6 +184,9 @@ const Stock = () => {
                         highlightRows={true}
                         selectedRowIndex={selectedRowIndex}
                         initialPageSize={responsivePageSize}
+                        initialPageIndex={tablePage}
+                        onPageChange={setTablePage}
+                        resetPageToken={resetPageToken}
                     />
                 )
                 }

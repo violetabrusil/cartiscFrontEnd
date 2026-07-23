@@ -67,7 +67,7 @@ const SearchModalWorkOrder = ({ fields, onSearch, onClose }) => {
     return (
         <div className="filter-modal-overlay">
 
-            <div className="filter-modal">
+            <div className="filter-modal filter-modal-work-order-history">
                 <div className="title-modal-search">
                     <h3>Filtros de búsqueda</h3>
                     <button className="button-close-modal" onClick={onClose}  >
@@ -130,19 +130,19 @@ const SearchModalWorkOrder = ({ fields, onSearch, onClose }) => {
                     </div>
                 )}
                 {fields.includes('DateStartOfSearch') && fields.includes('DateFinishOfSearch') && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
+                    <div className="date-range-fields">
+                        <div className="date-range-field">
                             <label className="label-fields">Fecha Inicio</label>
                             <DatePicker
-                                className="input-fields"
+                                className="input-fields input-fields-date"
                                 placeholderText="Seleccione una fecha"
                                 selected={formData['DateStartOfSearch']}
                                 onChange={date => handleDateChange('DateStartOfSearch', date)} />
                         </div>
-                        <div>
+                        <div className="date-range-field">
                             <label className="label-fields">Fecha Fin</label>
                             <DatePicker
-                                className="input-fields"
+                                className="input-fields input-fields-date"
                                 placeholderText="Seleccione una fecha"
                                 selected={formData['DateFinishOfSearch']}
                                 onChange={date => handleDateChange('DateFinishOfSearch', date)} />
@@ -180,7 +180,9 @@ const SearchModalWorkOrder = ({ fields, onSearch, onClose }) => {
                     </div>
                 )}
 
-                <button onClick={handleSubmit} className="modal-button">Aplicar</button>
+                <div className="modal-button-row">
+                    <button onClick={handleSubmit} className="modal-button">Aplicar</button>
+                </div>
             </div>
         </div>
     )
