@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const apiLogin = axios.create({
-
-    baseURL: 'http://localhost:1313/cartics',
+    baseURL: process.env.REACT_APP_API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
         'Accept': '*/*',
@@ -14,13 +13,12 @@ apiLogin.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
 
     if (token) {
-        config.headers.Authorization = token; // Sin el prefijo Bearer
+        config.headers.Authorization = token;
     }
 
     return config;
 }, (error) => {
     return Promise.reject(error);
 });
-
 
 export default apiLogin;
