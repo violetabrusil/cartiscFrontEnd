@@ -52,6 +52,13 @@ const Cars = () => {
     const [nameClient, setNameClient] = useState('');
     const [loading, setLoading] = useState(true);
 
+    const VEHICLE_PAGE_SIZE = 10;
+    const [isFetchingVehicles, setIsFetchingVehicles] = useState(false);
+    const [vehiclePage, setVehiclePage] = useState(1);
+    const [hasMoreVehicles, setHasMoreVehicles] = useState(true);
+    const vehicleObserver = useRef();
+    const isFirstVehicleFilterRun = useRef(true);
+
     const [vehicles, setVehicles] = useState([]);
     const iconsVehicles = useMemo(() => {
         return {
@@ -523,16 +530,18 @@ const Cars = () => {
 
     };
 
+    const CLIENT_SEARCH_PAGE_SIZE = 50;
+
     const handleSearchClientWithDebounce = useMemo(
         () => debounce(async (term, tab, signal) => {
             if (!term) return;
             let endpoint = tab === 'cédula'
-                ? `/clients/search-by-cedula/${term}`
-                : `/clients/search-by-name/${term}`;
+                ? `/clients/search/cedula/${term}/1/${CLIENT_SEARCH_PAGE_SIZE}`
+                : `/clients/search/name/${term}/1/${CLIENT_SEARCH_PAGE_SIZE}`;
 
             try {
                 const response = await apiClient.get(endpoint, { signal });
-                setClients(response.data || []);
+                setClients(response.data.values || []);
             } catch (error) {
                 if (error.name === 'AbortError') return;
                 setClients([]);
@@ -640,23 +649,40 @@ const Cars = () => {
     }, [searchClienTerm, activeTab, handleSearchClientWithDebounce]);
 
     useEffect(() => {
+        if (isFirstVehicleFilterRun.current) {
+            isFirstVehicleFilterRun.current = false;
+            return;
+        }
+        setVehiclePage(1);
+        setHasMoreVehicles(true);
+        if (vehicleListScrollRef.current) {
+            vehicleListScrollRef.current.scrollTop = 0;
+        }
+    }, [searchTerm, selectedOption, refreshVehicles, vehicleSuspended]);
+
+    useEffect(() => {
 
         const controller = new AbortController();
 
         const fetchData = async () => {
 
-            setLoading(true);
-            let endpoint = '/vehicles/all';
+            if (isFetchingVehicles && vehiclePage !== 1) return;
+
+            if (vehiclePage === 1) setLoading(true);
+            setIsFetchingVehicles(true);
+
+            let endpoint = `/vehicles/list/${vehiclePage}/${VEHICLE_PAGE_SIZE}`;
+            console.log("endpoint",endpoint)
             const searchTypePlate = "plate";
             const searchTypeClientName = "client_name";
 
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Placa':
-                        endpoint = `/vehicles/search/${searchTypePlate}/${searchTerm}`;
+                        endpoint = `/vehicles/search/${searchTypePlate}/${searchTerm}/${vehiclePage}/${VEHICLE_PAGE_SIZE}`;
                         break;
                     case 'Nombre Titular':
-                        endpoint = `/vehicles/search/${searchTypeClientName}/${searchTerm}`;
+                        endpoint = `/vehicles/search/${searchTypeClientName}/${searchTerm}/${vehiclePage}/${VEHICLE_PAGE_SIZE}`;
                         break;
                     default:
                         break;
@@ -667,20 +693,22 @@ const Cars = () => {
                     signal: controller.signal
                 });
 
-                if (!controller.signal.aborted) {
-                    if (response.data && response.data.length > 0) {
-                        const formattedVehicles = response.data.map(vehicle => {
-                            if (vehicle.plate) {
-                                vehicle.plate = formatPlate(vehicle.plate);
-                            }
-                            vehicle.iconSrc = iconsVehicles[vehicle.category]
-                            return vehicle;
-                        });
-                        setVehicles(formattedVehicles);
-                    } else {
-                        setVehicles([]);
-                    }
+                console.log("data vehicles", response.data)
 
+                if (!controller.signal.aborted) {
+                    const rawData = response.data.values || [];
+                    const totalPages = parseInt(response.data.total_pages) || 0;
+
+                    setHasMoreVehicles(vehiclePage < totalPages && rawData.length > 0);
+
+                    const formattedVehicles = rawData.map(vehicle => {
+                        if (vehicle.plate) {
+                            vehicle.plate = formatPlate(vehicle.plate);
+                        }
+                        vehicle.iconSrc = iconsVehicles[vehicle.category]
+                        return vehicle;
+                    });
+                    setVehicles(prev => (vehiclePage === 1 ? formattedVehicles : [...prev, ...formattedVehicles]));
                 }
 
             } catch (error) {
@@ -688,10 +716,12 @@ const Cars = () => {
                     return;
                 }
                 console.error('Error al cargar la información:', error.message);
-                setVehicles([]);
+                if (vehiclePage === 1) setVehicles([]);
+                setHasMoreVehicles(false);
             } finally {
                 if (!controller.signal.aborted) {
                     setLoading(false);
+                    setIsFetchingVehicles(false);
                 }
             }
         };
@@ -699,7 +729,20 @@ const Cars = () => {
 
         return () => controller.abort();
 
-    }, [searchTerm, selectedOption, refreshVehicles, vehicleSuspended, iconsVehicles]);
+    }, [vehiclePage, searchTerm, selectedOption, refreshVehicles, vehicleSuspended, iconsVehicles]);
+
+    const lastVehicleElementRef = useCallback(node => {
+        if (loading || isFetchingVehicles) return;
+        if (vehicleObserver.current) vehicleObserver.current.disconnect();
+
+        vehicleObserver.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMoreVehicles) {
+                setVehiclePage(prev => prev + 1);
+            }
+        });
+
+        if (node) vehicleObserver.current.observe(node);
+    }, [loading, isFetchingVehicles, hasMoreVehicles]);
 
     useEffect(() => {
         console.log("Valor de selectedOption al regresar:", selectedOption, searchTerm);
@@ -763,17 +806,19 @@ const Cars = () => {
                         wrapperClassName="title-search-wrapper"
                     />
 
-                    {loading ? (
+                    {loading && vehiclePage === 1 ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
                             <PuffLoader color="#316EA8" loading={loading} size={60} />
                         </div>
                     ) : (
 
                         <>
-                       
+
                             <div className="container-list-vehicle" ref={vehicleListScrollRef}>
-                                {vehicles.map(vehicleData => (
-                                    <div key={vehicleData.id} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)}>
+                                {vehicles.map((vehicleData, index) => {
+                                    const isLast = vehicles.length === index + 1;
+                                    return (
+                                    <div key={`${vehicleData.id}-${index}`} className="result-car" onClick={(event) => handleCarHistory(vehicleData.id, event)} ref={isLast ? lastVehicleElementRef : null}>
                                         <div className="first-result-car">
                                             <div className="input-plate-container">
                                                 <input
@@ -804,7 +849,14 @@ const Cars = () => {
                                         </div>
 
                                     </div>
-                                ))}
+                                    );
+                                })}
+
+                                {isFetchingVehicles && vehiclePage > 1 && (
+                                    <div className="infinite-scroll-loader">
+                                        <PuffLoader color="#316EA8" size={40} />
+                                    </div>
+                                )}
                             </div>
                         </>
 

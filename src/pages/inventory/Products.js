@@ -28,6 +28,8 @@ const customStyles = {
 
 const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }) => {
 
+    const PRODUCTS_PAGE_SIZE = 500;
+
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -171,7 +173,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
     const fetchData = async () => {
         setLoading(true);
 
-        let endpoint = '/products/all';
+        let endpoint = `/products/list/1/${PRODUCTS_PAGE_SIZE}`;
         const searchPerSku = "sku";
         const searchPerSupplier = "supplier_name";
         const searchPerTitle = "title";
@@ -182,20 +184,20 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
             switch (selectedOption.value) {
 
                 case 'sku':
-                    endpoint = `/products/search?search_type=${searchPerSku}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerSku}&criteria=${searchTerm}`;
 
                     break;
                 case 'supplier_name':
-                    endpoint = `/products/search?search_type=${searchPerSupplier}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerSupplier}&criteria=${searchTerm}`;
                     break;
                 case 'title':
-                    endpoint = `/products/search?search_type=${searchPerTitle}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerTitle}&criteria=${searchTerm}`;
                     break;
                 case 'category':
-                    endpoint = `/products/search?search_type=${searchPerCategory}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerCategory}&criteria=${searchTerm}`;
                     break;
                 case 'brand':
-                    endpoint = `/products/search?search_type=${searchPerBrand}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerBrand}&criteria=${searchTerm}`;
                     break;
                 default:
                     break;
@@ -203,7 +205,7 @@ const Products = ({ viewMode, setViewMode, selectedProduct, setSelectedProduct }
         }
         try {
             const response = await apiClient.get(endpoint);
-            setAllProducts(response.data);
+            setAllProducts(response.data.values || []);
         } catch (error) {
             if (error.code === 'ECONNABORTED') {
                 toast.error('La solicitud ha superado el tiempo límite.', {

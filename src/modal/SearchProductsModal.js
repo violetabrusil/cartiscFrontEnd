@@ -28,6 +28,8 @@ export function SearchProductsModal({ onClose,
     workOrderId,
 }) {
 
+    const PRODUCTS_PAGE_SIZE = 500;
+
     const [allProducts, setAllProducts] = useState([]);
     const [selectedOption, setSelectedOption] = useState({ value: 'title', label: 'Título' });
     const [searchTerm, setSearchTerm] = useState("");
@@ -443,16 +445,16 @@ export function SearchProductsModal({ onClose,
         }
 
         setLoading(true);
-        let endpoint = '/products/all';
+        let endpoint = `/products/list/1/${PRODUCTS_PAGE_SIZE}`;
 
         if (searchTerm) {
             const type = selectedOption?.value || 'title';
-            endpoint = `/products/search?search_type=${type}&criteria=${encodeURIComponent(searchTerm)}`;
+            endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${type}&criteria=${encodeURIComponent(searchTerm)}`;
         }
 
         try {
             const response = await apiClient.get(endpoint);
-            setAllProducts(response.data);
+            setAllProducts(response.data.values || []);
         } catch (error) {
             if (error.response?.status !== 400) {
                 toast.error('Error al obtener los productos');

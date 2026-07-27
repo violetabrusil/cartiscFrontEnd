@@ -3,7 +3,7 @@ import "../../Modal.css";
 import "../../NewClient.css";
 import 'react-toastify/dist/ReactToastify.css';
 import "../../Loader.css";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import { debounce } from 'lodash';
@@ -45,6 +45,8 @@ const Clients = () => {
 
     const navigate = useNavigate();
 
+    const PAGE_SIZE = 10;
+
     const [clients, setClients] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOption, setSelectedOption] = useState('Nombre');
@@ -53,6 +55,12 @@ const Clients = () => {
     const [clientSuspended, setClientSuspended] = useState(false);
     const [isAlertClientSuspend, setIsAlertClientSuspend] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+
+    const observer = useRef();
+    const isFirstFilterRun = useRef(true);
 
     const [cedula, setCedula] = useState('');
     const [name, setName] = useState('');
@@ -452,20 +460,36 @@ const Clients = () => {
     };
 
     useEffect(() => {
+        if (isFirstFilterRun.current) {
+            isFirstFilterRun.current = false;
+            return;
+        }
+        setPage(1);
+        setHasMore(true);
+        if (clientListScrollRef.current) {
+            clientListScrollRef.current.scrollTop = 0;
+        }
+    }, [searchTerm, selectedOption, refreshClients, clientSuspended]);
+
+    useEffect(() => {
 
         const controller = new AbortController();
 
         const fetchData = async () => {
-            setLoading(true);
-            let endpoint = '/clients/all';
+            if (isFetching && page !== 1) return;
+
+            if (page === 1) setLoading(true);
+            setIsFetching(true);
+
+            let endpoint = `/clients/list/${page}/${PAGE_SIZE}`;
 
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Cédula':
-                        endpoint = `/clients/search-by-cedula/${searchTerm}`;
+                        endpoint = `/clients/search/cedula/${searchTerm}/${page}/${PAGE_SIZE}`;
                         break;
                     case 'Nombre':
-                        endpoint = `/clients/search-by-name/${searchTerm}`;
+                        endpoint = `/clients/search/name/${searchTerm}/${page}/${PAGE_SIZE}`;
                         break;
                     default:
                         break;
@@ -475,8 +499,14 @@ const Clients = () => {
                 const response = await apiClient.get(endpoint, {
                     signal: controller.signal
                 });
+                console.log("clients data", response.data)
+
                 if (!controller.signal.aborted) {
-                    setClients(response.data || []);
+                    const rawData = response.data.values || [];
+                    const totalPages = parseInt(response.data.total_pages) || 0;
+
+                    setHasMore(page < totalPages && rawData.length > 0);
+                    setClients(prev => (page === 1 ? rawData : [...prev, ...rawData]));
                 }
 
             } catch (error) {
@@ -484,16 +514,31 @@ const Clients = () => {
                     return;
                 }
                 console.error('Error al cargar la información:', error.message);
-                setClients([]);
+                if (page === 1) setClients([]);
+                setHasMore(false);
             } finally {
                 if (!controller.signal.aborted) {
                     setLoading(false);
+                    setIsFetching(false);
                 }
             }
         };
         fetchData();
         return () => controller.abort();
-    }, [searchTerm, selectedOption, refreshClients, clientSuspended]);
+    }, [page, searchTerm, selectedOption, refreshClients, clientSuspended]);
+
+    const lastClientElementRef = useCallback(node => {
+        if (loading || isFetching) return;
+        if (observer.current) observer.current.disconnect();
+
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                setPage(prev => prev + 1);
+            }
+        });
+
+        if (node) observer.current.observe(node);
+    }, [loading, isFetching, hasMore]);
 
     useEffect(() => {
         if (selectedClient) {
@@ -566,15 +611,17 @@ const Clients = () => {
                         wrapperClassName="title-search-wrapper"
                     />
 
-                    {loading ? (
+                    {loading && page === 1 ? (
                         <div className="loader-container" style={{ marginLeft: '-93px' }}>
                             <PuffLoader color="#316EA8" loading={loading} size={60} />
                         </div>
                     ) : (
                         <>
                             <div className="container-list-client" ref={clientListScrollRef}>
-                                {clients.map(clientData => (
-                                    <div className="result-client" onClick={(event) => handleClientCarInformation(clientData.client.id, event)} key={clientData.client.id}>
+                                {clients.map((clientData, index) => {
+                                    const isLast = clients.length === index + 1;
+                                    return (
+                                    <div className="result-client" onClick={(event) => handleClientCarInformation(clientData.client.id, event)} key={`${clientData.client.id}-${index}`} ref={isLast ? lastClientElementRef : null}>
                                         <div className="first-result">
                                             <img src={clientIcon} alt="Client Icon" className="icon-client" />
                                             <div className="container-data">
@@ -653,8 +700,14 @@ const Clients = () => {
                                         </div>
 
                                     </div>
+                                    );
+                                })}
 
-                                ))}
+                                {isFetching && page > 1 && (
+                                    <div className="infinite-scroll-loader">
+                                        <PuffLoader color="#316EA8" size={40} />
+                                    </div>
+                                )}
                             </div>
                         </>
                     )

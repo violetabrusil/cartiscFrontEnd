@@ -50,6 +50,8 @@ const NewWorkOrder = () => {
 
     const { user } = useContext(AuthContext);
 
+    const CLIENT_PAGE_SIZE = 50;
+
     const [selectedOption, setSelectedOption] = useState('Nombre');
     const [searchTerm, setSearchTerm] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -482,15 +484,15 @@ const NewWorkOrder = () => {
 
     const getClient = async () => {
 
-        let endpoint = '/clients/all';
+        let endpoint = `/clients/list/1/${CLIENT_PAGE_SIZE}`;
 
         if (searchTerm) {
             switch (selectedOption) {
                 case 'Cédula':
-                    endpoint = `/clients/search-by-cedula/${searchTerm}`;
+                    endpoint = `/clients/search/cedula/${searchTerm}/1/${CLIENT_PAGE_SIZE}`;
                     break;
                 case 'Nombre':
-                    endpoint = `/clients/search-by-name/${searchTerm}`;
+                    endpoint = `/clients/search/name/${searchTerm}/1/${CLIENT_PAGE_SIZE}`;
                     break;
                 default:
                     break;
@@ -499,7 +501,7 @@ const NewWorkOrder = () => {
         setLoadingClients(true);
         try {
             const response = await apiClient.get(endpoint);
-            setClients(response.data);
+            setClients(response.data.values || []);
 
         } catch (error) {
             toast.error('Error al obtener los datos de los clientes', {
