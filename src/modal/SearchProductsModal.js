@@ -440,7 +440,7 @@ export function SearchProductsModal({ onClose,
     }
 
     const fetchData = async () => {
-        if (searchTerm && searchTerm.trim().length < 2) {
+        if (searchTerm && searchTerm.trim().length < 3) {
             return;
         }
 

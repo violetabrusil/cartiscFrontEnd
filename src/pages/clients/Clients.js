@@ -153,20 +153,24 @@ const Clients = () => {
         navigate("/clients/newClient");
     };
 
-    const handleClientInformation = (clientId, event) => {
+    const handleClientInformation = async (clientId, event) => {
         event.stopPropagation();
-        const client = clients.find(client => client.client.id === clientId);
-        setSelectedClient(client);
+        const clientListItem = clients.find(client => client.client.id === clientId);
+        setSelectedClientData(clientListItem);
         setShowClientInformation(true);
         setShowClientCarInformation(false);
         setShowTitle(false);
         setSelectedVehicle(null);
-       
-        const clientdata = clients.find(client => client.client.id === clientId);
-        setSelectedClientData(clientdata);
-        setShowClientInformation(true);
-        setShowClientCarInformation(false);
         setShowAddVehicle(false);
+
+        try {
+            const response = await apiClient.get(`/clients/${clientId}`);
+            const fullClient = response.data && response.data.client ? response.data : { client: response.data };
+            setSelectedClient(fullClient);
+        } catch (error) {
+            console.error('Error al obtener el detalle del cliente:', error.message);
+            setSelectedClient(clientListItem);
+        }
     };
 
     const handleClientCarInformation = (clientId, event) => {
@@ -276,6 +280,16 @@ const Clients = () => {
     /*const handleAlertClick = () => {
         openAlertModal();
     };*/
+
+    // El backend no confirma la convención de mayúsculas/guiones bajos de las llaves de vehicles_count,
+    // así que comparamos normalizando ambos lados (minúsculas, sin '_' ni espacios).
+    const getVehicleCount = (vehiclesCount, categoryCode) => {
+        if (!vehiclesCount) return 0;
+        const normalize = (key) => key.toLowerCase().replace(/[_\s]/g, '');
+        const target = normalize(categoryCode);
+        const matchKey = Object.keys(vehiclesCount).find(key => normalize(key) === target);
+        return matchKey ? vehiclesCount[matchKey] : 0;
+    };
 
     const formatPlate = (plateInput) => {
         const regex = /^([A-Z]{3})(\d{3,4})$/;
@@ -481,15 +495,15 @@ const Clients = () => {
             if (page === 1) setLoading(true);
             setIsFetching(true);
 
-            let endpoint = `/clients/list/${page}/${PAGE_SIZE}`;
+            let endpoint = `/clients/list/${page}/${PAGE_SIZE}?with_vehicles=true`;
 
             if (searchTerm) {
                 switch (selectedOption) {
                     case 'Cédula':
-                        endpoint = `/clients/search/cedula/${searchTerm}/${page}/${PAGE_SIZE}`;
+                        endpoint = `/clients/search/cedula/${searchTerm}/${page}/${PAGE_SIZE}?with_vehicles=true`;
                         break;
                     case 'Nombre':
-                        endpoint = `/clients/search/name/${searchTerm}/${page}/${PAGE_SIZE}`;
+                        endpoint = `/clients/search/name/${searchTerm}/${page}/${PAGE_SIZE}?with_vehicles=true`;
                         break;
                     default:
                         break;
@@ -499,7 +513,6 @@ const Clients = () => {
                 const response = await apiClient.get(endpoint, {
                     signal: controller.signal
                 });
-                console.log("clients data", response.data)
 
                 if (!controller.signal.aborted) {
                     const rawData = response.data.values || [];
@@ -639,23 +652,23 @@ const Clients = () => {
                                                         ) : (
                                                             <>
 
-                                                                {clientData.vehicles_count.car > 0 && (
+                                                                {getVehicleCount(clientData.vehicles_count, 'car') > 0 && (
                                                                     <div className="container-car-number">
-                                                                        <label className="car-number">{clientData.vehicles_count.car}</label>
+                                                                        <label className="car-number">{getVehicleCount(clientData.vehicles_count, 'car')}</label>
                                                                         <img src={autoIcon} alt="Car client" className="icon-car" />
                                                                     </div>
                                                                 )}
 
-                                                                {clientData.vehicles_count.suv > 0 && (
+                                                                {getVehicleCount(clientData.vehicles_count, 'suv') > 0 && (
                                                                     <div className="container-car-number">
-                                                                        <label className="car-number">{clientData.vehicles_count.suv}</label>
+                                                                        <label className="car-number">{getVehicleCount(clientData.vehicles_count, 'suv')}</label>
                                                                         <img src={suvIcon} alt="Suv client" className="icon-car" />
                                                                     </div>
                                                                 )}
 
-                                                                {clientData.vehicles_count.pickup_truck > 0 && (
+                                                                {getVehicleCount(clientData.vehicles_count, 'pickup_truck') > 0 && (
                                                                     <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.pickup_truck}
+                                                                        <label className="car-number"> {getVehicleCount(clientData.vehicles_count, 'pickup_truck')}
                                                                         </label>
                                                                         <div className="van-container">
                                                                             <img src={camionetaIcon} alt="Van client" className="icon-van"></img>
@@ -664,18 +677,18 @@ const Clients = () => {
                                                                     </div>
                                                                 )}
 
-                                                                {clientData.vehicles_count.van > 0 && (
+                                                                {getVehicleCount(clientData.vehicles_count, 'van') > 0 && (
                                                                     <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.van}
+                                                                        <label className="car-number"> {getVehicleCount(clientData.vehicles_count, 'van')}
                                                                         </label>
                                                                         <img src={busetaIcon} alt="Bus client" className="icon-bus"></img>
                                                                     </div>
 
                                                                 )}
 
-                                                                {clientData.vehicles_count.truck > 0 && (
+                                                                {getVehicleCount(clientData.vehicles_count, 'truck') > 0 && (
                                                                     <div className="container-car-number">
-                                                                        <label className="car-number"> {clientData.vehicles_count.truck}
+                                                                        <label className="car-number"> {getVehicleCount(clientData.vehicles_count, 'truck')}
                                                                         </label>
                                                                         <img src={camionIcon} alt="Truck client" className="icon-car"></img>
                                                                     </div>

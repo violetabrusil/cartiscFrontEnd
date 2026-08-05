@@ -381,7 +381,7 @@ const Cars = () => {
         }
     };
 
-    const handleCarInformation = (vehicle, event) => {
+    const handleCarInformation = async (vehicle, event) => {
         event.stopPropagation();
         setSelectedVehicle(vehicle);
         setShowCarInformation(true);
@@ -389,6 +389,18 @@ const Cars = () => {
         setShowMaintenance(false);
         setShowAddVehicle(false);
         setShowButtonAddVehicle(false);
+
+        try {
+            const response = await apiClient.get(`/vehicles/${vehicle.id}`);
+            const fullVehicle = { ...response.data };
+            if (fullVehicle.plate) {
+                fullVehicle.plate = formatPlate(fullVehicle.plate);
+            }
+            fullVehicle.category = toCategoryCode(fullVehicle.category);
+            setSelectedVehicle(fullVehicle);
+        } catch (error) {
+            console.error('Error al obtener el detalle del vehículo:', error.message);
+        }
     };
 
     const openAlertModalVehicleSuspend = () => {
@@ -438,7 +450,15 @@ const Cars = () => {
                 }
             );
         }
-        return plateInput; 
+        return plateInput;
+    };
+
+    const toCategoryCode = (rawCategory) => {
+        if (!rawCategory) return rawCategory;
+        const normalize = (value) => value.toLowerCase().replace(/[_\s]/g, '');
+        const target = normalize(rawCategory);
+        const match = Object.keys(iconsVehicles).find(code => normalize(code) === target);
+        return match || rawCategory;
     };
 
     const handleInputFocus = () => {
@@ -705,6 +725,7 @@ const Cars = () => {
                         if (vehicle.plate) {
                             vehicle.plate = formatPlate(vehicle.plate);
                         }
+                        vehicle.category = toCategoryCode(vehicle.category);
                         vehicle.iconSrc = iconsVehicles[vehicle.category]
                         return vehicle;
                     });
@@ -751,13 +772,13 @@ const Cars = () => {
 
     useEffect(() => {
         if (selectedVehicle) {
-            setPlateCar(selectedVehicle.plate);
-            setYear(selectedVehicle.year);
-            setCategory(selectedVehicle.category);
-            setKm(selectedVehicle.km);
-            setBrand(selectedVehicle.brand);
-            setModel(selectedVehicle.model);
-            setMotor(selectedVehicle.motor);
+            setPlateCar(selectedVehicle.plate ?? '');
+            setYear(selectedVehicle.year ?? '');
+            setCategory(selectedVehicle.category ?? '');
+            setKm(selectedVehicle.km ?? '');
+            setBrand(selectedVehicle.brand ?? '');
+            setModel(selectedVehicle.model ?? '');
+            setMotor(selectedVehicle.motor ?? '');
         }
     }, [selectedVehicle, iconsVehicles]);
 

@@ -159,24 +159,25 @@ const Location = () => {
         const searchPerCategory = "category";
         const searchPerBrand = "brand";
 
-        if (searchTerm) {
+        if (searchTerm && searchTerm.trim().length >= 3) {
+            const criteria = encodeURIComponent(searchTerm);
             switch (selectedOption.value) {
 
                 case 'sku':
-                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerSku}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerSku}&criteria=${criteria}`;
 
                     break;
                 case 'supplier_name':
-                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerSupplier}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerSupplier}&criteria=${criteria}`;
                     break;
                 case 'title':
-                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerTitle}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerTitle}&criteria=${criteria}`;
                     break;
                 case 'category':
-                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerCategory}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerCategory}&criteria=${criteria}`;
                     break;
                 case 'brand':
-                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerBrand}&criteria=${searchTerm}`;
+                    endpoint = `/products/search/1/${PRODUCTS_PAGE_SIZE}?search_type=${searchPerBrand}&criteria=${criteria}`;
                     break;
                 default:
                     break;
