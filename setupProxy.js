@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     '/cartics',
     createProxyMiddleware({
-      target: 'http://192.168.100.98:1313',
+      target: 'http://localhost:1313',
       changeOrigin: true,
     })
   );

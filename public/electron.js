@@ -1,6 +1,5 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const isDev = require('electron-is-dev');
 
 let mainWindow
 
@@ -32,11 +31,9 @@ function createWindow() {
     mainWindow.webContents.setVisualZoomLevelLimits(1, 1);
   });
 
-  mainWindow.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}`
-  );
+  // Siempre carga desde el contenedor Docker persistente (nginx sirviendo el build en :3000),
+  // asi funciona igual sin importar si el proyecto se corrio con npm start o no.
+  mainWindow.loadURL('http://localhost:3000');
   mainWindow.on('closed', function () {
     mainWindow = null
   })

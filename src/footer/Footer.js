@@ -32,20 +32,28 @@ function Footer() {
 
   const legendStyle = {
     position: 'absolute',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
     textAlign: 'center',
     fontSize: '13px',
     bottom: '10px',
     right: '10px',
     color: 'white',
-    zIndex: 1000 
+    zIndex: 1000
   };
 
   return (
     <>
       <div style={{ position: 'relative' }} id="content-container">
-        {/* Aquí va el contenido de tu página */}
+
       </div>
       <div style={legendStyle}>
+        <img
+          src={process.env.PUBLIC_URL + "/SHUK SIMBOLO LOGOTIPOS-20.png"}
+          alt="SHUK Tech logo"
+          style={{ height: '18px', width: 'auto' }}
+        />
         SHUK TECH S.A.S - Version 1.3.72
       </div>
 

@@ -1,0 +1,14 @@
+services:
+  cartics-frontend:
+    build: .
+    image: cartics-frontend
+    container_name: cartics-frontend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    networks:
+      - cartics_cartics_network
+
+networks:
+  cartics_cartics_network:
+    external: true
