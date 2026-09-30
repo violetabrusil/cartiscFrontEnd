@@ -27,8 +27,12 @@ apiClient.interceptors.response.use((response) => response, (error) => {
     if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.hash = '/login';
-        window.location.reload();
+        
+        const isCheckAuth = error.config && error.config.url && error.config.url.includes('/check-auth');
+        if (!isCheckAuth) {
+            window.location.hash = '/login';
+            window.location.reload();
+        }
     }
 
     return Promise.reject(error);
