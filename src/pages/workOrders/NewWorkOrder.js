@@ -484,15 +484,15 @@ const NewWorkOrder = () => {
 
     const getClient = async () => {
 
-        let endpoint = `/clients/list/1/${CLIENT_PAGE_SIZE}`;
+        let endpoint = `/clients/list/1/${CLIENT_PAGE_SIZE}?with_vehicles=true`;
 
         if (searchTerm) {
             switch (selectedOption) {
                 case 'Cédula':
-                    endpoint = `/clients/search/cedula/${searchTerm}/1/${CLIENT_PAGE_SIZE}`;
+                    endpoint = `/clients/search/cedula/${searchTerm}/1/${CLIENT_PAGE_SIZE}?with_vehicles=true`;
                     break;
                 case 'Nombre':
-                    endpoint = `/clients/search/name/${searchTerm}/1/${CLIENT_PAGE_SIZE}`;
+                    endpoint = `/clients/search/name/${searchTerm}/1/${CLIENT_PAGE_SIZE}?with_vehicles=true`;
                     break;
                 default:
                     break;
