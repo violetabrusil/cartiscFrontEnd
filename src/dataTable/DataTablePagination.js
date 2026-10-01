@@ -1,4 +1,5 @@
 import { useTable } from 'react-table';
+import { getPageItems, useResponsiveMaxSlots, ELLIPSIS } from "../pagination/getPageItems";
 import "../DataTablePagination.css";
 
 const DataTablePagination = ({
@@ -13,6 +14,7 @@ const DataTablePagination = ({
     pageSize,
     setCurrentPage,
     onPageChange,
+    maxSlots = 10,
 }) => {
     const {
         getTableProps,
@@ -25,26 +27,11 @@ const DataTablePagination = ({
         data,
     });
 
+    const slots = useResponsiveMaxSlots(maxSlots);
+
     const renderPageNumbers = () => {
-        const pageNumbers = [];
-        const maxPagesToShow = 10;
-
-        for (let i = 1; i <= totalPages; i++) {
-            if (i <= maxPagesToShow || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
-                pageNumbers.push(i);
-            }
-        }
-
-        const finalNumbers = [];
-        pageNumbers.forEach((number, index) => {
-            if (index > 0 && number - pageNumbers[index - 1] > 1) {
-                finalNumbers.push('...');
-            }
-            finalNumbers.push(number);
-        });
-
-        return finalNumbers.map((number, index) => {
-            if (number === '...') {
+        return getPageItems(currentPage, totalPages, slots).map((number, index) => {
+            if (number === ELLIPSIS) {
                 return <span key={`ellipsis-${index}`} className="ellipsis">{number}</span>;
             }
             return (

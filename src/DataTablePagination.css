@@ -143,3 +143,45 @@
 .page-numbers button:hover:not(.active) {
     background-color: #e0e0e0;
 }
+
+.page-numbers button {
+    min-width: 38px;
+    text-align: center;
+}
+
+.page-numbers .ellipsis {
+    min-width: 28px;
+    text-align: center;
+    color: #666;
+    user-select: none;
+}
+
+@media (max-width: 768px) {
+    .container-table-pagination-buttons {
+        padding: 8px 4px;
+    }
+
+    .container-table-pagination-buttons button {
+        padding: 6px 8px;
+        margin: 0 2px;
+    }
+
+    .page-numbers button {
+        min-width: 32px;
+        padding: 6px 4px;
+    }
+
+    .page-numbers .ellipsis {
+        min-width: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container-table-pagination-buttons {
+        font-size: 11px;
+    }
+
+    .page-numbers button {
+        min-width: 28px;
+    }
+}
